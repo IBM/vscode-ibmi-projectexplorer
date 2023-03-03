@@ -14,6 +14,6 @@ export default class Variables extends TreeItem {
       command: `vscode-ibmi-projectmode.updateVariable`,
       arguments: [this.workspaceFolder, name, value],
       title: `Update value`
-    }
+    };
   }
 }
