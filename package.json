@@ -51,6 +51,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "@halcyontech/vscode-ibmi-types": "^1.6.15"
+    "@halcyontech/vscode-ibmi-types": "^1.6.15",
+    "dotenv": "^16.0.3"
   }
 }

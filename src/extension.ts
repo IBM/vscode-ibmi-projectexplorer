@@ -26,6 +26,11 @@ export function activate(context: vscode.ExtensionContext) {
 		projectExplorer.refresh();
 	});
 
+	const projectWatcher = vscode.workspace.createFileSystemWatcher(`**/*.{env,json}`);
+	projectWatcher.onDidChange(() => {projectExplorer.refresh();});
+	projectWatcher.onDidCreate(() => {projectExplorer.refresh();});
+	projectWatcher.onDidDelete(() => {projectExplorer.refresh();});
+
 	context.subscriptions.push(
 		vscode.window.registerTreeDataProvider(
 			`projectExplorer`,

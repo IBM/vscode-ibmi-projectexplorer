@@ -2,7 +2,7 @@ import { ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder } from "
 
 export default class Project extends TreeItem {
   static contextValue = `project`;
-  constructor(workspaceFolder: WorkspaceFolder) {
+  constructor(public workspaceFolder: WorkspaceFolder) {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
 
     this.resourceUri = workspaceFolder.uri;
