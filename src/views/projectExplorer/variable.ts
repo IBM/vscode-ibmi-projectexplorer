@@ -8,7 +8,7 @@ export default class Variables extends TreeItem {
 
     this.contextValue = Variables.contextValue;
     this.description = value || `No value`;
-    this.iconPath = new ThemeIcon(`symbol-property`);
+    this.iconPath = new ThemeIcon(`pencil`);
 
     this.command = {
       command: `vscode-ibmi-projectmode.updateVariable`,
