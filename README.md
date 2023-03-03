@@ -16,7 +16,7 @@ Extension that implements Project Explorer and Job Log Viewer using the Code for
     * Library list comes from and updates `LIBL` in local `.env`
     * Initial list comes from connection default libraries 
     * Same for current library
-  * [ ] Object Browser
+  * [ ] Object Libraries
     * Has the library list below it
     * Libraries can be expanded to view objects inside of it
 
