@@ -1,71 +1,26 @@
 # vscode-ibm-projectmode README
 
-This is the README for your extension "vscode-ibm-projectmode". After writing up a brief description, we recommend including the following sections.
+Extension that implements Project Explorer and Job Log Viewer using the Code for IBM i API
 
-## Features
+### Project Explorer
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+* Each workspace folder
+  * [ ] Source view
+    * Supposedly is a diff between remote and local sources
+    * Currently is a simple IFS Browser of the deploy directory
+  * [ ] Variables
+    * Variables get listed from `iproj.json`
+    * Values come from and update `.env`
+  * [ ] Library list
+    * Library list comes from and updates `LIBL` in local `.env`
+    * Initial list comes from connection default libraries 
+    * Same for current library
 
-For example if there is an image subfolder under your extension project workspace:
+Refresh explorer when:
 
-\!\[feature X\]\(images/feature-x.png\)
+* Connection changes
+* `.env` changes (fs watcher?)
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+### Job Log Viewer
 
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+Job log viewer simple listens for changes to `.logs/joblog.json` and displays the JSON in the treeview with pretty colours.
