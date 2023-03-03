@@ -11,10 +11,14 @@ Extension that implements Project Explorer and Job Log Viewer using the Code for
   * [ ] Variables
     * Variables get listed from `iproj.json`
     * Values come from and update `.env`
+    * Perhaps create the `.env` if it doesn't exist with the default variables
   * [ ] Library list
     * Library list comes from and updates `LIBL` in local `.env`
     * Initial list comes from connection default libraries 
     * Same for current library
+  * [ ] Object Browser
+    * Has the library list below it
+    * Libraries can be expanded to view objects inside of it
 
 Refresh explorer when:
 
