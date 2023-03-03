@@ -15,6 +15,6 @@ export default class IFSFolder extends TreeItem {
       path: ifsFolder
     });
     this.contextValue = IFSFolder.contextValue;
-    this.iconPath = new ThemeIcon(`folder`);
+    this.iconPath = new ThemeIcon(`symbol-folder`);
   }
 }

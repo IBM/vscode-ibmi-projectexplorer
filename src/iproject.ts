@@ -1,11 +1,11 @@
-import { readFile, stat } from "fs/promises";
 import path = require("path");
-import { WorkspaceFolder } from "vscode";
+import { Uri, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
+import envUpdater from "./envUpdater";
 
-type EnvironmentVariables = {[name: string]: string};
+export type EnvironmentVariables = {[name: string]: string};
 
-interface iProjectT {
+export interface iProjectT {
   objlib?: string;
   curlib?: string;
   description?: string;
@@ -16,21 +16,29 @@ interface iProjectT {
   postUsrlibl: string[];
 }
 
-export default class IProject {
+export class IProject {
   private state: iProjectT|undefined;
   private environmentValues: EnvironmentVariables; 
-  constructor(private workspaceFolder: WorkspaceFolder) {
+  constructor(public workspaceFolder: WorkspaceFolder) {
     this.environmentValues = {};
   }
 
+  private getIProjFilePath(): Uri {
+    return Uri.parse(path.join(this.workspaceFolder.uri.fsPath, `iproj.json`));
+  }
+
+  public getEnvFilePath(): Uri {
+    return Uri.parse(path.join(this.workspaceFolder.uri.fsPath, `.env`));
+  }
+
   public async read() {
-    const content = await readFile(path.join(this.workspaceFolder.uri.fsPath, `iproj.json`), {encoding: `utf8`});
-    this.state = IProject.validateIProject(content);
+    const content = await workspace.fs.readFile(this.getIProjFilePath());
+    this.state = IProject.validateIProject(content.toString());
   }
 
   public async envExists(): Promise<boolean> {
     try {
-      await stat(path.join(this.workspaceFolder.uri.fsPath, `.env`));
+      const statResult = await workspace.fs.stat(this.getEnvFilePath());
       return true;
     } catch(e) {
       return false;
@@ -39,8 +47,8 @@ export default class IProject {
 
   public async getEnv() {
     try {
-      const content = await readFile(path.join(this.workspaceFolder.uri.fsPath, `.env`));
-      this.environmentValues = dotenv.parse(content);
+      const content = await workspace.fs.readFile(this.getEnvFilePath());
+      this.environmentValues = dotenv.parse(Buffer.from(content));
     } catch (e) {
       this.environmentValues = {};
     }

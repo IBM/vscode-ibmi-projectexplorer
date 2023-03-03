@@ -1,12 +1,13 @@
-import { CancellationToken, Event, EventEmitter, ProviderResult, TreeDataProvider, TreeItem, workspace, WorkspaceFolder } from "vscode";
+import { CancellationToken, commands, Event, EventEmitter, ExtensionContext, ProviderResult, TreeDataProvider, TreeItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
-import IProject from "../../iproject";
+import { IProject } from "../../iproject";
 import ErrorItem from "../../test/errorItem";
 import IFSFolder from "./ifsFolder";
 import Project from "./project";
 import Streamfile from "./streamfile";
 import Variables from "./variables";
 import Variable from "./variable";
+import envUpdater from "../../envUpdater";
 
 class ProjectManager {
   private static loaded: {[index: number]: IProject} = {};
@@ -29,6 +30,32 @@ class ProjectManager {
 export default class ProjectExplorer implements TreeDataProvider<any> {
   private _onDidChangeTreeData = new EventEmitter<TreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+
+  constructor(context: ExtensionContext) {
+    context.subscriptions.push(
+      commands.registerCommand(`vscode-ibmi-projectmode.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
+        if (workspaceFolder && varName) {
+          const iProject = ProjectManager.get(workspaceFolder);
+          if (iProject) {
+            const newValue = await window.showInputBox({
+              title: `New value for ${varName}`,
+              value: currentValue || ``,
+            });
+
+            if (newValue) {
+              const envPath = iProject.getEnvFilePath();
+              await envUpdater(envPath, {
+                [varName]: newValue
+              });
+            }
+          }
+
+        } else {
+          // TODO: handle badness
+        }
+      })
+    );
+  }
 
   refresh() {
     this._onDidChangeTreeData.fire(null);
@@ -105,7 +132,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
 
           if (possibleVariables && actualValues) {
             items.push(...possibleVariables?.map(
-              varName => new Variable(varName, actualValues[varName])
+              varName => new Variable(iProject!.workspaceFolder, varName, actualValues[varName])
             ));
 
           } else {

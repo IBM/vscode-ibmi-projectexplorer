@@ -3,12 +3,17 @@ import * as path from "path";
 
 export default class Variables extends TreeItem {
   static contextValue = `variable`;
-  constructor(name: string, value?: string) {
+  constructor(private workspaceFolder: WorkspaceFolder, name: string, value?: string) {
     super(name, TreeItemCollapsibleState.None);
 
     this.contextValue = Variables.contextValue;
     this.description = value || `No value`;
     this.iconPath = new ThemeIcon(`symbol-property`);
-    // TODO: on click, make editable
+
+    this.command = {
+      command: `vscode-ibmi-projectmode.updateVariable`,
+      arguments: [this.workspaceFolder, name, value],
+      title: `Update value`
+    }
   }
 }
