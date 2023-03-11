@@ -47,7 +47,9 @@ export class IProject {
 
   public async createEnv(): Promise<boolean> {
     try {
-      await workspace.fs.writeFile(this.getEnvFilePath(), new TextEncoder().encode(''));
+      const variables = this.getVariables().map(variable => variable + '=').join('\n');
+
+      await workspace.fs.writeFile(this.getEnvFilePath(), new TextEncoder().encode(variables));
       return true;
     } catch (e) {
       return false;
