@@ -8,8 +8,9 @@ import Streamfile from "./streamfile";
 import Variables from "./variables";
 import Variable from "./variable";
 import envUpdater from "../../envUpdater";
+import { DecorationProvider } from "./decorationProvider";
 
-class ProjectManager {
+export class ProjectManager {
   private static loaded: { [index: number]: IProject } = {};
 
   public static load(workspaceFolder: WorkspaceFolder) {
@@ -32,7 +33,9 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   constructor(context: ExtensionContext) {
+    const decorationProvider = new DecorationProvider();    
     context.subscriptions.push(
+      window.registerFileDecorationProvider(decorationProvider),
       commands.registerCommand(`vscode-ibmi-projectmode.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
         if (workspaceFolder && varName) {
           const iProject = ProjectManager.get(workspaceFolder);
@@ -102,11 +105,19 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
 
           // Then load the variable specific stuff
-          iProject?.read();
+          await iProject?.read();
 
           const hasEnv = await iProject?.envExists();
           if (hasEnv) {
-            items.push(new Variables(projectElement.workspaceFolder));
+            let unresolvedVariableCount = 0;
+
+            const possibleVariables = iProject?.getVariables();
+            const actualValues = await iProject?.getEnv();
+            if (possibleVariables && actualValues) {
+              unresolvedVariableCount = possibleVariables.filter(varName => !actualValues[varName]).length;
+            }
+
+            items.push(new Variables(projectElement.workspaceFolder, unresolvedVariableCount));
 
           } else {
             items.push(new ErrorItem(`Variables`, {
