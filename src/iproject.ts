@@ -1,9 +1,9 @@
 import path = require("path");
 import { Uri, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
-import envUpdater from "./envUpdater";
+import { TextEncoder } from "util";
 
-export type EnvironmentVariables = {[name: string]: string};
+export type EnvironmentVariables = { [name: string]: string };
 
 export interface iProjectT {
   objlib?: string;
@@ -17,18 +17,18 @@ export interface iProjectT {
 }
 
 export class IProject {
-  private state: iProjectT|undefined;
-  private environmentValues: EnvironmentVariables; 
+  private state: iProjectT | undefined;
+  private environmentValues: EnvironmentVariables;
   constructor(public workspaceFolder: WorkspaceFolder) {
     this.environmentValues = {};
   }
 
   private getIProjFilePath(): Uri {
-    return Uri.parse(path.join(this.workspaceFolder.uri.fsPath, `iproj.json`));
+    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `iproj.json`));
   }
 
   public getEnvFilePath(): Uri {
-    return Uri.parse(path.join(this.workspaceFolder.uri.fsPath, `.env`));
+    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.env`));
   }
 
   public async read() {
@@ -40,7 +40,16 @@ export class IProject {
     try {
       const statResult = await workspace.fs.stat(this.getEnvFilePath());
       return true;
-    } catch(e) {
+    } catch (e) {
+      return false;
+    }
+  }
+
+  public async createEnv(): Promise<boolean> {
+    try {
+      await workspace.fs.writeFile(this.getEnvFilePath(), new TextEncoder().encode(''));
+      return true;
+    } catch (e) {
       return false;
     }
   }
@@ -62,14 +71,17 @@ export class IProject {
     }
 
     const valueList: string[] = [
-      this.state.curlib, 
-      this.state.objlib, 
+      this.state.curlib,
+      this.state.objlib,
       ...(this.state.postUsrlibl ? this.state.postUsrlibl : []),
       ...(this.state.preUsrlibl ? this.state.preUsrlibl : []),
       ...(this.state.includePath ? this.state.includePath : []),
     ].filter(x => x) as string[];
 
-    return valueList.filter(value => value.startsWith(`&`)).map(value => value.substring(1));
+    const variableNameList = valueList.filter(value => value.startsWith(`&`)).map(value => value.substring(1));
+
+    return variableNameList.filter((name,
+      index) => variableNameList.indexOf(name) === index);
   }
 
   public static validateIProject(content: string): iProjectT {
