@@ -10,7 +10,7 @@ import Variable from "./variable";
 import envUpdater from "../../envUpdater";
 
 class ProjectManager {
-  private static loaded: {[index: number]: IProject} = {};
+  private static loaded: { [index: number]: IProject } = {};
 
   public static load(workspaceFolder: WorkspaceFolder) {
     if (!this.loaded[workspaceFolder.index]) {
@@ -18,7 +18,7 @@ class ProjectManager {
     }
   }
 
-  public static get(workspaceFolder: WorkspaceFolder): IProject|undefined {
+  public static get(workspaceFolder: WorkspaceFolder): IProject | undefined {
     return this.loaded[workspaceFolder.index];
   }
 
@@ -49,9 +49,14 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
               });
             }
           }
-
-        } else {
-          // TODO: handle badness
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectmode.createEnv`, async (workspaceFolder: WorkspaceFolder) => {
+        if (workspaceFolder) {
+          const iProject = ProjectManager.get(workspaceFolder);
+          if (iProject) {
+            await iProject?.createEnv();
+          }
         }
       })
     );
@@ -70,13 +75,13 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
 
     if (element) {
       let items: TreeItem[] = [];
-      let iProject: IProject|undefined;
+      let iProject: IProject | undefined;
 
       switch (element.contextValue) {
         case Project.contextValue:
           const projectElement = element as Project;
           iProject = ProjectManager.get(projectElement.workspaceFolder);
-          
+
           const deploymentDirs = ibmi?.getStorage().getDeployment()!;
 
           const localDir = projectElement.resourceUri?.path!;
@@ -113,9 +118,9 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
               }
             }));
           }
-        
+
           break;
-        
+
         case IFSFolder.contextValue:
           const objects = await ibmi?.getContent().getFileList(element.resourceUri?.path!);
           const objectItems = objects?.map((object) => (object.type === `directory` ? new IFSFolder(object.path) : new Streamfile(object.path))) || [];
@@ -127,7 +132,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           const variablesElement = element as Variables;
           iProject = ProjectManager.get(variablesElement.workspaceFolder);
 
-          const possibleVariables = await iProject?.getVariables();
+          const possibleVariables = iProject?.getVariables();
           const actualValues = await iProject?.getEnv();
 
           if (possibleVariables && actualValues) {
@@ -144,7 +149,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
       }
 
       return items;
-      
+
     } else {
 
       if (ibmi && ibmi.getConnection()) {
