@@ -8,24 +8,7 @@ import Streamfile from "./streamfile";
 import Variables from "./variables";
 import Variable from "./variable";
 import envUpdater from "../../envUpdater";
-
-class ProjectManager {
-  private static loaded: {[index: number]: IProject} = {};
-
-  public static load(workspaceFolder: WorkspaceFolder) {
-    if (!this.loaded[workspaceFolder.index]) {
-      this.loaded[workspaceFolder.index] = new IProject(workspaceFolder);
-    }
-  }
-
-  public static get(workspaceFolder: WorkspaceFolder): IProject|undefined {
-    return this.loaded[workspaceFolder.index];
-  }
-
-  public static clear() {
-    this.loaded = {};
-  }
-}
+import { ProjectManager } from "../../projectManager";
 
 export default class ProjectExplorer implements TreeDataProvider<any> {
   private _onDidChangeTreeData = new EventEmitter<TreeItem | undefined | null | void>();

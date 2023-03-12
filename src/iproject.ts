@@ -1,9 +1,11 @@
 import path = require("path");
 import { Uri, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
-import envUpdater from "./envUpdater";
+import { RingBuffer } from "./views/jobLog/RingBuffer";
+import { JobLogInfo } from "./jobLog";
+import lodash = require("lodash");
 
-export type EnvironmentVariables = {[name: string]: string};
+export type EnvironmentVariables = { [name: string]: string };
 
 export interface iProjectT {
   objlib?: string;
@@ -17,18 +19,29 @@ export interface iProjectT {
 }
 
 export class IProject {
-  private state: iProjectT|undefined;
-  private environmentValues: EnvironmentVariables; 
+  private state: iProjectT | undefined;
+  private jobLogs: RingBuffer<JobLogInfo>;
+  private environmentValues: EnvironmentVariables;
+
   constructor(public workspaceFolder: WorkspaceFolder) {
+    this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
   }
 
   private getIProjFilePath(): Uri {
-    return Uri.parse(path.join(this.workspaceFolder.uri.fsPath, `iproj.json`));
+    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `iproj.json`));
+  }
+
+  private getJobLogPath(): Uri {
+    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.logs`, `joblog.json`));
+  }
+
+  private getBuildOutputPath(): Uri {
+    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.logs`, `output.log`));
   }
 
   public getEnvFilePath(): Uri {
-    return Uri.parse(path.join(this.workspaceFolder.uri.fsPath, `.env`));
+    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.env`));
   }
 
   public async read() {
@@ -36,11 +49,46 @@ export class IProject {
     this.state = IProject.validateIProject(content.toString());
   }
 
+  public async readJobLog() {
+    const jobLogExists = await this.jobLogExists();
+    if (jobLogExists) {
+      const content = await workspace.fs.readFile(this.getJobLogPath());
+      const jobLog = IProject.validateJobLog(content.toString());
+      
+      if (!this.jobLogs.isEmpty()) {
+        const latestJobLog = this.jobLogs.get(-1);
+        if (latestJobLog && !lodash.isEqual(latestJobLog, jobLog)) {
+          this.jobLogs.add(jobLog);
+        }
+      } else {
+        this.jobLogs.add(jobLog);
+      }
+    }
+  }
+
+  public async jobLogExists(): Promise<boolean> {
+    try {
+      const statResult = await workspace.fs.stat(this.getJobLogPath());
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  public async buildOutputExists(): Promise<boolean> {
+    try {
+      const statResult = await workspace.fs.stat(this.getBuildOutputPath());
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   public async envExists(): Promise<boolean> {
     try {
       const statResult = await workspace.fs.stat(this.getEnvFilePath());
       return true;
-    } catch(e) {
+    } catch (e) {
       return false;
     }
   }
@@ -56,14 +104,18 @@ export class IProject {
     return this.environmentValues;
   }
 
+  public getJobLogs() {
+    return this.jobLogs.toArray();
+  }
+
   public getVariables(): string[] {
     if (!this.state) {
       return [];
     }
 
     const valueList: string[] = [
-      this.state.curlib, 
-      this.state.objlib, 
+      this.state.curlib,
+      this.state.objlib,
       ...(this.state.postUsrlibl ? this.state.postUsrlibl : []),
       ...(this.state.preUsrlibl ? this.state.preUsrlibl : []),
       ...(this.state.includePath ? this.state.includePath : []),
@@ -78,5 +130,13 @@ export class IProject {
     // Validate iproj.json here
 
     return iproj;
+  }
+
+  public static validateJobLog(content: string): JobLogInfo {
+    const jobLog = JSON.parse(content);
+
+    // Validate jobLog here
+
+    return new JobLogInfo(jobLog);
   }
 }
