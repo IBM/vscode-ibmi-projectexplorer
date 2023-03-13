@@ -1,12 +1,12 @@
-import { CancellationToken, EventEmitter, ExtensionContext, TreeDataProvider, TreeItem, workspace } from "vscode";
+import { CancellationToken, commands, env, EventEmitter, ExtensionContext, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
 import { IProject } from "../../iproject";
 import ErrorItem from "../../test/errorItem";
-import Project from "../projectExplorer/project";
 import { ProjectManager } from "../../projectManager";
 import Log from "./log";
 import Command from "./command";
 import Message from "./message";
+import Project from "../projectExplorer/project";
 
 export default class JobLog implements TreeDataProvider<any> {
   private _onDidChangeTreeData = new EventEmitter<TreeItem | undefined | null | void>();
@@ -14,7 +14,51 @@ export default class JobLog implements TreeDataProvider<any> {
 
   constructor(context: ExtensionContext) {
     context.subscriptions.push(
-      // TODO: add commands
+      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.refresh`, () => {
+        this.refresh();
+      }),
+      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.showJobLog`, async (element: Project) => {
+        const iProject = ProjectManager.get(element.workspaceFolder);
+        if (iProject) {
+          const jobLogExists = await iProject.jobLogExists();
+          if (jobLogExists) {
+            const jobLogUri = iProject.getJobLogPath();
+            await workspace.openTextDocument(jobLogUri).then(async jobLogDoc => {
+              await window.showTextDocument(jobLogDoc);
+            });
+          } else {
+            window.showErrorMessage('No job log found.');
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.showBuildOutput`, async (element: Project) => {
+        const iProject = ProjectManager.get(element.workspaceFolder);
+        if (iProject) {
+          const buildOutputExists = await iProject.buildOutputExists();
+          if (buildOutputExists) {
+            const buildOutputUri = iProject.getBuildOutputPath();
+            await workspace.openTextDocument(buildOutputUri).then(async buildOutputDoc => {
+              await window.showTextDocument(buildOutputDoc);
+            });
+          } else {
+            window.showErrorMessage('No build output found.');
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.clearJobLogs`, async (element: Project) => {
+        const iProject = ProjectManager.get(element.workspaceFolder);
+        if (iProject) {
+          await iProject.clearJobLogs();
+          this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.copy`, async (element: Command) => {      
+        try {
+            await env.clipboard.writeText(`${element.label}`);
+        } catch (error) {
+            window.showErrorMessage('Failed to copy command.');
+        }
+      })
     );
   }
 

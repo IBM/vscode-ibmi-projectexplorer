@@ -28,15 +28,15 @@ export class IProject {
     this.environmentValues = {};
   }
 
-  private getIProjFilePath(): Uri {
+  public getIProjFilePath(): Uri {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `iproj.json`));
   }
 
-  private getJobLogPath(): Uri {
+  public getJobLogPath(): Uri {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.logs`, `joblog.json`));
   }
 
-  private getBuildOutputPath(): Uri {
+  public getBuildOutputPath(): Uri {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.logs`, `output.log`));
   }
 
@@ -54,7 +54,7 @@ export class IProject {
     if (jobLogExists) {
       const content = await workspace.fs.readFile(this.getJobLogPath());
       const jobLog = IProject.validateJobLog(content.toString());
-      
+
       if (!this.jobLogs.isEmpty()) {
         const latestJobLog = this.jobLogs.get(-1);
         if (latestJobLog && !lodash.isEqual(latestJobLog, jobLog)) {
@@ -63,6 +63,20 @@ export class IProject {
       } else {
         this.jobLogs.add(jobLog);
       }
+    }
+  }
+
+  public async clearJobLogs() {
+    const jobLogExists = await this.jobLogExists();
+    if (jobLogExists) {
+      const localJobLog = this.jobLogs.get(-1);
+
+      this.jobLogs.fromArray([]);
+      if (localJobLog) {
+        this.jobLogs.add(localJobLog);
+      }
+    } else {
+      this.jobLogs.fromArray([]);
     }
   }
 
