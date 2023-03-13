@@ -1,5 +1,5 @@
-import { ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
-import { JobLogInfo, MessageInfo } from "../../jobLog";
+import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { JobLogInfo, MessageInfo, parseDateTime } from "../../jobLog";
 
 export default class Message extends TreeItem {
   static contextValue = `message`;
@@ -9,6 +9,7 @@ export default class Message extends TreeItem {
     super(msgLabel, TreeItemCollapsibleState.None);
 
     this.contextValue = Message.contextValue;
+    const msgTime = parseDateTime(msg.message_time).toLocaleString();
     this.description = msg.type + ' (' + msg + ')';
 
     const fromToText = JobLogInfo.createFromToTextForMsgEntity(msg);
@@ -18,22 +19,22 @@ export default class Message extends TreeItem {
     let msgIcon: ThemeIcon;
     switch (msg.severity) {
       case 0:
-        msgIcon = new ThemeIcon('info'); //TODO: ADD COLOR
+        msgIcon = new ThemeIcon('info', new ThemeColor('joblog.severity.0'));
         break;
       case 10:
-        msgIcon = new ThemeIcon('issues'); //TODO: ADD COLOR
+        msgIcon = new ThemeIcon('issues', new ThemeColor('joblog.severity.10'));
         break;
       case 20:
-        msgIcon = new ThemeIcon('warning'); //TODO: ADD COLOR
+        msgIcon = new ThemeIcon('warning', new ThemeColor('joblog.severity.20'));
         break;
       case 30:
-        msgIcon = new ThemeIcon('close'); //TODO: ADD COLOR
+        msgIcon = new ThemeIcon('close', new ThemeColor('joblog.severity.30'));
         break;
       case 40:
-        msgIcon = new ThemeIcon('workspace-untrusted'); //TODO: ADD COLOR
+        msgIcon = new ThemeIcon('workspace-untrusted', new ThemeColor('joblog.severity.40'));
         break;
       default:
-        msgIcon = new ThemeIcon('error'); //TODO: ADD COLOR
+        msgIcon = new ThemeIcon('error', new ThemeColor('joblog.severity.50'));
         break;
     }
     this.iconPath = msgIcon;
