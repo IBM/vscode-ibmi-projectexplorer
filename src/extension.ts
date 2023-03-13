@@ -47,8 +47,13 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerTreeDataProvider(
 			`jobLog`,
 			jobLog
-		)
+		),
+		vscode.workspace.onDidChangeWorkspaceFolders(() => {
+			projectExplorer.refresh();
+			jobLog.refresh();
+		})
 	);
+
 }
 
 // this method is called when your extension is deactivated
