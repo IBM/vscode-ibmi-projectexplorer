@@ -10,7 +10,7 @@ export default class Message extends TreeItem {
 
     this.contextValue = Message.contextValue;
     const msgTime = parseDateTime(msg.message_time).toLocaleString();
-    this.description = msg.type + ' (' + msg + ')';
+    this.description = msg.type + ' (' + msgTime + ')';
 
     const fromToText = JobLogInfo.createFromToTextForMsgEntity(msg);
     let msgHover = msg.second_level !== null ? msg.second_level.replace(/&N\s/, '').replace(/\s&N\s/g, '\n\n').replace(/\s&P\s/g, '\n\t') : '';
