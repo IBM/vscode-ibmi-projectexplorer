@@ -35,13 +35,21 @@ export default class JobLog implements TreeDataProvider<any> {
         case Project.contextValue:
           const projectElement = element as Project;
 
-          iProject = ProjectManager.get(projectElement.workspaceFolder);          
+          iProject = ProjectManager.get(projectElement.workspaceFolder);
           await iProject?.readJobLog();
           const jobLogs = iProject?.getJobLogs().slice().reverse();
+          const jobLogExists = await iProject?.jobLogExists();
 
           if (jobLogs) {
-            items.push(...jobLogs?.map(
-              jobLog => new Log(jobLog)
+            items.push(...jobLogs?.map((jobLog, index) => {
+              if (index === 0 && jobLogExists) {
+                // Local job log
+                return new Log(jobLogs[0], true);
+              } else {
+                // Old job logs in memory
+                return new Log(jobLog);
+              }
+            }
             ));
           } else {
             items.push(new ErrorItem(`No job log found.`));

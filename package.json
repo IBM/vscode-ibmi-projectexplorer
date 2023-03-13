@@ -30,6 +30,14 @@
     },
     "colors": [
       {
+        "id": "joblog.local",
+        "description": "Color for local job log",
+        "defaults": {
+          "dark": "#FFA500",
+          "light": "#FFA500"
+        }
+      },
+      {
         "id": "joblog.severity.0",
         "description": "Color for job log severity 0 messages",
         "defaults": {
