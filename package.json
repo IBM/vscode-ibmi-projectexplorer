@@ -21,6 +21,27 @@
           "name": "Project Explorer"
         }
       ]
+    },
+    "commands": [
+      {
+        "command": "vscode-ibmi-projectmode.addToIncludes",
+        "title": "Add to Include Paths"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "vscode-ibmi-projectmode.addToIncludes",
+          "when": "never"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "vscode-ibmi-projectmode.addToIncludes",
+          "when": "view == ifsBrowser && viewItem == directory",
+          "group": "1_projectmode@1"
+        }
+      ]
     }
   },
   "scripts": {
