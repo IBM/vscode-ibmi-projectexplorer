@@ -3,7 +3,7 @@ import { Uri, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
 import envUpdater from "./envUpdater";
 
-export type EnvironmentVariables = {[name: string]: string};
+export type EnvironmentVariables = { [name: string]: string };
 
 export interface iProjectT {
   objlib?: string;
@@ -17,8 +17,8 @@ export interface iProjectT {
 }
 
 export class IProject {
-  private state: iProjectT|undefined;
-  private environmentValues: EnvironmentVariables; 
+  private state: iProjectT | undefined;
+  private environmentValues: EnvironmentVariables;
   constructor(public workspaceFolder: WorkspaceFolder) {
     this.environmentValues = {};
   }
@@ -40,7 +40,7 @@ export class IProject {
     try {
       const statResult = await workspace.fs.stat(this.getEnvFilePath());
       return true;
-    } catch(e) {
+    } catch (e) {
       return false;
     }
   }
@@ -62,14 +62,18 @@ export class IProject {
     }
 
     const valueList: string[] = [
-      this.state.curlib, 
-      this.state.objlib, 
+      this.state.curlib,
+      this.state.objlib,
       ...(this.state.postUsrlibl ? this.state.postUsrlibl : []),
       ...(this.state.preUsrlibl ? this.state.preUsrlibl : []),
       ...(this.state.includePath ? this.state.includePath : []),
     ].filter(x => x) as string[];
 
     return valueList.filter(value => value.startsWith(`&`)).map(value => value.substring(1));
+  }
+
+  public addToIncludes(path: string) {
+    //TODO: Update iproj.json here
   }
 
   public static validateIProject(content: string): iProjectT {
