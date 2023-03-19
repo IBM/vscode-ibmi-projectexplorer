@@ -31,10 +31,10 @@ export function activate(context: vscode.ExtensionContext) {
 	projectWatcher.onDidChange(async (uri) => {
 		const workspaceFolders = workspace.workspaceFolders;
 		if (workspaceFolders && workspaceFolders.length > 0) {
-			const worksapceFolder = workspaceFolders.filter(workspaceFolder =>
+			const changedWorkspaceFolder = workspaceFolders.filter(workspaceFolder =>
 				uri.fsPath.startsWith(workspaceFolder.uri.fsPath)
 			)[0];
-			const iProject = ProjectManager.get(worksapceFolder);
+			const iProject = ProjectManager.get(changedWorkspaceFolder);
 			if (iProject) {
 				await iProject.read();
 			}
