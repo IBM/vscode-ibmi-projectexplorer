@@ -219,7 +219,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
 
       if (ibmi && ibmi.getConnection()) {
         const workspaceFolders = workspace.workspaceFolders;
-        const items: any[] | PromiseLike<any[]> = [];
+        const items: Project[] = [];
 
         if (workspaceFolders && workspaceFolders.length > 0) {
           workspaceFolders.map(folder => {
