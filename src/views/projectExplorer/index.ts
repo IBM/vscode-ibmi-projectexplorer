@@ -185,7 +185,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             for (const file of files){
               const path = `/QSYS.LIB/${lib.name}/${file.name}`;
               if (file.attribute === "PF"){
-                items.push(new PhysicalFile(path,lib.name,file.name, file.text))
+                items.push(new PhysicalFile(path,lib.name,file.name, file.text));
               } else {
                 // This is some other non physical file type
                 items.push(new File(path, file.attribute, file.type, lib.name, file.name, false, file.text, null));
@@ -200,15 +200,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
 
           if (members){
             for (const member of members){
-              let memberTreeItem:IBMiMember = {
-                library: pf.library,
-                file: pf.file,
-                name: member.name,
-                extension: member.extension,
-                recordLength: member.recordLength,
-                text: member.text
-              }
-              items.push(new File(member.name, member.extension, "MBR", pf.library, pf.file, true, member.text, memberTreeItem));        
+              items.push(new File(member.name, member.extension, "MBR", pf.library, pf.file, true, member.text, member));        
             }
           }
       }
