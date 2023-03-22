@@ -80,8 +80,10 @@ export class IProject {
       ...(this.state.includePath ? this.state.includePath : []),
     ].filter(x => x) as string[];
 
+    // Get everything that starts with an &
     const variableNameList = valueList.filter(value => value.startsWith(`&`)).map(value => value.substring(1));
 
+    // Remove duplicates
     return variableNameList.filter((name,
       index) => variableNameList.indexOf(name) === index);
   }
