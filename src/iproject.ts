@@ -5,9 +5,11 @@ import { TextEncoder } from "util";
 
 export type EnvironmentVariables = { [name: string]: string };
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface iProjectT {
   objlib?: string;
   curlib?: string;
+  name:string;
   description?: string;
   includePath?: string[];
   buildCommand?: string;
@@ -21,6 +23,10 @@ export class IProject {
   private environmentValues: EnvironmentVariables;
   constructor(public workspaceFolder: WorkspaceFolder) {
     this.environmentValues = {};
+  }
+
+  public getState(): iProjectT | undefined{
+    return this.state;
   }
 
   private getIProjFilePath(): Uri {
