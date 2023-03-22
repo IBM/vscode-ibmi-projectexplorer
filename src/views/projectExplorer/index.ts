@@ -1,6 +1,6 @@
-import { CancellationToken, commands, Event, EventEmitter, ExtensionContext, ProviderResult, TreeDataProvider, TreeItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { CancellationToken, commands, Event, EventEmitter, ExtensionContext, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
-import { IProject } from "../../iproject";
+import { IProject, iProjectT } from "../../iproject";
 import ErrorItem from "../../test/errorItem";
 import IFSFolder from "./ifsFolder";
 import Project from "./project";
@@ -9,6 +9,11 @@ import Variables from "./variables";
 import Variable from "./variable";
 import envUpdater from "../../envUpdater";
 import { ProjectManager } from "../../projectManager";
+import ObjectLibrary from "./objectlibrary";
+import QSYSLib from "./qsysLib";
+import PhysicalFile from "./physicalfile";
+import File from "./file";
+import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
 
 export default class ProjectExplorer implements TreeDataProvider<any> {
   private _onDidChangeTreeData = new EventEmitter<TreeItem | undefined | null | void>();
@@ -96,6 +101,9 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
               }
             }));
           }
+
+          const objectLibrariesTreeItem = new ObjectLibrary(projectElement.workspaceFolder);
+            items.push(objectLibrariesTreeItem);
         
           break;
         
@@ -124,6 +132,60 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             }));
           }
           break;
+        case ObjectLibrary.contextValue:
+          iProject = ProjectManager.get((element as ObjectLibrary).workspaceFolder);
+          const state = iProject?.getState() as iProjectT;
+          if (state){
+            const objLibs = new Set<string>() ;
+            if (state.curlib){
+              objLibs.add(state.curlib.toUpperCase()) ;
+            }
+            if (state.preUsrlibl){
+              for (const lib of state.preUsrlibl){
+                objLibs.add(lib.toUpperCase()) ;
+              }
+            }
+            if (state.postUsrlibl){
+              for (const lib of state.postUsrlibl){
+                objLibs.add(lib.toUpperCase()) ;
+              }
+            }
+
+            state.objlib ?  objLibs.add(state.objlib.toUpperCase()) : null;
+
+            for (const lib of objLibs){
+              const libTreeItem = new QSYSLib(`/QSYS.LIB/${lib}`,lib);
+              items.push(libTreeItem);
+            }
+          }
+          break;
+        case QSYSLib.contextValue:
+          const lib = element as QSYSLib;
+          const files = await ibmi?.getContent().getObjectList({
+            library: lib.name
+          });
+          if (files){
+            for (const file of files){
+              const path = `/QSYS.LIB/${lib.name}/${file.name}`;
+              if (file.attribute === "PF"){
+                items.push(new PhysicalFile(path,lib.name,file.name, file.text));
+              } else {
+                // This is some other non physical file type
+                items.push(new File(path, file.attribute, file.type, lib.name, file.name, false, file.text, null));
+              }
+            }
+          }  
+          break;
+
+        case PhysicalFile.contextValue:
+          const pf = element as PhysicalFile;
+          const members = await ibmi?.getContent().getMemberList(pf.library, pf.file);
+
+          if (members){
+            for (const member of members){
+              items.push(new File(member.name, member.extension, "MBR", pf.library, pf.file, true, member.text, member));        
+            }
+          }
       }
 
       return items;
@@ -132,13 +194,15 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
 
       if (ibmi && ibmi.getConnection()) {
         const workspaceFolders = workspace.workspaceFolders;
+        const items: Project[] = [];
 
         if (workspaceFolders && workspaceFolders.length > 0) {
-          return workspaceFolders.map(folder => {
+          workspaceFolders.map(folder => {
             ProjectManager.load(folder);
-
-            return new Project(folder);
+            items.push(new Project(folder));
           });
+          return items;
+
         } else {
           return [new ErrorItem(`Please open a local workspace folder.`)];
         }

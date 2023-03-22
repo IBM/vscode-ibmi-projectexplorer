@@ -7,9 +7,11 @@ import lodash = require("lodash");
 
 export type EnvironmentVariables = { [name: string]: string };
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface iProjectT {
   objlib?: string;
   curlib?: string;
+  name:string;
   description?: string;
   includePath?: string[];
   buildCommand?: string;
@@ -38,6 +40,10 @@ export class IProject {
 
   public getBuildOutputPath(): Uri {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.logs`, `output.log`));
+  }
+
+  public getState(): iProjectT | undefined{
+    return this.state;
   }
 
   public getEnvFilePath(): Uri {
