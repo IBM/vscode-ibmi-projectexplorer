@@ -150,7 +150,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           break;
         case ObjectLibrary.contextValue:
           iProject = ProjectManager.get((element as ObjectLibrary).workspaceFolder);
-          const state = iProject?.getState() as iProjectT;
+          const state = await iProject?.getState() as iProjectT;
           if (state) {
             const objLibs = new Set<string>();
             if (state.curlib) {

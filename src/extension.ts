@@ -18,6 +18,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	loadBase();
 
+	ProjectManager.loadProjects();
+
 	const projectExplorer = new ProjectExplorer(context);
 
 	const ibmi = getInstance();
@@ -66,22 +68,12 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Commands
 	context.subscriptions.push(
-		vscode.commands.registerCommand(`vscode-ibmi-projectmode.addToIncludes`, (element: vscode.TreeItem) => {
-			const path = (element as any).path;
-			if (path) {
-				const ibmi = getInstance();
-				const deploymentDirs = ibmi?.getStorage().getDeployment()!;
-				const localDir = projectElement.resourceUri?.path!; //TODO: Fix
-				const remoteDir = deploymentDirs[localDir]; //TODO: Fix
-
-				const iProject = ProjectManager.get(projectElement.workspaceFolder); //TODO: Fix
-				if (remoteDir && remoteDir !== path && path.startsWith(remoteDir)) {
-					//Add relative path to remoteDir to include paths
-					const relativePath = path.relative(remoteDir, path);
-					iProject.addToIncludes(relativePath);
-				} else {
-					//Add absolute path to include paths
-					iProject.addToIncludes(path);
+		vscode.commands.registerCommand(`vscode-ibmi-projectmode.addToIncludes`, async (element: vscode.TreeItem) => {
+			const includePath = (element as any).path;
+			if (includePath) {
+				const iProject = await ProjectManager.selectProject();
+				if (iProject) {
+					await iProject.addToIncludePaths(includePath);
 				}
 			} else {
 				vscode.window.showErrorMessage('Failed to retrieve path to directory.');

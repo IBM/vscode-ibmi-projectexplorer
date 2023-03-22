@@ -11,7 +11,6 @@ export type EnvironmentVariables = { [name: string]: string };
 export interface iProjectT {
   objlib?: string;
   curlib?: string;
-  name: string;
   description?: string;
   includePath?: string[];
   buildCommand?: string;
@@ -21,11 +20,13 @@ export interface iProjectT {
 }
 
 export class IProject {
+  private name: string;
   private state: iProjectT | undefined;
   private jobLogs: RingBuffer<JobLogInfo>;
   private environmentValues: EnvironmentVariables;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
+    this.name = workspaceFolder.name;
     this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
   }
@@ -42,8 +43,17 @@ export class IProject {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.logs`, `output.log`));
   }
 
-  public getState(): iProjectT | undefined {
-    return this.state;
+  public getName(): string {
+    return this.name;
+  }
+
+  public async getState(): Promise<iProjectT | undefined> {
+    if(this.state) {
+      return this.state;
+    } else {
+      await this.read();
+      return this.state;
+    }
   }
 
   public getEnvFilePath(): Uri {
@@ -53,6 +63,10 @@ export class IProject {
   public async read() {
     const content = await workspace.fs.readFile(this.getIProjFilePath());
     this.state = IProject.validateIProject(content.toString());
+  }
+
+  public async addToIncludePaths(includePath: string) {
+
   }
 
   public async readJobLog() {
