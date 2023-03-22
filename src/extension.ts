@@ -2,7 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 import path = require('path');
 import * as vscode from 'vscode';
+import { workspace } from 'vscode';
 import { loadBase, getInstance } from './ibmi';
+import { ProjectManager } from './projectManager';
 import JobLog from './views/jobLog';
 import ProjectExplorer from './views/projectExplorer';
 
@@ -29,7 +31,19 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	const projectWatcher = vscode.workspace.createFileSystemWatcher(`**/*.{env,json}`);
-	projectWatcher.onDidChange(() => { projectExplorer.refresh(); });
+	projectWatcher.onDidChange(async (uri) => {
+		const workspaceFolders = workspace.workspaceFolders;
+		if (workspaceFolders && workspaceFolders.length > 0) {
+			const changedWorkspaceFolder = workspaceFolders.filter(workspaceFolder =>
+				uri.fsPath.startsWith(workspaceFolder.uri.fsPath)
+			)[0];
+			const iProject = ProjectManager.get(changedWorkspaceFolder);
+			if (iProject) {
+				await iProject.read();
+			}
+		}
+		projectExplorer.refresh();
+	});
 	projectWatcher.onDidCreate(() => { projectExplorer.refresh(); });
 	projectWatcher.onDidDelete(() => { projectExplorer.refresh(); });
 

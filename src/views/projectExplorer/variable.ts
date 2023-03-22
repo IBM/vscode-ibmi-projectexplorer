@@ -6,6 +6,7 @@ export default class Variables extends TreeItem {
   constructor(private workspaceFolder: WorkspaceFolder, name: string, value?: string) {
     super(name, TreeItemCollapsibleState.None);
 
+    this.resourceUri = Uri.parse(`variable:${value ? 'resolved' : 'unresolved'}`, true);
     this.contextValue = Variables.contextValue;
     this.description = value || `No value`;
     this.iconPath = new ThemeIcon(`pencil`);

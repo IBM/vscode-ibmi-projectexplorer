@@ -5,8 +5,9 @@ import { EnvironmentVariables } from "./iproject";
 export default async function envUpdater(envUri: Uri, variables: EnvironmentVariables) {
   const textDoc = await workspace.openTextDocument(envUri);
   const eol = textDoc.eol === 1 ? `\n` : `\r\n`;
-  
-  let lines = textDoc.getText().split(eol);
+  const text = textDoc.getText();
+
+  let lines = text !== '' ? textDoc.getText().split(eol) : [];
 
   Object.keys(variables).forEach(varName => {
     const lineIndex = lines.findIndex(line => line.startsWith(varName + `=`));
