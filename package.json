@@ -218,7 +218,6 @@
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "@vscode/test-electron": "^2.1.5",
-    "@types/lodash": "^4.14.178",
     "eslint": "^8.20.0",
     "glob": "^8.0.3",
     "mocha": "^10.0.0",
@@ -229,7 +228,6 @@
   },
   "dependencies": {
     "@halcyontech/vscode-ibmi-types": "^1.6.15",
-    "dotenv": "^16.0.3",
-    "lodash": "4.17.21"
+    "dotenv": "^16.0.3"
   }
 }

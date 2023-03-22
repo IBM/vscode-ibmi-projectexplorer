@@ -3,7 +3,6 @@ import { Uri, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
-import lodash = require("lodash");
 import { TextEncoder } from "util";
 
 export type EnvironmentVariables = { [name: string]: string };
@@ -64,7 +63,7 @@ export class IProject {
 
       if (!this.jobLogs.isEmpty()) {
         const latestJobLog = this.jobLogs.get(-1);
-        if (latestJobLog && !lodash.isEqual(latestJobLog, jobLog)) {
+        if (latestJobLog && latestJobLog.commands[0].cmd_time !== jobLog.commands[0].cmd_time) {
           this.jobLogs.add(jobLog);
         }
       } else {
