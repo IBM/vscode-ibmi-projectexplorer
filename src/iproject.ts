@@ -1,13 +1,15 @@
 import path = require("path");
 import { Uri, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
-import envUpdater from "./envUpdater";
+import { TextEncoder } from "util";
 
 export type EnvironmentVariables = { [name: string]: string };
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface iProjectT {
   objlib?: string;
   curlib?: string;
+  name:string;
   description?: string;
   includePath?: string[];
   buildCommand?: string;
@@ -23,12 +25,16 @@ export class IProject {
     this.environmentValues = {};
   }
 
+  public getState(): iProjectT | undefined{
+    return this.state;
+  }
+
   private getIProjFilePath(): Uri {
-    return Uri.parse(path.join(this.workspaceFolder.uri.fsPath, `iproj.json`));
+    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `iproj.json`));
   }
 
   public getEnvFilePath(): Uri {
-    return Uri.parse(path.join(this.workspaceFolder.uri.fsPath, `.env`));
+    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.env`));
   }
 
   public async read() {
@@ -39,6 +45,17 @@ export class IProject {
   public async envExists(): Promise<boolean> {
     try {
       const statResult = await workspace.fs.stat(this.getEnvFilePath());
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  public async createEnv(): Promise<boolean> {
+    try {
+      const variables = this.getVariables().map(variable => variable + '=').join('\n');
+
+      await workspace.fs.writeFile(this.getEnvFilePath(), new TextEncoder().encode(variables));
       return true;
     } catch (e) {
       return false;
@@ -69,7 +86,12 @@ export class IProject {
       ...(this.state.includePath ? this.state.includePath : []),
     ].filter(x => x) as string[];
 
-    return valueList.filter(value => value.startsWith(`&`)).map(value => value.substring(1));
+    // Get everything that starts with an &
+    const variableNameList = valueList.filter(value => value.startsWith(`&`)).map(value => value.substring(1));
+
+    // Remove duplicates
+    return variableNameList.filter((name,
+      index) => variableNameList.indexOf(name) === index);
   }
 
   public addToIncludes(path: string) {
