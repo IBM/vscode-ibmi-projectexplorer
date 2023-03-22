@@ -18,14 +18,71 @@
       "explorer": [
         {
           "id": "projectExplorer",
-          "name": "Project Explorer"
+          "name": "Project Explorer",
+          "icon": "$(remote-explorer)"
+        },
+        {
+          "id": "jobLog",
+          "name": "Job Log",
+          "icon": "$(book)"
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "projectExplorer",
+        "contents": "No workspace folder opened",
+        "when": "workspaceFolderCount == 0"
+      },
+      {
+        "view": "projectExplorer",
+        "contents": "Scanning for projects...",
+        "when": "workspaceFolderCount > 0"
+      },
+      {
+        "view": "jobLog",
+        "contents": "No workspace folder opened",
+        "when": "workspaceFolderCount == 0"
+      },
+      {
+        "view": "jobLog",
+        "contents": "Scanning for projects...",
+        "when": "workspaceFolderCount > 0"
+      }
+    ],
     "commands": [
       {
         "command": "vscode-ibmi-projectmode.addToIncludes",
         "title": "Add to Include Paths"
+      },
+      {
+        "category": "Job Log",
+        "command": "vscode-ibmi-projectmode.jobLog.refresh",
+        "title": "Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "category": "Job Log",
+        "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+        "title": "Show Job Log",
+        "icon": "$(book)"
+      },
+      {
+        "category": "Job Log",
+        "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+        "title": "Show Build Output",
+        "icon": "$(note)"
+      },
+      {
+        "category": "Job Log",
+        "command": "vscode-ibmi-projectmode.jobLog.clearJobLogs",
+        "title": "Clear Job Log",
+        "icon": "$(clear-all)"
+      },
+      {
+        "category": "Job Log",
+        "command": "vscode-ibmi-projectmode.jobLog.copy",
+        "title": "Copy"
       }
     ],
     "menus": {
@@ -33,6 +90,29 @@
         {
           "command": "vscode-ibmi-projectmode.addToIncludes",
           "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectmode.jobLog.clearJobLogs",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectmode.jobLog.copy",
+          "when": "never"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "vscode-ibmi-projectmode.jobLog.refresh",
+          "when": "view == jobLog",
+          "group": "navigation@0"
         }
       ],
       "view/item/context": [
@@ -40,9 +120,97 @@
           "command": "vscode-ibmi-projectmode.addToIncludes",
           "when": "view == ifsBrowser && viewItem == directory",
           "group": "1_projectmode@1"
+        },
+        {
+          "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+          "when": "view == jobLog && viewItem == project",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+          "when": "view == jobLog && viewItem == project",
+          "group": "0_viewFile@0"
+        },
+        {
+          "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+          "when": "view == jobLog && viewItem == project",
+          "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+          "when": "view == jobLog && viewItem == project",
+          "group": "0_viewFile@1"
+        },
+        {
+          "command": "vscode-ibmi-projectmode.jobLog.clearJobLogs",
+          "when": "view == jobLog && viewItem == project",
+          "group": "1_modification@0"
+        },
+        {
+          "command": "vscode-ibmi-projectmode.jobLog.copy",
+          "when": "view == jobLog && viewItem == command",
+          "group": "1_modification@0"
         }
       ]
-    }
+    },
+    "colors": [
+      {
+        "id": "joblog.local",
+        "description": "Color for local job log",
+        "defaults": {
+          "dark": "#FFA500",
+          "light": "#FFA500"
+        }
+      },
+      {
+        "id": "joblog.severity.0",
+        "description": "Color for job log severity 0 messages",
+        "defaults": {
+          "dark": "#87d167",
+          "light": "#87d167"
+        }
+      },
+      {
+        "id": "joblog.severity.10",
+        "description": "Color for job log severity 10 messages",
+        "defaults": {
+          "dark": "#b17cbc",
+          "light": "#b17cbc"
+        }
+      },
+      {
+        "id": "joblog.severity.20",
+        "description": "Color for job log severity 20 messages",
+        "defaults": {
+          "dark": "#6db5f8",
+          "light": "#6db5f8"
+        }
+      },
+      {
+        "id": "joblog.severity.30",
+        "description": "Color for job log severity 30 messages",
+        "defaults": {
+          "dark": "#eed329",
+          "light": "#eed329"
+        }
+      },
+      {
+        "id": "joblog.severity.40",
+        "description": "Color for job log severity 40 messages",
+        "defaults": {
+          "dark": "#FFA500",
+          "light": "#FFA500"
+        }
+      },
+      {
+        "id": "joblog.severity.50",
+        "description": "Color for job log severity 50 messages",
+        "defaults": {
+          "dark": "#ee816b",
+          "light": "#ee816b"
+        }
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

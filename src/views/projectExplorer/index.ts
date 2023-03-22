@@ -8,6 +8,7 @@ import Streamfile from "./streamfile";
 import Variables from "./variables";
 import Variable from "./variable";
 import envUpdater from "../../envUpdater";
+import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
 import ObjectLibrary from "./objectlibrary";
 import QSYSLib from "./qsysLib";
@@ -15,30 +16,12 @@ import PhysicalFile from "./physicalfile";
 import File from "./file";
 import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
 
-export class ProjectManager {
-  private static loaded: { [index: number]: IProject } = {};
-
-  public static load(workspaceFolder: WorkspaceFolder) {
-    if (!this.loaded[workspaceFolder.index]) {
-      this.loaded[workspaceFolder.index] = new IProject(workspaceFolder);
-    }
-  }
-
-  public static get(workspaceFolder: WorkspaceFolder): IProject | undefined {
-    return this.loaded[workspaceFolder.index];
-  }
-
-  public static clear() {
-    this.loaded = {};
-  }
-}
-
 export default class ProjectExplorer implements TreeDataProvider<any> {
   private _onDidChangeTreeData = new EventEmitter<TreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   constructor(context: ExtensionContext) {
-    const decorationProvider = new DecorationProvider();    
+    const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
       commands.registerCommand(`vscode-ibmi-projectmode.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
@@ -136,8 +119,8 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
 
           const objectLibrariesTreeItem = new ObjectLibrary(projectElement.workspaceFolder);
-            items.push(objectLibrariesTreeItem);
-        
+          items.push(objectLibrariesTreeItem);
+
           break;
 
         case IFSFolder.contextValue:
@@ -168,26 +151,26 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
         case ObjectLibrary.contextValue:
           iProject = ProjectManager.get((element as ObjectLibrary).workspaceFolder);
           const state = iProject?.getState() as iProjectT;
-          if (state){
-            const objLibs = new Set<string>() ;
-            if (state.curlib){
-              objLibs.add(state.curlib.toUpperCase()) ;
+          if (state) {
+            const objLibs = new Set<string>();
+            if (state.curlib) {
+              objLibs.add(state.curlib.toUpperCase());
             }
-            if (state.preUsrlibl){
-              for (const lib of state.preUsrlibl){
-                objLibs.add(lib.toUpperCase()) ;
+            if (state.preUsrlibl) {
+              for (const lib of state.preUsrlibl) {
+                objLibs.add(lib.toUpperCase());
               }
             }
-            if (state.postUsrlibl){
-              for (const lib of state.postUsrlibl){
-                objLibs.add(lib.toUpperCase()) ;
+            if (state.postUsrlibl) {
+              for (const lib of state.postUsrlibl) {
+                objLibs.add(lib.toUpperCase());
               }
             }
 
-            state.objlib ?  objLibs.add(state.objlib.toUpperCase()) : null;
+            state.objlib ? objLibs.add(state.objlib.toUpperCase()) : null;
 
-            for (const lib of objLibs){
-              const libTreeItem = new QSYSLib(`/QSYS.LIB/${lib}`,lib);
+            for (const lib of objLibs) {
+              const libTreeItem = new QSYSLib(`/QSYS.LIB/${lib}`, lib);
               items.push(libTreeItem);
             }
           }
@@ -197,26 +180,26 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           const files = await ibmi?.getContent().getObjectList({
             library: lib.name
           });
-          if (files){
-            for (const file of files){
+          if (files) {
+            for (const file of files) {
               const path = `/QSYS.LIB/${lib.name}/${file.name}`;
-              if (file.attribute === "PF"){
-                items.push(new PhysicalFile(path,lib.name,file.name, file.text));
+              if (file.attribute === "PF") {
+                items.push(new PhysicalFile(path, lib.name, file.name, file.text));
               } else {
                 // This is some other non physical file type
                 items.push(new File(path, file.attribute, file.type, lib.name, file.name, false, file.text, null));
               }
             }
-          }  
+          }
           break;
 
         case PhysicalFile.contextValue:
           const pf = element as PhysicalFile;
           const members = await ibmi?.getContent().getMemberList(pf.library, pf.file);
 
-          if (members){
-            for (const member of members){
-              items.push(new File(member.name, member.extension, "MBR", pf.library, pf.file, true, member.text, member));        
+          if (members) {
+            for (const member of members) {
+              items.push(new File(member.name, member.extension, "MBR", pf.library, pf.file, true, member.text, member));
             }
           }
       }
