@@ -20,7 +20,7 @@ export default class JobLog implements TreeDataProvider<any> {
       commands.registerCommand(`vscode-ibmi-projectmode.jobLog.showJobLog`, async (element: Project) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
         if (iProject) {
-          const jobLogExists = await iProject.jobLogExists();
+          const jobLogExists = await iProject.projectFileExists('joblog.json');
           if (jobLogExists) {
             const jobLogUri = iProject.getJobLogPath();
             await workspace.openTextDocument(jobLogUri).then(async jobLogDoc => {
@@ -34,7 +34,7 @@ export default class JobLog implements TreeDataProvider<any> {
       commands.registerCommand(`vscode-ibmi-projectmode.jobLog.showBuildOutput`, async (element: Project) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
         if (iProject) {
-          const buildOutputExists = await iProject.buildOutputExists();
+          const buildOutputExists = await iProject.projectFileExists('output.log');
           if (buildOutputExists) {
             const buildOutputUri = iProject.getBuildOutputPath();
             await workspace.openTextDocument(buildOutputUri).then(async buildOutputDoc => {
@@ -82,7 +82,7 @@ export default class JobLog implements TreeDataProvider<any> {
           iProject = ProjectManager.get(projectElement.workspaceFolder);
           await iProject?.readJobLog();
           const jobLogs = iProject?.getJobLogs().slice().reverse();
-          const jobLogExists = await iProject?.jobLogExists();
+          const jobLogExists = await iProject?.projectFileExists('joblog.json');
 
           if (jobLogs) {
             items.push(...jobLogs?.map((jobLog, index) => {

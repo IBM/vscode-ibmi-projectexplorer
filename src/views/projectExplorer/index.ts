@@ -95,7 +95,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           // Then load the variable specific stuff
           await iProject?.read();
 
-          const hasEnv = await iProject?.envExists();
+          const hasEnv = await iProject?.projectFileExists('.env');
           if (hasEnv) {
             let unresolvedVariableCount = 0;
 

@@ -1,5 +1,5 @@
 import path = require("path");
-import { Uri, workspace, WorkspaceFolder } from "vscode";
+import { Uri, window, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
@@ -48,7 +48,7 @@ export class IProject {
   }
 
   public async getState(): Promise<iProjectT | undefined> {
-    if(this.state) {
+    if (this.state) {
       return this.state;
     } else {
       await this.read();
@@ -66,11 +66,35 @@ export class IProject {
   }
 
   public async addToIncludePaths(includePath: string) {
+    const iProjExists = await this.projectFileExists('iproj.json');
+    if (iProjExists) {
+      const content = await workspace.fs.readFile(this.getIProjFilePath());
 
+      const iProject = IProject.validateIProject(content.toString());
+      if (iProject) {
+        try {
+          if (iProject.includePath) {
+            if (!iProject.includePath.includes(includePath)) {
+              iProject.includePath.push(includePath);
+            } else {
+              window.showErrorMessage(`${includePath} already exists in includePaths`);
+            }
+          } else {
+            iProject.includePath = [includePath];
+          }
+
+          await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+        } catch {
+          window.showErrorMessage('Failed to update iproj.json');
+        }
+      }
+    } else {
+      //TO DO: Handle when iproj does not exist
+    }
   }
 
   public async readJobLog() {
-    const jobLogExists = await this.jobLogExists();
+    const jobLogExists = await this.projectFileExists('joblog.json');
     if (jobLogExists) {
       const content = await workspace.fs.readFile(this.getJobLogPath());
       const jobLog = IProject.validateJobLog(content.toString());
@@ -87,7 +111,7 @@ export class IProject {
   }
 
   public async clearJobLogs() {
-    const jobLogExists = await this.jobLogExists();
+    const jobLogExists = await this.projectFileExists('joblog.json');
     if (jobLogExists) {
       const localJobLog = this.jobLogs.get(-1);
 
@@ -100,27 +124,25 @@ export class IProject {
     }
   }
 
-  public async jobLogExists(): Promise<boolean> {
-    try {
-      const statResult = await workspace.fs.stat(this.getJobLogPath());
-      return true;
-    } catch (e) {
-      return false;
+  public async projectFileExists(type: 'iproj.json' | 'joblog.json' | 'output.log' | '.env') {
+    let fileUri: Uri;
+    switch (type) {
+      case "iproj.json":
+        fileUri = this.getIProjFilePath();
+        break;
+      case "joblog.json":
+        fileUri = this.getJobLogPath();
+        break;
+      case "output.log":
+        fileUri = this.getBuildOutputPath();
+        break;
+      case ".env":
+        fileUri = this.getEnvFilePath();
+        break;
     }
-  }
 
-  public async buildOutputExists(): Promise<boolean> {
     try {
-      const statResult = await workspace.fs.stat(this.getBuildOutputPath());
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  public async envExists(): Promise<boolean> {
-    try {
-      const statResult = await workspace.fs.stat(this.getEnvFilePath());
+      const statResult = await workspace.fs.stat(fileUri);
       return true;
     } catch (e) {
       return false;
@@ -172,10 +194,6 @@ export class IProject {
     // Remove duplicates
     return variableNameList.filter((name,
       index) => variableNameList.indexOf(name) === index);
-  }
-
-  public addToIncludes(path: string) {
-    //TODO: Update iproj.json here
   }
 
   public static validateIProject(content: string): iProjectT {

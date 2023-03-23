@@ -68,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Commands
 	context.subscriptions.push(
-		vscode.commands.registerCommand(`vscode-ibmi-projectmode.addToIncludes`, async (element: vscode.TreeItem) => {
+		vscode.commands.registerCommand(`vscode-ibmi-projectmode.addToIncludePaths`, async (element: vscode.TreeItem) => {
 			const includePath = (element as any).path;
 			if (includePath) {
 				const iProject = await ProjectManager.selectProject();

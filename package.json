@@ -52,7 +52,7 @@
     ],
     "commands": [
       {
-        "command": "vscode-ibmi-projectmode.addToIncludes",
+        "command": "vscode-ibmi-projectmode.addToIncludePaths",
         "title": "Add to Include Paths"
       },
       {
@@ -88,7 +88,7 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "vscode-ibmi-projectmode.addToIncludes",
+          "command": "vscode-ibmi-projectmode.addToIncludePaths",
           "when": "never"
         },
         {
@@ -117,7 +117,7 @@
       ],
       "view/item/context": [
         {
-          "command": "vscode-ibmi-projectmode.addToIncludes",
+          "command": "vscode-ibmi-projectmode.addToIncludePaths",
           "when": "view == ifsBrowser && viewItem == directory",
           "group": "1_projectmode@1"
         },
