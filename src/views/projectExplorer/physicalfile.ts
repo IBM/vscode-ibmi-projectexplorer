@@ -1,3 +1,7 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import * as path from "path";
 
@@ -5,7 +9,7 @@ export default class PhysicalFile extends TreeItem {
   static contextValue = `physicalfile`;
   library: string;
   file: string;
-  constructor(fullpath: string, library:string, file:string, text:string) {
+  constructor(fullpath: string, library: string, file: string, text: string) {
     super(`${path.posix.basename(fullpath)}`, TreeItemCollapsibleState.Collapsed);
 
     this.resourceUri = Uri.from({

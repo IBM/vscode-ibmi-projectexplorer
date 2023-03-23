@@ -1,3 +1,7 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { QuickPickItem, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "./iproject";
 
@@ -54,7 +58,7 @@ export class ProjectManager {
                     for (const index in this.loaded) {
                         const project = this.loaded[index];
 
-                        if(project.getName() === selectedProject.label) {
+                        if (project.getName() === selectedProject.label) {
                             return project;
                         }
                     }

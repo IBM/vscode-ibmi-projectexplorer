@@ -1,5 +1,8 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
-import * as path from "path";
 
 export default class Variables extends TreeItem {
   static contextValue = `variable`;

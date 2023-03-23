@@ -1,3 +1,7 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { CancellationToken, Event, FileDecoration, FileDecorationProvider, ProviderResult, ThemeColor, Uri } from "vscode";
 
 export class DecorationProvider implements FileDecorationProvider {

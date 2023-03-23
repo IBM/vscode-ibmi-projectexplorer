@@ -1,3 +1,7 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import * as path from 'path';
 
 import { runTests } from '@vscode/test-electron';

@@ -1,7 +1,11 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 
 export default class ObjectLibrary extends TreeItem {
-    static contextValue = `objectLibrary`;
+  static contextValue = `objectLibrary`;
   constructor(public workspaceFolder: WorkspaceFolder) {
     super("Object Libraries", TreeItemCollapsibleState.Collapsed);
 

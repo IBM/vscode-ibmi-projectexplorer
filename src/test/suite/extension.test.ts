@@ -1,3 +1,7 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import * as assert from 'assert';
 
 // You can import and use all API from the 'vscode' module

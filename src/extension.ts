@@ -1,8 +1,9 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import path = require('path');
 import * as vscode from 'vscode';
-import { workspace } from 'vscode';
 import { loadBase, getInstance } from './ibmi';
 import { ProjectManager } from './projectManager';
 import JobLog from './views/jobLog';
@@ -29,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const projectWatcher = vscode.workspace.createFileSystemWatcher(`**/*.{env,json}`);
 	projectWatcher.onDidChange(async (uri) => {
-		const workspaceFolders = workspace.workspaceFolders;
+		const workspaceFolders = vscode.workspace.workspaceFolders;
 		if (workspaceFolders && workspaceFolders.length > 0) {
 			const changedWorkspaceFolder = workspaceFolders.filter(workspaceFolder =>
 				uri.fsPath.startsWith(workspaceFolder.uri.fsPath)

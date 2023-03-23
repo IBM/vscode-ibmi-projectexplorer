@@ -1,3 +1,7 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { CancellationToken, commands, Event, EventEmitter, ExtensionContext, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
 import { IProject, iProjectT } from "../../iproject";
@@ -14,7 +18,6 @@ import ObjectLibrary from "./objectlibrary";
 import QSYSLib from "./qsysLib";
 import PhysicalFile from "./physicalfile";
 import File from "./file";
-import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
 
 export default class ProjectExplorer implements TreeDataProvider<any> {
   private _onDidChangeTreeData = new EventEmitter<TreeItem | undefined | null | void>();

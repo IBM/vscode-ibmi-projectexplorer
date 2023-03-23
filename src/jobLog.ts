@@ -1,6 +1,8 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import path = require("path");
-import { Uri } from "vscode";
-import { RingBuffer } from "./views/jobLog/RingBuffer";
 
 export interface CommandInfo {
     cmd: string;

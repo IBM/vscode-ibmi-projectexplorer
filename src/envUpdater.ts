@@ -1,3 +1,7 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { TextEncoder } from "util";
 import { Uri, workspace } from "vscode";
 import { EnvironmentVariables } from "./iproject";
