@@ -45,11 +45,26 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
         }
       }),
+      commands.registerCommand(`vscode-ibmi-projectmode.createProject`, async (workspaceFolder: WorkspaceFolder) => {
+        if (workspaceFolder) {
+          const iProject = ProjectManager.get(workspaceFolder);
+          if (iProject) {
+            const description = await window.showInputBox({
+              placeHolder: 'Description',
+              prompt: 'Enter project description'
+            });
+
+            if (description) {
+              await iProject.createProject(description);
+            }
+          }
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectmode.createEnv`, async (workspaceFolder: WorkspaceFolder) => {
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
-            await iProject?.createEnv();
+            await iProject.createEnv();
           }
         }
       })
@@ -213,18 +228,48 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
 
       if (ibmi && ibmi.getConnection()) {
         const workspaceFolders = workspace.workspaceFolders;
-        const items: Project[] = [];
+        const items: any[] = [];
 
         if (workspaceFolders && workspaceFolders.length > 0) {
-          workspaceFolders.map(folder => {
+          for await (const folder of workspaceFolders) {
             ProjectManager.load(folder);
-            items.push(new Project(folder));
-          });
-          return items;
 
+            const iProject = ProjectManager.get(folder);
+            if (iProject) {
+              const metadataExists = await iProject.projectFileExists('iproj.json');
+              if (metadataExists) {
+                const state = await iProject.getState();
+                if(state) {
+                  items.push(new Project(folder, state.description));
+                } else {
+                  items.push(new Project(folder));
+                }
+              } else {
+                items.push(new ErrorItem(
+                  folder.name,
+                  {
+                    description: 'Please configure project metadata.',
+                    command: {
+                      command: 'vscode-ibmi-projectmode.createProject',
+                      arguments: [folder],
+                      title: 'Create project iproj.json'
+                    }
+                  }));
+              }
+            }
+          };
         } else {
-          return [new ErrorItem(`Please open a local workspace folder.`)];
+          items.push(new ErrorItem(
+            `Please open a local workspace folder.`,
+            {
+              command: {
+                command: 'workbench.action.files.openFolder',
+                title: 'Open folder'
+              }
+            }));
         }
+
+        return items;
       } else {
         return [new ErrorItem(`Please connect to an IBM i.`)];
       }

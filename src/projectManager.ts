@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { QuickPickItem, window, workspace, WorkspaceFolder } from "vscode";
+import { QuickPickItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "./iproject";
 
 export class ProjectManager {
@@ -32,7 +32,7 @@ export class ProjectManager {
         }
     }
 
-    public static async selectProject() {
+    public static async selectProject(): Promise<IProject | undefined> {
         switch (Object.keys(this.loaded).length) {
             case 0:
                 window.showErrorMessage('Please open a local workspace folder.');
@@ -66,5 +66,17 @@ export class ProjectManager {
         }
 
         return;
+    }
+
+    public static getProjectFromUri(uri: Uri): IProject | undefined {
+        const workspaceFolders = workspace.workspaceFolders;
+        if (workspaceFolders && workspaceFolders.length > 0) {
+            const changedWorkspaceFolder = workspaceFolders.filter(workspaceFolder =>
+                uri.fsPath.startsWith(workspaceFolder.uri.fsPath)
+            )[0];
+
+            const iProject = ProjectManager.get(changedWorkspaceFolder);
+            return iProject;
+        }
     }
 }

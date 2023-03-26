@@ -60,6 +60,10 @@ export class IProject {
     }
   }
 
+  public setState(state: iProjectT | undefined) {
+    this.state = state;
+  }
+
   public getEnvFilePath(): Uri {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.env`));
   }
@@ -93,7 +97,7 @@ export class IProject {
         }
       }
     } else {
-      //TO DO: Handle when iproj does not exist
+      window.showErrorMessage('No iproj.json found');
     }
   }
 
@@ -147,6 +151,19 @@ export class IProject {
 
     try {
       const statResult = await workspace.fs.stat(fileUri);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  public async createProject(description: string): Promise<boolean> {
+    try {
+      const content = {
+        description: description
+      };
+
+      await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(content, null, 2)));
       return true;
     } catch (e) {
       return false;

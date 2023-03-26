@@ -30,20 +30,20 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const projectWatcher = vscode.workspace.createFileSystemWatcher(`**/*.{env,json}`);
 	projectWatcher.onDidChange(async (uri) => {
-		const workspaceFolders = vscode.workspace.workspaceFolders;
-		if (workspaceFolders && workspaceFolders.length > 0) {
-			const changedWorkspaceFolder = workspaceFolders.filter(workspaceFolder =>
-				uri.fsPath.startsWith(workspaceFolder.uri.fsPath)
-			)[0];
-			const iProject = ProjectManager.get(changedWorkspaceFolder);
-			if (iProject) {
-				await iProject.read();
-			}
+		const iProject = ProjectManager.getProjectFromUri(uri);
+		if (iProject) {
+			await iProject.read();
 		}
 		projectExplorer.refresh();
 	});
-	projectWatcher.onDidCreate(() => { projectExplorer.refresh(); });
-	projectWatcher.onDidDelete(() => { projectExplorer.refresh(); });
+	projectWatcher.onDidCreate(async (uri) => { projectExplorer.refresh(); });
+	projectWatcher.onDidDelete(async (uri) => {
+		const iProject = ProjectManager.getProjectFromUri(uri);
+		if (iProject) {
+			iProject.setState(undefined);
+		}
+		projectExplorer.refresh();
+	});
 
 	const jobLog = new JobLog(context);
 
