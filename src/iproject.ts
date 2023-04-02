@@ -132,7 +132,7 @@ export class IProject {
     }
   }
 
-  public async projectFileExists(type: 'iproj.json' | 'joblog.json' | 'output.log' | '.env') {
+  public async projectFileExists(type: 'iproj.json' | 'joblog.json' | 'output.log' | '.env'): Promise<boolean> {
     let fileUri: Uri;
     switch (type) {
       case "iproj.json":
