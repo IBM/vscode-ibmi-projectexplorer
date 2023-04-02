@@ -62,6 +62,8 @@ export function activate(context: vscode.ExtensionContext) {
 			jobLog
 		),
 		vscode.workspace.onDidChangeWorkspaceFolders(() => {
+			ProjectManager.clear();
+
 			projectExplorer.refresh();
 			jobLog.refresh();
 		})
