@@ -47,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const jobLog = new JobLog(context);
 
-	const jobLogWatcher = vscode.workspace.createFileSystemWatcher(`**/*.logs/{joblog.json,output.log}`);
+	const jobLogWatcher = vscode.workspace.createFileSystemWatcher(`**/*.logs/joblog.json`);
 	jobLogWatcher.onDidChange(() => { jobLog.refresh(); });
 	jobLogWatcher.onDidCreate(() => { jobLog.refresh(); });
 	jobLogWatcher.onDidDelete(() => { jobLog.refresh(); });
