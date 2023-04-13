@@ -1,9 +1,5 @@
 /*
- * Licensed Materials - Property of IBM
- *
- * 5900-AN9
- *
- * (c) Copyright IBM Corp. 2021
+ * (c) Copyright IBM Corp. 2023
  */
 
 export class RingBuffer<T> {

@@ -1,5 +1,8 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { CancellationToken, commands, env, EventEmitter, ExtensionContext, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
-import { getInstance } from "../../ibmi";
 import { IProject } from "../../iproject";
 import ErrorItem from "../../test/errorItem";
 import { ProjectManager } from "../../projectManager";
@@ -20,7 +23,7 @@ export default class JobLog implements TreeDataProvider<any> {
       commands.registerCommand(`vscode-ibmi-projectmode.jobLog.showJobLog`, async (element: Project) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
         if (iProject) {
-          const jobLogExists = await iProject.jobLogExists();
+          const jobLogExists = await iProject.projectFileExists('joblog.json');
           if (jobLogExists) {
             const jobLogUri = iProject.getJobLogPath();
             await workspace.openTextDocument(jobLogUri).then(async jobLogDoc => {
@@ -34,7 +37,7 @@ export default class JobLog implements TreeDataProvider<any> {
       commands.registerCommand(`vscode-ibmi-projectmode.jobLog.showBuildOutput`, async (element: Project) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
         if (iProject) {
-          const buildOutputExists = await iProject.buildOutputExists();
+          const buildOutputExists = await iProject.projectFileExists('output.log');
           if (buildOutputExists) {
             const buildOutputUri = iProject.getBuildOutputPath();
             await workspace.openTextDocument(buildOutputUri).then(async buildOutputDoc => {
@@ -52,11 +55,11 @@ export default class JobLog implements TreeDataProvider<any> {
           this.refresh();
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.copy`, async (element: Command) => {      
+      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.copy`, async (element: Command) => {
         try {
-            await env.clipboard.writeText(element.label!.toString());
+          await env.clipboard.writeText(element.label!.toString());
         } catch (error) {
-            window.showErrorMessage('Failed to copy command.');
+          window.showErrorMessage('Failed to copy command.');
         }
       })
     );
@@ -82,7 +85,7 @@ export default class JobLog implements TreeDataProvider<any> {
           iProject = ProjectManager.get(projectElement.workspaceFolder);
           await iProject?.readJobLog();
           const jobLogs = iProject?.getJobLogs().slice().reverse();
-          const jobLogExists = await iProject?.jobLogExists();
+          const jobLogExists = await iProject?.projectFileExists('joblog.json');
 
           if (jobLogs) {
             items.push(...jobLogs?.map((jobLog, index) => {

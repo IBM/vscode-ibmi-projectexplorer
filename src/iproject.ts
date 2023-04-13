@@ -1,5 +1,9 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import path = require("path");
-import { Uri, workspace, WorkspaceFolder } from "vscode";
+import { Uri, window, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
@@ -11,7 +15,6 @@ export type EnvironmentVariables = { [name: string]: string };
 export interface iProjectT {
   objlib?: string;
   curlib?: string;
-  name: string;
   description?: string;
   includePath?: string[];
   buildCommand?: string;
@@ -21,11 +24,13 @@ export interface iProjectT {
 }
 
 export class IProject {
+  private name: string;
   private state: iProjectT | undefined;
   private jobLogs: RingBuffer<JobLogInfo>;
   private environmentValues: EnvironmentVariables;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
+    this.name = workspaceFolder.name;
     this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
   }
@@ -42,8 +47,21 @@ export class IProject {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.logs`, `output.log`));
   }
 
-  public getState(): iProjectT | undefined {
-    return this.state;
+  public getName(): string {
+    return this.name;
+  }
+
+  public async getState(): Promise<iProjectT | undefined> {
+    if (this.state) {
+      return this.state;
+    } else {
+      await this.read();
+      return this.state;
+    }
+  }
+
+  public setState(state: iProjectT | undefined) {
+    this.state = state;
   }
 
   public getEnvFilePath(): Uri {
@@ -55,8 +73,36 @@ export class IProject {
     this.state = IProject.validateIProject(content.toString());
   }
 
+  public async addToIncludePaths(includePath: string) {
+    const iProjExists = await this.projectFileExists('iproj.json');
+    if (iProjExists) {
+      const content = await workspace.fs.readFile(this.getIProjFilePath());
+
+      const iProject = IProject.validateIProject(content.toString());
+      if (iProject) {
+        try {
+          if (iProject.includePath) {
+            if (!iProject.includePath.includes(includePath)) {
+              iProject.includePath.push(includePath);
+            } else {
+              window.showErrorMessage(`${includePath} already exists in includePaths`);
+            }
+          } else {
+            iProject.includePath = [includePath];
+          }
+
+          await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+        } catch {
+          window.showErrorMessage('Failed to update iproj.json');
+        }
+      }
+    } else {
+      window.showErrorMessage('No iproj.json found');
+    }
+  }
+
   public async readJobLog() {
-    const jobLogExists = await this.jobLogExists();
+    const jobLogExists = await this.projectFileExists('joblog.json');
     if (jobLogExists) {
       const content = await workspace.fs.readFile(this.getJobLogPath());
       const jobLog = IProject.validateJobLog(content.toString());
@@ -73,7 +119,7 @@ export class IProject {
   }
 
   public async clearJobLogs() {
-    const jobLogExists = await this.jobLogExists();
+    const jobLogExists = await this.projectFileExists('joblog.json');
     if (jobLogExists) {
       const localJobLog = this.jobLogs.get(-1);
 
@@ -86,27 +132,38 @@ export class IProject {
     }
   }
 
-  public async jobLogExists(): Promise<boolean> {
+  public async projectFileExists(type: 'iproj.json' | 'joblog.json' | 'output.log' | '.env'): Promise<boolean> {
+    let fileUri: Uri;
+    switch (type) {
+      case "iproj.json":
+        fileUri = this.getIProjFilePath();
+        break;
+      case "joblog.json":
+        fileUri = this.getJobLogPath();
+        break;
+      case "output.log":
+        fileUri = this.getBuildOutputPath();
+        break;
+      case ".env":
+        fileUri = this.getEnvFilePath();
+        break;
+    }
+
     try {
-      const statResult = await workspace.fs.stat(this.getJobLogPath());
+      const statResult = await workspace.fs.stat(fileUri);
       return true;
     } catch (e) {
       return false;
     }
   }
 
-  public async buildOutputExists(): Promise<boolean> {
+  public async createProject(description: string): Promise<boolean> {
     try {
-      const statResult = await workspace.fs.stat(this.getBuildOutputPath());
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
+      const content = {
+        description: description
+      };
 
-  public async envExists(): Promise<boolean> {
-    try {
-      const statResult = await workspace.fs.stat(this.getEnvFilePath());
+      await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(content, null, 2)));
       return true;
     } catch (e) {
       return false;

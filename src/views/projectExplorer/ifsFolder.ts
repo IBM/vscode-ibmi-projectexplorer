@@ -1,3 +1,7 @@
+/*
+ * (c) Copyright IBM Corp. 2023
+ */
+
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
 import * as path from "path";
 
