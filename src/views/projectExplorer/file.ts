@@ -12,7 +12,7 @@ export default class File extends TreeItem {
   static contextValue = `file`;
   memberUri: Uri | null;
   constructor(fullpath: string, attribute: string | undefined, type: string | undefined, library: string, file: string,
-    isPhyicalFile: boolean, tooltip: string, member: IBMiMember | null) {
+    isPhyicalFile: boolean, tooltip: string | undefined, member: IBMiMember | null) {
     let fileExtension = '';
     if (type === "*PGM") {
       fileExtension = "PGM";
