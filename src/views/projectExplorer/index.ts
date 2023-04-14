@@ -18,6 +18,8 @@ import ObjectLibrary from "./objectlibrary";
 import QSYSLib from "./qsysLib";
 import PhysicalFile from "./physicalfile";
 import File from "./file";
+import IncludePaths from "./includePaths";
+import IncludePath from "./includePath";
 
 export default class ProjectExplorer implements TreeDataProvider<any> {
   private _onDidChangeTreeData = new EventEmitter<TreeItem | undefined | null | void>();
@@ -67,6 +69,41 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             await iProject.createEnv();
           }
         }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectmode.addToIncludePaths`, async (element: TreeItem) => {
+        if (element instanceof IncludePaths) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const includePath = await window.showInputBox({
+              placeHolder: 'Include Path',
+              prompt: 'Enter include path'
+            });
+
+            if (includePath) {
+              iProject.addToIncludePaths(includePath);
+            }
+          }
+        } else {
+          const includePath = (element as any).path;
+          if (includePath) {
+            const iProject = await ProjectManager.selectProject();
+            if (iProject) {
+              await iProject.addToIncludePaths(includePath);
+            }
+          } else {
+            window.showErrorMessage('Failed to retrieve path to directory.');
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectmode.removeFromIncludePaths`, async (element: IncludePath) => {
+        if (element instanceof IncludePath) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            iProject.removeFromIncludePaths(element.label!.toString());
+          }
+        }
       })
     );
   }
@@ -85,6 +122,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
     if (element) {
       let items: TreeItem[] = [];
       let iProject: IProject | undefined;
+      let state: iProjectT | undefined;
 
       switch (element.contextValue) {
         case Project.contextValue:
@@ -136,8 +174,8 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             }));
           }
 
-          const objectLibrariesTreeItem = new ObjectLibrary(projectElement.workspaceFolder);
-          items.push(objectLibrariesTreeItem);
+          items.push(new ObjectLibrary(projectElement.workspaceFolder));
+          items.push(new IncludePaths(projectElement.workspaceFolder));
 
           break;
 
@@ -167,8 +205,10 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
           break;
         case ObjectLibrary.contextValue:
-          iProject = ProjectManager.get((element as ObjectLibrary).workspaceFolder);
-          const state = await iProject?.getState() as iProjectT;
+          const objectLibrariesElement = element as ObjectLibrary;
+          iProject = ProjectManager.get(objectLibrariesElement.workspaceFolder);
+
+          state = await iProject?.getState() as iProjectT;
           if (state) {
             const objLibs = new Set<string>();
             if (state.curlib) {
@@ -193,6 +233,18 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             }
           }
           break;
+        case IncludePaths.contextValue:
+          const includePathsElement = element as IncludePaths;
+          iProject = ProjectManager.get(includePathsElement.workspaceFolder);
+
+          state = await iProject?.getState() as iProjectT;
+          if (state && state.includePath) {
+            state.includePath.forEach(includePath => {
+              items.push(new IncludePath(includePathsElement.workspaceFolder, includePath));
+            });
+          }
+          break;
+
         case QSYSLib.contextValue:
           const lib = element as QSYSLib;
           const files = await ibmi?.getContent().getObjectList({
@@ -239,7 +291,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
               const metadataExists = await iProject.projectFileExists('iproj.json');
               if (metadataExists) {
                 const state = await iProject.getState();
-                if(state) {
+                if (state) {
                   items.push(new Project(folder, state.description));
                 } else {
                   items.push(new Project(folder));

@@ -85,10 +85,37 @@ export class IProject {
             if (!iProject.includePath.includes(includePath)) {
               iProject.includePath.push(includePath);
             } else {
-              window.showErrorMessage(`${includePath} already exists in includePaths`);
+              window.showErrorMessage(`${includePath} already exists in the includePaths`);
             }
           } else {
             iProject.includePath = [includePath];
+          }
+
+          await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+        } catch {
+          window.showErrorMessage('Failed to update iproj.json');
+        }
+      }
+    } else {
+      window.showErrorMessage('No iproj.json found');
+    }
+  }
+
+  public async removeFromIncludePaths(includePath: string) {
+    const iProjExists = await this.projectFileExists('iproj.json');
+    if (iProjExists) {
+      const content = await workspace.fs.readFile(this.getIProjFilePath());
+
+      const iProject = IProject.validateIProject(content.toString());
+      if (iProject) {
+        try {
+          if (iProject.includePath) {
+            const index = iProject.includePath.indexOf(includePath);
+            if (index > -1) {
+              iProject.includePath.splice(index, 1);
+            } else {
+              window.showErrorMessage(`${includePath} does not exist in includePaths`);
+            }
           }
 
           await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
