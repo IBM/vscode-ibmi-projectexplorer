@@ -3,7 +3,7 @@
  */
 
 import { Command, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
-import { ProjectExplorerTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 
 export default class ErrorItem extends ProjectExplorerTreeItem {

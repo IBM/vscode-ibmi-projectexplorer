@@ -6,7 +6,7 @@ import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscod
 import * as path from "path";
 import { getMemberUri } from "../../QSysFs";
 import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
-import { ProjectExplorerTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 
 export default class MemberFile extends ProjectExplorerTreeItem {

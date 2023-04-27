@@ -9,7 +9,7 @@ import Project from "./project";
 import envUpdater from "../../envUpdater";
 import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
-import { ProjectExplorerTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { IProject } from "../../iproject";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {

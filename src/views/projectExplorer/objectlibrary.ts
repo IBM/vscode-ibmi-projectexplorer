@@ -3,7 +3,7 @@
  */
 
 import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
-import { ProjectExplorerTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import Library from "./library";
 import { ContextValue } from "../../projectExplorerApi";

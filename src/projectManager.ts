@@ -4,7 +4,7 @@
 
 import { QuickPickItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "./iproject";
-import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectTreeItem";
+import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 import Project from "./views/projectExplorer/project";
 
 export class ProjectManager {

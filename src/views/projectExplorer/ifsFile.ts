@@ -4,7 +4,7 @@
 
 import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
 import * as path from "path";
-import { ProjectExplorerTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 
 export default class IFSFile extends ProjectExplorerTreeItem {

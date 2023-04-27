@@ -3,7 +3,7 @@
  */
 
 import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
-import { ProjectExplorerTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { getInstance } from "../../ibmi";
 import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";

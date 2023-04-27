@@ -9,7 +9,7 @@ import { ProjectManager } from './projectManager';
 import JobLog from './views/jobLog';
 import ProjectExplorer from './views/projectExplorer';
 import { ProjectExplorerApi } from './projectExplorerApi';
-import { ProjectExplorerTreeItem } from './views/projectExplorer/projectTreeItem';
+import { ProjectExplorerTreeItem } from './views/projectExplorer/projectExplorerTreeItem';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
