@@ -11,9 +11,11 @@ import ErrorItem from "./errorItem";
 import Variables from "./variables";
 import ObjectLibrary from "./objectlibrary";
 import { ContextValue } from "../../typings";
+import { IProject } from "../../iproject";
 
 export default class Project extends ProjectTreeItem {
   static contextValue = ContextValue.project;
+  static extensibleChildren: ((iProject: IProject) => Promise<ProjectTreeItem[]>)[] = [];
 
   constructor(public workspaceFolder: WorkspaceFolder, description?: string) {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
@@ -76,6 +78,14 @@ export default class Project extends ProjectTreeItem {
 
     items.push(new ObjectLibrary(this.workspaceFolder));
 
+    for await (const extensibleChildren of Project.extensibleChildren) {
+      items.push(...await extensibleChildren(iProject!));
+    }
+
     return items;
+  }
+
+  static pushExtensibleChildren(callback: (iProject: IProject) => Promise<ProjectTreeItem[]>) {
+    this.extensibleChildren.push(callback);
   }
 }

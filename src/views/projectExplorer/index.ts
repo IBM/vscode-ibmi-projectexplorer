@@ -74,7 +74,6 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectTreeItem
   async getChildren(element?: ProjectTreeItem): Promise<ProjectTreeItem[]> {
     if (element) {
       return element.getChildren();
-
     } else {
       const ibmi = getInstance();
 

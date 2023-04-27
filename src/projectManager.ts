@@ -103,8 +103,4 @@ export class ProjectManager {
 
         }
     }
-
-    public static updateProject() {
-
-    }
 }
