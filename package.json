@@ -1,7 +1,7 @@
 {
   "name": "vscode-ibmi-projectexplorer",
   "displayName": "Project Explorer for IBM i",
-  "description": "Merlin extension example",
+  "description": "Project Explorer for IBM i",
   "publisher": "IBM",
   "version": "0.0.1",
   "engines": {
