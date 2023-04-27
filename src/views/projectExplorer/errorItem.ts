@@ -4,7 +4,7 @@
 
 import { Command, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectTreeItem";
-import { ContextValue } from "../../typings";
+import { ContextValue } from "../../projectExplorerApi";
 
 export default class ErrorItem extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.error;

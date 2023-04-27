@@ -6,7 +6,7 @@ import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { ProjectManager } from "../../projectManager";
 import Library from "./library";
-import { ContextValue } from "../../typings";
+import { ContextValue } from "../../projectExplorerApi";
 
 export default class ObjectLibrary extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.objectLibrary;

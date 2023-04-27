@@ -4,7 +4,7 @@
 
 import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectTreeItem";
-import { ContextValue } from "../../typings";
+import { ContextValue } from "../../projectExplorerApi";
 
 export default class Variable extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.variable;

@@ -7,7 +7,7 @@ import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { ProjectManager } from "../../projectManager";
 import ErrorItem from "./errorItem";
 import Variable from "./variable";
-import { ContextValue } from "../../typings";
+import { ContextValue } from "../../projectExplorerApi";
 
 export default class Variables extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.variables;

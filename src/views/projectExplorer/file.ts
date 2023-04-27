@@ -7,7 +7,7 @@ import * as path from "path";
 import { getMemberUri } from "../../QSysFs";
 import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectTreeItem";
-import { ContextValue } from "../../typings";
+import { ContextValue } from "../../projectExplorerApi";
 
 export default class MemberFile extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.memberFile;

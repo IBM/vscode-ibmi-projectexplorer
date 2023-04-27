@@ -7,7 +7,7 @@ import * as path from "path";
 import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import MemberFile from "./file";
 import { getInstance } from "../../ibmi";
-import { ContextValue } from "../../typings";
+import { ContextValue } from "../../projectExplorerApi";
 
 export default class ObjectFile extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.objectFile;

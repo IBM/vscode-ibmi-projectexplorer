@@ -8,7 +8,7 @@ import { loadBase, getInstance } from './ibmi';
 import { ProjectManager } from './projectManager';
 import JobLog from './views/jobLog';
 import ProjectExplorer from './views/projectExplorer';
-import { ProjectExplorerApi } from './typings';
+import { ProjectExplorerApi } from './projectExplorerApi';
 import { ProjectExplorerTreeItem } from './views/projectExplorer/projectTreeItem';
 
 // this method is called when your extension is activated

@@ -10,7 +10,7 @@ import IFSDirectory from "./ifsFolder";
 import ErrorItem from "./errorItem";
 import Variables from "./variables";
 import ObjectLibrary from "./objectlibrary";
-import { ContextValue } from "../../typings";
+import { ContextValue } from "../../projectExplorerApi";
 import { IProject } from "../../iproject";
 
 export default class Project extends ProjectExplorerTreeItem {
