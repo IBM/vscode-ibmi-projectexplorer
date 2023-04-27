@@ -1,6 +1,6 @@
 {
-  "name": "vscode-ibm-projectmode",
-  "displayName": "vscode-ibm-projectmode",
+  "name": "vscode-ibmi-projectexplorer",
+  "displayName": "vscode-ibmi-projectexplorer",
   "description": "Merlin extension example",
   "version": "0.0.1",
   "engines": {
@@ -52,102 +52,102 @@
     ],
     "commands": [
       {
-        "command": "vscode-ibmi-projectmode.addToIncludePaths",
+        "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
         "title": "Add to Include Paths"
       },
       {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectmode.jobLog.refresh",
+        "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
       },
       {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+        "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
         "title": "Show Job Log",
         "icon": "$(book)"
       },
       {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+        "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
         "title": "Show Build Output",
         "icon": "$(note)"
       },
       {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectmode.jobLog.clearJobLogs",
+        "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
         "title": "Clear Job Log",
         "icon": "$(clear-all)"
       },
       {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectmode.jobLog.copy",
+        "command": "vscode-ibmi-projectexplorer.jobLog.copy",
         "title": "Copy"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "vscode-ibmi-projectmode.addToIncludePaths",
+          "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.clearJobLogs",
+          "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.copy",
+          "command": "vscode-ibmi-projectexplorer.jobLog.copy",
           "when": "never"
         }
       ],
       "view/title": [
         {
-          "command": "vscode-ibmi-projectmode.jobLog.refresh",
+          "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
           "when": "view == jobLog",
           "group": "navigation@0"
         }
       ],
       "view/item/context": [
         {
-          "command": "vscode-ibmi-projectmode.addToIncludePaths",
+          "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "view == ifsBrowser && viewItem == directory",
-          "group": "1_projectmode@1"
+          "group": "1_projectexplorer@1"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
           "when": "view == jobLog && viewItem == project",
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
           "when": "view == jobLog && viewItem == project",
           "group": "0_viewFile@0"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
           "when": "view == jobLog && viewItem == project",
           "group": "inline@1"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
           "when": "view == jobLog && viewItem == project",
           "group": "0_viewFile@1"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.clearJobLogs",
+          "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
           "when": "view == jobLog && viewItem == project",
           "group": "1_modification@0"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.copy",
+          "command": "vscode-ibmi-projectexplorer.jobLog.copy",
           "when": "view == jobLog && viewItem == command",
           "group": "1_modification@0"
         }
