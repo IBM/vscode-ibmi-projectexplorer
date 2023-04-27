@@ -63,8 +63,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectTreeItem
     );
   }
 
-  refresh() {
-    this._onDidChangeTreeData.fire(null);
+  refresh(element?: ProjectTreeItem) {
+    this._onDidChangeTreeData.fire(element);
   }
 
   getTreeItem(element: ProjectTreeItem): ProjectTreeItem | Thenable<ProjectTreeItem> {
