@@ -127,12 +127,12 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 				createFilePreview(content, library, file, member);
 			} catch (e) {
 				// if this works its a source member
-				vscode.commands.executeCommand('vscode.open', memberUri)
+				vscode.commands.executeCommand('vscode.open', memberUri);
 			}
 		}
 	});
 
-	return { projectManager: ProjectManager };
+	return { projectManager: ProjectManager, projectExplorer: projectExplorer };
 }
 
 // this method is called when your extension is deactivated

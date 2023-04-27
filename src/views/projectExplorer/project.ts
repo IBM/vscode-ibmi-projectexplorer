@@ -15,7 +15,8 @@ import { IProject } from "../../iproject";
 
 export default class Project extends ProjectTreeItem {
   static contextValue = ContextValue.project;
-  static extensibleChildren: ((iProject: IProject) => Promise<ProjectTreeItem[]>)[] = [];
+  static callBack: ((iProject: IProject) => Promise<ProjectTreeItem[]>)[] = [];
+  private extensibleChildren: ProjectTreeItem[] = [];
 
   constructor(public workspaceFolder: WorkspaceFolder, description?: string) {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
@@ -78,14 +79,15 @@ export default class Project extends ProjectTreeItem {
 
     items.push(new ObjectLibrary(this.workspaceFolder));
 
-    for await (const extensibleChildren of Project.extensibleChildren) {
-      items.push(...await extensibleChildren(iProject!));
+    for await (const extensibleChildren of Project.callBack) {
+      this.extensibleChildren.push(...await extensibleChildren(iProject!));
     }
+    items.push(...this.extensibleChildren);
 
     return items;
   }
 
-  static pushExtensibleChildren(callback: (iProject: IProject) => Promise<ProjectTreeItem[]>) {
-    this.extensibleChildren.push(callback);
+  getExtensibleChildren() {
+    return this.extensibleChildren;
   }
 }

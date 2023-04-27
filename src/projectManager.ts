@@ -5,6 +5,7 @@
 import { QuickPickItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "./iproject";
 import { ProjectTreeItem } from "./views/projectExplorer/projectTreeItem";
+import Project from "./views/projectExplorer/project";
 
 export class ProjectManager {
     private static loaded: { [index: number]: IProject } = {};
@@ -102,5 +103,9 @@ export class ProjectManager {
             return ProjectManager.get(element.workspaceFolder);
 
         }
+    }
+
+    public static pushExtensibleChildren(callback: (iProject: IProject) => Promise<ProjectTreeItem[]>) {
+        Project.callBack.push(callback);
     }
 }

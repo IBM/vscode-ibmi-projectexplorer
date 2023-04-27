@@ -10,10 +10,12 @@ import envUpdater from "../../envUpdater";
 import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
 import { ProjectTreeItem } from "./projectTreeItem";
+import { IProject } from "../../iproject";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+  private projectTreeItems: Project[] = [];
 
   constructor(context: ExtensionContext) {
     const decorationProvider = new DecorationProvider();
@@ -75,11 +77,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectTreeItem
     if (element) {
       return element.getChildren();
     } else {
+      const items: ProjectTreeItem[] = [];
+
       const ibmi = getInstance();
 
       if (ibmi && ibmi.getConnection()) {
         const workspaceFolders = workspace.workspaceFolders;
-        const items: any[] = [];
 
         if (workspaceFolders && workspaceFolders.length > 0) {
           for await (const folder of workspaceFolders) {
@@ -109,6 +112,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectTreeItem
                   }));
               }
             }
+
+            this.projectTreeItems = items as Project[];
           };
         } else {
           items.push(new ErrorItem(
@@ -121,10 +126,18 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectTreeItem
               }
             }));
         }
-
-        return items;
       } else {
-        return [new ErrorItem(undefined, `Please connect to an IBM i.`)];
+        items.push(new ErrorItem(undefined, `Please connect to an IBM i.`));
+      }
+
+      return items;
+    }
+  }
+
+  getProjectTreeItem(iProject: IProject): Project | undefined {
+    for (const projectTreeItem of this.projectTreeItems) {
+      if (projectTreeItem.workspaceFolder === iProject.workspaceFolder) {
+        return projectTreeItem;
       }
     }
   }
