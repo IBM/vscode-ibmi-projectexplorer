@@ -3,10 +3,10 @@
  */
 
 import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
-import { ProjectTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { ContextValue } from "../../typings";
 
-export default class Variable extends ProjectTreeItem {
+export default class Variable extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.variable;
 
   constructor(public workspaceFolder: WorkspaceFolder, name: string, value?: string) {
@@ -24,7 +24,7 @@ export default class Variable extends ProjectTreeItem {
     };
   }
 
-  getChildren(): ProjectTreeItem[] {
+  getChildren(): ProjectExplorerTreeItem[] {
     return [];
   }
 }

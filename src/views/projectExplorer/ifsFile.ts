@@ -4,10 +4,10 @@
 
 import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
 import * as path from "path";
-import { ProjectTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { ContextValue } from "../../typings";
 
-export default class IFSFile extends ProjectTreeItem {
+export default class IFSFile extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.ifsFile;
 
   constructor(public workspaceFolder: WorkspaceFolder, fullpath: string) {
@@ -21,7 +21,7 @@ export default class IFSFile extends ProjectTreeItem {
     this.iconPath = new ThemeIcon(`file`);
   }
 
-  getChildren(): ProjectTreeItem[] {
+  getChildren(): ProjectExplorerTreeItem[] {
     return [];
   }
 }

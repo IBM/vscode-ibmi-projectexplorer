@@ -9,7 +9,7 @@ import { ProjectManager } from './projectManager';
 import JobLog from './views/jobLog';
 import ProjectExplorer from './views/projectExplorer';
 import { ProjectExplorerApi } from './typings';
-import { ProjectTreeItem } from './views/projectExplorer/projectTreeItem';
+import { ProjectExplorerTreeItem } from './views/projectExplorer/projectTreeItem';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -73,7 +73,7 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 
 	// Commands
 	context.subscriptions.push(
-		vscode.commands.registerCommand(`vscode-ibmi-projectmode.addToIncludePaths`, async (element: ProjectTreeItem) => {
+		vscode.commands.registerCommand(`vscode-ibmi-projectmode.addToIncludePaths`, async (element: ProjectExplorerTreeItem) => {
 			const includePath = (element as any).path;
 			if (includePath) {
 				const iProject = await ProjectManager.selectProject();

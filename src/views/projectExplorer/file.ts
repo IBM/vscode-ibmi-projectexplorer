@@ -6,10 +6,10 @@ import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscod
 import * as path from "path";
 import { getMemberUri } from "../../QSysFs";
 import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
-import { ProjectTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { ContextValue } from "../../typings";
 
-export default class MemberFile extends ProjectTreeItem {
+export default class MemberFile extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.memberFile;
   memberUri: Uri | null;
 
@@ -53,7 +53,7 @@ export default class MemberFile extends ProjectTreeItem {
     }
   }
 
-  getChildren(): ProjectTreeItem[] {
+  getChildren(): ProjectExplorerTreeItem[] {
     return [];
   }
 }

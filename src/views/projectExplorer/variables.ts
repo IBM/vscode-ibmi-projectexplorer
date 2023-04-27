@@ -3,13 +3,13 @@
  */
 
 import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
-import { ProjectTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { ProjectManager } from "../../projectManager";
 import ErrorItem from "./errorItem";
 import Variable from "./variable";
 import { ContextValue } from "../../typings";
 
-export default class Variables extends ProjectTreeItem {
+export default class Variables extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.variables;
 
   constructor(public workspaceFolder: WorkspaceFolder, unresolvedVariableCount: number) {
@@ -20,8 +20,8 @@ export default class Variables extends ProjectTreeItem {
     this.iconPath = new ThemeIcon(`symbol-variable`);
   }
 
-  async getChildren(): Promise<ProjectTreeItem[]> {
-    let items: ProjectTreeItem[] = [];
+  async getChildren(): Promise<ProjectExplorerTreeItem[]> {
+    let items: ProjectExplorerTreeItem[] = [];
 
     const iProject = ProjectManager.get(this.workspaceFolder);
     const possibleVariables = iProject?.getVariables();

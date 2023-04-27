@@ -9,11 +9,11 @@ import Project from "./project";
 import envUpdater from "../../envUpdater";
 import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
-import { ProjectTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { IProject } from "../../iproject";
 
-export default class ProjectExplorer implements TreeDataProvider<ProjectTreeItem> {
-  private _onDidChangeTreeData = new EventEmitter<ProjectTreeItem | undefined | null | void>();
+export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
+  private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
   private projectTreeItems: Project[] = [];
 
@@ -65,19 +65,19 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectTreeItem
     );
   }
 
-  refresh(element?: ProjectTreeItem) {
+  refresh(element?: ProjectExplorerTreeItem) {
     this._onDidChangeTreeData.fire(element);
   }
 
-  getTreeItem(element: ProjectTreeItem): ProjectTreeItem | Thenable<ProjectTreeItem> {
+  getTreeItem(element: ProjectExplorerTreeItem): ProjectExplorerTreeItem | Thenable<ProjectExplorerTreeItem> {
     return element;
   }
 
-  async getChildren(element?: ProjectTreeItem): Promise<ProjectTreeItem[]> {
+  async getChildren(element?: ProjectExplorerTreeItem): Promise<ProjectExplorerTreeItem[]> {
     if (element) {
       return element.getChildren();
     } else {
-      const items: ProjectTreeItem[] = [];
+      const items: ProjectExplorerTreeItem[] = [];
 
       const ibmi = getInstance();
 

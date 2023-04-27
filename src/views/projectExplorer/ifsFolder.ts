@@ -4,12 +4,12 @@
 
 import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
 import * as path from "path";
-import { ProjectTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import IFSFile from "./ifsFile";
 import { getInstance } from "../../ibmi";
 import { ContextValue } from "../../typings";
 
-export default class IFSDirectory extends ProjectTreeItem {
+export default class IFSDirectory extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.ifsDirectory;
 
   constructor(public workspaceFolder: WorkspaceFolder, ifsFolder: string, customTitle?: string) {
@@ -27,8 +27,8 @@ export default class IFSDirectory extends ProjectTreeItem {
     this.iconPath = new ThemeIcon(`symbol-folder`);
   }
 
-  async getChildren(): Promise<ProjectTreeItem[]> {
-    let items: ProjectTreeItem[] = [];
+  async getChildren(): Promise<ProjectExplorerTreeItem[]> {
+    let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
     const objects = await ibmi?.getContent().getFileList(this.resourceUri?.path!);

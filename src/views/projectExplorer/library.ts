@@ -3,13 +3,13 @@
  */
 
 import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
-import { ProjectTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { getInstance } from "../../ibmi";
 import ObjectFile from "./physicalfile";
 import MemberFile from "./file";
 import { ContextValue } from "../../typings";
 
-export default class Library extends ProjectTreeItem {
+export default class Library extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.library;
   name: string;
 
@@ -22,8 +22,8 @@ export default class Library extends ProjectTreeItem {
     this.tooltip = `Library ${path}`
   }
 
-  async getChildren(): Promise<ProjectTreeItem[]> {
-    let items: ProjectTreeItem[] = [];
+  async getChildren(): Promise<ProjectExplorerTreeItem[]> {
+    let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
     const files = await ibmi?.getContent().getObjectList({

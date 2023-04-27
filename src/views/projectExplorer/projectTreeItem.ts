@@ -4,7 +4,7 @@
 
 import * as vscode from "vscode";
 
-export abstract class ProjectTreeItem extends vscode.TreeItem {
+export abstract class ProjectExplorerTreeItem extends vscode.TreeItem {
 
     abstract workspaceFolder: vscode.WorkspaceFolder | undefined;
 
@@ -13,5 +13,5 @@ export abstract class ProjectTreeItem extends vscode.TreeItem {
      *
      * @return Children of this tree item.
      */
-    abstract getChildren(): ProjectTreeItem[] | Promise<ProjectTreeItem[]>;
+    abstract getChildren(): ProjectExplorerTreeItem[] | Promise<ProjectExplorerTreeItem[]>;
 }

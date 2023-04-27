@@ -3,10 +3,10 @@
  */
 
 import { Command, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
-import { ProjectTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { ContextValue } from "../../typings";
 
-export default class ErrorItem extends ProjectTreeItem {
+export default class ErrorItem extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.error;
 
   constructor(public workspaceFolder: WorkspaceFolder | undefined, label: string, options: { description?: string, command?: Command } = {}) {
@@ -19,7 +19,7 @@ export default class ErrorItem extends ProjectTreeItem {
     this.iconPath = new ThemeIcon(`error`);
   }
 
-  getChildren(): ProjectTreeItem[] {
+  getChildren(): ProjectExplorerTreeItem[] {
     return [];
   }
 }

@@ -4,7 +4,7 @@
 
 import { QuickPickItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "./iproject";
-import { ProjectTreeItem } from "./views/projectExplorer/projectTreeItem";
+import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectTreeItem";
 import Project from "./views/projectExplorer/project";
 
 export class ProjectManager {
@@ -98,14 +98,14 @@ export class ProjectManager {
         }
     }
 
-    public static getProjectFromTreeItem(element: ProjectTreeItem) {
+    public static getProjectFromTreeItem(element: ProjectExplorerTreeItem) {
         if (element.workspaceFolder) {
             return ProjectManager.get(element.workspaceFolder);
 
         }
     }
 
-    public static pushExtensibleChildren(callback: (iProject: IProject) => Promise<ProjectTreeItem[]>) {
+    public static pushExtensibleChildren(callback: (iProject: IProject) => Promise<ProjectExplorerTreeItem[]>) {
         Project.callBack.push(callback);
     }
 }

@@ -3,7 +3,7 @@
  */
 
 import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
-import { ProjectTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { ProjectManager } from "../../projectManager";
 import { getInstance } from "../../ibmi";
 import IFSDirectory from "./ifsFolder";
@@ -13,10 +13,10 @@ import ObjectLibrary from "./objectlibrary";
 import { ContextValue } from "../../typings";
 import { IProject } from "../../iproject";
 
-export default class Project extends ProjectTreeItem {
+export default class Project extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.project;
-  static callBack: ((iProject: IProject) => Promise<ProjectTreeItem[]>)[] = [];
-  private extensibleChildren: ProjectTreeItem[] = [];
+  static callBack: ((iProject: IProject) => Promise<ProjectExplorerTreeItem[]>)[] = [];
+  private extensibleChildren: ProjectExplorerTreeItem[] = [];
 
   constructor(public workspaceFolder: WorkspaceFolder, description?: string) {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
@@ -27,8 +27,8 @@ export default class Project extends ProjectTreeItem {
     this.description = description;
   }
 
-  async getChildren(): Promise<ProjectTreeItem[]> {
-    let items: ProjectTreeItem[] = [];
+  async getChildren(): Promise<ProjectExplorerTreeItem[]> {
+    let items: ProjectExplorerTreeItem[] = [];
 
     const iProject = ProjectManager.get(this.workspaceFolder);
 

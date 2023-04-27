@@ -3,12 +3,12 @@
  */
 
 import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
-import { ProjectTreeItem } from "./projectTreeItem";
+import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { ProjectManager } from "../../projectManager";
 import Library from "./library";
 import { ContextValue } from "../../typings";
 
-export default class ObjectLibrary extends ProjectTreeItem {
+export default class ObjectLibrary extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.objectLibrary;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
@@ -20,8 +20,8 @@ export default class ObjectLibrary extends ProjectTreeItem {
     this.tooltip = "Object Libraries - Work with the set of libraries defined in the curlib, objlib, preUsrlibl, and postUsrlibl entries of the iproj.json"
   }
 
-  async getChildren(): Promise<ProjectTreeItem[]> {
-    let items: ProjectTreeItem[] = [];
+  async getChildren(): Promise<ProjectExplorerTreeItem[]> {
+    let items: ProjectExplorerTreeItem[] = [];
 
     const iProject = ProjectManager.get(this.workspaceFolder);
     const state = await iProject?.getState();
