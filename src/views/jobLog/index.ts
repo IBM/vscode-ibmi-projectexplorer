@@ -4,7 +4,7 @@
 
 import { CancellationToken, commands, env, EventEmitter, ExtensionContext, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "../../iproject";
-import ErrorItem from "../../test/errorItem";
+import ErrorItem from "../projectExplorer/errorItem";
 import { ProjectManager } from "../../projectManager";
 import Log from "./log";
 import Command from "./command";
@@ -99,7 +99,7 @@ export default class JobLog implements TreeDataProvider<any> {
             }
             ));
           } else {
-            items.push(new ErrorItem(`No job log found.`));
+            items.push(new ErrorItem(projectElement.workspaceFolder, `No job log found.`));
           }
 
           break;
@@ -136,7 +136,7 @@ export default class JobLog implements TreeDataProvider<any> {
           return new Project(folder);
         });
       } else {
-        return [new ErrorItem(`Please open a local workspace folder.`)];
+        return [new ErrorItem(undefined, `Please open a local workspace folder.`)];
       }
     }
   }

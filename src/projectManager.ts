@@ -4,6 +4,7 @@
 
 import { QuickPickItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "./iproject";
+import { ProjectTreeItem } from "./views/projectExplorer/projectTreeItem";
 
 export class ProjectManager {
     private static loaded: { [index: number]: IProject } = {};
@@ -68,15 +69,42 @@ export class ProjectManager {
         return;
     }
 
-    public static getProjectFromUri(uri: Uri): IProject | undefined {
-        const workspaceFolders = workspace.workspaceFolders;
-        if (workspaceFolders && workspaceFolders.length > 0) {
-            const changedWorkspaceFolder = workspaceFolders.filter(workspaceFolder =>
-                uri.fsPath.startsWith(workspaceFolder.uri.fsPath)
-            )[0];
-
-            const iProject = ProjectManager.get(changedWorkspaceFolder);
-            return iProject;
+    public static getProjects(): IProject[] {
+        let projects = [];
+        for (const index in this.loaded) {
+            projects.push(this.loaded[index]);
         }
+
+        return projects;
+    }
+
+    public static getProjectFromActiveTextEditor(): IProject | undefined {
+        let activeFileUri = window.activeTextEditor?.document.uri;
+        activeFileUri = activeFileUri?.scheme === 'file' ? activeFileUri : undefined;
+
+        if (activeFileUri) {
+            return this.getProjectFromUri(activeFileUri);
+        }
+    }
+
+    public static getProjectFromUri(uri: Uri): IProject | undefined {
+        for (const index in this.loaded) {
+            const project = this.loaded[index];
+
+            if (uri.fsPath.startsWith(project.workspaceFolder.uri.fsPath)) {
+                return project;
+            }
+        }
+    }
+
+    public static getProjectFromTreeItem(element: ProjectTreeItem) {
+        if (element.workspaceFolder) {
+            return ProjectManager.get(element.workspaceFolder);
+
+        }
+    }
+
+    public static updateProject() {
+
     }
 }

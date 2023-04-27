@@ -2,17 +2,19 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
 import * as path from "path";
 import { getMemberUri } from "../../QSysFs";
 import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
+import { ProjectTreeItem } from "./projectTreeItem";
+import { ContextValue } from "../../typings";
 
-export default class File extends TreeItem {
-  //
-  static contextValue = `file`;
+export default class MemberFile extends ProjectTreeItem {
+  static contextValue = ContextValue.memberFile;
   memberUri: Uri | null;
-  constructor(fullpath: string, attribute: string | undefined, type: string | undefined, library: string, file: string,
-    isPhyicalFile: boolean, tooltip: string, member: IBMiMember | null) {
+
+  constructor(public workspaceFolder: WorkspaceFolder, fullpath: string, attribute: string | undefined, type: string | undefined, library: string, file: string,
+    isPhyicalFile: boolean, tooltip: string | undefined, member: IBMiMember | null) {
     let fileExtension = '';
     if (type === "*PGM") {
       fileExtension = "PGM";
@@ -36,7 +38,7 @@ export default class File extends TreeItem {
       this.memberUri = getMemberUri(member, { filter: member.name });
     }
 
-    this.contextValue = File.contextValue;
+    this.contextValue = MemberFile.contextValue;
     this.iconPath = new ThemeIcon(`file`);
     this.description = fileExtension ? `(${fileExtension})` : "";
     this.tooltip = tooltip;
@@ -49,5 +51,9 @@ export default class File extends TreeItem {
         arguments: [library, file, basename, this.memberUri]
       };
     }
+  }
+
+  getChildren(): ProjectTreeItem[] {
+    return [];
   }
 }

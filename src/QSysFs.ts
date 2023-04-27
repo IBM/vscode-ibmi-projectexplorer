@@ -2,6 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
+import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
 import { stringify, ParsedUrlQueryInput } from "querystring";
 import * as vscode from "vscode";
 
@@ -18,16 +19,6 @@ export function getUriFromPath(path: string, options?: QsysFsOptions) {
     //QSYS path
     return vscode.Uri.parse(path).with({ scheme: `member`, path: `/${path}`, query });
   }
-}
-
-export interface IBMiMember {
-  library: string
-  file: string
-  name: string
-  extension: string
-  recordLength: number
-  text: string
-  asp?: string
 }
 
 export interface QsysFsOptions {
