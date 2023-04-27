@@ -4,6 +4,9 @@
   "description": "Project Explorer for IBM i",
   "publisher": "IBM",
   "version": "0.0.1",
+  "repository": {
+    "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
+  },
   "engines": {
     "vscode": "^1.75.0"
   },
