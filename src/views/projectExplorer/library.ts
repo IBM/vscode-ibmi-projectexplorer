@@ -5,7 +5,7 @@
 import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectTreeItem";
 import { getInstance } from "../../ibmi";
-import ObjectFile from "./physicalfile";
+import ObjectFile from "./objectFile";
 import MemberFile from "./file";
 import { ContextValue } from "../../projectExplorerApi";
 
