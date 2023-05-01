@@ -1,0 +1,22 @@
+{
+  "description": "Project Explorer for IBM i",
+  "explorer.projectExplorer": "Project Explorer",
+  "explorer.jobLog": "Job Log",
+  "viewsWelcome.projectExplorer.noWorkspace": "No workspace folder opened",
+  "viewsWelcome.projectExplorer.scanning": "Scanning for projects...",
+  "viewsWelcome.jobLog.noWorkspace": "No workspace folder opened",
+  "viewsWelcome.jobLog.scanning": "Scanning for projects...",
+  "commands.projectExplorer.addToIncludePaths": "Add to Include Paths",
+  "commands.jobLog.refresh": "Refresh",
+  "commands.jobLog.showJobLog": "Show Job Log",
+  "commands.jobLog.showBuildOutput": "Show Build Output",
+  "commands.jobLog.clearJobLogs": "Clear Job Log",
+  "commands.jobLog.copy": "Copy",
+  "colors.joblog.local": "Color for local job log",
+  "colors.joblog.severity.0": "Color for job log severity 0 messages",
+  "colors.joblog.severity.10": "Color for job log severity 10 messages",
+  "colors.joblog.severity.20": "Color for job log severity 20 messages",
+  "colors.joblog.severity.30": "Color for job log severity 30 messages",
+  "colors.joblog.severity.40": "Color for job log severity 40 messages",
+  "colors.joblog.severity.50": "Color for job log severity 50 messages"
+}
