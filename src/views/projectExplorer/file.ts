@@ -12,7 +12,7 @@ export default class File extends TreeItem {
   static contextValue = `file`;
   memberUri: Uri | null;
   constructor(fullpath: string, attribute: string | undefined, type: string | undefined, library: string, file: string,
-    isPhyicalFile: boolean, tooltip: string | undefined, member: IBMiMember | null) {
+    isPhysicalFile: boolean, tooltip: string | undefined, member: IBMiMember | null) {
     let fileExtension = '';
     if (type === "*PGM") {
       fileExtension = "PGM";
@@ -42,7 +42,7 @@ export default class File extends TreeItem {
     this.tooltip = tooltip;
 
     // We only want to add a command if it's a physical file
-    if (isPhyicalFile) {
+    if (isPhysicalFile) {
       this.command = {
         command: `showMemberContent`,
         title: `Show member contents`,
