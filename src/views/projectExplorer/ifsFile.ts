@@ -7,6 +7,9 @@ import * as path from "path";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 
+/**
+ * Tree item for an IFS file
+ */
 export default class IFSFile extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.ifsFile;
 

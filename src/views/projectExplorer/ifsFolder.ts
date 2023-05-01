@@ -9,6 +9,9 @@ import IFSFile from "./ifsFile";
 import { getInstance } from "../../ibmi";
 import { ContextValue } from "../../projectExplorerApi";
 
+/**
+ * Tree item for an IFS directory
+ */
 export default class IFSDirectory extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.ifsDirectory;
 

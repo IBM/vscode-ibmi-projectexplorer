@@ -4,6 +4,9 @@
 
 import * as vscode from "vscode";
 
+/**
+ * Abstract class for a tree item in the Project Explorer
+ */
 export abstract class ProjectExplorerTreeItem extends vscode.TreeItem {
 
     abstract workspaceFolder: vscode.WorkspaceFolder | undefined;

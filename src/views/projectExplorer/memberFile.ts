@@ -9,6 +9,9 @@ import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 
+/**
+ * Tree item for a member file
+ */
 export default class MemberFile extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.memberFile;
   memberUri: Uri | null;

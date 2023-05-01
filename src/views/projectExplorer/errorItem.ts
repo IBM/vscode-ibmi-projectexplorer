@@ -6,6 +6,9 @@ import { Command, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "v
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 
+/**
+ * Tree item for error information
+ */
 export default class ErrorItem extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.error;
 

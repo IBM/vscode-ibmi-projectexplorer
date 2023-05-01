@@ -9,6 +9,9 @@ import MemberFile from "./memberFile";
 import { getInstance } from "../../ibmi";
 import { ContextValue } from "../../projectExplorerApi";
 
+/**
+ * Tree item for an object file
+ */
 export default class ObjectFile extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.objectFile;
   library: string;

@@ -9,6 +9,9 @@ import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
 import { ContextValue } from "../../projectExplorerApi";
 
+/**
+ * Tree item for a library
+ */
 export default class Library extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.library;
   name: string;

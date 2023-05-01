@@ -6,6 +6,9 @@ import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscod
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 
+/**
+ * Tree item for a variable
+ */
 export default class Variable extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.variable;
 

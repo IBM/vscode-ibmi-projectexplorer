@@ -9,10 +9,13 @@ import { getInstance } from "../../ibmi";
 import IFSDirectory from "./ifsFolder";
 import ErrorItem from "./errorItem";
 import Variables from "./variables";
-import ObjectLibrary from "./objectlibrary";
+import ObjectLibraries from "./objectlibraries";
 import { ContextValue } from "../../projectExplorerApi";
 import { IProject } from "../../iproject";
 
+/**
+ * Tree item for a project
+ */
 export default class Project extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.project;
   static callBack: ((iProject: IProject) => Promise<ProjectExplorerTreeItem[]>)[] = [];
@@ -77,7 +80,7 @@ export default class Project extends ProjectExplorerTreeItem {
       }));
     }
 
-    items.push(new ObjectLibrary(this.workspaceFolder));
+    items.push(new ObjectLibraries(this.workspaceFolder));
 
     for await (const extensibleChildren of Project.callBack) {
       this.extensibleChildren.push(...await extensibleChildren(iProject!));

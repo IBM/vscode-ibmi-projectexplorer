@@ -8,15 +8,18 @@ import { ProjectManager } from "../../projectManager";
 import Library from "./library";
 import { ContextValue } from "../../projectExplorerApi";
 
-export default class ObjectLibrary extends ProjectExplorerTreeItem {
-  static contextValue = ContextValue.objectLibrary;
+/**
+ * Tree item for the Object Libraries heading
+ */
+export default class ObjectLibraries extends ProjectExplorerTreeItem {
+  static contextValue = ContextValue.objectLibraries;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
     super("Object Libraries", TreeItemCollapsibleState.Collapsed);
 
     this.resourceUri = workspaceFolder.uri;
     this.iconPath = new ThemeIcon(`root-folder`);
-    this.contextValue = ObjectLibrary.contextValue;
+    this.contextValue = ObjectLibraries.contextValue;
     this.tooltip = "Object Libraries - Work with the set of libraries defined in the curlib, objlib, preUsrlibl, and postUsrlibl entries of the iproj.json"
   }
 
