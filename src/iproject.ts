@@ -138,7 +138,11 @@ export class IProject {
           return;
 
         } else {
-          unresolvedState[position]!.push(library);
+          if (position === 'preUsrlibl') {
+            unresolvedState[position]!.unshift(library);
+          } else {
+            unresolvedState[position]!.push(library);
+          }
         }
       } else {
         unresolvedState[position] = [library];
@@ -358,7 +362,9 @@ export class IProject {
   public static validateIProject(content: string): iProjectT {
     const iproj = JSON.parse(content);
 
-    // Validate iproj.json here
+    if (!iproj.objlib && iproj.curlib) {
+      iproj.objlib = iproj.curlib;
+    }
 
     return iproj;
   }
