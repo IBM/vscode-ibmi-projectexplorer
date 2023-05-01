@@ -21,7 +21,7 @@ export default class Variable extends ProjectExplorerTreeItem {
     this.iconPath = new ThemeIcon(`pencil`);
 
     this.command = {
-      command: `vscode-ibmi-projectmode.updateVariable`,
+      command: `vscode-ibmi-projectexplorer.updateVariable`,
       arguments: [this.workspaceFolder, name, value],
       title: `Update value`
     };

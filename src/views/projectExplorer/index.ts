@@ -21,7 +21,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
-      commands.registerCommand(`vscode-ibmi-projectmode.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
         if (workspaceFolder && varName) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -39,7 +39,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.createProject`, async (workspaceFolder: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createProject`, async (workspaceFolder: WorkspaceFolder) => {
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -54,7 +54,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.createEnv`, async (workspaceFolder: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createEnv`, async (workspaceFolder: WorkspaceFolder) => {
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -105,7 +105,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                   {
                     description: 'Please configure project metadata.',
                     command: {
-                      command: 'vscode-ibmi-projectmode.createProject',
+                      command: 'vscode-ibmi-projectexplorer.createProject',
                       arguments: [folder],
                       title: 'Create project iproj.json'
                     }

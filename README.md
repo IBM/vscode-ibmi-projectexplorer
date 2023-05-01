@@ -1,4 +1,4 @@
-# vscode-ibm-projectmode README
+# vscode-ibmi-projectexplorer README
 
 Extension that implements Project Explorer and Job Log Viewer using the Code for IBM i API
 

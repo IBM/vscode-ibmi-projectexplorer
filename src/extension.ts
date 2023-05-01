@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vscode-ibm-projectmode" is now active!');
+	console.log('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!');
 
 	loadBase();
 
@@ -73,7 +73,7 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 
 	// Commands
 	context.subscriptions.push(
-		vscode.commands.registerCommand(`vscode-ibmi-projectmode.addToIncludePaths`, async (element: ProjectExplorerTreeItem) => {
+		vscode.commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: ProjectExplorerTreeItem) => {
 			const includePath = (element as any).path;
 			if (includePath) {
 				const iProject = await ProjectManager.selectProject();

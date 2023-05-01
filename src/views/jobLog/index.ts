@@ -17,10 +17,10 @@ export default class JobLog implements TreeDataProvider<any> {
 
   constructor(context: ExtensionContext) {
     context.subscriptions.push(
-      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.refresh`, () => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.refresh`, () => {
         this.refresh();
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.showJobLog`, async (element: Project) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showJobLog`, async (element: Project) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
         if (iProject) {
           const jobLogExists = await iProject.projectFileExists('joblog.json');
@@ -34,7 +34,7 @@ export default class JobLog implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.showBuildOutput`, async (element: Project) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showBuildOutput`, async (element: Project) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
         if (iProject) {
           const buildOutputExists = await iProject.projectFileExists('output.log');
@@ -48,14 +48,14 @@ export default class JobLog implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.clearJobLogs`, async (element: Project) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.clearJobLogs`, async (element: Project) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
         if (iProject) {
           await iProject.clearJobLogs();
           this.refresh();
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.jobLog.copy`, async (element: Command) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.copy`, async (element: Command) => {
         try {
           await env.clipboard.writeText(element.label!.toString());
         } catch (error) {
