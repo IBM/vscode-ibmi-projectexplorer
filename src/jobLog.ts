@@ -3,6 +3,7 @@
  */
 
 import path = require("path");
+import { l10n } from "vscode";
 
 export interface CommandInfo {
     cmd: string;
@@ -37,8 +38,8 @@ export class JobLogInfo {
     }
 
     public static createFromToTextForMsgEntity(msg: MessageInfo) {
-        const fromText = `From: ${msg.from_library}/${msg.from_program}:${msg.from_instruction}`;
-        const toText = `To: ${msg.to_library}/${msg.to_module}/${msg.to_program}/${msg.to_procedure}:${msg.to_instruction}`;
+        const fromText = l10n.t(`From: {0}/{1}:{2}`, msg.from_library, msg.from_program, msg.from_instruction);
+        const toText = l10n.t(`To: {0}/{1}/{2}/{3}:{4}`, msg.to_library, msg.to_module, msg.to_program, msg.to_procedure, msg.to_instruction);
         return `${fromText}\n${toText}`;
     }
 }
@@ -70,6 +71,6 @@ export function parseDateTime(dateTime: string): Date {
 
         return new Date(year, month, day, hour, min, sec);
     } catch {
-        throw Error(`Cannot parse \"${dateTime}\" as a Date object.`);
+        throw Error(l10n.t(`Cannot parse \"{0}\" as a Date object.`, dateTime));
     }
 }

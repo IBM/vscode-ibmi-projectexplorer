@@ -3,7 +3,7 @@
  */
 
 import path = require("path");
-import { Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
@@ -85,7 +85,7 @@ export class IProject {
             if (!iProject.includePath.includes(includePath)) {
               iProject.includePath.push(includePath);
             } else {
-              window.showErrorMessage(`${includePath} already exists in includePaths`);
+              window.showErrorMessage(l10n.t(`{0} already exists in includePaths`, includePath));
             }
           } else {
             iProject.includePath = [includePath];
@@ -93,11 +93,11 @@ export class IProject {
 
           await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
         } catch {
-          window.showErrorMessage('Failed to update iproj.json');
+          window.showErrorMessage(l10n.t('Failed to update iproj.json'));
         }
       }
     } else {
-      window.showErrorMessage('No iproj.json found');
+      window.showErrorMessage(l10n.t('No iproj.json found'));
     }
   }
 

@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, l10n } from "vscode";
 import * as path from "path";
 import { getMemberUri } from "../../QSysFs";
 import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
@@ -45,7 +45,7 @@ export default class File extends TreeItem {
     if (isPhyicalFile) {
       this.command = {
         command: `showMemberContent`,
-        title: `Show member contents`,
+        title: l10n.t(`Show member contents`),
         arguments: [library, file, basename, this.memberUri]
       };
     }

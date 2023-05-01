@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { QuickPickItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { l10n, QuickPickItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "./iproject";
 
 export class ProjectManager {
@@ -35,7 +35,7 @@ export class ProjectManager {
     public static async selectProject(): Promise<IProject | undefined> {
         switch (Object.keys(this.loaded).length) {
             case 0:
-                window.showErrorMessage('Please open a local workspace folder.');
+                window.showErrorMessage(l10n.t('Please open a local workspace folder'));
                 break;
             case 1:
                 return this.loaded[0];
@@ -51,7 +51,7 @@ export class ProjectManager {
                 }
 
                 const selectedProject = await window.showQuickPick(projectItems, {
-                    placeHolder: 'Select a project'
+                    placeHolder: l10n.t('Select a project')
                 });
 
                 if (selectedProject) {

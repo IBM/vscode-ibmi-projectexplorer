@@ -3,19 +3,19 @@
  */
 
 import path = require('path');
-import * as vscode from 'vscode';
 import { loadBase, getInstance } from './ibmi';
 import { ProjectManager } from './projectManager';
 import JobLog from './views/jobLog';
 import ProjectExplorer from './views/projectExplorer';
+import { ExtensionContext, Position, Range, TreeItem, Uri, WorkspaceEdit, commands, l10n, window, workspace } from 'vscode';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: ExtensionContext) {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!');
+	console.log(l10n.t('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!'));
 
 	loadBase();
 
@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// @ts-ignore
 	ibmi?.onEvent(`deployLocation`, () => { projectExplorer.refresh(); });
 
-	const projectWatcher = vscode.workspace.createFileSystemWatcher(`**/*.{env,json}`);
+	const projectWatcher = workspace.createFileSystemWatcher(`**/*.{env,json}`);
 	projectWatcher.onDidChange(async (uri) => {
 		const iProject = ProjectManager.getProjectFromUri(uri);
 		if (iProject) {
@@ -47,21 +47,21 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const jobLog = new JobLog(context);
 
-	const jobLogWatcher = vscode.workspace.createFileSystemWatcher(`**/*.logs/joblog.json`);
+	const jobLogWatcher = workspace.createFileSystemWatcher(`**/*.logs/joblog.json`);
 	jobLogWatcher.onDidChange(() => { jobLog.refresh(); });
 	jobLogWatcher.onDidCreate(() => { jobLog.refresh(); });
 	jobLogWatcher.onDidDelete(() => { jobLog.refresh(); });
 
 	context.subscriptions.push(
-		vscode.window.registerTreeDataProvider(
+		window.registerTreeDataProvider(
 			`projectExplorer`,
 			projectExplorer
 		),
-		vscode.window.registerTreeDataProvider(
+		window.registerTreeDataProvider(
 			`jobLog`,
 			jobLog
 		),
-		vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		workspace.onDidChangeWorkspaceFolders(() => {
 			ProjectManager.clear();
 
 			projectExplorer.refresh();
@@ -71,7 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Commands
 	context.subscriptions.push(
-		vscode.commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: vscode.TreeItem) => {
+		commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: TreeItem) => {
 			const includePath = (element as any).path;
 			if (includePath) {
 				const iProject = await ProjectManager.selectProject();
@@ -79,7 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
 					await iProject.addToIncludePaths(includePath);
 				}
 			} else {
-				vscode.window.showErrorMessage('Failed to retrieve path to directory.');
+				window.showErrorMessage(l10n.t('Failed to retrieve path to directory'));
 			}
 		})
 	);
@@ -87,34 +87,33 @@ export function activate(context: vscode.ExtensionContext) {
 	// Display a physical file
 	const createFilePreview = async (content: string, library: string, file: string, member: string) => {
 		// Local file path if the file has been saved by the user
-		let filePath = vscode.Uri.parse(path.join('/tmp', library, file, member));
+		let filePath = Uri.parse(path.join('/tmp', library, file, member));
 		try {
 			// Check if it exists
-			await vscode.workspace.fs.stat(filePath);
+			await workspace.fs.stat(filePath);
 		}
 		catch (e) {
 			// If it doesn't exist, create the file
-			filePath = vscode.Uri.parse('untitled:' + path.join('/tmp', library, file, member));
-			new vscode.WorkspaceEdit().createFile(filePath, { overwrite: true });
+			filePath = Uri.parse('untitled:' + path.join('/tmp', library, file, member));
+			new WorkspaceEdit().createFile(filePath, { overwrite: true });
 		}
-		vscode.workspace.openTextDocument(filePath).then(document => {
+		workspace.openTextDocument(filePath).then(document => {
 			// Write the content to the file
-			const edit = new vscode.WorkspaceEdit();
-			edit.replace(filePath, new vscode.Range(new vscode.Position(0, 0), new vscode.Position(document.lineCount + 1, 0)), content);
-			return vscode.workspace.applyEdit(edit).then(success => {
+			const edit = new WorkspaceEdit();
+			edit.replace(filePath, new Range(new Position(0, 0), new Position(document.lineCount + 1, 0)), content);
+			return workspace.applyEdit(edit).then(success => {
 				if (success) {
-					vscode.window.showTextDocument(document);
+					window.showTextDocument(document);
 				} else {
-					vscode.window.showInformationMessage('Error: Could not write the content of the file');
+					window.showInformationMessage(l10n.t('Error: Could not write the content of the file'));
 				}
 			});
 
 		});
 	};
 
-
 	// Show content for an IBM i member
-	vscode.commands.registerCommand('showMemberContent', async (library: string, file: string, member: string, memberUri: vscode.Uri | null) => {
+	commands.registerCommand('showMemberContent', async (library: string, file: string, member: string, memberUri: Uri | null) => {
 		const instance = getInstance();
 		if (instance) {
 			let content: string;
@@ -125,7 +124,7 @@ export function activate(context: vscode.ExtensionContext) {
 				createFilePreview(content, library, file, member);
 			} catch (e) {
 				// if this works its a source member
-				vscode.commands.executeCommand('vscode.open', memberUri)
+				commands.executeCommand('vscode.open', memberUri);
 			}
 		}
 	});

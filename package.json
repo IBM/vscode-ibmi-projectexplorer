@@ -250,7 +250,6 @@
   },
   "dependencies": {
     "@halcyontech/vscode-ibmi-types": "^1.6.15",
-    "dotenv": "^16.0.3",
-    "@vscode/l10n": "^0.0.13"
+    "dotenv": "^16.0.3"
   }
 }

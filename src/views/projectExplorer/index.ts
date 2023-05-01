@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { CancellationToken, commands, Event, EventEmitter, ExtensionContext, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { CancellationToken, commands, Event, EventEmitter, ExtensionContext, l10n, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
 import { IProject, iProjectT } from "../../iproject";
 import ErrorItem from "../../test/errorItem";
@@ -32,7 +32,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
             const newValue = await window.showInputBox({
-              title: `New value for ${varName}`,
+              title: l10n.t(`New value for {0}`, varName),
               value: currentValue || ``,
             });
 
@@ -50,8 +50,8 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
             const description = await window.showInputBox({
-              placeHolder: 'Description',
-              prompt: 'Enter project description'
+              placeHolder: l10n.t('Description'),
+              prompt: l10n.t('Enter project description')
             });
 
             if (description) {
@@ -98,13 +98,13 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
 
           // First load the IFS browser stuff
           if (remoteDir) {
-            items.push(new IFSFolder(remoteDir, `Source`));
+            items.push(new IFSFolder(remoteDir, l10n.t(`Source`)));
           } else {
-            items.push(new ErrorItem(`Source`, {
-              description: `Please configure remote directory.`,
+            items.push(new ErrorItem(l10n.t(`Source`), {
+              description: l10n.t(`Please configure remote directory`),
               command: {
                 command: `code-for-ibmi.setDeployLocation`,
-                title: `Set deploy location`,
+                title: l10n.t(`Set deploy location`),
                 arguments: [{}, element.resourceUri]
               }
             }));
@@ -126,12 +126,12 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             items.push(new Variables(projectElement.workspaceFolder, unresolvedVariableCount));
 
           } else {
-            items.push(new ErrorItem(`Variables`, {
-              description: `Please configure environment file.`,
+            items.push(new ErrorItem(l10n.t(`Variables`), {
+              description: l10n.t(`Please configure environment file`),
               command: {
                 command: `vscode-ibmi-projectexplorer.createEnv`,
                 arguments: [projectElement.workspaceFolder],
-                title: `Create project .env`
+                title: l10n.t(`Create project .env`)
               }
             }));
           }
@@ -161,8 +161,8 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             ));
 
           } else {
-            items.push(new ErrorItem(`Source`, {
-              description: `Unable to read variables.`,
+            items.push(new ErrorItem(l10n.t(`Source`), {
+              description: l10n.t(`Unable to read variables`),
             }));
           }
           break;
@@ -248,11 +248,11 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
                 items.push(new ErrorItem(
                   folder.name,
                   {
-                    description: 'Please configure project metadata.',
+                    description: l10n.t('Please configure project metadata'),
                     command: {
                       command: 'vscode-ibmi-projectexplorer.createProject',
                       arguments: [folder],
-                      title: 'Create project iproj.json'
+                      title: l10n.t('Create project iproj.json')
                     }
                   }));
               }
@@ -260,18 +260,18 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           };
         } else {
           items.push(new ErrorItem(
-            `Please open a local workspace folder.`,
+            l10n.t(`Please open a local workspace folder`),
             {
               command: {
                 command: 'workbench.action.files.openFolder',
-                title: 'Open folder'
+                title: l10n.t('Open folder')
               }
             }));
         }
 
         return items;
       } else {
-        return [new ErrorItem(`Please connect to an IBM i.`)];
+        return [new ErrorItem(l10n.t(`Please connect to an IBM i`))];
       }
     }
   }
