@@ -16,7 +16,7 @@ export default class Library extends ProjectExplorerTreeItem {
   constructor(public workspaceFolder: WorkspaceFolder, path: string, name: string) {
     super(name, TreeItemCollapsibleState.Collapsed);
     this.description = path;
-    this.contextValue = this.contextValue;
+    this.contextValue = Library.contextValue;
     this.iconPath = new ThemeIcon(`symbol-folder`);
     this.name = name;
     this.tooltip = `Library ${path}`
