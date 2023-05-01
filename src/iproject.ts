@@ -106,19 +106,19 @@ export class IProject {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.env`));
   }
 
-  public async addToIncludePaths(includePath: string) {
+  public async addToIncludePaths(directoryToAdd: string) {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
       if (unresolvedState.includePath) {
-        if (!unresolvedState.includePath.includes(includePath)) {
-          unresolvedState.includePath.push(includePath);
+        if (!unresolvedState.includePath.includes(directoryToAdd)) {
+          unresolvedState.includePath.push(directoryToAdd);
         } else {
-          window.showErrorMessage(`${includePath} already exists in includePaths`);
+          window.showErrorMessage(`${directoryToAdd} already exists in includePaths`);
           return;
         }
       } else {
-        unresolvedState.includePath = [includePath];
+        unresolvedState.includePath = [directoryToAdd];
       }
 
       await this.updateIProj(unresolvedState);
