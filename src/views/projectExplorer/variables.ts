@@ -7,7 +7,7 @@ import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l1
 export default class Variables extends TreeItem {
   static contextValue = `variables`;
   constructor(public workspaceFolder: WorkspaceFolder, unresolvedVariableCount: number) {
-    super(l10n.t(`Variables`), TreeItemCollapsibleState.Collapsed);
+    super(l10n.t('Variables'), TreeItemCollapsibleState.Collapsed);
 
     this.resourceUri = Uri.parse(`variables:${unresolvedVariableCount}`, true);
     this.contextValue = Variables.contextValue;

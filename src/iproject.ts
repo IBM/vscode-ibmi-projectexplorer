@@ -85,7 +85,7 @@ export class IProject {
             if (!iProject.includePath.includes(includePath)) {
               iProject.includePath.push(includePath);
             } else {
-              window.showErrorMessage(l10n.t(`{0} already exists in includePaths`, includePath));
+              window.showErrorMessage(l10n.t('{0} already exists in includePaths', includePath));
             }
           } else {
             iProject.includePath = [includePath];

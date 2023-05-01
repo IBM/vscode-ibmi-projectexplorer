@@ -45,7 +45,7 @@ export default class File extends TreeItem {
     if (isPhyicalFile) {
       this.command = {
         command: `showMemberContent`,
-        title: l10n.t(`Show member contents`),
+        title: l10n.t('Show member contents'),
         arguments: [library, file, basename, this.memberUri]
       };
     }

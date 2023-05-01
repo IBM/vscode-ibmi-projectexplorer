@@ -11,13 +11,13 @@ export default class Variables extends TreeItem {
 
     this.resourceUri = Uri.parse(`variable:${value ? 'resolved' : 'unresolved'}`, true);
     this.contextValue = Variables.contextValue;
-    this.description = value || l10n.t(`No value`);
+    this.description = value || l10n.t('No value');
     this.iconPath = new ThemeIcon(`pencil`);
 
     this.command = {
       command: `vscode-ibmi-projectexplorer.updateVariable`,
       arguments: [this.workspaceFolder, name, value],
-      title: l10n.t(`Update value`)
+      title: l10n.t('Update value')
     };
   }
 }

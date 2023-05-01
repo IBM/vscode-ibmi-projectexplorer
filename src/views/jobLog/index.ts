@@ -99,7 +99,7 @@ export default class JobLog implements TreeDataProvider<any> {
             }
             ));
           } else {
-            items.push(new ErrorItem(l10n.t(`No job log found`)));
+            items.push(new ErrorItem(l10n.t('No job log found')));
           }
 
           break;
@@ -136,7 +136,7 @@ export default class JobLog implements TreeDataProvider<any> {
           return new Project(folder);
         });
       } else {
-        return [new ErrorItem(l10n.t(`Please open a local workspace folder`))];
+        return [new ErrorItem(l10n.t('Please open a local workspace folder'))];
       }
     }
   }

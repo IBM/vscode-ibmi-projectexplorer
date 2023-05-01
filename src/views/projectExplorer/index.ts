@@ -32,7 +32,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
             const newValue = await window.showInputBox({
-              title: l10n.t(`New value for {0}`, varName),
+              title: l10n.t('New value for {0}', varName),
               value: currentValue || ``,
             });
 
@@ -98,13 +98,13 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
 
           // First load the IFS browser stuff
           if (remoteDir) {
-            items.push(new IFSFolder(remoteDir, l10n.t(`Source`)));
+            items.push(new IFSFolder(remoteDir, l10n.t('Source')));
           } else {
-            items.push(new ErrorItem(l10n.t(`Source`), {
-              description: l10n.t(`Please configure remote directory`),
+            items.push(new ErrorItem(l10n.t('Source'), {
+              description: l10n.t('Please configure remote directory'),
               command: {
                 command: `code-for-ibmi.setDeployLocation`,
-                title: l10n.t(`Set deploy location`),
+                title: l10n.t('Set deploy location'),
                 arguments: [{}, element.resourceUri]
               }
             }));
@@ -126,12 +126,12 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             items.push(new Variables(projectElement.workspaceFolder, unresolvedVariableCount));
 
           } else {
-            items.push(new ErrorItem(l10n.t(`Variables`), {
-              description: l10n.t(`Please configure environment file`),
+            items.push(new ErrorItem(l10n.t('Variables'), {
+              description: l10n.t('Please configure environment file'),
               command: {
                 command: `vscode-ibmi-projectexplorer.createEnv`,
                 arguments: [projectElement.workspaceFolder],
-                title: l10n.t(`Create project .env`)
+                title: l10n.t('Create project .env')
               }
             }));
           }
@@ -161,8 +161,8 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             ));
 
           } else {
-            items.push(new ErrorItem(l10n.t(`Source`), {
-              description: l10n.t(`Unable to read variables`),
+            items.push(new ErrorItem(l10n.t('Source'), {
+              description: l10n.t('Unable to read variables'),
             }));
           }
           break;
@@ -239,7 +239,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
               const metadataExists = await iProject.projectFileExists('iproj.json');
               if (metadataExists) {
                 const state = await iProject.getState();
-                if(state) {
+                if (state) {
                   items.push(new Project(folder, state.description));
                 } else {
                   items.push(new Project(folder));
@@ -260,7 +260,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           };
         } else {
           items.push(new ErrorItem(
-            l10n.t(`Please open a local workspace folder`),
+            l10n.t('Please open a local workspace folder'),
             {
               command: {
                 command: 'workbench.action.files.openFolder',
@@ -271,7 +271,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
 
         return items;
       } else {
-        return [new ErrorItem(l10n.t(`Please connect to an IBM i`))];
+        return [new ErrorItem(l10n.t('Please connect to an IBM i'))];
       }
     }
   }

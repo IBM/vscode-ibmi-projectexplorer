@@ -14,6 +14,6 @@ export default class QSYSLib extends TreeItem {
     this.contextValue = `Library`;
     this.iconPath = new ThemeIcon(`symbol-folder`);
     this.name = name;
-    this.tooltip = l10n.t(`Library {0}`, path);
+    this.tooltip = l10n.t('Library {0}', path);
   }
 }
