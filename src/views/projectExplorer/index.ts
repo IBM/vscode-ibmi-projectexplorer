@@ -4,7 +4,7 @@
 
 import { CancellationToken, commands, Event, EventEmitter, ExtensionContext, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
-import { IProject, iProjectT } from "../../iproject";
+import { IProject } from "../../iproject";
 import ErrorItem from "../../test/errorItem";
 import IFSFolder from "./ifsFolder";
 import Project from "./project";
@@ -18,6 +18,7 @@ import ObjectLibrary from "./objectlibrary";
 import QSYSLib from "./qsysLib";
 import PhysicalFile from "./physicalfile";
 import File from "./file";
+import { IProjectT } from "../../iProjectT";
 
 export default class ProjectExplorer implements TreeDataProvider<any> {
   private _onDidChangeTreeData = new EventEmitter<TreeItem | undefined | null | void>();
@@ -168,7 +169,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           break;
         case ObjectLibrary.contextValue:
           iProject = ProjectManager.get((element as ObjectLibrary).workspaceFolder);
-          const state = await iProject?.getState() as iProjectT;
+          const state = await iProject?.getState() as IProjectT;
           if (state) {
             const objLibs = new Set<string>();
             if (state.curlib) {
