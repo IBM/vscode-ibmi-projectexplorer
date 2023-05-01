@@ -28,20 +28,20 @@ export default class Variables extends ProjectExplorerTreeItem {
 
     const iProject = ProjectManager.get(this.workspaceFolder);
     const possibleVariables = iProject?.getVariables();
-    const actualValues = await iProject?.getEnv();
-
-    if (possibleVariables && actualValues) {
-      items.push(...possibleVariables?.map(
-        varName => {
-          return new Variable(this.workspaceFolder, varName, actualValues[varName]);
-        }
-      ));
-
-    } else {
-      items.push(new ErrorItem(this.workspaceFolder, `Source`, {
-        description: `Unable to read variables.`,
-      }));
+    if (!possibleVariables) {
+      return [];
     }
+
+    const actualValues = await iProject?.getEnv();
+    if (!actualValues) {
+      return [new ErrorItem(this.workspaceFolder, `Unable to retrieve environment variables`)];
+    }
+
+    items.push(...possibleVariables.map(
+      varName => {
+        return new Variable(this.workspaceFolder, varName, actualValues[varName]);
+      }
+    ));
 
     return items;
   }
