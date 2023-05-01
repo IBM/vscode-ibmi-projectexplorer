@@ -28,7 +28,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
-      commands.registerCommand(`vscode-ibmi-projectmode.projectExplorer.addLibraryListEntry`, async (element: LibraryList) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
@@ -52,7 +52,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.projectExplorer.setCurrentLibrary`, async (element: LibraryList) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary`, async (element: LibraryList) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
@@ -67,7 +67,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.projectExplorer.removeFromLibraryList`, async (element: QSYSLib) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList`, async (element: QSYSLib) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
@@ -77,7 +77,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
         if (workspaceFolder && varName) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -95,7 +95,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.createProject`, async (workspaceFolder: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createProject`, async (workspaceFolder: WorkspaceFolder) => {
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -110,7 +110,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.createEnv`, async (workspaceFolder: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createEnv`, async (workspaceFolder: WorkspaceFolder) => {
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -177,7 +177,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             items.push(new ErrorItem(`Variables`, {
               description: `Please configure environment file.`,
               command: {
-                command: `vscode-ibmi-projectmode.createEnv`,
+                command: `vscode-ibmi-projectexplorer.createEnv`,
                 arguments: [projectElement.workspaceFolder],
                 title: `Create project .env`
               }
@@ -369,7 +369,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
                   {
                     description: 'Please configure project metadata.',
                     command: {
-                      command: 'vscode-ibmi-projectmode.createProject',
+                      command: 'vscode-ibmi-projectexplorer.createProject',
                       arguments: [folder],
                       title: 'Create project iproj.json'
                     }

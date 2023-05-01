@@ -1,13 +1,20 @@
 {
-  "name": "vscode-ibm-projectmode",
-  "displayName": "vscode-ibm-projectmode",
-  "description": "Merlin extension example",
+  "name": "vscode-ibmi-projectexplorer",
+  "displayName": "Project Explorer for IBM i",
+  "description": "Project Explorer for IBM i",
+  "publisher": "IBM",
   "version": "0.0.1",
+  "repository": {
+    "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
+  },
   "engines": {
     "vscode": "^1.75.0"
   },
   "categories": [
     "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "extensionDependencies": [
@@ -53,146 +60,146 @@
     "commands": [
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectmode.projectExplorer.addLibraryListEntry",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
         "title": "Add Library List Entry",
         "icon": "$(add)"
       },
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectmode.projectExplorer.setCurrentLibrary",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
         "title": "Set Current Library",
         "icon": "$(edit)"
       },
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectmode.projectExplorer.removeFromLibraryList",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
         "title": "Remove From Library List",
         "icon": "$(close)"
       },
       {
-        "command": "vscode-ibmi-projectmode.addToIncludePaths",
+        "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
         "title": "Add to Include Paths"
       },
       {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectmode.jobLog.refresh",
+        "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
         "title": "Refresh",
         "icon": "$(refresh)"
       },
       {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+        "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
         "title": "Show Job Log",
         "icon": "$(book)"
       },
       {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+        "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
         "title": "Show Build Output",
         "icon": "$(note)"
       },
       {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectmode.jobLog.clearJobLogs",
+        "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
         "title": "Clear Job Log",
         "icon": "$(clear-all)"
       },
       {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectmode.jobLog.copy",
+        "command": "vscode-ibmi-projectexplorer.jobLog.copy",
         "title": "Copy"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "vscode-ibmi-projectmode.projectExplorer.addLibraryListEntry",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectmode.projectExplorer.setCurrentLibrary",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectmode.projectExplorer.removeFromLibraryList",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectmode.addToIncludePaths",
+          "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.clearJobLogs",
+          "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.copy",
+          "command": "vscode-ibmi-projectexplorer.jobLog.copy",
           "when": "never"
         }
       ],
       "view/title": [
         {
-          "command": "vscode-ibmi-projectmode.jobLog.refresh",
+          "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
           "when": "view == jobLog",
           "group": "navigation@0"
         }
       ],
       "view/item/context": [
         {
-          "command": "vscode-ibmi-projectmode.projectExplorer.addLibraryListEntry",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
           "when": "view == projectExplorer && viewItem == libraryList",
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectmode.projectExplorer.setCurrentLibrary",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
           "when": "view == projectExplorer && viewItem == libraryList",
           "group": "inline@1"
         },
         {
-          "command": "vscode-ibmi-projectmode.projectExplorer.removeFromLibraryList",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
           "when": "view == projectExplorer && viewItem == library",
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectmode.addToIncludePaths",
+          "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "view == ifsBrowser && viewItem == directory",
-          "group": "1_projectmode@1"
+          "group": "1_projectexplorer@1"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
           "when": "view == jobLog && viewItem == project",
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showJobLog",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
           "when": "view == jobLog && viewItem == project",
           "group": "0_viewFile@0"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
           "when": "view == jobLog && viewItem == project",
           "group": "inline@1"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.showBuildOutput",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
           "when": "view == jobLog && viewItem == project",
           "group": "0_viewFile@1"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.clearJobLogs",
+          "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
           "when": "view == jobLog && viewItem == project",
           "group": "1_modification@0"
         },
         {
-          "command": "vscode-ibmi-projectmode.jobLog.copy",
+          "command": "vscode-ibmi-projectexplorer.jobLog.copy",
           "when": "view == jobLog && viewItem == command",
           "group": "1_modification@0"
         }
@@ -305,7 +312,7 @@
     "mocha": "^10.0.0",
     "ts-loader": "^9.3.1",
     "typescript": "^4.7.4",
-    "webpack": "^5.74.0",
+    "webpack": "^5.76.0",
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
