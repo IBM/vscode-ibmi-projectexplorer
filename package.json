@@ -20,6 +20,7 @@
   "extensionDependencies": [
     "HalcyonTechLtd.code-for-ibmi"
   ],
+  "l10n": "./l10n",
   "contributes": {
     "views": {
       "explorer": [
