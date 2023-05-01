@@ -29,7 +29,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
-      commands.registerCommand(`vscode-ibmi-projectmode.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
         if (workspaceFolder && varName) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -47,7 +47,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.createProject`, async (workspaceFolder: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createProject`, async (workspaceFolder: WorkspaceFolder) => {
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -62,7 +62,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.createEnv`, async (workspaceFolder: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createEnv`, async (workspaceFolder: WorkspaceFolder) => {
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -70,7 +70,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.addToIncludePaths`, async (element: TreeItem) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: TreeItem) => {
         if (element instanceof IncludePaths) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
@@ -96,7 +96,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectmode.removeFromIncludePaths`, async (element: IncludePath) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.removeFromIncludePaths`, async (element: IncludePath) => {
         if (element instanceof IncludePath) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
@@ -167,7 +167,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             items.push(new ErrorItem(`Variables`, {
               description: `Please configure environment file.`,
               command: {
-                command: `vscode-ibmi-projectmode.createEnv`,
+                command: `vscode-ibmi-projectexplorer.createEnv`,
                 arguments: [projectElement.workspaceFolder],
                 title: `Create project .env`
               }
@@ -302,7 +302,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
                   {
                     description: 'Please configure project metadata.',
                     command: {
-                      command: 'vscode-ibmi-projectmode.createProject',
+                      command: 'vscode-ibmi-projectexplorer.createProject',
                       arguments: [folder],
                       title: 'Create project iproj.json'
                     }
