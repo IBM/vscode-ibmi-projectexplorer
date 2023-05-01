@@ -16,7 +16,7 @@ export default class ObjectLibrary extends ProjectExplorerTreeItem {
 
     this.resourceUri = workspaceFolder.uri;
     this.iconPath = new ThemeIcon(`root-folder`);
-    this.contextValue = this.contextValue;
+    this.contextValue = ObjectLibrary.contextValue;
     this.tooltip = "Object Libraries - Work with the set of libraries defined in the curlib, objlib, preUsrlibl, and postUsrlibl entries of the iproj.json"
   }
 
