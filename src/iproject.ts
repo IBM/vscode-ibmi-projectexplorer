@@ -10,26 +10,15 @@ import { JobLogInfo } from "./jobLog";
 import { TextEncoder } from "util";
 import { LibraryType } from "./views/projectExplorer/qsysLib";
 import { getInstance } from "./ibmi";
+import { IProjectT } from "./iProjectT";
 
 const DEFAULT_CURLIB = '&CURLIB';
 
 export type EnvironmentVariables = { [name: string]: string };
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export interface iProjectT {
-  objlib?: string;
-  curlib?: string;
-  description?: string;
-  includePath?: string[];
-  buildCommand?: string;
-  compileCommand?: string;
-  preUsrlibl?: string[];
-  postUsrlibl?: string[];
-}
-
 export class IProject {
   private name: string;
-  private state: iProjectT | undefined;
+  private state: IProjectT | undefined;
   private jobLogs: RingBuffer<JobLogInfo>;
   private environmentValues: EnvironmentVariables;
 
@@ -55,7 +44,7 @@ export class IProject {
     return this.name;
   }
 
-  public async getState(): Promise<iProjectT | undefined> {
+  public async getState(): Promise<IProjectT | undefined> {
     if (!this.state) {
       return await this.updateState();
     }
@@ -86,8 +75,8 @@ export class IProject {
     return lib;
   }
 
-  public async getUnresolvedState(): Promise<iProjectT | undefined> {
-    let iproj: iProjectT | undefined;
+  public async getUnresolvedState(): Promise<IProjectT | undefined> {
+    let iproj: IProjectT | undefined;
 
     try {
       const content = await workspace.fs.readFile(this.getIProjFilePath());
@@ -99,7 +88,7 @@ export class IProject {
     return iproj;
   }
 
-  public setState(state: iProjectT | undefined) {
+  public setState(state: IProjectT | undefined) {
     this.state = state;
   }
 
@@ -292,7 +281,7 @@ export class IProject {
     }
   }
 
-  public async updateIProj(iProject: iProjectT) {
+  public async updateIProj(iProject: IProjectT) {
     try {
       await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
     } catch {
@@ -428,7 +417,7 @@ export class IProject {
       index) => variableNameList.indexOf(name) === index);
   }
 
-  public static validateIProject(content: string): iProjectT {
+  public static validateIProject(content: string): IProjectT {
     const iproj = JSON.parse(content);
 
     if (!iproj.objlib && iproj.curlib) {
