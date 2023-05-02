@@ -218,67 +218,25 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           const libraryListElement = element as LibraryList;
           iProject = ProjectManager.get(libraryListElement.workspaceFolder);
 
-          state = await iProject?.getState();
-          if (state) {
-            const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;
+          const libraryList = await iProject?.getLibraryList();
+          if (libraryList) {
+            let lib, type;
+            for (const line of libraryList) {
+              lib = line.substring(0, 10).trim();
+              type = line.substring(12);
 
-            // Retrieve current library
-            let curlib = state.curlib;
-            if (curlib && !curlib.startsWith('&')) {
-              const badLibs = await ibmi?.getContent().validateLibraryList([curlib]);
-              if (badLibs?.includes(curlib)) {
-                curlib = undefined;
-              }
-            } else {
-              curlib = undefined;
-            }
+              switch (type) {
+                case `SYS`:
+                  items.push(new QSYSLib(libraryListElement.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.systemLibrary));
+                  break;
 
-            // Retrieve user libraries
-            let userLibrariesToAdd: string[] = [
-              ...(state.postUsrlibl ? state.postUsrlibl.slice().reverse() : []),
-              ...(defaultUserLibraries ? defaultUserLibraries : []),
-              ...(state.preUsrlibl ? state.preUsrlibl.slice().reverse() : [])
-            ];
-            userLibrariesToAdd = userLibrariesToAdd.filter(lib => !lib.startsWith('&'));
-            const badLibs = await ibmi?.getContent().validateLibraryList(userLibrariesToAdd);
-            if (badLibs) {
-              userLibrariesToAdd = userLibrariesToAdd.filter(lib => !badLibs.includes(lib));
-            }
+                case `CUR`:
+                  items.push(new QSYSLib(libraryListElement.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.currentLibrary));
+                  break;
 
-            let buildLibraryListCommand = [
-              defaultUserLibraries ? `liblist -d ${defaultUserLibraries.join(` `)}` : ``,
-              state.curlib && state.curlib !== '' ? `liblist -c ${state.curlib}` : ``,
-              userLibrariesToAdd && userLibrariesToAdd.length > 0 ? `liblist -a ${userLibrariesToAdd.join(` `)}` : ``,
-              `liblist`
-            ].filter(cmd => cmd !== ``).join(` ; `);
-
-            const liblResult = await ibmi?.getConnection().sendQsh({
-              command: buildLibraryListCommand
-            });
-            if (liblResult && liblResult.code === 0) {
-              const libraryListString = liblResult.stdout;
-              if (libraryListString !== ``) {
-                const libraryList = libraryListString.split(`\n`);
-
-                let lib, type;
-                for (const line of libraryList) {
-                  lib = line.substring(0, 10).trim();
-                  type = line.substring(12);
-
-                  switch (type) {
-                    case `SYS`:
-                      items.push(new QSYSLib(libraryListElement.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.systemLibrary));
-                      break;
-
-                    case `CUR`:
-                      items.push(new QSYSLib(libraryListElement.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.currentLibrary));
-                      break;
-
-                    case `USR`:
-                      items.push(new QSYSLib(libraryListElement.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.userLibrary));
-                      break;
-                  }
-                }
+                case `USR`:
+                  items.push(new QSYSLib(libraryListElement.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.userLibrary));
+                  break;
               }
             }
           }

@@ -9,6 +9,7 @@ import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
 import { TextEncoder } from "util";
 import { LibraryType } from "./views/projectExplorer/qsysLib";
+import { getInstance } from "./ibmi";
 
 const DEFAULT_CURLIB = '&CURLIB';
 
@@ -124,6 +125,57 @@ export class IProject {
       await this.updateIProj(unresolvedState);
     } else {
       window.showErrorMessage('No iproj.json found');
+    }
+  }
+
+  public async getLibraryList(): Promise<string[] | undefined> {
+    const ibmi = getInstance();
+    const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;
+
+    // Get user libraries
+    const state = await this.getState();
+
+    if (state) {
+      let userLibrariesToAdd: string[] = [
+        ...(state.preUsrlibl ? state.preUsrlibl : []),
+        ...(defaultUserLibraries ? defaultUserLibraries : []),
+        ...(state.postUsrlibl ? state.postUsrlibl : [])
+      ];
+      userLibrariesToAdd = [... new Set(userLibrariesToAdd.filter(lib => !lib.startsWith('&')))].reverse();
+
+      // Get current library
+      let curlib = state.curlib && !state.curlib.startsWith('&') ? state.curlib : undefined;
+
+      // Validate libraries
+      let librariesToValidate = curlib && !userLibrariesToAdd.includes(curlib) ? userLibrariesToAdd.concat(curlib) : userLibrariesToAdd;
+      const badLibs = await ibmi?.getContent().validateLibraryList(librariesToValidate);
+      if (curlib && badLibs?.includes(curlib)) {
+        curlib = undefined;
+      }
+      if (badLibs) {
+        userLibrariesToAdd = userLibrariesToAdd.filter(lib => !badLibs.includes(lib));
+      }
+
+      // Retrieve library list
+      let buildLibraryListCommand = [
+        defaultUserLibraries ? `liblist -d ${defaultUserLibraries.join(` `)}` : ``,
+        state.curlib && state.curlib !== '' ? `liblist -c ${state.curlib}` : ``,
+        userLibrariesToAdd && userLibrariesToAdd.length > 0 ? `liblist -a ${userLibrariesToAdd.join(` `)}` : ``,
+        `liblist`
+      ].filter(cmd => cmd !== ``).join(` ; `);
+
+      const liblResult = await ibmi?.getConnection().sendQsh({
+        command: buildLibraryListCommand
+      });
+
+      if (liblResult && liblResult.code === 0) {
+        const libraryListString = liblResult.stdout;
+
+        if (libraryListString !== ``) {
+          const libraryList = libraryListString.split(`\n`);
+          return libraryList;
+        }
+      }
     }
   }
 
