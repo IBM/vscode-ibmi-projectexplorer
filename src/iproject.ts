@@ -67,17 +67,17 @@ export class IProject {
     if (unresolvedState) {
       const values = await this.getEnv();
 
-      unresolvedState.preUsrlibl = unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl.map(preUsrlib => this.resolveLibraries(preUsrlib, values)) : undefined;
-      unresolvedState.postUsrlibl = unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl.map(postUsrlib => this.resolveLibraries(postUsrlib, values)) : undefined;
-      unresolvedState.curlib = unresolvedState.curlib ? this.resolveLibraries(unresolvedState.curlib, values) : undefined;
-      unresolvedState.objlib = unresolvedState.objlib ? this.resolveLibraries(unresolvedState.objlib, values) : undefined;
+      unresolvedState.preUsrlibl = unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl.map(preUsrlib => this.resolveLibrary(preUsrlib, values)) : undefined;
+      unresolvedState.postUsrlibl = unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl.map(postUsrlib => this.resolveLibrary(postUsrlib, values)) : undefined;
+      unresolvedState.curlib = unresolvedState.curlib ? this.resolveLibrary(unresolvedState.curlib, values) : undefined;
+      unresolvedState.objlib = unresolvedState.objlib ? this.resolveLibrary(unresolvedState.objlib, values) : undefined;
     }
 
     this.state = unresolvedState;
     return this.state;
   }
 
-  private resolveLibraries(lib: string, values: EnvironmentVariables): string {
+  private resolveLibrary(lib: string, values: EnvironmentVariables): string {
     if (lib && lib.startsWith('&') && values[lib.substring(1)] && values[lib.substring(1)] !== '') {
       return values[lib.substring(1)];
     }
