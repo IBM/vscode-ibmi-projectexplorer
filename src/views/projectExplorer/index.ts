@@ -218,7 +218,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           const libraryListElement = element as LibraryList;
           iProject = ProjectManager.get(libraryListElement.workspaceFolder);
 
-          state = await iProject?.getState() as iProjectT;
+          state = await iProject?.getState();
           if (state) {
             const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;
 
@@ -287,7 +287,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           const objectLibrariesElement = element as LibraryList;
           iProject = ProjectManager.get(objectLibrariesElement.workspaceFolder);
 
-          state = await iProject?.getState() as iProjectT;
+          state = await iProject?.getState();
           if (state) {
             const objLibs = new Set<string>();
             if (state.curlib) {
