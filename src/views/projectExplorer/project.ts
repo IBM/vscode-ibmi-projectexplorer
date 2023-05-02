@@ -83,7 +83,12 @@ export default class Project extends ProjectExplorerTreeItem {
     items.push(new ObjectLibraries(this.workspaceFolder));
 
     for await (const extensibleChildren of Project.callBack) {
-      this.extensibleChildren.push(...await extensibleChildren(iProject!));
+      let children: ProjectExplorerTreeItem[] = [];
+      try {
+        children = await extensibleChildren(iProject!);
+      } catch (error) { }
+
+      this.extensibleChildren.push(...children);
     }
     items.push(...this.extensibleChildren);
 
