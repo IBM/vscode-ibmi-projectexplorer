@@ -4,7 +4,7 @@
 
 import { CancellationToken, commands, Event, EventEmitter, ExtensionContext, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
-import { IProject, iProjectT } from "../../iproject";
+import { IProject } from "../../iproject";
 import ErrorItem from "../../test/errorItem";
 import IFSFolder from "./ifsFolder";
 import Project from "./project";
@@ -18,6 +18,7 @@ import ObjectLibrary from "./objectlibrary";
 import QSYSLib from "./qsysLib";
 import PhysicalFile from "./physicalfile";
 import File from "./file";
+import { IProjectT } from "../../iProjectT";
 import IncludePaths from "./includePaths";
 import IncludePath from "./includePath";
 
@@ -122,7 +123,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
     if (element) {
       let items: TreeItem[] = [];
       let iProject: IProject | undefined;
-      let state: iProjectT | undefined;
+      let state: IProjectT | undefined;
 
       switch (element.contextValue) {
         case Project.contextValue:
@@ -208,7 +209,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           const objectLibrariesElement = element as ObjectLibrary;
           iProject = ProjectManager.get(objectLibrariesElement.workspaceFolder);
 
-          state = await iProject?.getState() as iProjectT;
+          state = await iProject?.getState();
           if (state) {
             const objLibs = new Set<string>();
             if (state.curlib) {
@@ -237,7 +238,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           const includePathsElement = element as IncludePaths;
           iProject = ProjectManager.get(includePathsElement.workspaceFolder);
 
-          state = await iProject?.getState() as iProjectT;
+          state = await iProject?.getState();
           if (state && state.includePath) {
             state.includePath.forEach(includePath => {
               items.push(new IncludePath(includePathsElement.workspaceFolder, includePath));

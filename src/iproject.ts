@@ -8,24 +8,13 @@ import * as dotenv from 'dotenv';
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
 import { TextEncoder } from "util";
+import { IProjectT } from "./iProjectT";
 
 export type EnvironmentVariables = { [name: string]: string };
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export interface iProjectT {
-  objlib?: string;
-  curlib?: string;
-  description?: string;
-  includePath?: string[];
-  buildCommand?: string;
-  compileCommand?: string;
-  preUsrlibl: string[];
-  postUsrlibl: string[];
-}
-
 export class IProject {
   private name: string;
-  private state: iProjectT | undefined;
+  private state: IProjectT | undefined;
   private jobLogs: RingBuffer<JobLogInfo>;
   private environmentValues: EnvironmentVariables;
 
@@ -51,7 +40,7 @@ export class IProject {
     return this.name;
   }
 
-  public async getState(): Promise<iProjectT | undefined> {
+  public async getState(): Promise<IProjectT | undefined> {
     if (this.state) {
       return this.state;
     } else {
@@ -60,7 +49,7 @@ export class IProject {
     }
   }
 
-  public setState(state: iProjectT | undefined) {
+  public setState(state: IProjectT | undefined) {
     this.state = state;
   }
 
@@ -244,7 +233,7 @@ export class IProject {
       index) => variableNameList.indexOf(name) === index);
   }
 
-  public static validateIProject(content: string): iProjectT {
+  public static validateIProject(content: string): IProjectT {
     const iproj = JSON.parse(content);
 
     // Validate iproj.json here
