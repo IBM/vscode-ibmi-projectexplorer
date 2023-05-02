@@ -71,21 +71,6 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 		})
 	);
 
-	// Commands
-	context.subscriptions.push(
-		vscode.commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: ProjectExplorerTreeItem) => {
-			const includePath = (element as any).path;
-			if (includePath) {
-				const iProject = await ProjectManager.selectProject();
-				if (iProject) {
-					await iProject.addToIncludePaths(includePath);
-				}
-			} else {
-				vscode.window.showErrorMessage('Failed to retrieve path to directory.');
-			}
-		})
-	);
-
 	// Display a physical file
 	const createFilePreview = async (content: string, library: string, file: string, member: string) => {
 		// Local file path if the file has been saved by the user

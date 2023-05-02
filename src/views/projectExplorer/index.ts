@@ -2,15 +2,17 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands, EventEmitter, ExtensionContext, TreeDataProvider, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, EventEmitter, ExtensionContext, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
 import ErrorItem from "./errorItem";
+import { IProject } from "../../iproject";
 import Project from "./project";
 import envUpdater from "../../envUpdater";
 import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
-import { IProject } from "../../iproject";
+import IncludePaths from "./includePaths";
+import IncludePath from "./includePath";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -59,6 +61,41 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
             await iProject.createEnv();
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: TreeItem) => {
+        if (element instanceof IncludePaths) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const includePath = await window.showInputBox({
+              placeHolder: 'Include Path',
+              prompt: 'Enter include path'
+            });
+
+            if (includePath) {
+              iProject.addToIncludePaths(includePath);
+            }
+          }
+        } else {
+          const includePath = (element as any).path;
+          if (includePath) {
+            const iProject = await ProjectManager.selectProject();
+            if (iProject) {
+              await iProject.addToIncludePaths(includePath);
+            }
+          } else {
+            window.showErrorMessage('Failed to retrieve path to directory.');
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.removeFromIncludePaths`, async (element: IncludePath) => {
+        if (element instanceof IncludePath) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            iProject.removeFromIncludePaths(element.label!.toString());
           }
         }
       })

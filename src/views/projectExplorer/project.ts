@@ -12,6 +12,7 @@ import Variables from "./variables";
 import ObjectLibraries from "./objectlibraries";
 import { ContextValue } from "../../projectExplorerApi";
 import { IProject } from "../../iproject";
+import IncludePaths from "./includePaths";
 
 /**
  * Tree item for a project
@@ -81,6 +82,7 @@ export default class Project extends ProjectExplorerTreeItem {
     }
 
     items.push(new ObjectLibraries(this.workspaceFolder));
+    items.push(new IncludePaths(this.workspaceFolder));
 
     for await (const extensibleChildren of Project.callBack) {
       let children: ProjectExplorerTreeItem[] = [];

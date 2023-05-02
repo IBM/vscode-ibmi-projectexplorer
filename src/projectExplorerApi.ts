@@ -20,5 +20,7 @@ export enum ContextValue {
   ifsDirectory = 'ifsDirectory',
   ifsFile = 'ifsFile',
   variable = 'variable',
+  includePaths = 'includePaths',
+  includePath = 'includePath',
   error = 'error'
 }
