@@ -62,7 +62,7 @@ export class IProject {
     this.state = IProject.validateIProject(content.toString());
   }
 
-  public async addToIncludePaths(includePath: string) {
+  public async addToIncludePaths(directoryToAdd: string) {
     const iProjExists = await this.projectFileExists('iproj.json');
     if (iProjExists) {
       const content = await workspace.fs.readFile(this.getIProjFilePath());
@@ -71,13 +71,40 @@ export class IProject {
       if (iProject) {
         try {
           if (iProject.includePath) {
-            if (!iProject.includePath.includes(includePath)) {
-              iProject.includePath.push(includePath);
+            if (!iProject.includePath.includes(directoryToAdd)) {
+              iProject.includePath.push(directoryToAdd);
             } else {
-              window.showErrorMessage(`${includePath} already exists in includePaths`);
+              window.showErrorMessage(`${directoryToAdd} already exists in the includePaths`);
             }
           } else {
-            iProject.includePath = [includePath];
+            iProject.includePath = [directoryToAdd];
+          }
+
+          await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+        } catch {
+          window.showErrorMessage('Failed to update iproj.json');
+        }
+      }
+    } else {
+      window.showErrorMessage('No iproj.json found');
+    }
+  }
+
+  public async removeFromIncludePaths(directoryToRemove: string) {
+    const iProjExists = await this.projectFileExists('iproj.json');
+    if (iProjExists) {
+      const content = await workspace.fs.readFile(this.getIProjFilePath());
+
+      const iProject = IProject.validateIProject(content.toString());
+      if (iProject) {
+        try {
+          if (iProject.includePath) {
+            const index = iProject.includePath.indexOf(directoryToRemove);
+            if (index > -1) {
+              iProject.includePath.splice(index, 1);
+            } else {
+              window.showErrorMessage(`${directoryToRemove} does not exist in includePaths`);
+            }
           }
 
           await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
