@@ -77,8 +77,16 @@
         "icon": "$(close)"
       },
       {
+        "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
-        "title": "Add to Include Paths"
+        "title": "Add to Include Paths",
+        "icon": "$(add)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
+        "title": "Remove From Include Paths",
+        "icon": "$(close)"
       },
       {
         "category": "Job Log",
@@ -129,6 +137,10 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
           "when": "never"
         },
@@ -172,6 +184,16 @@
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "view == ifsBrowser && viewItem == directory",
           "group": "1_projectexplorer@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
+          "when": "view == projectExplorer && viewItem == includePaths",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
+          "when": "view == projectExplorer && viewItem == includePath",
+          "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",

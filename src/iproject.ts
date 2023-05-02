@@ -128,6 +128,23 @@ export class IProject {
     }
   }
 
+  public async removeFromIncludePaths(directoryToRemove: string) {
+    const unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(directoryToRemove) : -1;
+      if (index > -1) {
+        unresolvedState.includePath!.splice(index, 1);
+      } else {
+        window.showErrorMessage(`${directoryToRemove} does not exist in includePaths`);
+      }
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage('No iproj.json found');
+    }
+  }
+
   public async getLibraryList(): Promise<string[] | undefined> {
     const ibmi = getInstance();
     const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;

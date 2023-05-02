@@ -19,6 +19,8 @@ import QSYSLib, { LibraryType } from "./qsysLib";
 import PhysicalFile from "./physicalfile";
 import File from "./file";
 import LibraryList from "./libraryList";
+import IncludePaths from "./includePaths";
+import IncludePath from "./includePath";
 
 export default class ProjectExplorer implements TreeDataProvider<any> {
   private _onDidChangeTreeData = new EventEmitter<TreeItem | undefined | null | void>();
@@ -117,6 +119,41 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             await iProject.createEnv();
           }
         }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: TreeItem) => {
+        if (element instanceof IncludePaths) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const includePath = await window.showInputBox({
+              placeHolder: 'Include Path',
+              prompt: 'Enter include path'
+            });
+
+            if (includePath) {
+              iProject.addToIncludePaths(includePath);
+            }
+          }
+        } else {
+          const includePath = (element as any).path;
+          if (includePath) {
+            const iProject = await ProjectManager.selectProject();
+            if (iProject) {
+              await iProject.addToIncludePaths(includePath);
+            }
+          } else {
+            window.showErrorMessage('Failed to retrieve path to directory.');
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.removeFromIncludePaths`, async (element: IncludePath) => {
+        if (element instanceof IncludePath) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            iProject.removeFromIncludePaths(element.label!.toString());
+          }
+        }
       })
     );
   }
@@ -186,6 +223,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
 
           items.push(new LibraryList(projectElement.workspaceFolder));
           items.push(new ObjectLibrary(projectElement.workspaceFolder));
+          items.push(new IncludePaths(projectElement.workspaceFolder));
 
           break;
 
@@ -242,7 +280,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
           break;
         case ObjectLibrary.contextValue:
-          const objectLibrariesElement = element as LibraryList;
+          const objectLibrariesElement = element as ObjectLibrary;
           iProject = ProjectManager.get(objectLibrariesElement.workspaceFolder);
 
           state = await iProject?.getState();
@@ -270,6 +308,18 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             }
           }
           break;
+        case IncludePaths.contextValue:
+          const includePathsElement = element as IncludePaths;
+          iProject = ProjectManager.get(includePathsElement.workspaceFolder);
+
+          state = await iProject?.getState() as iProjectT;
+          if (state && state.includePath) {
+            state.includePath.forEach(includePath => {
+              items.push(new IncludePath(includePathsElement.workspaceFolder, includePath));
+            });
+          }
+          break;
+
         case QSYSLib.contextValue:
           const lib = element as QSYSLib;
           const files = await ibmi?.getContent().getObjectList({
