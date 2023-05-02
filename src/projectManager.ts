@@ -89,19 +89,15 @@ export class ProjectManager {
     }
 
     public static getProjectFromUri(uri: Uri): IProject | undefined {
-        for (const index in this.loaded) {
-            const project = this.loaded[index];
-
-            if (uri.fsPath.startsWith(project.workspaceFolder.uri.fsPath)) {
-                return project;
-            }
+        const workspaceFolder = workspace.getWorkspaceFolder(uri);
+        if (workspaceFolder) {
+            return ProjectManager.get(workspaceFolder);
         }
     }
 
     public static getProjectFromTreeItem(element: ProjectExplorerTreeItem) {
         if (element.workspaceFolder) {
             return ProjectManager.get(element.workspaceFolder);
-
         }
     }
 
