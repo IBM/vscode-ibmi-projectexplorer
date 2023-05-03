@@ -27,8 +27,8 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 
 	const ibmi = getInstance();
 	ibmi?.onEvent(`connected`, () => { projectExplorer.refresh(); });
-	// @ts-ignore
 	ibmi?.onEvent(`deployLocation`, () => { projectExplorer.refresh(); });
+	ibmi?.onEvent(`disconnected`, () => { projectExplorer.refresh(); });
 
 	const projectWatcher = vscode.workspace.createFileSystemWatcher(`**/{iproj.json,.ibmi.json,.env}`);
 	projectWatcher.onDidChange(async (uri) => {
