@@ -6,7 +6,6 @@ import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscod
 import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
-import { getMemberUri } from "../../QSysFs";
 
 /**
  * Tree item for a member file
@@ -30,7 +29,7 @@ export default class MemberFile extends ProjectExplorerTreeItem {
       `Record Length: ${memberFileInfo.recordLength}\n` +
       `Changed: ${memberFileInfo.changed}\n` +
       (memberFileInfo.asp ? `ASP: ${memberFileInfo.asp}` : ``);
-    this.resourceUri = getMemberUri(memberFileInfo);
+    this.resourceUri = this.getMemberResourceUri();
     this.command = {
       command: `vscode.open`,
       title: `Open Member`,
@@ -40,5 +39,10 @@ export default class MemberFile extends ProjectExplorerTreeItem {
 
   getChildren(): ProjectExplorerTreeItem[] {
     return [];
+  }
+
+  getMemberResourceUri() {
+    const path = `${this.memberFileInfo.asp ? `${this.memberFileInfo.asp}/` : ``}${this.memberFileInfo.library}/${this.memberFileInfo.file}/${this.memberFileInfo.name}.${this.memberFileInfo.extension}`;
+    return Uri.parse(path).with({ scheme: `member`, path: `/${path}` });
   }
 }

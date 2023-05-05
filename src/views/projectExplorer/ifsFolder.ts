@@ -2,44 +2,53 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
-import * as path from "path";
+import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import IFSFile from "./ifsFile";
 import { getInstance } from "../../ibmi";
 import { ContextValue } from "../../projectExplorerApi";
+import * as vscodeIbmiTypes from "@halcyontech/vscode-ibmi-types";
 
 /**
  * Tree item for an IFS directory
  */
 export default class IFSDirectory extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.ifsDirectory;
+  ifsDirectoryInfo: vscodeIbmiTypes.IFSFile;
 
-  constructor(public workspaceFolder: WorkspaceFolder, ifsFolder: string, customTitle?: string) {
-    super(customTitle || path.posix.basename(ifsFolder), TreeItemCollapsibleState.Collapsed);
-
-    if (customTitle) {
-      this.description = ifsFolder;
-    }
-
-    this.resourceUri = Uri.from({
-      scheme: `streamfile`,
-      path: ifsFolder
-    });
+  constructor(public workspaceFolder: WorkspaceFolder, ifsDirectoryInfo: vscodeIbmiTypes.IFSFile, custom?: { label?: string, description?: string }) {
+    super(ifsDirectoryInfo.name, TreeItemCollapsibleState.Collapsed);
+    this.ifsDirectoryInfo = ifsDirectoryInfo;
     this.contextValue = IFSDirectory.contextValue;
     this.iconPath = new ThemeIcon(`symbol-folder`);
+    this.tooltip = `Name: ${ifsDirectoryInfo.name}\n` +
+      `Path: ${ifsDirectoryInfo.path}\n`;
+    if (custom) {
+      if (custom.label) {
+        this.label = custom.label;
+      }
+
+      if (custom.description) {
+        this.description = custom.description;
+      }
+    }
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
     let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
-    const objects = await ibmi?.getContent().getFileList(this.resourceUri?.path!);
-    const objectItems = objects?.map((object) => (object.type === `directory` ? new IFSDirectory(this.workspaceFolder, object.path) : new IFSFile(this.workspaceFolder, object.path))) || [];
+    const files = await ibmi?.getContent().getFileList(this.ifsDirectoryInfo.path, { order: 'name' });
+    if (files) {
+      for (const file of files) {
+        if (file.type === 'directory') {
+          items.push(new IFSDirectory(this.workspaceFolder, file));
+        } else {
+          items.push(new IFSFile(this.workspaceFolder, file));
+        }
+      }
+    }
 
-    items.push(...objectItems);
     return items;
   }
 }
-
-

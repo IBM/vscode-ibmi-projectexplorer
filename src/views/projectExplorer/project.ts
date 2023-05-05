@@ -13,6 +13,7 @@ import ObjectLibraries from "./objectlibraries";
 import { ContextValue } from "../../projectExplorerApi";
 import { IProject } from "../../iproject";
 import IncludePaths from "./includePaths";
+import path = require("path");
 
 /**
  * Tree item for a project
@@ -43,7 +44,17 @@ export default class Project extends ProjectExplorerTreeItem {
 
     // First load the IFS browser stuff
     if (remoteDir) {
-      items.push(new IFSDirectory(this.workspaceFolder, remoteDir, `Source`));
+      items.push(new IFSDirectory(this.workspaceFolder,
+        {
+          type: 'directory',
+          name: path.posix.basename(remoteDir),
+          path: remoteDir
+        },
+        {
+          label: 'Source',
+          description: remoteDir
+        }
+      ));
     } else {
       items.push(new ErrorItem(this.workspaceFolder, `Source`, {
         description: `Please configure remote directory.`,
