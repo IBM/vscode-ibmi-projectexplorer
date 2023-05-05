@@ -6,14 +6,13 @@ import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import { getInstance } from "../../ibmi";
-import IFSDirectory from "./ifsFolder";
 import ErrorItem from "./errorItem";
 import Variables from "./variables";
 import ObjectLibraries from "./objectlibraries";
 import { ContextValue } from "../../projectExplorerApi";
 import { IProject } from "../../iproject";
 import IncludePaths from "./includePaths";
-import path = require("path");
+import Source from "./source";
 
 /**
  * Tree item for a project
@@ -44,17 +43,7 @@ export default class Project extends ProjectExplorerTreeItem {
 
     // First load the IFS browser stuff
     if (remoteDir) {
-      items.push(new IFSDirectory(this.workspaceFolder,
-        {
-          type: 'directory',
-          name: path.posix.basename(remoteDir),
-          path: remoteDir
-        },
-        {
-          label: 'Source',
-          description: remoteDir
-        }
-      ));
+      items.push(new Source(this.workspaceFolder, remoteDir));
     } else {
       items.push(new ErrorItem(this.workspaceFolder, `Source`, {
         description: `Please configure remote directory.`,

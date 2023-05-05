@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import path = require("path");
+import * as path from "path";
 import { Uri, window, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
 import { RingBuffer } from "./views/jobLog/RingBuffer";

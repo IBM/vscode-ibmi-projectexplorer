@@ -12,6 +12,7 @@ export interface ProjectExplorerApi {
 
 export enum ContextValue {
   project = 'project',
+  source = 'source',
   variables = 'variables',
   objectLibraries = 'objectLibraries',
   library = 'library',

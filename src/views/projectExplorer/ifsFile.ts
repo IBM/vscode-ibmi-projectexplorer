@@ -3,7 +3,6 @@
  */
 
 import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
-import * as path from "path";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 import * as vscodeIbmiTypes from "@halcyontech/vscode-ibmi-types";

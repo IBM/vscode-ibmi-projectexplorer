@@ -2,21 +2,26 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
-import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
+import { ThemeIcon, WorkspaceFolder } from "vscode";
 import { ContextValue } from "../../projectExplorerApi";
+import IFSDirectory from "./ifsDirectory";
+import * as path from "path";
 
-export default class IncludePath extends ProjectExplorerTreeItem {
+export default class IncludePath extends IFSDirectory {
   static contextValue = ContextValue.includePath;
 
   constructor(public workspaceFolder: WorkspaceFolder, includePath: string) {
-    super(includePath, TreeItemCollapsibleState.None);
-
+    super(workspaceFolder,
+      {
+        type: 'directory',
+        name: path.posix.basename(includePath),
+        path: includePath
+      },
+      {
+        label: includePath
+      }
+    );
     this.contextValue = IncludePath.contextValue;
     this.iconPath = new ThemeIcon(`link`);
-  }
-
-  getChildren(): ProjectExplorerTreeItem[] {
-    return [];
   }
 }

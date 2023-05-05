@@ -2,8 +2,6 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import path = require("path");
-
 export interface CommandInfo {
     cmd: string;
     cmd_time: string;
