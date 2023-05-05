@@ -2,7 +2,6 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import path = require('path');
 import * as vscode from 'vscode';
 import { loadBase, getInstance } from './ibmi';
 import { ProjectManager } from './projectManager';
@@ -19,11 +18,9 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 	console.log('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!');
 
 	loadBase();
-
 	ProjectManager.loadProjects();
 
 	const projectExplorer = new ProjectExplorer(context);
-
 	const ibmi = getInstance();
 	ibmi?.onEvent(`connected`, () => { projectExplorer.refresh(); });
 	ibmi?.onEvent(`deployLocation`, () => { projectExplorer.refresh(); });
@@ -47,24 +44,16 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 	});
 
 	const jobLog = new JobLog(context);
-
 	const jobLogWatcher = vscode.workspace.createFileSystemWatcher(`**/*.logs/joblog.json`);
 	jobLogWatcher.onDidChange(() => { jobLog.refresh(); });
 	jobLogWatcher.onDidCreate(() => { jobLog.refresh(); });
 	jobLogWatcher.onDidDelete(() => { jobLog.refresh(); });
 
 	context.subscriptions.push(
-		vscode.window.registerTreeDataProvider(
-			`projectExplorer`,
-			projectExplorer
-		),
-		vscode.window.registerTreeDataProvider(
-			`jobLog`,
-			jobLog
-		),
+		vscode.window.registerTreeDataProvider(`projectExplorer`, projectExplorer),
+		vscode.window.registerTreeDataProvider(`jobLog`, jobLog),
 		vscode.workspace.onDidChangeWorkspaceFolders(() => {
 			ProjectManager.clear();
-
 			projectExplorer.refresh();
 			jobLog.refresh();
 		})
