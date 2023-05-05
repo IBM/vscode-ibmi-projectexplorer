@@ -17,7 +17,7 @@ export default class MemberFile extends ProjectExplorerTreeItem {
 
   constructor(public workspaceFolder: WorkspaceFolder, memberFileInfo: IBMiMember, pathToObject: string) {
     const extension = memberFileInfo.extension.trim() !== '' ? memberFileInfo.extension : 'MBR';
-    super(`${memberFileInfo.name}.${memberFileInfo.extension}`, TreeItemCollapsibleState.None);
+    super(`${memberFileInfo.name}.${extension}`, TreeItemCollapsibleState.None);
     this.memberFileInfo = memberFileInfo;
     this.path = `${pathToObject}/${memberFileInfo.name}.${memberFileInfo.extension}`;
     this.contextValue = MemberFile.contextValue;
@@ -26,6 +26,7 @@ export default class MemberFile extends ProjectExplorerTreeItem {
     this.tooltip = `Name: ${memberFileInfo.name}\n` +
       `Path: ${this.path}\n` +
       (memberFileInfo.text?.trim() !== '' ? `Text: ${memberFileInfo.text}\n` : ``) +
+      `Extension: ${extension}\n` +
       `Record Length: ${memberFileInfo.recordLength}\n` +
       `Changed: ${memberFileInfo.changed}\n` +
       (memberFileInfo.asp ? `ASP: ${memberFileInfo.asp}` : ``);

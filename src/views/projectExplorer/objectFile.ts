@@ -26,12 +26,13 @@ export default class ObjectFile extends ProjectExplorerTreeItem {
     this.contextValue = ObjectFile.contextValue;
     const icon = objectFileIcons.get(type.toLowerCase()) || `file`;
     this.iconPath = new ThemeIcon(icon);
-    this.description = objectFileInfo.text + (objectFileInfo.attribute ? ` (${objectFileInfo.attribute})` : '');
+    this.description = (objectFileInfo.text.trim() !== '' ? `${objectFileInfo.text} ` : ``) +
+      (objectFileInfo.attribute ? `(${objectFileInfo.attribute})` : '');
     this.tooltip = `Name: ${objectFileInfo.name}\n` +
       `Path: ${this.path}\n` +
       (objectFileInfo.text.trim() !== '' ? `Text: ${objectFileInfo.text}\n` : ``) +
-      `Type: ${objectFileInfo.type}\n` +
-      `Attribute: ${objectFileInfo.attribute}`;
+      `Attribute: ${objectFileInfo.attribute}\n` +
+      `Type: ${objectFileInfo.type}`;
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {

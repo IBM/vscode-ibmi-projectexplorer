@@ -24,12 +24,13 @@ export default class Library extends ProjectExplorerTreeItem {
     this.path = `/${libraryInfo.library}.LIB/${libraryInfo.name}.${type}`;
     this.contextValue = Library.contextValue;
     this.iconPath = new ThemeIcon(`library`);
-    this.description = libraryInfo.text + (libraryInfo.attribute ? ` (${libraryInfo.attribute})` : '');
+    this.description = (libraryInfo.text.trim() !== '' ? `${libraryInfo.text} ` : ``) +
+      (libraryInfo.attribute ? `(${libraryInfo.attribute})` : '');
     this.tooltip = `Name: ${libraryInfo.name}\n` +
       `Path: ${this.path}\n` +
       (libraryInfo.text.trim() !== '' ? `Text: ${libraryInfo.text}\n` : ``) +
-      `Type: ${libraryInfo.type}\n` +
-      `Attribute: ${libraryInfo.attribute}`;
+      `Attribute: ${libraryInfo.attribute}\n` +
+      `Type: ${libraryInfo.type}`;
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
