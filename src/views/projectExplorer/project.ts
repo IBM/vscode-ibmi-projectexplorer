@@ -38,7 +38,7 @@ export default class Project extends ProjectExplorerTreeItem {
 
     const ibmi = getInstance();
     const deploymentDirs = ibmi?.getStorage().getDeployment()!;
-    const localDir = this.resourceUri?.path!;
+    const localDir = this.resourceUri?.fsPath!;
     const remoteDir = deploymentDirs[localDir];
 
     // First load the IFS browser stuff

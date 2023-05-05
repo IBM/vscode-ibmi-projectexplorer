@@ -233,6 +233,30 @@ export class IProject {
       index) => variableNameList.indexOf(name) === index);
   }
 
+  public async getObjectLibraries(): Promise<Set<string> | undefined> {
+    const state = await this.getState();
+    if (state) {
+      const objLibs = new Set<string>();
+      if (state.curlib) {
+        objLibs.add(state.curlib.toUpperCase());
+      }
+      if (state.preUsrlibl) {
+        for (const lib of state.preUsrlibl) {
+          objLibs.add(lib.toUpperCase());
+        }
+      }
+      if (state.postUsrlibl) {
+        for (const lib of state.postUsrlibl) {
+          objLibs.add(lib.toUpperCase());
+        }
+      }
+
+      state.objlib ? objLibs.add(state.objlib.toUpperCase()) : null;
+
+      return objLibs;
+    }
+  }
+
   public static validateIProject(content: string): IProjectT {
     const iproj = JSON.parse(content);
 
