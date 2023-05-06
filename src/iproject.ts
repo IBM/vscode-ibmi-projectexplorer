@@ -9,6 +9,7 @@ import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
 import { TextEncoder } from "util";
 import { IProjectT } from "./iProjectT";
+import { getInstance } from "./ibmi";
 
 export type EnvironmentVariables = { [name: string]: string };
 
@@ -63,6 +64,11 @@ export class IProject {
   }
 
   public async addToIncludePaths(directoryToAdd: string) {
+    const ibmi = getInstance();
+    const deploymentDirs = ibmi?.getStorage().getDeployment()!;
+    const remoteDir = deploymentDirs[this.workspaceFolder.uri.fsPath];
+    directoryToAdd = directoryToAdd.startsWith(remoteDir) ? path.posix.relative(remoteDir, directoryToAdd) : directoryToAdd;
+
     const iProjExists = await this.projectFileExists('iproj.json');
     if (iProjExists) {
       const content = await workspace.fs.readFile(this.getIProjFilePath());
