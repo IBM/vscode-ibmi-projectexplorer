@@ -1,0 +1,3 @@
+[submodule "vscode-ibmi-projectexplorer-types"]
+	path = vscode-ibmi-projectexplorer-types
+	url = https://github.com/IBM/vscode-ibmi-projectexplorer-types.git
