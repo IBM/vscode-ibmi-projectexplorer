@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { QuickPickItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { ExtensionContext, QuickPickItem, StatusBarAlignment, StatusBarItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "./iproject";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 import Project from "./views/projectExplorer/project";
@@ -10,6 +10,7 @@ import Project from "./views/projectExplorer/project";
 export class ProjectManager {
     private static loaded: { [index: number]: IProject } = {};
     private static activeProject: IProject | undefined;
+    private static activeProjectStatusBarItem: StatusBarItem;
 
     public static load(workspaceFolder: WorkspaceFolder) {
         if (!this.loaded[workspaceFolder.index]) {
@@ -17,7 +18,7 @@ export class ProjectManager {
             this.loaded[workspaceFolder.index] = iProject;
 
             if (!this.activeProject) {
-                this.activeProject = this.loaded[workspaceFolder.index];
+                this.setActiveProject(workspaceFolder);
             }
         }
     }
@@ -30,32 +31,51 @@ export class ProjectManager {
         return this.activeProject;
     }
 
+    public static getActiveProjectStatusBarItem(): StatusBarItem {
+        return this.activeProjectStatusBarItem;
+    }
+
     public static clear() {
         this.loaded = {};
     }
 
-    public static clearActiveProject() {
-        this.activeProject = undefined;
-    }
+    public static initialize(context: ExtensionContext) {
+        this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
+        context.subscriptions.push(this.activeProjectStatusBarItem);
+        this.setActiveProject(undefined);
 
-    public static loadProjects() {
         const workspaceFolders = workspace.workspaceFolders;
-
         if (workspaceFolders && workspaceFolders.length > 0) {
             workspaceFolders.map(folder => {
-                ProjectManager.load(folder);
+                this.load(folder);
             });
         }
     }
 
-    public static setActiveProject(workspaceFolder: WorkspaceFolder) {
-        this.activeProject = this.loaded[workspaceFolder.index];
+    public static setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
+        if (workspaceFolder) {
+            this.activeProject = this.loaded[workspaceFolder.index];
+            this.activeProjectStatusBarItem.text = `$(root-folder) Project: ${this.activeProject.workspaceFolder.name}`;
+            this.activeProjectStatusBarItem.tooltip = `Active project: ${this.activeProject.workspaceFolder}`;
+            this.activeProjectStatusBarItem.command = {
+                command: `vscode-ibmi-projectexplorer.setActiveProject`,
+                title: `Set Active Project`
+            };
+        } else {
+            this.activeProject = undefined;
+            this.activeProjectStatusBarItem.text = `$(root-folder) Project: $(circle-slash)`;
+            this.activeProjectStatusBarItem.tooltip = `Please open a local workspace folder`;
+            this.activeProjectStatusBarItem.command = {
+                command: 'workbench.action.files.openFolder',
+                title: 'Open folder'
+            };
+        }
     }
 
     public static async selectProject(): Promise<IProject | undefined> {
         switch (Object.keys(this.loaded).length) {
             case 0:
-                window.showErrorMessage('Please open a local workspace folder.');
+                window.showErrorMessage('Please open a local workspace folder');
                 break;
             case 1:
                 return this.loaded[0];
@@ -97,6 +117,16 @@ export class ProjectManager {
         return projects;
     }
 
+    public static getProjectFromName(name: string): IProject | undefined {
+        for (const index in this.loaded) {
+            const iProject = this.loaded[index];
+
+            if (iProject.getName() === name) {
+                return iProject;
+            }
+        }
+    }
+
     public static getProjectFromActiveTextEditor(): IProject | undefined {
         let activeFileUri = window.activeTextEditor?.document.uri;
         activeFileUri = activeFileUri?.scheme === 'file' ? activeFileUri : undefined;
@@ -109,13 +139,13 @@ export class ProjectManager {
     public static getProjectFromUri(uri: Uri): IProject | undefined {
         const workspaceFolder = workspace.getWorkspaceFolder(uri);
         if (workspaceFolder) {
-            return ProjectManager.get(workspaceFolder);
+            return this.get(workspaceFolder);
         }
     }
 
     public static getProjectFromTreeItem(element: ProjectExplorerTreeItem) {
         if (element.workspaceFolder) {
-            return ProjectManager.get(element.workspaceFolder);
+            return this.get(element.workspaceFolder);
         }
     }
 

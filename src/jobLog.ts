@@ -68,6 +68,6 @@ export function parseDateTime(dateTime: string): Date {
 
         return new Date(year, month, day, hour, min, sec);
     } catch {
-        throw Error(`Cannot parse \"${dateTime}\" as a Date object.`);
+        throw Error(`Cannot parse \"${dateTime}\" as a Date object`);
     }
 }

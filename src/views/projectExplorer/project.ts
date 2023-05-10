@@ -46,7 +46,7 @@ export default class Project extends ProjectExplorerTreeItem {
       items.push(new Source(this.workspaceFolder, remoteDir));
     } else {
       items.push(new ErrorItem(this.workspaceFolder, `Source`, {
-        description: `Please configure remote directory.`,
+        description: `Please configure remote directory`,
         command: {
           command: `code-for-ibmi.setDeployLocation`,
           title: `Set deploy location`,
@@ -72,7 +72,7 @@ export default class Project extends ProjectExplorerTreeItem {
 
     } else {
       items.push(new ErrorItem(this.workspaceFolder, `Variables`, {
-        description: `Please configure environment file.`,
+        description: `Please configure environment file`,
         command: {
           command: `vscode-ibmi-projectmode.createEnv`,
           arguments: [this.workspaceFolder],
