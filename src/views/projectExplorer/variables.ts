@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import ErrorItem from "./errorItem";
@@ -20,7 +20,7 @@ export default class Variables extends ProjectExplorerTreeItem {
 
     this.resourceUri = Uri.parse(`variables:${unresolvedVariableCount}`, true);
     this.contextValue = Variables.contextValue;
-    this.iconPath = new ThemeIcon(`symbol-variable`);
+    this.iconPath = new ThemeIcon(`symbol-variable`, new ThemeColor(`icon.foreground`));
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {

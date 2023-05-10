@@ -9,10 +9,16 @@ import Project from "./views/projectExplorer/project";
 
 export class ProjectManager {
     private static loaded: { [index: number]: IProject } = {};
+    private static activeProject: IProject | undefined;
 
     public static load(workspaceFolder: WorkspaceFolder) {
         if (!this.loaded[workspaceFolder.index]) {
-            this.loaded[workspaceFolder.index] = new IProject(workspaceFolder);
+            const iProject = new IProject(workspaceFolder);
+            this.loaded[workspaceFolder.index] = iProject;
+
+            if (!this.activeProject) {
+                this.activeProject = this.loaded[workspaceFolder.index];
+            }
         }
     }
 
@@ -20,8 +26,16 @@ export class ProjectManager {
         return this.loaded[workspaceFolder.index];
     }
 
+    public static getActiveProject(): IProject | undefined {
+        return this.activeProject;
+    }
+
     public static clear() {
         this.loaded = {};
+    }
+
+    public static clearActiveProject() {
+        this.activeProject = undefined;
     }
 
     public static loadProjects() {
@@ -34,6 +48,10 @@ export class ProjectManager {
         }
     }
 
+    public static setActiveProject(workspaceFolder: WorkspaceFolder) {
+        this.activeProject = this.loaded[workspaceFolder.index];
+    }
+
     public static async selectProject(): Promise<IProject | undefined> {
         switch (Object.keys(this.loaded).length) {
             case 0:
@@ -44,11 +62,11 @@ export class ProjectManager {
             default:
                 const projectItems: QuickPickItem[] = [];
                 for (const index in this.loaded) {
-                    const project = this.loaded[index];
+                    const iProject = this.loaded[index];
 
-                    const state = await project.getState();
+                    const state = await iProject.getState();
                     if (state) {
-                        projectItems.push({ label: project.getName(), description: state.description });
+                        projectItems.push({ label: iProject.getName(), description: state.description });
                     }
                 }
 
@@ -58,10 +76,10 @@ export class ProjectManager {
 
                 if (selectedProject) {
                     for (const index in this.loaded) {
-                        const project = this.loaded[index];
+                        const iProject = this.loaded[index];
 
-                        if (project.getName() === selectedProject.label) {
-                            return project;
+                        if (iProject.getName() === selectedProject.label) {
+                            return iProject;
                         }
                     }
                 }

@@ -52,8 +52,15 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 	context.subscriptions.push(
 		vscode.window.registerTreeDataProvider(`projectExplorer`, projectExplorer),
 		vscode.window.registerTreeDataProvider(`jobLog`, jobLog),
-		vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		vscode.workspace.onDidChangeWorkspaceFolders((event) => {
 			ProjectManager.clear();
+
+			const removedWorkspaceFolders = event.removed;
+			const activeProject = ProjectManager.getActiveProject();
+			if (activeProject && removedWorkspaceFolders.includes(activeProject.workspaceFolder)) {
+				ProjectManager.clearActiveProject();
+			}
+
 			projectExplorer.refresh();
 			jobLog.refresh();
 		})

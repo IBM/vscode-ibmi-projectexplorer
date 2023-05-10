@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { WorkspaceFolder } from "vscode";
+import { ThemeIcon, WorkspaceFolder } from "vscode";
 import { ContextValue } from "../../projectExplorerApi";
 import IFSDirectory from "./ifsDirectory";
 import * as path from "path";
@@ -23,5 +23,6 @@ export default class Source extends IFSDirectory {
       }
     );
     this.contextValue = Source.contextValue;
+    this.iconPath = new ThemeIcon(`server-environment`);
   }
 }

@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import Library from "./library";
@@ -17,7 +17,7 @@ export default class ObjectLibraries extends ProjectExplorerTreeItem {
 
   constructor(public workspaceFolder: WorkspaceFolder) {
     super("Object Libraries", TreeItemCollapsibleState.Collapsed);
-    this.iconPath = new ThemeIcon(`root-folder`);
+    this.iconPath = new ThemeIcon(`symbol-class`, new ThemeColor(`icon.foreground`));
     this.contextValue = ObjectLibraries.contextValue;
     this.tooltip = "Object Libraries - Work with the set of libraries defined in the curlib, objlib, preUsrlibl, and postUsrlibl entries of the iproj.json"
   }

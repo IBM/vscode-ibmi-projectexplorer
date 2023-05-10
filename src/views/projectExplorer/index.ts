@@ -23,6 +23,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.setActiveProject`, (element: ProjectExplorerTreeItem) => {
+        ProjectManager.setActiveProject(element.workspaceFolder!);
+        this.refresh();
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
         if (workspaceFolder && varName) {
           const iProject = ProjectManager.get(workspaceFolder);
@@ -81,7 +85,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         } else {
           const includePath = (element as any).path;
           if (includePath) {
-            const iProject = await ProjectManager.selectProject();
+            const iProject = ProjectManager.getActiveProject();
             if (iProject) {
               await iProject.addToIncludePaths(includePath);
             }
@@ -152,6 +156,15 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
             this.projectTreeItems = items as Project[];
           };
+
+          const activeProject = ProjectManager.getActiveProject();
+          if (activeProject) {
+            const projectTreeItem = this.getProjectTreeItem(activeProject);
+            if (projectTreeItem) {
+              projectTreeItem.setActive();
+            }
+          }
+
         } else {
           items.push(new ErrorItem(
             undefined,

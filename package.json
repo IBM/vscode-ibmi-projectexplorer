@@ -60,6 +60,12 @@
     "commands": [
       {
         "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.setActiveProject",
+        "title": "Set Active Project",
+        "icon": "$(circle-filled)"
+      },
+      {
+        "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
         "title": "Add to Include Paths",
         "icon": "$(add)"
@@ -103,6 +109,10 @@
     "menus": {
       "commandPalette": [
         {
+          "command": "vscode-ibmi-projectexplorer.setActiveProject",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "never"
         },
@@ -135,6 +145,11 @@
         }
       ],
       "view/item/context": [
+        {
+          "command": "vscode-ibmi-projectexplorer.setActiveProject",
+          "when": "view == projectExplorer && viewItem == project_inactive",
+          "group": "inline@0"
+        },
         {
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "view == ifsBrowser && viewItem == directory",

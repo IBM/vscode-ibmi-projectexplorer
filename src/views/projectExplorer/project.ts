@@ -26,8 +26,8 @@ export default class Project extends ProjectExplorerTreeItem {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
 
     this.resourceUri = workspaceFolder.uri;
-    this.iconPath = new ThemeIcon(`root-folder`);
-    this.contextValue = Project.contextValue;
+    this.iconPath = new ThemeIcon(`symbol-folder`);
+    this.contextValue = Project.contextValue + ContextValue.inactive;
     this.description = description;
   }
 
@@ -99,5 +99,10 @@ export default class Project extends ProjectExplorerTreeItem {
 
   getExtensibleChildren() {
     return this.extensibleChildren;
+  }
+
+  setActive() {
+    this.contextValue = Project.contextValue + ContextValue.active;
+    this.iconPath = new ThemeIcon(`root-folder`);
   }
 }
