@@ -72,42 +72,6 @@ export class ProjectManager {
         }
     }
 
-    public static async selectProject(): Promise<IProject | undefined> {
-        switch (Object.keys(this.loaded).length) {
-            case 0:
-                window.showErrorMessage('Please open a local workspace folder');
-                break;
-            case 1:
-                return this.loaded[0];
-            default:
-                const projectItems: QuickPickItem[] = [];
-                for (const index in this.loaded) {
-                    const iProject = this.loaded[index];
-
-                    const state = await iProject.getState();
-                    if (state) {
-                        projectItems.push({ label: iProject.getName(), description: state.description });
-                    }
-                }
-
-                const selectedProject = await window.showQuickPick(projectItems, {
-                    placeHolder: 'Select a project'
-                });
-
-                if (selectedProject) {
-                    for (const index in this.loaded) {
-                        const iProject = this.loaded[index];
-
-                        if (iProject.getName() === selectedProject.label) {
-                            return iProject;
-                        }
-                    }
-                }
-        }
-
-        return;
-    }
-
     public static getProjects(): IProject[] {
         let projects = [];
         for (const index in this.loaded) {
