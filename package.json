@@ -60,6 +60,24 @@
     "commands": [
       {
         "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
+        "title": "Add Library List Entry",
+        "icon": "$(add)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
+        "title": "Set Current Library",
+        "icon": "$(edit)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
+        "title": "Remove From Library List",
+        "icon": "$(close)"
+      },
+      {
+        "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
         "title": "Add to Include Paths",
         "icon": "$(add)"
@@ -103,6 +121,18 @@
     "menus": {
       "commandPalette": [
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "never"
         },
@@ -135,6 +165,21 @@
         }
       ],
       "view/item/context": [
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
+          "when": "view == projectExplorer && viewItem == libraryList",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
+          "when": "view == projectExplorer && viewItem == libraryList",
+          "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
+          "when": "view == projectExplorer && viewItem == library",
+          "group": "inline@0"
+        },
         {
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "view == ifsBrowser && viewItem == directory",
@@ -183,6 +228,30 @@
       ]
     },
     "colors": [
+      {
+        "id": "projectExplorer.systemLibrary",
+        "description": "Color for system libraries",
+        "defaults": {
+          "dark": "#4CB1FF",
+          "light": "#4CB1FF"
+        }
+      },
+      {
+        "id": "projectExplorer.currentLibrary",
+        "description": "Color for current library",
+        "defaults": {
+          "dark": "#4CAF4F",
+          "light": "#4CAF4F"
+        }
+      },
+      {
+        "id": "projectExplorer.userLibrary",
+        "description": "Color for user libraries",
+        "defaults": {
+          "dark": "#C79F0C",
+          "light": "#C79F0C"
+        }
+      },
       {
         "id": "joblog.local",
         "description": "Color for local job log",
@@ -269,7 +338,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "@halcyontech/vscode-ibmi-types": "^1.6.15",
+    "@halcyontech/vscode-ibmi-types": "^1.8.0",
     "dotenv": "^16.0.3"
   }
 }
