@@ -9,6 +9,10 @@ import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
 import { TextEncoder } from "util";
 import { IProjectT } from "./iProjectT";
+import { getInstance } from "./ibmi";
+import { LibraryType } from "./views/projectExplorer/library";
+
+const DEFAULT_CURLIB = '&CURLIB';
 
 export type EnvironmentVariables = { [name: string]: string };
 
@@ -41,12 +45,47 @@ export class IProject {
   }
 
   public async getState(): Promise<IProjectT | undefined> {
-    if (this.state) {
-      return this.state;
-    } else {
-      await this.read();
-      return this.state;
+    if (!this.state) {
+      return await this.updateState();
     }
+    return this.state;
+  }
+
+  public async updateState() {
+    const unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      const values = await this.getEnv();
+
+      unresolvedState.preUsrlibl = unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl.map(preUsrlib => this.resolveLibrary(preUsrlib, values)) : undefined;
+      unresolvedState.postUsrlibl = unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl.map(postUsrlib => this.resolveLibrary(postUsrlib, values)) : undefined;
+      unresolvedState.curlib = unresolvedState.curlib ? this.resolveLibrary(unresolvedState.curlib, values) : undefined;
+      unresolvedState.objlib = unresolvedState.objlib ? this.resolveLibrary(unresolvedState.objlib, values) : undefined;
+    }
+
+    this.state = unresolvedState;
+    return this.state;
+  }
+
+  private resolveLibrary(lib: string, values: EnvironmentVariables): string {
+    if (lib && lib.startsWith('&') && values[lib.substring(1)] && values[lib.substring(1)] !== '') {
+      return values[lib.substring(1)];
+    }
+
+    return lib;
+  }
+
+  public async getUnresolvedState(): Promise<IProjectT | undefined> {
+    let iproj: IProjectT | undefined;
+
+    try {
+      const content = await workspace.fs.readFile(this.getIProjFilePath());
+      iproj = IProject.validateIProject(content.toString());
+    } catch (e) {
+      iproj = undefined;
+    }
+
+    return iproj;
   }
 
   public setState(state: IProjectT | undefined) {
@@ -57,63 +96,218 @@ export class IProject {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.env`));
   }
 
-  public async read() {
-    const content = await workspace.fs.readFile(this.getIProjFilePath());
-    this.state = IProject.validateIProject(content.toString());
-  }
-
   public async addToIncludePaths(directoryToAdd: string) {
-    const iProjExists = await this.projectFileExists('iproj.json');
-    if (iProjExists) {
-      const content = await workspace.fs.readFile(this.getIProjFilePath());
+    const ibmi = getInstance();
+    const deploymentDirs = ibmi?.getStorage().getDeployment()!;
+    const remoteDir = deploymentDirs[this.workspaceFolder.uri.fsPath];
+    directoryToAdd = directoryToAdd.startsWith(remoteDir) ? path.posix.relative(remoteDir, directoryToAdd) : directoryToAdd;
 
-      const iProject = IProject.validateIProject(content.toString());
-      if (iProject) {
-        try {
-          if (iProject.includePath) {
-            if (!iProject.includePath.includes(directoryToAdd)) {
-              iProject.includePath.push(directoryToAdd);
-            } else {
-              window.showErrorMessage(`${directoryToAdd} already exists in the includePaths`);
-            }
-          } else {
-            iProject.includePath = [directoryToAdd];
-          }
-
-          await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
-        } catch {
-          window.showErrorMessage('Failed to update iproj.json');
+    const unresolvedState = await this.getUnresolvedState();
+    if (unresolvedState) {
+      if (unresolvedState.includePath) {
+        if (!unresolvedState.includePath.includes(directoryToAdd)) {
+          unresolvedState.includePath.push(directoryToAdd);
+        } else {
+          window.showErrorMessage(`${directoryToAdd} already exists in includePaths`);
+          return;
         }
+      } else {
+        unresolvedState.includePath = [directoryToAdd];
       }
+
+      await this.updateIProj(unresolvedState);
     } else {
       window.showErrorMessage('No iproj.json found');
     }
   }
 
   public async removeFromIncludePaths(directoryToRemove: string) {
-    const iProjExists = await this.projectFileExists('iproj.json');
-    if (iProjExists) {
-      const content = await workspace.fs.readFile(this.getIProjFilePath());
+    const unresolvedState = await this.getUnresolvedState();
 
-      const iProject = IProject.validateIProject(content.toString());
-      if (iProject) {
-        try {
-          if (iProject.includePath) {
-            const index = iProject.includePath.indexOf(directoryToRemove);
-            if (index > -1) {
-              iProject.includePath.splice(index, 1);
-            } else {
-              window.showErrorMessage(`${directoryToRemove} does not exist in includePaths`);
+    if (unresolvedState) {
+      const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(directoryToRemove) : -1;
+      if (index > -1) {
+        unresolvedState.includePath!.splice(index, 1);
+      } else {
+        window.showErrorMessage(`${directoryToRemove} does not exist in includePaths`);
+      }
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage('No iproj.json found');
+    }
+  }
+
+  public async getLibraryList() {
+    const ibmi = getInstance();
+    const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;
+
+    // Get user libraries
+    const state = await this.getState();
+
+    if (state) {
+      let userLibrariesToAdd: string[] = [
+        ...(state.preUsrlibl ? state.preUsrlibl : []),
+        ...(defaultUserLibraries ? defaultUserLibraries : []),
+        ...(state.postUsrlibl ? state.postUsrlibl : [])
+      ];
+      userLibrariesToAdd = [... new Set(userLibrariesToAdd.filter(lib => !lib.startsWith('&')))].reverse();
+
+      // Get current library
+      let curlib = state.curlib && !state.curlib.startsWith('&') ? state.curlib : undefined;
+
+      // Validate libraries
+      let librariesToValidate = curlib && !userLibrariesToAdd.includes(curlib) ? userLibrariesToAdd.concat(curlib) : userLibrariesToAdd;
+      const badLibs = await ibmi?.getContent().validateLibraryList(librariesToValidate);
+      if (curlib && badLibs?.includes(curlib)) {
+        curlib = undefined;
+      }
+      if (badLibs) {
+        userLibrariesToAdd = userLibrariesToAdd.filter(lib => !badLibs.includes(lib));
+      }
+
+      // Retrieve library list
+      let buildLibraryListCommand = [
+        defaultUserLibraries ? `liblist -d ${defaultUserLibraries.join(` `)}` : ``,
+        state.curlib && state.curlib !== '' ? `liblist -c ${state.curlib}` : ``,
+        userLibrariesToAdd && userLibrariesToAdd.length > 0 ? `liblist -a ${userLibrariesToAdd.join(` `)}` : ``,
+        `liblist`
+      ].filter(cmd => cmd !== ``).join(` ; `);
+
+      const liblResult = await ibmi?.getConnection().sendQsh({
+        command: buildLibraryListCommand
+      });
+
+      if (liblResult && liblResult.code === 0) {
+        const libraryListString = liblResult.stdout;
+
+        if (libraryListString !== ``) {
+          const libraries = libraryListString.split(`\n`);
+
+          let libraryList: { name: string, libraryType: string }[] = [];
+          for (const library of libraries) {
+            libraryList.push({
+              name: library.substring(0, 10).trim(),
+              libraryType: library.substring(12)
+            });
+          }
+
+          const libraryNames = libraryList.map(lib => lib.name);
+          const libraryListInfo = await ibmi?.getContent().getLibraryList(libraryNames);
+          if (libraryListInfo) {
+            for (const libraryInfo of libraryListInfo) {
+              const index = libraryNames.indexOf(libraryInfo.name);
+              (libraryInfo as any).libraryType = libraryList[index].libraryType;
             }
           }
 
-          await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
-        } catch {
-          window.showErrorMessage('Failed to update iproj.json');
+          return libraryListInfo;
         }
       }
+    }
+  }
+
+  public async addToLibraryList(library: string, position: 'preUsrlibl' | 'postUsrlibl') {
+    const unresolvedState = await this.getUnresolvedState();
+    const state = await this.getState();
+
+    if (unresolvedState && state) {
+      if (unresolvedState[position] && state[position]) {
+        if (state[position]!.includes(library)) {
+          window.showErrorMessage(`${library} already exists in ${position}`);
+          return;
+
+        } else {
+          if (position === 'preUsrlibl') {
+            unresolvedState[position]!.unshift(library);
+          } else {
+            unresolvedState[position]!.push(library);
+          }
+        }
+      } else {
+        unresolvedState[position] = [library];
+      }
+
+      await this.updateIProj(unresolvedState);
     } else {
       window.showErrorMessage('No iproj.json found');
+    }
+  }
+
+  public async setCurrentLibrary(library: string) {
+    const unresolvedState = await this.getUnresolvedState();
+    const state = await this.getState();
+
+    if (unresolvedState && state) {
+      if (state.curlib === library) {
+        window.showErrorMessage(`Current library already set to ${library}`);
+        return;
+      } else if (unresolvedState.curlib && unresolvedState.curlib.startsWith('&')) {
+        //Update variable
+        await this.setEnv(unresolvedState.curlib.substring(1), library);
+      } else {
+        await this.setEnv(DEFAULT_CURLIB, library);
+
+        unresolvedState.curlib = DEFAULT_CURLIB;
+      }
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage('No iproj.json found');
+    }
+  }
+
+  public async removeFromLibraryList(library: string, type: LibraryType) {
+    const unresolvedState = await this.getUnresolvedState() as any;
+
+    if (unresolvedState) {
+      if (type === LibraryType.currentLibrary) {
+        if (unresolvedState.curlib?.startsWith('&')) {
+          await this.setEnv(unresolvedState.curlib.substring(1), '');
+          return;
+        } else {
+          unresolvedState.curlib = undefined;
+        }
+      } else {
+        const state = await this.getState() as any;
+
+        if (state) {
+          // Search for library in preUsrlibl then postUsrlibl
+          let libIndex = -1;
+          for await (const usrlibl of ['preUsrlibl', 'postUsrlibl']) {
+            if (unresolvedState[usrlibl] && state[usrlibl] && state[usrlibl].includes(library)) {
+              libIndex = state[usrlibl].indexOf(library);
+
+              if (libIndex > -1) {
+                if (unresolvedState[usrlibl][libIndex].startsWith('&')) {
+                  await this.setEnv(unresolvedState[usrlibl][libIndex].substring(1), '');
+                  return;
+                } else {
+                  unresolvedState[usrlibl].splice(libIndex, 1);
+                }
+                break;
+              }
+            }
+          }
+
+          if (libIndex < 0) {
+            window.showErrorMessage(`${library} does not exist in preUsrlibl or postUsrlibl`);
+            return;
+          }
+        }
+      }
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage('No iproj.json found');
+    }
+  }
+
+  public async updateIProj(iProject: IProjectT) {
+    try {
+      await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+    } catch {
+      window.showErrorMessage('Failed to update iproj.json');
     }
   }
 
@@ -188,7 +382,7 @@ export class IProject {
 
   public async createEnv(): Promise<boolean> {
     try {
-      const variables = this.getVariables().map(variable => variable + '=').join('\n');
+      const variables = (await this.getVariables()).map(variable => variable + '=').join('\n');
 
       await workspace.fs.writeFile(this.getEnvFilePath(), new TextEncoder().encode(variables));
       return true;
@@ -208,21 +402,33 @@ export class IProject {
     return this.environmentValues;
   }
 
+  public async setEnv(variable: string, value: string) {
+    const env = await this.getEnv();
+    env[variable] = value;
+
+    let content = '';
+    for (const [key, value] of Object.entries(env)) {
+      content += `${key}=${value}\n`;
+    }
+    await workspace.fs.writeFile(this.getEnvFilePath(), new TextEncoder().encode(content));
+  }
+
   public getJobLogs() {
     return this.jobLogs.toArray();
   }
 
-  public getVariables(): string[] {
-    if (!this.state) {
+  public async getVariables(): Promise<string[]> {
+    const unresolvedState = await this.getUnresolvedState();
+    if (!unresolvedState) {
       return [];
     }
 
     const valueList: string[] = [
-      this.state.curlib,
-      this.state.objlib,
-      ...(this.state.postUsrlibl ? this.state.postUsrlibl : []),
-      ...(this.state.preUsrlibl ? this.state.preUsrlibl : []),
-      ...(this.state.includePath ? this.state.includePath : []),
+      unresolvedState.curlib,
+      unresolvedState.objlib,
+      ...(unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl : []),
+      ...(unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl : []),
+      ...(unresolvedState.includePath ? unresolvedState.includePath : []),
     ].filter(x => x) as string[];
 
     // Get everything that starts with an &
@@ -260,7 +466,9 @@ export class IProject {
   public static validateIProject(content: string): IProjectT {
     const iproj = JSON.parse(content);
 
-    // Validate iproj.json here
+    if (!iproj.objlib && iproj.curlib) {
+      iproj.objlib = iproj.curlib;
+    }
 
     return iproj;
   }

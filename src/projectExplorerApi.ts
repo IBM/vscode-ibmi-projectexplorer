@@ -14,6 +14,7 @@ export enum ContextValue {
   project = 'project',
   source = 'source',
   variables = 'variables',
+  libraryList = 'libraryList',
   objectLibraries = 'objectLibraries',
   library = 'library',
   objectFile = `objectFile`,

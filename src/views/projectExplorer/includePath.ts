@@ -21,6 +21,7 @@ export default class IncludePath extends IFSDirectory {
         label: includePath
       }
     );
+
     this.contextValue = IncludePath.contextValue;
     this.iconPath = new ThemeIcon(`link`);
   }

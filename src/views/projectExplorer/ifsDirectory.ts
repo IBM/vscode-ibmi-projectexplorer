@@ -19,6 +19,7 @@ export default class IFSDirectory extends ProjectExplorerTreeItem {
   constructor(public workspaceFolder: WorkspaceFolder, ifsDirectoryInfo: vscodeIbmiTypes.IFSFile, custom?: { label?: string, description?: string }) {
     super(ifsDirectoryInfo.name, TreeItemCollapsibleState.Collapsed);
     this.ifsDirectoryInfo = ifsDirectoryInfo;
+
     this.contextValue = IFSDirectory.contextValue;
     this.iconPath = new ThemeIcon(`symbol-folder`);
     this.tooltip = `Name: ${ifsDirectoryInfo.name}\n` +
