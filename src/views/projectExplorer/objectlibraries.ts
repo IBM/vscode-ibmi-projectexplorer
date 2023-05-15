@@ -5,7 +5,7 @@
 import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
-import Library from "./library";
+import Library, { LibraryType } from "./library";
 import { ContextValue } from "../../projectExplorerApi";
 
 /**
@@ -47,7 +47,7 @@ export default class ObjectLibraries extends ProjectExplorerTreeItem {
       state.objlib ? objLibs.add(state.objlib.toUpperCase()) : null;
 
       for (const lib of objLibs) {
-        const libTreeItem = new Library(this.workspaceFolder, `/QSYS.LIB/${lib}`, lib);
+        const libTreeItem = new Library(this.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.library);
         items.push(libTreeItem);
       }
     }

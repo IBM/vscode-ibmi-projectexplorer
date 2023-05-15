@@ -13,6 +13,8 @@ import { DecorationProvider } from "./decorationProvider";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import IncludePaths from "./includePaths";
 import IncludePath from "./includePath";
+import LibraryList from "./libraryList";
+import Library from "./library";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -23,6 +25,55 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const library = await window.showInputBox({
+              prompt: `Enter library name`
+            });
+
+            if (library) {
+              const selectedPosition = await window.showQuickPick([
+                'Beginning of Library List',
+                'End of Library List'], {
+                placeHolder: 'Choose where to position the library',
+              });
+
+              if (selectedPosition) {
+                const position = (selectedPosition === 'Beginning of Library List') ? 'preUsrlibl' : 'postUsrlibl';
+                await iProject.addToLibraryList(library, position);
+              }
+            }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary`, async (element: LibraryList) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const library = await window.showInputBox({
+              prompt: `Enter library name`
+            });
+
+            if (library) {
+              await iProject.setCurrentLibrary(library);
+            }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList`, async (element: Library) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const library = element.label!.toString();
+            await iProject.removeFromLibraryList(library, element.type);
+          }
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
         if (workspaceFolder && varName) {
           const iProject = ProjectManager.get(workspaceFolder);
@@ -75,7 +126,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             });
 
             if (includePath) {
-              iProject.addToIncludePaths(includePath);
+              await iProject.addToIncludePaths(includePath);
             }
           }
         } else {
@@ -95,7 +146,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
-            iProject.removeFromIncludePaths(element.label!.toString());
+            await iProject.removeFromIncludePaths(element.label!.toString());
           }
         }
       })

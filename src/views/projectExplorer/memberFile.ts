@@ -15,9 +15,8 @@ import { ContextValue } from "../../projectExplorerApi";
 export default class MemberFile extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.memberFile;
   memberUri: Uri | null;
-
   constructor(public workspaceFolder: WorkspaceFolder, fullpath: string, attribute: string | undefined, type: string | undefined, library: string, file: string,
-    isPhyicalFile: boolean, tooltip: string | undefined, member: IBMiMember | null) {
+    isPhysicalFile: boolean, tooltip: string | undefined, member: IBMiMember | null) {
     let fileExtension = '';
     if (type === "*PGM") {
       fileExtension = "PGM";
@@ -47,7 +46,7 @@ export default class MemberFile extends ProjectExplorerTreeItem {
     this.tooltip = tooltip;
 
     // We only want to add a command if it's a physical file
-    if (isPhyicalFile) {
+    if (isPhysicalFile) {
       this.command = {
         command: `showMemberContent`,
         title: `Show member contents`,

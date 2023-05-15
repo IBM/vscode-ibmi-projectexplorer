@@ -34,7 +34,7 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 	projectWatcher.onDidChange(async (uri) => {
 		const iProject = ProjectManager.getProjectFromUri(uri);
 		if (iProject) {
-			await iProject.read();
+			await iProject.updateState();
 		}
 		projectExplorer.refresh();
 	});
