@@ -11,6 +11,7 @@ import { TextEncoder } from "util";
 import { LibraryType } from "./views/projectExplorer/qsysLib";
 import { getInstance } from "./ibmi";
 import { IProjectT } from "./iProjectT";
+import { getInstance } from "./ibmi";
 
 const DEFAULT_CURLIB = '&CURLIB';
 
@@ -97,8 +98,12 @@ export class IProject {
   }
 
   public async addToIncludePaths(directoryToAdd: string) {
-    const unresolvedState = await this.getUnresolvedState();
+    const ibmi = getInstance();
+    const deploymentDirs = ibmi?.getStorage().getDeployment()!;
+    const remoteDir = deploymentDirs[this.workspaceFolder.uri.fsPath];
+    directoryToAdd = directoryToAdd.startsWith(remoteDir) ? path.posix.relative(remoteDir, directoryToAdd) : directoryToAdd;
 
+    const unresolvedState = await this.getUnresolvedState();
     if (unresolvedState) {
       if (unresolvedState.includePath) {
         if (!unresolvedState.includePath.includes(directoryToAdd)) {

@@ -132,7 +132,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
             });
 
             if (includePath) {
-              iProject.addToIncludePaths(includePath);
+              await iProject.addToIncludePaths(includePath);
             }
           }
         } else {
@@ -152,7 +152,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
-            iProject.removeFromIncludePaths(element.label!.toString());
+            await iProject.removeFromIncludePaths(element.label!.toString());
           }
         }
       })
