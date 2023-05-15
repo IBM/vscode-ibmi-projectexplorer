@@ -18,7 +18,6 @@ export default class ErrorItem extends ProjectExplorerTreeItem {
     this.contextValue = ErrorItem.contextValue;
     this.description = options.description;
     this.command = options.command;
-
     this.iconPath = new ThemeIcon(`error`);
   }
 

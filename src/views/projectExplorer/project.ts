@@ -13,6 +13,7 @@ import { ContextValue } from "../../projectExplorerApi";
 import { IProject } from "../../iproject";
 import IncludePaths from "./includePaths";
 import Source from "./source";
+import LibraryList from "./libraryList";
 
 /**
  * Tree item for a project
@@ -55,14 +56,11 @@ export default class Project extends ProjectExplorerTreeItem {
       }));
     }
 
-    // Then load the variable specific stuff
-    await iProject?.read();
-
     const hasEnv = await iProject?.projectFileExists('.env');
     if (hasEnv) {
       let unresolvedVariableCount = 0;
 
-      const possibleVariables = iProject?.getVariables();
+      const possibleVariables = await iProject?.getVariables();
       const actualValues = await iProject?.getEnv();
       if (possibleVariables && actualValues) {
         unresolvedVariableCount = possibleVariables.filter(varName => !actualValues[varName]).length;
@@ -81,6 +79,7 @@ export default class Project extends ProjectExplorerTreeItem {
       }));
     }
 
+    items.push(new LibraryList(this.workspaceFolder));
     items.push(new ObjectLibraries(this.workspaceFolder));
     items.push(new IncludePaths(this.workspaceFolder));
 

@@ -27,7 +27,7 @@ export default class Variables extends ProjectExplorerTreeItem {
     let items: ProjectExplorerTreeItem[] = [];
 
     const iProject = ProjectManager.get(this.workspaceFolder);
-    const possibleVariables = iProject?.getVariables();
+    const possibleVariables = await iProject?.getVariables();
     if (!possibleVariables) {
       return [];
     }

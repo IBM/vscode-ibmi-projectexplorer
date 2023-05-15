@@ -5,7 +5,7 @@
 import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
-import Library from "./library";
+import Library, { LibraryType } from "./library";
 import { ContextValue } from "../../projectExplorerApi";
 import { getInstance } from "../../ibmi";
 
@@ -25,14 +25,14 @@ export default class ObjectLibraries extends ProjectExplorerTreeItem {
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
     let items: ProjectExplorerTreeItem[] = [];
 
+    const ibmi = getInstance();
     const iProject = ProjectManager.get(this.workspaceFolder);
     const objLibs = await iProject?.getObjectLibraries();
     if (objLibs) {
       for (const objLib of objLibs) {
-        const ibmi = getInstance();
         const libraryInfo = await ibmi?.getContent().getObjectList({ library: 'QSYS', object: objLib, types: ['*LIB'] }, 'name');
         if (libraryInfo) {
-          const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0]);
+          const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0], LibraryType.library);
           items.push(libTreeItem);
         }
       }

@@ -16,6 +16,7 @@ export default class IFSFile extends ProjectExplorerTreeItem {
 
   constructor(public workspaceFolder: WorkspaceFolder, ifsFileInfo: vscodeIbmiTypes.IFSFile) {
     super(ifsFileInfo.name, TreeItemCollapsibleState.None);
+
     this.ifsFileInfo = ifsFileInfo;
     this.contextValue = IFSFile.contextValue;
     this.iconPath = new ThemeIcon(`file`);

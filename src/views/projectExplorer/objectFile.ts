@@ -7,19 +7,20 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import MemberFile from "./memberFile";
 import { getInstance } from "../../ibmi";
 import { ContextValue } from "../../projectExplorerApi";
-import { IBMiFile } from "@halcyontech/vscode-ibmi-types";
+import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 
 /**
  * Tree item for an object file
  */
 export default class ObjectFile extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.objectFile;
-  objectFileInfo: IBMiFile;
+  objectFileInfo: IBMiObject;
   path: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, objectFileInfo: IBMiFile, pathToLibrary: string) {
+  constructor(public workspaceFolder: WorkspaceFolder, objectFileInfo: IBMiObject, pathToLibrary: string) {
     const type = objectFileInfo.type.startsWith(`*`) ? objectFileInfo.type.substring(1) : objectFileInfo.type;
     super(`${objectFileInfo.name}.${type}`);
+
     this.objectFileInfo = objectFileInfo;
     this.path = `${pathToLibrary}/${objectFileInfo.name}.${type}`;
     this.collapsibleState = objectFileInfo.attribute === 'PF' ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None;
@@ -27,7 +28,7 @@ export default class ObjectFile extends ProjectExplorerTreeItem {
     const icon = objectFileIcons.get(type.toLowerCase()) || `file`;
     this.iconPath = new ThemeIcon(icon);
     this.description = (objectFileInfo.text.trim() !== '' ? `${objectFileInfo.text} ` : ``) +
-      (objectFileInfo.attribute ? `(${objectFileInfo.attribute})` : '');
+      (objectFileInfo.attribute?.trim() !== '' ? `(${objectFileInfo.attribute})` : '');
     this.tooltip = `Name: ${objectFileInfo.name}\n` +
       `Path: ${this.path}\n` +
       (objectFileInfo.text.trim() !== '' ? `Text: ${objectFileInfo.text}\n` : ``) +

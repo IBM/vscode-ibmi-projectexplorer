@@ -22,6 +22,7 @@ export default class Source extends IFSDirectory {
         description: remoteDir
       }
     );
+
     this.contextValue = Source.contextValue;
     this.iconPath = new ThemeIcon(`server-environment`);
   }
