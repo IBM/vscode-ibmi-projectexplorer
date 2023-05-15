@@ -8,10 +8,12 @@ import { loadBase, getInstance } from './ibmi';
 import { ProjectManager } from './projectManager';
 import JobLog from './views/jobLog';
 import ProjectExplorer from './views/projectExplorer';
+import { ProjectExplorerApi } from './projectExplorerApi';
+import { ProjectExplorerTreeItem } from './views/projectExplorer/projectExplorerTreeItem';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
@@ -28,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// @ts-ignore
 	ibmi?.onEvent(`deployLocation`, () => { projectExplorer.refresh(); });
 
-	const projectWatcher = vscode.workspace.createFileSystemWatcher(`**/*.{env,json}`);
+	const projectWatcher = vscode.workspace.createFileSystemWatcher(`**/{iproj.json,.ibmi.json,.env}`);
 	projectWatcher.onDidChange(async (uri) => {
 		const iProject = ProjectManager.getProjectFromUri(uri);
 		if (iProject) {
@@ -110,10 +112,12 @@ export function activate(context: vscode.ExtensionContext) {
 				createFilePreview(content, library, file, member);
 			} catch (e) {
 				// if this works its a source member
-				vscode.commands.executeCommand('vscode.open', memberUri)
+				vscode.commands.executeCommand('vscode.open', memberUri);
 			}
 		}
 	});
+
+	return { projectManager: ProjectManager, projectExplorer: projectExplorer };
 }
 
 // this method is called when your extension is deactivated

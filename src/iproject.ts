@@ -8,10 +8,9 @@ import * as dotenv from 'dotenv';
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
 import { TextEncoder } from "util";
-import { LibraryType } from "./views/projectExplorer/qsysLib";
-import { getInstance } from "./ibmi";
 import { IProjectT } from "./iProjectT";
 import { getInstance } from "./ibmi";
+import { LibraryType } from "./views/projectExplorer/library";
 
 const DEFAULT_CURLIB = '&CURLIB';
 

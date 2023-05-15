@@ -2,30 +2,24 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { CancellationToken, commands, Event, EventEmitter, ExtensionContext, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, TreeItemCollapsibleState, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, EventEmitter, ExtensionContext, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
+import ErrorItem from "./errorItem";
 import { IProject } from "../../iproject";
-import ErrorItem from "../../test/errorItem";
-import IFSFolder from "./ifsFolder";
 import Project from "./project";
-import Streamfile from "./streamfile";
-import Variables from "./variables";
-import Variable from "./variable";
 import envUpdater from "../../envUpdater";
 import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
-import ObjectLibrary from "./objectlibrary";
-import QSYSLib, { LibraryType } from "./qsysLib";
-import PhysicalFile from "./physicalfile";
-import File from "./file";
-import LibraryList from "./libraryList";
-import { IProjectT } from "../../iProjectT";
+import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import IncludePaths from "./includePaths";
 import IncludePath from "./includePath";
+import LibraryList from "./libraryList";
+import Library from "./library";
 
-export default class ProjectExplorer implements TreeDataProvider<any> {
-  private _onDidChangeTreeData = new EventEmitter<TreeItem | undefined | null | void>();
+export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
+  private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+  private projectTreeItems: Project[] = [];
 
   constructor(context: ExtensionContext) {
     const decorationProvider = new DecorationProvider();
@@ -70,7 +64,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList`, async (element: QSYSLib) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList`, async (element: Library) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
@@ -159,204 +153,24 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
     );
   }
 
-  refresh() {
-    this._onDidChangeTreeData.fire(null);
+  refresh(element?: ProjectExplorerTreeItem) {
+    this._onDidChangeTreeData.fire(element);
   }
 
-  getTreeItem(element: TreeItem): TreeItem | Thenable<TreeItem> {
+  getTreeItem(element: ProjectExplorerTreeItem): ProjectExplorerTreeItem | Thenable<ProjectExplorerTreeItem> {
     return element;
   }
 
-  async getChildren(element?: TreeItem): Promise<any[]> {
-    const ibmi = getInstance();
-
+  async getChildren(element?: ProjectExplorerTreeItem): Promise<ProjectExplorerTreeItem[]> {
     if (element) {
-      let items: TreeItem[] = [];
-      let iProject: IProject | undefined;
-      let state: IProjectT | undefined;
-
-      switch (element.contextValue) {
-        case Project.contextValue:
-          const projectElement = element as Project;
-          iProject = ProjectManager.get(projectElement.workspaceFolder);
-
-          const deploymentDirs = ibmi?.getStorage().getDeployment()!;
-
-          const localDir = projectElement.resourceUri?.path!;
-          const remoteDir = deploymentDirs[localDir];
-
-          // First load the IFS browser stuff
-          if (remoteDir) {
-            items.push(new IFSFolder(remoteDir, `Source`));
-          } else {
-            items.push(new ErrorItem(`Source`, {
-              description: `Please configure remote directory.`,
-              command: {
-                command: `code-for-ibmi.setDeployLocation`,
-                title: `Set deploy location`,
-                arguments: [{}, element.resourceUri]
-              }
-            }));
-          }
-
-          const hasEnv = await iProject?.projectFileExists('.env');
-          if (hasEnv) {
-            let unresolvedVariableCount = 0;
-
-            const possibleVariables = await iProject?.getVariables();
-            const actualValues = await iProject?.getEnv();
-            if (possibleVariables && actualValues) {
-              unresolvedVariableCount = possibleVariables.filter(varName => !actualValues[varName]).length;
-            }
-
-            items.push(new Variables(projectElement.workspaceFolder, unresolvedVariableCount));
-
-          } else {
-            items.push(new ErrorItem(`Variables`, {
-              description: `Please configure environment file.`,
-              command: {
-                command: `vscode-ibmi-projectexplorer.createEnv`,
-                arguments: [projectElement.workspaceFolder],
-                title: `Create project .env`
-              }
-            }));
-          }
-
-          items.push(new LibraryList(projectElement.workspaceFolder));
-          items.push(new ObjectLibrary(projectElement.workspaceFolder));
-          items.push(new IncludePaths(projectElement.workspaceFolder));
-
-          break;
-
-        case IFSFolder.contextValue:
-          const objects = await ibmi?.getContent().getFileList(element.resourceUri?.path!);
-          const objectItems = objects?.map((object) => (object.type === `directory` ? new IFSFolder(object.path) : new Streamfile(object.path))) || [];
-
-          items.push(...objectItems);
-          break;
-
-        case Variables.contextValue:
-          const variablesElement = element as Variables;
-          iProject = ProjectManager.get(variablesElement.workspaceFolder);
-
-          const possibleVariables = await iProject?.getVariables();
-          const actualValues = await iProject?.getEnv();
-
-          if (possibleVariables && actualValues) {
-            items.push(...possibleVariables?.map(
-              varName => new Variable(iProject!.workspaceFolder, varName, actualValues[varName])
-            ));
-
-          } else {
-            items.push(new ErrorItem(`Source`, {
-              description: `Unable to read variables.`,
-            }));
-          }
-          break;
-        case LibraryList.contextValue:
-          const libraryListElement = element as LibraryList;
-          iProject = ProjectManager.get(libraryListElement.workspaceFolder);
-
-          const libraryList = await iProject?.getLibraryList();
-          if (libraryList) {
-            let lib, type;
-            for (const line of libraryList) {
-              lib = line.substring(0, 10).trim();
-              type = line.substring(12);
-
-              switch (type) {
-                case `SYS`:
-                  items.push(new QSYSLib(libraryListElement.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.systemLibrary));
-                  break;
-
-                case `CUR`:
-                  items.push(new QSYSLib(libraryListElement.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.currentLibrary));
-                  break;
-
-                case `USR`:
-                  items.push(new QSYSLib(libraryListElement.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.userLibrary));
-                  break;
-              }
-            }
-          }
-          break;
-        case ObjectLibrary.contextValue:
-          const objectLibrariesElement = element as ObjectLibrary;
-          iProject = ProjectManager.get(objectLibrariesElement.workspaceFolder);
-
-          state = await iProject?.getState();
-          if (state) {
-            const objLibs = new Set<string>();
-            if (state.curlib) {
-              objLibs.add(state.curlib.toUpperCase());
-            }
-            if (state.preUsrlibl) {
-              for (const lib of state.preUsrlibl) {
-                objLibs.add(lib.toUpperCase());
-              }
-            }
-            if (state.postUsrlibl) {
-              for (const lib of state.postUsrlibl) {
-                objLibs.add(lib.toUpperCase());
-              }
-            }
-
-            state.objlib ? objLibs.add(state.objlib.toUpperCase()) : null;
-
-            for (const lib of objLibs) {
-              const libTreeItem = new QSYSLib(objectLibrariesElement.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.library);
-              items.push(libTreeItem);
-            }
-          }
-          break;
-        case IncludePaths.contextValue:
-          const includePathsElement = element as IncludePaths;
-          iProject = ProjectManager.get(includePathsElement.workspaceFolder);
-
-          state = await iProject?.getState();
-          if (state && state.includePath) {
-            state.includePath.forEach(includePath => {
-              items.push(new IncludePath(includePathsElement.workspaceFolder, includePath));
-            });
-          }
-          break;
-
-        case QSYSLib.contextValue:
-          const lib = element as QSYSLib;
-          const files = await ibmi?.getContent().getObjectList({
-            library: lib.name
-          });
-          if (files) {
-            for (const file of files) {
-              const path = `/QSYS.LIB/${lib.name}/${file.name}`;
-              if (file.attribute === "PF") {
-                items.push(new PhysicalFile(path, lib.name, file.name, file.text));
-              } else {
-                // This is some other non physical file type
-                items.push(new File(path, file.attribute, file.type, lib.name, file.name, false, file.text, null));
-              }
-            }
-          }
-          break;
-
-        case PhysicalFile.contextValue:
-          const pf = element as PhysicalFile;
-          const members = await ibmi?.getContent().getMemberList(pf.library, pf.file);
-
-          if (members) {
-            for (const member of members) {
-              items.push(new File(member.name, member.extension, "MBR", pf.library, pf.file, true, member.text, member));
-            }
-          }
-      }
-
-      return items;
-
+      return element.getChildren();
     } else {
+      const items: ProjectExplorerTreeItem[] = [];
+
+      const ibmi = getInstance();
 
       if (ibmi && ibmi.getConnection()) {
         const workspaceFolders = workspace.workspaceFolders;
-        const items: any[] = [];
 
         if (workspaceFolders && workspaceFolders.length > 0) {
           for await (const folder of workspaceFolders) {
@@ -374,6 +188,7 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
                 }
               } else {
                 items.push(new ErrorItem(
+                  folder,
                   folder.name,
                   {
                     description: 'Please configure project metadata.',
@@ -385,9 +200,12 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
                   }));
               }
             }
+
+            this.projectTreeItems = items as Project[];
           };
         } else {
           items.push(new ErrorItem(
+            undefined,
             `Please open a local workspace folder.`,
             {
               command: {
@@ -396,19 +214,19 @@ export default class ProjectExplorer implements TreeDataProvider<any> {
               }
             }));
         }
-
-        return items;
       } else {
-        return [new ErrorItem(`Please connect to an IBM i.`)];
+        items.push(new ErrorItem(undefined, `Please connect to an IBM i.`));
       }
+
+      return items;
     }
   }
 
-  getParent?(element: any) {
-    throw new Error("Method not implemented.");
-  }
-
-  resolveTreeItem?(item: TreeItem, element: any, token: CancellationToken): Promise<TreeItem> {
-    throw new Error("Method not implemented.");
+  getProjectTreeItem(iProject: IProject): Project | undefined {
+    for (const projectTreeItem of this.projectTreeItems) {
+      if (projectTreeItem.workspaceFolder === iProject.workspaceFolder) {
+        return projectTreeItem;
+      }
+    }
   }
 }
