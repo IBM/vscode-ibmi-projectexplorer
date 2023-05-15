@@ -192,16 +192,18 @@ export class IProject {
             });
           }
 
-          const libraryNames = libraryList.map(lib => lib.name);
-          const libraryListInfo = await ibmi?.getContent().getLibraryList(libraryNames);
+          const libraryListInfo = await ibmi?.getContent().getLibraryList(libraryList.map(lib => lib.name));
           if (libraryListInfo) {
-            for (const libraryInfo of libraryListInfo) {
-              const index = libraryNames.indexOf(libraryInfo.name);
-              (libraryInfo as any).libraryType = libraryList[index].libraryType;
+            let libl = [];
+            for (const [index, library] of libraryList.entries()) {
+              libl.push({
+                libraryInfo: libraryListInfo[index],
+                libraryType: library.libraryType
+              });
             }
-          }
 
-          return libraryListInfo;
+            return libl;
+          }
         }
       }
     }

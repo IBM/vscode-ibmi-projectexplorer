@@ -30,17 +30,17 @@ export default class LibraryList extends ProjectExplorerTreeItem {
     const libraryList = await iProject?.getLibraryList();
     if (libraryList) {
       for (const library of libraryList) {
-        switch ((library as any).libraryType) {
+        switch (library.libraryType) {
           case `SYS`:
-            items.push(new Library(this.workspaceFolder, library, LibraryType.systemLibrary));
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.systemLibrary));
             break;
 
           case `CUR`:
-            items.push(new Library(this.workspaceFolder, library, LibraryType.currentLibrary));
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.currentLibrary));
             break;
 
           case `USR`:
-            items.push(new Library(this.workspaceFolder, library, LibraryType.userLibrary));
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.userLibrary));
             break;
         }
       }
