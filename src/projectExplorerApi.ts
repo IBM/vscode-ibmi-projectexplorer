@@ -24,5 +24,7 @@ export enum ContextValue {
   variable = 'variable',
   includePaths = 'includePaths',
   includePath = 'includePath',
+  local = '_local',
+  remote = '_remote',
   error = 'error'
 }

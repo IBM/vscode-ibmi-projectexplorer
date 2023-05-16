@@ -2,12 +2,16 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
+import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, workspace } from "vscode";
 import { ContextValue } from "../../projectExplorerApi";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
-import IncludePath from "./includePath";
+import LocalIncludePath from "./localIncludePath";
+import RemoteIncludePath from "./remoteIncludePath";
 
+/**
+ * Tree item for Include Paths heading
+ */
 export default class IncludePaths extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.includePaths;
 
@@ -24,9 +28,28 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
     const iProject = ProjectManager.get(this.workspaceFolder);
     const state = await iProject?.getState();
     if (state && state.includePath) {
-      state.includePath.forEach(includePath => {
-        items.push(new IncludePath(this.workspaceFolder, includePath));
-      });
+      for await (const includePath of state.includePath) {
+
+        let includePathUri = Uri.file(includePath);
+        try {
+          const statResult = await workspace.fs.stat(includePathUri);
+
+          // Absolute local include path
+          items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri));
+        } catch (e) {
+          includePathUri = Uri.joinPath(this.workspaceFolder.uri, includePath);
+
+          try {
+            const statResult = await workspace.fs.stat(includePathUri);
+
+            // Relative local include path
+            items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri));
+          } catch (e) {
+            // Remote include path
+            items.push(new RemoteIncludePath(this.workspaceFolder, includePath));
+          }
+        }
+      }
     }
 
     return items;
