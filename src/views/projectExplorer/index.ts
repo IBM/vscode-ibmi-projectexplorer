@@ -146,10 +146,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         await commands.executeCommand('revealInExplorer', element.uri);
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.removeFromIncludePaths`, async (element: RemoteIncludePath | LocalIncludePath) => {
-        const iProject = ProjectManager.get(element.workspaceFolder);
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
 
-        if (iProject) {
-          await iProject.removeFromIncludePaths(element.label!.toString());
+          if (iProject) {
+            await iProject.removeFromIncludePaths(element.label!.toString());
+          }
         }
       })
     );
