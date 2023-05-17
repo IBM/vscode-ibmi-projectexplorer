@@ -187,7 +187,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "when": "view == projectExplorer && viewItem =~ /^library_(current|user).*/",
           "group": "inline@0"
         },
         {
