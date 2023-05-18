@@ -26,7 +26,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.setActiveProject`, async (element?: ProjectExplorerTreeItem) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.setActiveProject`, async (element?: Project) => {
         if (element) {
           ProjectManager.setActiveProject(element.workspaceFolder!);
           this.refresh();

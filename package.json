@@ -187,7 +187,7 @@
       "view/item/context": [
         {
           "command": "vscode-ibmi-projectexplorer.setActiveProject",
-          "when": "view == projectExplorer && viewItem == project_inactive",
+          "when": "view == projectExplorer && viewItem =~ /^project_inactive.*/",
           "group": "inline@0"
         },
         {
