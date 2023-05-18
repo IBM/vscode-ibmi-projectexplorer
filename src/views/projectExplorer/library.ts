@@ -6,8 +6,8 @@ import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { getInstance } from "../../ibmi";
 import ObjectFile from "./objectFile";
-import MemberFile from "./memberFile";
 import { ContextValue } from "../../projectExplorerApi";
+import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 
 export enum LibraryType {
   library,
@@ -21,30 +21,42 @@ export enum LibraryType {
  */
 export default class Library extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.library;
-  name: string;
-  type: LibraryType;
+  libraryInfo: IBMiObject;
+  libraryType: LibraryType;
+  path: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, path: string, name: string, type: LibraryType) {
-    super(name, TreeItemCollapsibleState.Collapsed);
-    this.description = path;
-    this.contextValue = Library.contextValue;
-    this.name = name;
-    this.tooltip = `Library ${path}`;
-    this.type = type;
+  constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType) {
+    super(libraryInfo.name, TreeItemCollapsibleState.Collapsed);
 
+    this.libraryInfo = libraryInfo;
+    this.libraryType = libraryType;
+    const type = libraryInfo.type.startsWith(`*`) ? libraryInfo.type.substring(1) : libraryInfo.type;
+    this.path = `/${libraryInfo.library}.LIB/${libraryInfo.name}.${type}`;
+    this.iconPath = new ThemeIcon(`library`);
+    this.description = (libraryInfo.text.trim() !== '' ? `${libraryInfo.text} ` : ``) +
+      (libraryInfo.attribute?.trim() !== '' ? `(${libraryInfo.attribute})` : '');
+    this.tooltip = `Name: ${libraryInfo.name}\n` +
+      `Path: ${this.path}\n` +
+      (libraryInfo.text.trim() !== '' ? `Text: ${libraryInfo.text}\n` : ``) +
+      `Attribute: ${libraryInfo.attribute}\n` +
+      `Type: ${libraryInfo.type}`;
     let iconColor: ThemeColor | undefined;
-    switch (type) {
+    switch (this.libraryType) {
       case LibraryType.systemLibrary:
         iconColor = new ThemeColor('projectExplorer.systemLibrary');
+        this.contextValue = Library.contextValue + ContextValue.system;
         break;
       case LibraryType.currentLibrary:
         iconColor = new ThemeColor('projectExplorer.currentLibrary');
+        this.contextValue = Library.contextValue + ContextValue.current;
         break;
       case LibraryType.userLibrary:
         iconColor = new ThemeColor('projectExplorer.userLibrary');
+        this.contextValue = Library.contextValue + ContextValue.user;
         break;
       default:
         iconColor = undefined;
+        this.contextValue = Library.contextValue;
     }
     this.iconPath = new ThemeIcon(`library`, iconColor);
   }
@@ -53,18 +65,10 @@ export default class Library extends ProjectExplorerTreeItem {
     let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
-    const files = await ibmi?.getContent().getObjectList({
-      library: this.name
-    });
-    if (files) {
-      for (const file of files) {
-        const path = `/QSYS.LIB/${this.name}/${file.name}`;
-        if (file.attribute === "PF") {
-          items.push(new ObjectFile(this.workspaceFolder, path, this.name, file.name, file.text));
-        } else {
-          // This is some other non physical file type
-          items.push(new MemberFile(this.workspaceFolder, path, file.attribute, file.type, this.name, file.name, false, file.text, null));
-        }
+    const objectFiles = await ibmi?.getContent().getObjectList({ library: this.libraryInfo.name, }, 'name');
+    if (objectFiles) {
+      for (const objectFile of objectFiles) {
+        items.push(new ObjectFile(this.workspaceFolder, objectFile, this.path));
       }
     }
 

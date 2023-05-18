@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import path = require("path");
+import * as path from "path";
 import { Uri, window, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
 import { RingBuffer } from "./views/jobLog/RingBuffer";
@@ -138,7 +138,7 @@ export class IProject {
     }
   }
 
-  public async getLibraryList(): Promise<string[] | undefined> {
+  public async getLibraryList() {
     const ibmi = getInstance();
     const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;
 
@@ -182,8 +182,28 @@ export class IProject {
         const libraryListString = liblResult.stdout;
 
         if (libraryListString !== ``) {
-          const libraryList = libraryListString.split(`\n`);
-          return libraryList;
+          const libraries = libraryListString.split(`\n`);
+
+          let libraryList: { name: string, libraryType: string }[] = [];
+          for (const library of libraries) {
+            libraryList.push({
+              name: library.substring(0, 10).trim(),
+              libraryType: library.substring(12)
+            });
+          }
+
+          const libraryListInfo = await ibmi?.getContent().getLibraryList(libraryList.map(lib => lib.name));
+          if (libraryListInfo) {
+            let libl = [];
+            for (const [index, library] of libraryList.entries()) {
+              libl.push({
+                libraryInfo: libraryListInfo[index],
+                libraryType: library.libraryType
+              });
+            }
+
+            return libl;
+          }
         }
       }
     }
@@ -419,6 +439,30 @@ export class IProject {
     // Remove duplicates
     return variableNameList.filter((name,
       index) => variableNameList.indexOf(name) === index);
+  }
+
+  public async getObjectLibraries(): Promise<Set<string> | undefined> {
+    const state = await this.getState();
+    if (state) {
+      const objLibs = new Set<string>();
+      if (state.curlib) {
+        objLibs.add(state.curlib.toUpperCase());
+      }
+      if (state.preUsrlibl) {
+        for (const lib of state.preUsrlibl) {
+          objLibs.add(lib.toUpperCase());
+        }
+      }
+      if (state.postUsrlibl) {
+        for (const lib of state.postUsrlibl) {
+          objLibs.add(lib.toUpperCase());
+        }
+      }
+
+      state.objlib ? objLibs.add(state.objlib.toUpperCase()) : null;
+
+      return objLibs;
+    }
   }
 
   public static validateIProject(content: string): IProjectT {

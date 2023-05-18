@@ -7,6 +7,7 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 import { ProjectManager } from "../../projectManager";
 import Library, { LibraryType } from "./library";
+import { getInstance } from "../../ibmi";
 
 /**
  * Tree item for the Library List heading
@@ -24,25 +25,22 @@ export default class LibraryList extends ProjectExplorerTreeItem {
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
     let items: ProjectExplorerTreeItem[] = [];
 
+    const ibmi = getInstance();
     const iProject = ProjectManager.get(this.workspaceFolder);
     const libraryList = await iProject?.getLibraryList();
     if (libraryList) {
-      let lib, type;
-      for (const line of libraryList) {
-        lib = line.substring(0, 10).trim();
-        type = line.substring(12);
-
-        switch (type) {
+      for (const library of libraryList) {
+        switch (library.libraryType) {
           case `SYS`:
-            items.push(new Library(this.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.systemLibrary));
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.systemLibrary));
             break;
 
           case `CUR`:
-            items.push(new Library(this.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.currentLibrary));
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.currentLibrary));
             break;
 
           case `USR`:
-            items.push(new Library(this.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.userLibrary));
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.userLibrary));
             break;
         }
       }

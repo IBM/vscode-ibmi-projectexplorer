@@ -7,6 +7,7 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import Library, { LibraryType } from "./library";
 import { ContextValue } from "../../projectExplorerApi";
+import { getInstance } from "../../ibmi";
 
 /**
  * Tree item for the Object Libraries heading
@@ -17,7 +18,6 @@ export default class ObjectLibraries extends ProjectExplorerTreeItem {
   constructor(public workspaceFolder: WorkspaceFolder) {
     super("Object Libraries", TreeItemCollapsibleState.Collapsed);
 
-    this.resourceUri = workspaceFolder.uri;
     this.iconPath = new ThemeIcon(`root-folder`);
     this.contextValue = ObjectLibraries.contextValue;
     this.tooltip = "Object Libraries - Work with the set of libraries defined in the curlib, objlib, preUsrlibl, and postUsrlibl entries of the iproj.json"
@@ -26,29 +26,16 @@ export default class ObjectLibraries extends ProjectExplorerTreeItem {
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
     let items: ProjectExplorerTreeItem[] = [];
 
+    const ibmi = getInstance();
     const iProject = ProjectManager.get(this.workspaceFolder);
-    const state = await iProject?.getState();
-    if (state) {
-      const objLibs = new Set<string>();
-      if (state.curlib) {
-        objLibs.add(state.curlib.toUpperCase());
-      }
-      if (state.preUsrlibl) {
-        for (const lib of state.preUsrlibl) {
-          objLibs.add(lib.toUpperCase());
+    const objLibs = await iProject?.getObjectLibraries();
+    if (objLibs) {
+      for (const objLib of objLibs) {
+        const libraryInfo = await ibmi?.getContent().getObjectList({ library: 'QSYS', object: objLib, types: ['*LIB'] }, 'name');
+        if (libraryInfo) {
+          const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0], LibraryType.library);
+          items.push(libTreeItem);
         }
-      }
-      if (state.postUsrlibl) {
-        for (const lib of state.postUsrlibl) {
-          objLibs.add(lib.toUpperCase());
-        }
-      }
-
-      state.objlib ? objLibs.add(state.objlib.toUpperCase()) : null;
-
-      for (const lib of objLibs) {
-        const libTreeItem = new Library(this.workspaceFolder, `/QSYS.LIB/${lib}`, lib, LibraryType.library);
-        items.push(libTreeItem);
       }
     }
 
