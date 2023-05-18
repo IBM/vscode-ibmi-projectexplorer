@@ -27,8 +27,8 @@ export default class Project extends ProjectExplorerTreeItem {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
 
     this.resourceUri = workspaceFolder.uri;
-    this.iconPath = new ThemeIcon(`root-folder`);
-    this.contextValue = Project.contextValue;
+    this.iconPath = new ThemeIcon(`symbol-folder`);
+    this.contextValue = Project.contextValue + ContextValue.inactive;
     this.description = description;
   }
 
@@ -47,7 +47,7 @@ export default class Project extends ProjectExplorerTreeItem {
       items.push(new Source(this.workspaceFolder, remoteDir));
     } else {
       items.push(new ErrorItem(this.workspaceFolder, `Source`, {
-        description: `Please configure remote directory.`,
+        description: `Please configure remote directory`,
         command: {
           command: `code-for-ibmi.setDeployLocation`,
           title: `Set deploy location`,
@@ -70,7 +70,7 @@ export default class Project extends ProjectExplorerTreeItem {
 
     } else {
       items.push(new ErrorItem(this.workspaceFolder, `Variables`, {
-        description: `Please configure environment file.`,
+        description: `Please configure environment file`,
         command: {
           command: `vscode-ibmi-projectexplorer.createEnv`,
           arguments: [this.workspaceFolder],
@@ -98,5 +98,10 @@ export default class Project extends ProjectExplorerTreeItem {
 
   getExtensibleChildren() {
     return this.extensibleChildren;
+  }
+
+  setActive() {
+    this.contextValue = Project.contextValue + ContextValue.active;
+    this.iconPath = new ThemeIcon(`root-folder`);
   }
 }

@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands, EventEmitter, ExtensionContext, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, EventEmitter, ExtensionContext, QuickPickItem, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
 import ErrorItem from "./errorItem";
 import { IProject } from "../../iproject";
@@ -26,6 +26,34 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.setActiveProject`, async (element?: Project) => {
+        if (element) {
+          ProjectManager.setActiveProject(element.workspaceFolder!);
+          this.refresh();
+        } else {
+          const projectItems: QuickPickItem[] = [];
+          const activeProject = ProjectManager.getActiveProject();
+          for (const iProject of ProjectManager.getProjects()) {
+            const state = await iProject.getState();
+            if (state) {
+              const icon = activeProject && activeProject.workspaceFolder === iProject.workspaceFolder ? `$(root-folder)` : `$(symbol-folder)`;
+              projectItems.push({ label: `${icon} ${iProject.getName()}`, description: state.description });
+            }
+          }
+
+          const newActiveProject = await window.showQuickPick(projectItems, {
+            placeHolder: 'Select a project'
+          });
+
+          if (newActiveProject) {
+            const iProject = ProjectManager.getProjectFromName(newActiveProject.label.split(' ')[1]);
+            if (iProject) {
+              ProjectManager.setActiveProject(iProject.workspaceFolder);
+              this.refresh();
+            }
+          }
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
@@ -133,12 +161,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         } else {
           const includePath = (element as any).path;
           if (includePath) {
-            const iProject = await ProjectManager.selectProject();
+            const iProject = ProjectManager.getActiveProject();
             if (iProject) {
               await iProject.addToIncludePaths(includePath);
             }
           } else {
-            window.showErrorMessage('Failed to retrieve path to directory.');
+            window.showErrorMessage('Failed to retrieve path to directory');
           }
         }
       }),
@@ -195,7 +223,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                   folder,
                   folder.name,
                   {
-                    description: 'Please configure project metadata.',
+                    description: 'Please configure project metadata',
                     command: {
                       command: 'vscode-ibmi-projectexplorer.createProject',
                       arguments: [folder],
@@ -207,10 +235,19 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
             this.projectTreeItems = items as Project[];
           };
+
+          const activeProject = ProjectManager.getActiveProject();
+          if (activeProject) {
+            const projectTreeItem = this.getProjectTreeItem(activeProject);
+            if (projectTreeItem) {
+              projectTreeItem.setActive();
+            }
+          }
+
         } else {
           items.push(new ErrorItem(
             undefined,
-            `Please open a local workspace folder.`,
+            `Please open a local workspace folder`,
             {
               command: {
                 command: 'workbench.action.files.openFolder',
@@ -219,7 +256,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             }));
         }
       } else {
-        items.push(new ErrorItem(undefined, `Please connect to an IBM i.`));
+        items.push(new ErrorItem(undefined, `Please connect to an IBM i`));
       }
 
       return items;

@@ -18,13 +18,21 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 	console.log('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!');
 
 	loadBase();
-	ProjectManager.loadProjects();
+	ProjectManager.initialize(context);
 
 	const projectExplorer = new ProjectExplorer(context);
 	const ibmi = getInstance();
-	ibmi?.onEvent(`connected`, () => { projectExplorer.refresh(); });
-	ibmi?.onEvent(`deployLocation`, () => { projectExplorer.refresh(); });
-	ibmi?.onEvent(`disconnected`, () => { projectExplorer.refresh(); });
+	ibmi?.onEvent(`connected`, () => {
+		projectExplorer.refresh();
+		ProjectManager.getActiveProjectStatusBarItem().show();
+	});
+	ibmi?.onEvent(`deployLocation`, () => {
+		projectExplorer.refresh();
+	});
+	ibmi?.onEvent(`disconnected`, () => { 
+		projectExplorer.refresh(); 
+		ProjectManager.getActiveProjectStatusBarItem().hide();
+	});
 
 	const projectWatcher = vscode.workspace.createFileSystemWatcher(`**/{iproj.json,.ibmi.json,.env}`);
 	projectWatcher.onDidChange(async (uri) => {
@@ -52,8 +60,15 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 	context.subscriptions.push(
 		vscode.window.registerTreeDataProvider(`projectExplorer`, projectExplorer),
 		vscode.window.registerTreeDataProvider(`jobLog`, jobLog),
-		vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		vscode.workspace.onDidChangeWorkspaceFolders((event) => {
 			ProjectManager.clear();
+
+			const removedWorkspaceFolders = event.removed;
+			const activeProject = ProjectManager.getActiveProject();
+			if (activeProject && removedWorkspaceFolders.includes(activeProject.workspaceFolder)) {
+				ProjectManager.setActiveProject(undefined);
+			}
+
 			projectExplorer.refresh();
 			jobLog.refresh();
 		})
