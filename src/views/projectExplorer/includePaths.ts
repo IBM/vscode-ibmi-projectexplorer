@@ -8,6 +8,8 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
+import { getInstance } from "../../ibmi";
+import path = require("path");
 
 /**
  * Tree item for Include Paths heading
@@ -45,8 +47,17 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
             // Relative local include path
             items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri));
           } catch (e) {
-            // Remote include path
-            items.push(new RemoteIncludePath(this.workspaceFolder, includePath));
+            if (includePath.startsWith('/')) {
+              // Absolute remote include path
+              items.push(new RemoteIncludePath(this.workspaceFolder, includePath));
+            } else {
+              // Relative remote include path
+              const ibmi = getInstance();
+              const deploymentDirs = ibmi?.getStorage().getDeployment()!;
+              const remoteDir = deploymentDirs[this.workspaceFolder.uri.fsPath];
+              const absoluteIncludePath = path.posix.join(remoteDir, includePath);
+              items.push(new RemoteIncludePath(this.workspaceFolder, absoluteIncludePath, { label: includePath }));
+            }
           }
         }
       }
