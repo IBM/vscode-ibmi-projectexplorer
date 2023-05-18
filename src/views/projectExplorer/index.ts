@@ -12,9 +12,10 @@ import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import IncludePaths from "./includePaths";
-import IncludePath from "./includePath";
 import LibraryList from "./libraryList";
 import Library from "./library";
+import LocalIncludePath from "./localIncludePath";
+import RemoteIncludePath from "./remoteIncludePath";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -169,8 +170,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.removeFromIncludePaths`, async (element: IncludePath) => {
-        if (element instanceof IncludePath) {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.revealInExplorer`, async (element: LocalIncludePath) => {
+        await commands.executeCommand('revealInExplorer', element.uri);
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.removeFromIncludePaths`, async (element: RemoteIncludePath | LocalIncludePath) => {
+        if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {

@@ -72,7 +72,7 @@ export default class Project extends ProjectExplorerTreeItem {
       items.push(new ErrorItem(this.workspaceFolder, `Variables`, {
         description: `Please configure environment file`,
         command: {
-          command: `vscode-ibmi-projectmode.createEnv`,
+          command: `vscode-ibmi-projectexplorer.createEnv`,
           arguments: [this.workspaceFolder],
           title: `Create project .env`
         }

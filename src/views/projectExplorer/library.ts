@@ -32,7 +32,6 @@ export default class Library extends ProjectExplorerTreeItem {
     this.libraryType = libraryType;
     const type = libraryInfo.type.startsWith(`*`) ? libraryInfo.type.substring(1) : libraryInfo.type;
     this.path = `/${libraryInfo.library}.LIB/${libraryInfo.name}.${type}`;
-    this.contextValue = Library.contextValue;
     this.iconPath = new ThemeIcon(`library`);
     this.description = (libraryInfo.text.trim() !== '' ? `${libraryInfo.text} ` : ``) +
       (libraryInfo.attribute?.trim() !== '' ? `(${libraryInfo.attribute})` : '');
@@ -45,15 +44,19 @@ export default class Library extends ProjectExplorerTreeItem {
     switch (this.libraryType) {
       case LibraryType.systemLibrary:
         iconColor = new ThemeColor('projectExplorer.systemLibrary');
+        this.contextValue = Library.contextValue + ContextValue.system;
         break;
       case LibraryType.currentLibrary:
         iconColor = new ThemeColor('projectExplorer.currentLibrary');
+        this.contextValue = Library.contextValue + ContextValue.current;
         break;
       case LibraryType.userLibrary:
         iconColor = new ThemeColor('projectExplorer.userLibrary');
+        this.contextValue = Library.contextValue + ContextValue.user;
         break;
       default:
         iconColor = undefined;
+        this.contextValue = Library.contextValue;
     }
     this.iconPath = new ThemeIcon(`library`, iconColor);
   }

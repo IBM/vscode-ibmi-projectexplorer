@@ -19,6 +19,9 @@ export enum ContextValue {
   libraryList = 'libraryList',
   objectLibraries = 'objectLibraries',
   library = 'library',
+  system = '_system',
+  current = '_current',
+  user = '_user',
   objectFile = `objectFile`,
   memberFile = 'memberFile',
   ifsDirectory = 'ifsDirectory',
@@ -26,5 +29,7 @@ export enum ContextValue {
   variable = 'variable',
   includePaths = 'includePaths',
   includePath = 'includePath',
+  local = '_local',
+  remote = '_remote',
   error = 'error'
 }
