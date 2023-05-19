@@ -16,6 +16,7 @@ import LibraryList from "./libraryList";
 import Library from "./library";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
+import Source from "./source";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -26,7 +27,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.setActiveProject`, async (element?: Project) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, async (element?: Project) => {
         if (element) {
           ProjectManager.setActiveProject(element.workspaceFolder!);
           this.refresh();
@@ -52,6 +53,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               this.refresh();
             }
           }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation`, async (element: Source) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${element.description}`);
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList) => {

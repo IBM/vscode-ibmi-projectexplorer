@@ -46,12 +46,15 @@ export default class Project extends ProjectExplorerTreeItem {
     if (remoteDir) {
       items.push(new Source(this.workspaceFolder, remoteDir));
     } else {
+      const homeDirectory = (ibmi?.getConfig().homeDirectory.endsWith('/') ? ibmi?.getConfig().homeDirectory.slice(0, -1) : ibmi?.getConfig().homeDirectory);
+      const defaultDeployLocation = `${homeDirectory}/${this.workspaceFolder.name}`;
+
       items.push(new ErrorItem(this.workspaceFolder, l10n.t('Source'), {
         description: l10n.t('Please configure deploy location'),
         command: {
           command: `code-for-ibmi.setDeployLocation`,
           title: l10n.t('Set deploy location'),
-          arguments: [{}, this.resourceUri]
+          arguments: [undefined, this.workspaceFolder, defaultDeployLocation]
         }
       }));
     }
