@@ -2,15 +2,19 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ExtensionContext, QuickPickItem, StatusBarAlignment, StatusBarItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { EventEmitter, ExtensionContext, StatusBarAlignment, StatusBarItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "./iproject";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 import Project from "./views/projectExplorer/project";
+
+export type ProjectExplorerEvent = 'load' | 'clear' | 'activeProject';
 
 export class ProjectManager {
     private static loaded: { [index: number]: IProject } = {};
     private static activeProject: IProject | undefined;
     private static activeProjectStatusBarItem: StatusBarItem;
+    private static emitter: EventEmitter<ProjectExplorerEvent> = new EventEmitter();
+    private static events: { event: ProjectExplorerEvent, func: Function }[] = [];
 
     public static load(workspaceFolder: WorkspaceFolder) {
         if (!this.loaded[workspaceFolder.index]) {
@@ -20,6 +24,8 @@ export class ProjectManager {
             if (!this.activeProject) {
                 this.setActiveProject(workspaceFolder);
             }
+
+            this.fire('load');
         }
     }
 
@@ -37,9 +43,16 @@ export class ProjectManager {
 
     public static clear() {
         this.loaded = {};
+
+        this.fire('clear');
     }
 
     public static initialize(context: ExtensionContext) {
+        this.emitter.event(e => {
+            this.events.filter(event => event.event === e)
+                .forEach(event => event.func());
+        });
+
         this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
         context.subscriptions.push(this.activeProjectStatusBarItem);
         this.setActiveProject(undefined);
@@ -50,6 +63,14 @@ export class ProjectManager {
                 this.load(folder);
             });
         }
+    }
+
+    public static onEvent(event: ProjectExplorerEvent, func: Function) {
+        this.events.push({ event, func });
+    }
+
+    public static fire(event: ProjectExplorerEvent) {
+        this.emitter?.fire(event);
     }
 
     public static setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
@@ -70,6 +91,8 @@ export class ProjectManager {
                 title: 'Open folder'
             };
         }
+
+        this.fire('activeProject');
     }
 
     public static getProjects(): IProject[] {

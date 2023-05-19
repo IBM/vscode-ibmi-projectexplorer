@@ -22,16 +22,21 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 
 	const projectExplorer = new ProjectExplorer(context);
 	const ibmi = getInstance();
-	ibmi?.onEvent(`connected`, () => {
+	ibmi?.onEvent(`connected`, async () => {
 		projectExplorer.refresh();
 		ProjectManager.getActiveProjectStatusBarItem().show();
+		await updateUserLibraryListView();
 	});
 	ibmi?.onEvent(`deployLocation`, () => {
 		projectExplorer.refresh();
 	});
-	ibmi?.onEvent(`disconnected`, () => { 
-		projectExplorer.refresh(); 
+	ibmi?.onEvent(`disconnected`, () => {
+		projectExplorer.refresh();
 		ProjectManager.getActiveProjectStatusBarItem().hide();
+	});
+
+	ProjectManager.onEvent('activeProject', async () => {
+		await updateUserLibraryListView();
 	});
 
 	const projectWatcher = vscode.workspace.createFileSystemWatcher(`**/{iproj.json,.ibmi.json,.env}`);
@@ -79,3 +84,43 @@ export function activate(context: vscode.ExtensionContext): ProjectExplorerApi {
 
 // this method is called when your extension is deactivated
 export function deactivate() { }
+
+export async function updateUserLibraryListView() {	
+
+
+	//Handle when disconnect - then set to default user libraries
+	//Fix bottom part for updating the config and refreshing the view
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	const ibmi = getInstance();
+	if (ibmi && ibmi.getConnection()) {
+	  const newActiveProject = ProjectManager.getActiveProject();
+	  if (newActiveProject) {
+		const libraryList = await newActiveProject.getLibraryList();
+		if (libraryList) {
+		  const newUserLibraryList = libraryList
+			.filter(library => library.libraryType === 'USR')
+			.map(library => library.libraryInfo.name);
+
+		  const config = ibmi?.getConfig();
+		  if (config) {
+			config.libraryList = newUserLibraryList;
+			// await ConnectionConfiguration.update(config);
+			// if (GlobalConfiguration.get(`autoRefresh`)) this.refresh();
+		  }
+		}
+	  }
+	}
+}
