@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
+import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
 import { ContextValue } from "../../projectExplorerApi";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 
@@ -19,8 +19,8 @@ export default class LocalIncludePath extends ProjectExplorerTreeItem {
 
     this.contextValue = LocalIncludePath.contextValue + ContextValue.local;
     this.iconPath = new ThemeIcon(`symbol-folder`);
-    this.tooltip = `Name: ${includePath}\n` +
-      `Path: ${uri.fsPath}\n`;
+    this.tooltip = l10n.t('Name: {0}\n', includePath) +
+      l10n.t('Path: {0}', uri.fsPath);
     this.iconPath = new ThemeIcon(`link`);
   }
 

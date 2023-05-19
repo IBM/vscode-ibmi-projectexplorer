@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { getInstance } from "../../ibmi";
 import ObjectFile from "./objectFile";
@@ -34,12 +34,12 @@ export default class Library extends ProjectExplorerTreeItem {
     this.path = `/${libraryInfo.library}.LIB/${libraryInfo.name}.${type}`;
     this.iconPath = new ThemeIcon(`library`);
     this.description = (libraryInfo.text.trim() !== '' ? `${libraryInfo.text} ` : ``) +
-      (libraryInfo.attribute?.trim() !== '' ? `(${libraryInfo.attribute})` : '');
-    this.tooltip = `Name: ${libraryInfo.name}\n` +
-      `Path: ${this.path}\n` +
-      (libraryInfo.text.trim() !== '' ? `Text: ${libraryInfo.text}\n` : ``) +
-      `Attribute: ${libraryInfo.attribute}\n` +
-      `Type: ${libraryInfo.type}`;
+      (libraryInfo.attribute?.trim() !== '' ? `(${libraryInfo.attribute})` : ``);
+    this.tooltip = l10n.t('Name: {0}\n', libraryInfo.name) +
+      l10n.t('Path: {0}\n', this.path) +
+      (libraryInfo.text.trim() !== '' ? l10n.t('Text: {0}\n', libraryInfo.text) : ``) +
+      (libraryInfo.attribute ? l10n.t('Attribute: {0}\n', libraryInfo.attribute) : ``) +
+      l10n.t('Type: {0}', libraryInfo.type);
     let iconColor: ThemeColor | undefined;
     switch (this.libraryType) {
       case LibraryType.systemLibrary:

@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
+import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
 import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
@@ -23,13 +23,13 @@ export default class MemberFile extends ProjectExplorerTreeItem {
     this.contextValue = MemberFile.contextValue;
     this.iconPath = new ThemeIcon(`file`);
     this.description = memberFileInfo.text;
-    this.tooltip = `Name: ${memberFileInfo.name}\n` +
-      `Path: ${this.path}\n` +
-      (memberFileInfo.text?.trim() !== '' ? `Text: ${memberFileInfo.text}\n` : ``) +
-      `Extension: ${extension}\n` +
-      `Record Length: ${memberFileInfo.recordLength}\n` +
-      `Changed: ${memberFileInfo.changed}\n` +
-      (memberFileInfo.asp ? `ASP: ${memberFileInfo.asp}` : ``);
+    this.tooltip = l10n.t('Name: {0}\n', memberFileInfo.name) +
+      l10n.t('Path: {0}\n', this.path) +
+      (memberFileInfo.text && memberFileInfo.text.trim() !== '' ? l10n.t('Text: {0}\n', memberFileInfo.text) : ``) +
+      l10n.t('Extension: {0}\n', extension) +
+      (memberFileInfo.recordLength ? l10n.t('Record Length: {0}\n', memberFileInfo.recordLength) : ``) +
+      l10n.t('Changed: {0}\n', memberFileInfo.changed) +
+      (memberFileInfo.asp ? l10n.t('ASP: {0}', memberFileInfo.asp) : ``);
     this.resourceUri = this.getMemberResourceUri();
     this.command = {
       command: `vscode.open`,

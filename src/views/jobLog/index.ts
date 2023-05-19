@@ -140,12 +140,4 @@ export default class JobLog implements TreeDataProvider<any> {
       }
     }
   }
-
-  getParent?(element: any) {
-    throw new Error("Method not implemented.");
-  }
-
-  resolveTreeItem?(item: TreeItem, element: any, token: CancellationToken): Promise<TreeItem> {
-    throw new Error("Method not implemented.");
-  }
 }

@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
+import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 import { ProjectManager } from "../../projectManager";
@@ -16,7 +16,7 @@ export default class LibraryList extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.libraryList;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
-    super(`Library List`, TreeItemCollapsibleState.Collapsed);
+    super(l10n.t('Library List'), TreeItemCollapsibleState.Collapsed);
 
     this.contextValue = LibraryList.contextValue;
     this.iconPath = new ThemeIcon(`folder-library`);

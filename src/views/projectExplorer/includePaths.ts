@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, workspace } from "vscode";
+import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
 import { ContextValue } from "../../projectExplorerApi";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
@@ -18,7 +18,7 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.includePaths;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
-    super(`Include Paths`, TreeItemCollapsibleState.Collapsed);
+    super(l10n.t('Include Paths'), TreeItemCollapsibleState.Collapsed);
 
     this.contextValue = IncludePaths.contextValue;
     this.iconPath = new ThemeIcon(`list-flat`);

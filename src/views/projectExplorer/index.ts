@@ -42,7 +42,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
 
           const newActiveProject = await window.showQuickPick(projectItems, {
-            placeHolder: 'Select a project'
+            placeHolder: l10n.t('Select a project')
           });
 
           if (newActiveProject) {
@@ -60,18 +60,19 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (iProject) {
             const library = await window.showInputBox({
-              prompt: `Enter library name`
+              prompt: l10n.t('Enter library name'),
+              placeHolder: l10n.t('Library name')
             });
 
             if (library) {
               const selectedPosition = await window.showQuickPick([
-                'Beginning of Library List',
-                'End of Library List'], {
-                placeHolder: 'Choose where to position the library',
+                l10n.t('Beginning of Library List'),
+                l10n.t('End of Library List')], {
+                placeHolder: l10n.t('Choose where to position the library'),
               });
 
               if (selectedPosition) {
-                const position = (selectedPosition === 'Beginning of Library List') ? 'preUsrlibl' : 'postUsrlibl';
+                const position = (selectedPosition === l10n.t('Beginning of Library List')) ? 'preUsrlibl' : 'postUsrlibl';
                 await iProject.addToLibraryList(library, position);
               }
             }
@@ -84,7 +85,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (iProject) {
             const library = await window.showInputBox({
-              prompt: `Enter library name`
+              prompt: l10n.t('Enter library name'),
+              placeHolder: l10n.t('Library name')
             });
 
             if (library) {
@@ -108,7 +110,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
             const newValue = await window.showInputBox({
-              title: l10n.t('New value for {0}', varName),
+              prompt: l10n.t('Enter new value for {0}', varName),
+              placeHolder: l10n.t('Variable value'),
               value: currentValue || ``,
             });
 
@@ -126,8 +129,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
             const description = await window.showInputBox({
-              placeHolder: l10n.t('Description'),
-              prompt: l10n.t('Enter project description')
+              prompt: l10n.t('Enter project description'),
+              placeHolder: l10n.t('Description')
             });
 
             if (description) {
@@ -150,8 +153,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (iProject) {
             const includePath = await window.showInputBox({
-              placeHolder: 'Include Path',
-              prompt: 'Enter include path'
+              prompt: l10n.t('Enter include path'),
+              placeHolder: l10n.t('Include Path')
             });
 
             if (includePath) {
@@ -166,7 +169,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               await iProject.addToIncludePaths(includePath);
             }
           } else {
-            window.showErrorMessage('Failed to retrieve path to directory');
+            window.showErrorMessage(l10n.t('Failed to retrieve path to directory'));
           }
         }
       }),
@@ -223,7 +226,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                   folder,
                   folder.name,
                   {
-                    description: 'Please configure project metadata',
+                    description: l10n.t('Please configure project metadata'),
                     command: {
                       command: 'vscode-ibmi-projectexplorer.createProject',
                       arguments: [folder],
@@ -247,7 +250,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         } else {
           items.push(new ErrorItem(
             undefined,
-            `Please open a local workspace folder`,
+            l10n.t('Please open a local workspace folder'),
             {
               command: {
                 command: 'workbench.action.files.openFolder',
@@ -256,7 +259,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             }));
         }
       } else {
-        items.push(new ErrorItem(undefined, `Please connect to an IBM i`));
+        items.push(new ErrorItem(undefined, l10n.t('Please connect to an IBM i')));
       }
 
       return items;

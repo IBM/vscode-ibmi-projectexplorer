@@ -62,25 +62,25 @@
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.setActiveProject",
-        "title": "Set Active Project",
+        "title": "%commands.projectExplorer.setActiveProject%",
         "icon": "$(circle-filled)"
       },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
-        "title": "Add Library List Entry",
+        "title": "%commands.projectExplorer.addLibraryListEntry%",
         "icon": "$(add)"
       },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
-        "title": "Set Current Library",
+        "title": "%commands.projectExplorer.setCurrentLibrary%",
         "icon": "$(edit)"
       },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
-        "title": "Remove From Library List",
+        "title": "%commands.projectExplorer.removeFromLibraryList%",
         "icon": "$(close)"
       },
       {
@@ -92,13 +92,13 @@
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.revealInExplorer",
-        "title": "Reveal in Explorer",
+        "title": "%commands.projectExplorer.revealInExplorer%",
         "icon": "$(arrow-right)"
       },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
-        "title": "Remove From Include Paths",
+        "title": "%commands.projectExplorer.removeFromIncludePaths%",
         "icon": "$(close)"
       },
       {
@@ -261,7 +261,7 @@
     "colors": [
       {
         "id": "projectExplorer.systemLibrary",
-        "description": "Color for system libraries",
+        "description": "%colors.projectExplorer.systemLibraries%",
         "defaults": {
           "dark": "#4CB1FF",
           "light": "#4CB1FF"
@@ -269,7 +269,7 @@
       },
       {
         "id": "projectExplorer.currentLibrary",
-        "description": "Color for current library",
+        "description": "%colors.projectExplorer.currentLibrary%",
         "defaults": {
           "dark": "#4CAF4F",
           "light": "#4CAF4F"
@@ -277,7 +277,7 @@
       },
       {
         "id": "projectExplorer.userLibrary",
-        "description": "Color for user libraries",
+        "description": "%colors.projectExplorer.userLibraries%",
         "defaults": {
           "dark": "#C79F0C",
           "light": "#C79F0C"
@@ -285,7 +285,7 @@
       },
       {
         "id": "joblog.local",
-        "description": "colors.joblog.local",
+        "description": "%colors.jobLog.local%",
         "defaults": {
           "dark": "#FFA500",
           "light": "#FFA500"
@@ -293,7 +293,7 @@
       },
       {
         "id": "joblog.severity.0",
-        "description": "colors.joblog.severity.0",
+        "description": "%colors.jobLog.severity.0%",
         "defaults": {
           "dark": "#87d167",
           "light": "#87d167"
@@ -301,7 +301,7 @@
       },
       {
         "id": "joblog.severity.10",
-        "description": "colors.joblog.severity.10",
+        "description": "%colors.jobLog.severity.10%",
         "defaults": {
           "dark": "#b17cbc",
           "light": "#b17cbc"
@@ -309,7 +309,7 @@
       },
       {
         "id": "joblog.severity.20",
-        "description": "colors.joblog.severity.20",
+        "description": "%colors.jobLog.severity.20%",
         "defaults": {
           "dark": "#6db5f8",
           "light": "#6db5f8"
@@ -317,7 +317,7 @@
       },
       {
         "id": "joblog.severity.30",
-        "description": "colors.joblog.severity.30",
+        "description": "%colors.jobLog.severity.30%",
         "defaults": {
           "dark": "#eed329",
           "light": "#eed329"
@@ -325,7 +325,7 @@
       },
       {
         "id": "joblog.severity.40",
-        "description": "colors.joblog.severity.40",
+        "description": "%colors.jobLog.severity.40%",
         "defaults": {
           "dark": "#FFA500",
           "light": "#FFA500"
@@ -333,7 +333,7 @@
       },
       {
         "id": "joblog.severity.50",
-        "description": "colors.joblog.severity.50",
+        "description": "%colors.jobLog.severity.50%",
         "defaults": {
           "dark": "#ee816b",
           "light": "#ee816b"
