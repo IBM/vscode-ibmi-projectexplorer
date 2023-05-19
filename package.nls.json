@@ -22,6 +22,7 @@
   "commands.jobLog.showBuildOutput": "Show Build Output",
   "commands.jobLog.clearJobLogs": "Clear Job Log",
   "commands.jobLog.copy": "Copy",
+  "colors.projectExplorer.activeProject": "Color for active project",
   "colors.projectExplorer.systemLibraries": "Color for system libraries",
   "colors.projectExplorer.currentLibrary": "Color for current library",
   "colors.projectExplorer.userLibraries": "Color for user libraries",

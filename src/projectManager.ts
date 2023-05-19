@@ -43,6 +43,7 @@ export class ProjectManager {
         this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
         context.subscriptions.push(this.activeProjectStatusBarItem);
         this.setActiveProject(undefined);
+        this.activeProjectStatusBarItem.show();
 
         const workspaceFolders = workspace.workspaceFolders;
         if (workspaceFolders && workspaceFolders.length > 0) {

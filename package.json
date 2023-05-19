@@ -305,6 +305,14 @@
     },
     "colors": [
       {
+        "id": "projectExplorer.activeProject",
+        "description": "%colors.projectExplorer.activeProject%",
+        "defaults": {
+          "dark": "#4CAF4F",
+          "light": "#4CAF4F"
+        }
+      },
+      {
         "id": "projectExplorer.systemLibrary",
         "description": "%colors.projectExplorer.systemLibraries%",
         "defaults": {

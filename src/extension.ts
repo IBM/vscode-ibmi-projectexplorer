@@ -19,14 +19,12 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 	const ibmi = getInstance();
 	ibmi?.onEvent(`connected`, () => {
 		projectExplorer.refresh();
-		ProjectManager.getActiveProjectStatusBarItem().show();
 	});
 	ibmi?.onEvent(`deployLocation`, () => {
 		projectExplorer.refresh();
 	});
 	ibmi?.onEvent(`disconnected`, () => {
 		projectExplorer.refresh();
-		ProjectManager.getActiveProjectStatusBarItem().hide();
 	});
 
 	const projectWatcher = workspace.createFileSystemWatcher(`**/{iproj.json,.ibmi.json,.env}`);

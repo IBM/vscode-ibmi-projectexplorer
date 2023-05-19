@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import { getInstance } from "../../ibmi";
@@ -26,7 +26,6 @@ export default class Project extends ProjectExplorerTreeItem {
   constructor(public workspaceFolder: WorkspaceFolder, description?: string) {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
 
-    this.resourceUri = workspaceFolder.uri;
     this.iconPath = new ThemeIcon(`symbol-folder`);
     this.contextValue = Project.contextValue + ContextValue.inactive;
     this.description = description;
@@ -40,7 +39,7 @@ export default class Project extends ProjectExplorerTreeItem {
       const iProject = ProjectManager.get(this.workspaceFolder);
 
       const deploymentDirs = ibmi?.getStorage().getDeployment()!;
-      const localDir = this.resourceUri?.fsPath!;
+      const localDir = this.workspaceFolder.uri.fsPath!;
       const remoteDir = deploymentDirs[localDir];
 
       // First load the IFS browser stuff
@@ -52,7 +51,7 @@ export default class Project extends ProjectExplorerTreeItem {
           command: {
             command: `code-for-ibmi.setDeployLocation`,
             title: l10n.t('Set deploy location'),
-            arguments: [{}, this.resourceUri]
+            arguments: [{}, this.workspaceFolder.uri]
           }
         }));
       }
@@ -111,6 +110,6 @@ export default class Project extends ProjectExplorerTreeItem {
 
   setActive() {
     this.contextValue = Project.contextValue + ContextValue.active;
-    this.iconPath = new ThemeIcon(`root-folder`);
+    this.iconPath = new ThemeIcon(`root-folder`, new ThemeColor('projectExplorer.activeProject'));
   }
 }
