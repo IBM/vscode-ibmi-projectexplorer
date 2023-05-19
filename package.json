@@ -67,6 +67,11 @@
       },
       {
         "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateToIFS",
+        "title": "%commands.projectExplorer.migrateToIFS%"
+      },
+      {
+        "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
         "title": "%commands.projectExplorer.addLibraryListEntry%",
         "icon": "$(add)"
@@ -138,6 +143,10 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateToIFS",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
           "when": "never"
         },
@@ -190,6 +199,11 @@
           "command": "vscode-ibmi-projectexplorer.setActiveProject",
           "when": "view == projectExplorer && viewItem =~ /^project_inactive.*/",
           "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateToIFS",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
+          "group": "0_migrate@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",

@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, EventEmitter, ExtensionContext, l10n, ProgressLocation, QuickPickItem, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
 import ErrorItem from "./errorItem";
 import { IProject } from "../../iproject";
@@ -16,6 +16,8 @@ import LibraryList from "./libraryList";
 import Library from "./library";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
+import { migrateToIFS } from "../../migrateToIFS";
+import * as path from "path";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -51,6 +53,50 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               ProjectManager.setActiveProject(iProject.workspaceFolder);
               this.refresh();
             }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.migrateToIFS`, async (element: Library) => {
+        if (element) {
+          const migrationData = await migrateToIFS(element.label!.toString());
+          if (migrationData) {
+            const ibmi = getInstance();
+            let deploymentDirs = ibmi?.getStorage().getDeployment()!;
+            let remoteDir = deploymentDirs[element.workspaceFolder.uri.fsPath];
+            if (!remoteDir) {
+              await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${ibmi?.getConfig().homeDirectory}${element.workspaceFolder.name}`);
+
+              deploymentDirs = ibmi?.getStorage().getDeployment()!;
+              remoteDir = deploymentDirs[element.workspaceFolder.uri.fsPath];
+              if (!remoteDir) {
+                return;
+              }
+            }
+
+            let migrationResult = true;
+            await window.withProgress({
+              location: ProgressLocation.Notification,
+              title: l10n.t('Migrating to IFS'),
+            }, async (progress) => {
+              for await (const file of migrationData.sourceFiles) {
+                progress.report({ message: file });
+
+                const result = await ibmi?.getConnection().sendCommand({
+                  command: `export PATH="/QOpenSys/pkgs/bin:$PATH:" && /QOpenSys/pkgs/bin/makei cvtsrcpf -c ${migrationData.defaultCCSID} ${path.parse(file).name} ${element.label}`,
+                  directory: remoteDir
+                });
+
+                migrationResult = migrationResult && (result?.code !== 0);
+              }
+            });
+
+            if (migrationResult) {
+              window.showInformationMessage(l10n.t('Successfully migrated source to {0}', remoteDir));
+            } else {
+              window.showInformationMessage(l10n.t('Failed to migrated source to {0}', remoteDir));
+            }
+
+            this.refresh();
           }
         }
       }),
