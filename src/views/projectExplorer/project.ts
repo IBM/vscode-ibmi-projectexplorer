@@ -35,63 +35,72 @@ export default class Project extends ProjectExplorerTreeItem {
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
     let items: ProjectExplorerTreeItem[] = [];
 
-    const iProject = ProjectManager.get(this.workspaceFolder);
-
     const ibmi = getInstance();
-    const deploymentDirs = ibmi?.getStorage().getDeployment()!;
-    const localDir = this.resourceUri?.fsPath!;
-    const remoteDir = deploymentDirs[localDir];
+    if (ibmi && ibmi.getConnection()) {
+      const iProject = ProjectManager.get(this.workspaceFolder);
 
-    // First load the IFS browser stuff
-    if (remoteDir) {
-      items.push(new Source(this.workspaceFolder, remoteDir));
-    } else {
-      items.push(new ErrorItem(this.workspaceFolder, l10n.t('Source'), {
-        description: l10n.t('Please configure deploy location'),
-        command: {
-          command: `code-for-ibmi.setDeployLocation`,
-          title: l10n.t('Set deploy location'),
-          arguments: [{}, this.resourceUri]
-        }
-      }));
-    }
+      const deploymentDirs = ibmi?.getStorage().getDeployment()!;
+      const localDir = this.resourceUri?.fsPath!;
+      const remoteDir = deploymentDirs[localDir];
 
-    const hasEnv = await iProject?.projectFileExists('.env');
-    if (hasEnv) {
-      let unresolvedVariableCount = 0;
-
-      const possibleVariables = await iProject?.getVariables();
-      const actualValues = await iProject?.getEnv();
-      if (possibleVariables && actualValues) {
-        unresolvedVariableCount = possibleVariables.filter(varName => !actualValues[varName]).length;
+      // First load the IFS browser stuff
+      if (remoteDir) {
+        items.push(new Source(this.workspaceFolder, remoteDir));
+      } else {
+        items.push(new ErrorItem(this.workspaceFolder, l10n.t('Source'), {
+          description: l10n.t('Please configure deploy location'),
+          command: {
+            command: `code-for-ibmi.setDeployLocation`,
+            title: l10n.t('Set deploy location'),
+            arguments: [{}, this.resourceUri]
+          }
+        }));
       }
 
-      items.push(new Variables(this.workspaceFolder, unresolvedVariableCount));
+      const hasEnv = await iProject?.projectFileExists('.env');
+      if (hasEnv) {
+        let unresolvedVariableCount = 0;
 
+        const possibleVariables = await iProject?.getVariables();
+        const actualValues = await iProject?.getEnv();
+        if (possibleVariables && actualValues) {
+          unresolvedVariableCount = possibleVariables.filter(varName => !actualValues[varName]).length;
+        }
+
+        items.push(new Variables(this.workspaceFolder, unresolvedVariableCount));
+
+      } else {
+        items.push(new ErrorItem(this.workspaceFolder, l10n.t('Variables'), {
+          description: l10n.t('Please configure environment file'),
+          command: {
+            command: `vscode-ibmi-projectexplorer.createEnv`,
+            arguments: [this.workspaceFolder],
+            title: l10n.t('Create project .env')
+          }
+        }));
+      }
+
+      items.push(new LibraryList(this.workspaceFolder));
+      items.push(new ObjectLibraries(this.workspaceFolder));
+      items.push(new IncludePaths(this.workspaceFolder));
+
+      for await (const extensibleChildren of Project.callBack) {
+        let children: ProjectExplorerTreeItem[] = [];
+        try {
+          children = await extensibleChildren(iProject!);
+        } catch (error) { }
+
+        this.extensibleChildren.push(...children);
+      }
+      items.push(...this.extensibleChildren);
     } else {
-      items.push(new ErrorItem(this.workspaceFolder, l10n.t('Variables'), {
-        description: l10n.t('Please configure environment file'),
+      items.push(new ErrorItem(undefined, l10n.t('Please connect to an IBM i'), {
         command: {
-          command: `vscode-ibmi-projectexplorer.createEnv`,
-          arguments: [this.workspaceFolder],
-          title: l10n.t('Create project .env')
+          command: `connectionBrowser.focus`,
+          title: l10n.t('Focus on connection browser')
         }
       }));
     }
-
-    items.push(new LibraryList(this.workspaceFolder));
-    items.push(new ObjectLibraries(this.workspaceFolder));
-    items.push(new IncludePaths(this.workspaceFolder));
-
-    for await (const extensibleChildren of Project.callBack) {
-      let children: ProjectExplorerTreeItem[] = [];
-      try {
-        children = await extensibleChildren(iProject!);
-      } catch (error) { }
-
-      this.extensibleChildren.push(...children);
-    }
-    items.push(...this.extensibleChildren);
 
     return items;
   }

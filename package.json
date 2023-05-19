@@ -58,7 +58,30 @@
         "when": "workspaceFolderCount > 0"
       }
     ],
+    "submenus": [
+      {
+        "id": "projectExplorer.goTo",
+        "label": "%submenus.projectExplorer.gotTo%",
+        "icon": "$(server-environment)"
+      }
+    ],
     "commands": [
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.goToObjectBrowser",
+        "title": "%commands.projectExplorer.goToObjectBrowser%"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.goToIFSBrowser",
+        "title": "%commands.projectExplorer.goToIFSBrowser%"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer",
+        "title": "%commands.projectExplorer.refreshProjectExplorer%",
+        "icon": "$(refresh)"
+      },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.setActiveProject",
@@ -103,8 +126,8 @@
       },
       {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
-        "title": "%commands.jobLog.refresh%",
+        "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
+        "title": "%commands.jobLog.refreshJobLog%",
         "icon": "$(refresh)"
       },
       {
@@ -178,9 +201,31 @@
           "when": "never"
         }
       ],
+      "projectExplorer.goTo": [
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.goToObjectBrowser",
+          "when": "view == projectExplorer",
+          "group": "0_goTo@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.goToIFSBrowser",
+          "when": "view == projectExplorer",
+          "group": "0_goTo@1"
+        }
+      ],
       "view/title": [
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
+          "submenu": "projectExplorer.goTo",
+          "when": "view == projectExplorer && code-for-ibmi:connected",
+          "group": "navigation@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer",
+          "when": "view == projectExplorer",
+          "group": "navigation@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
           "when": "view == jobLog",
           "group": "navigation@0"
         }
