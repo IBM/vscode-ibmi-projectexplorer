@@ -17,7 +17,7 @@
   "commands.projectExplorer.addToIncludePaths": "Add To Include Paths",
   "commands.projectExplorer.revealInExplorer": "Reveal In Explorer",
   "commands.projectExplorer.removeFromIncludePaths": "Remove From Include Paths",
-  "commands.jobLog.refreshJobLog": "Refresh",
+  "commands.jobLog.refreshJobLog": "Refresh Job Log",
   "commands.jobLog.showJobLog": "Show Job Log",
   "commands.jobLog.showBuildOutput": "Show Build Output",
   "commands.jobLog.clearJobLogs": "Clear Job Log",
