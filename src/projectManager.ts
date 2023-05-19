@@ -2,15 +2,24 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { l10n, QuickPickItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { ExtensionContext, StatusBarAlignment, StatusBarItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "./iproject";
+import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
+import Project from "./views/projectExplorer/project";
 
 export class ProjectManager {
     private static loaded: { [index: number]: IProject } = {};
+    private static activeProject: IProject | undefined;
+    private static activeProjectStatusBarItem: StatusBarItem;
 
     public static load(workspaceFolder: WorkspaceFolder) {
         if (!this.loaded[workspaceFolder.index]) {
-            this.loaded[workspaceFolder.index] = new IProject(workspaceFolder);
+            const iProject = new IProject(workspaceFolder);
+            this.loaded[workspaceFolder.index] = iProject;
+
+            if (!this.activeProject) {
+                this.setActiveProject(workspaceFolder);
+            }
         }
     }
 
@@ -18,65 +27,93 @@ export class ProjectManager {
         return this.loaded[workspaceFolder.index];
     }
 
+    public static getActiveProject(): IProject | undefined {
+        return this.activeProject;
+    }
+
+    public static getActiveProjectStatusBarItem(): StatusBarItem {
+        return this.activeProjectStatusBarItem;
+    }
+
     public static clear() {
         this.loaded = {};
     }
 
-    public static loadProjects() {
-        const workspaceFolders = workspace.workspaceFolders;
+    public static initialize(context: ExtensionContext) {
+        this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
+        context.subscriptions.push(this.activeProjectStatusBarItem);
+        this.setActiveProject(undefined);
 
+        const workspaceFolders = workspace.workspaceFolders;
         if (workspaceFolders && workspaceFolders.length > 0) {
             workspaceFolders.map(folder => {
-                ProjectManager.load(folder);
+                this.load(folder);
             });
         }
     }
 
-    public static async selectProject(): Promise<IProject | undefined> {
-        switch (Object.keys(this.loaded).length) {
-            case 0:
-                window.showErrorMessage(l10n.t('Please open a local workspace folder'));
-                break;
-            case 1:
-                return this.loaded[0];
-            default:
-                const projectItems: QuickPickItem[] = [];
-                for (const index in this.loaded) {
-                    const project = this.loaded[index];
+    public static setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
+        if (workspaceFolder) {
+            this.activeProject = this.loaded[workspaceFolder.index];
+            this.activeProjectStatusBarItem.text = `$(root-folder) Project: ${this.activeProject.workspaceFolder.name}`;
+            this.activeProjectStatusBarItem.tooltip = `Active project: ${this.activeProject.workspaceFolder}`;
+            this.activeProjectStatusBarItem.command = {
+                command: `vscode-ibmi-projectexplorer.setActiveProject`,
+                title: `Set Active Project`
+            };
+        } else {
+            this.activeProject = undefined;
+            this.activeProjectStatusBarItem.text = `$(root-folder) Project: $(circle-slash)`;
+            this.activeProjectStatusBarItem.tooltip = `Please open a local workspace folder`;
+            this.activeProjectStatusBarItem.command = {
+                command: 'workbench.action.files.openFolder',
+                title: 'Open folder'
+            };
+        }
+    }
 
-                    const state = await project.getState();
-                    if (state) {
-                        projectItems.push({ label: project.getName(), description: state.description });
-                    }
-                }
-
-                const selectedProject = await window.showQuickPick(projectItems, {
-                    placeHolder: l10n.t('Select a project')
-                });
-
-                if (selectedProject) {
-                    for (const index in this.loaded) {
-                        const project = this.loaded[index];
-
-                        if (project.getName() === selectedProject.label) {
-                            return project;
-                        }
-                    }
-                }
+    public static getProjects(): IProject[] {
+        let projects = [];
+        for (const index in this.loaded) {
+            projects.push(this.loaded[index]);
         }
 
-        return;
+        return projects;
+    }
+
+    public static getProjectFromName(name: string): IProject | undefined {
+        for (const index in this.loaded) {
+            const iProject = this.loaded[index];
+
+            if (iProject.getName() === name) {
+                return iProject;
+            }
+        }
+    }
+
+    public static getProjectFromActiveTextEditor(): IProject | undefined {
+        let activeFileUri = window.activeTextEditor?.document.uri;
+        activeFileUri = activeFileUri?.scheme === 'file' ? activeFileUri : undefined;
+
+        if (activeFileUri) {
+            return this.getProjectFromUri(activeFileUri);
+        }
     }
 
     public static getProjectFromUri(uri: Uri): IProject | undefined {
-        const workspaceFolders = workspace.workspaceFolders;
-        if (workspaceFolders && workspaceFolders.length > 0) {
-            const changedWorkspaceFolder = workspaceFolders.filter(workspaceFolder =>
-                uri.fsPath.startsWith(workspaceFolder.uri.fsPath)
-            )[0];
-
-            const iProject = ProjectManager.get(changedWorkspaceFolder);
-            return iProject;
+        const workspaceFolder = workspace.getWorkspaceFolder(uri);
+        if (workspaceFolder) {
+            return this.get(workspaceFolder);
         }
+    }
+
+    public static getProjectFromTreeItem(element: ProjectExplorerTreeItem) {
+        if (element.workspaceFolder) {
+            return this.get(element.workspaceFolder);
+        }
+    }
+
+    public static pushExtensibleChildren(callback: (iProject: IProject) => Promise<ProjectExplorerTreeItem[]>) {
+        Project.callBack.push(callback);
     }
 }

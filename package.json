@@ -60,8 +60,46 @@
     ],
     "commands": [
       {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.setActiveProject",
+        "title": "Set Active Project",
+        "icon": "$(circle-filled)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
+        "title": "Add Library List Entry",
+        "icon": "$(add)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
+        "title": "Set Current Library",
+        "icon": "$(edit)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
+        "title": "Remove From Library List",
+        "icon": "$(close)"
+      },
+      {
+        "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
-        "title": "%commands.projectExplorer.addToIncludePaths%"
+        "title": "%commands.projectExplorer.addToIncludePaths%",
+        "icon": "$(add)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.revealInExplorer",
+        "title": "Reveal in Explorer",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
+        "title": "Remove From Include Paths",
+        "icon": "$(close)"
       },
       {
         "category": "Job Log",
@@ -96,7 +134,31 @@
     "menus": {
       "commandPalette": [
         {
+          "command": "vscode-ibmi-projectexplorer.setActiveProject",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.revealInExplorer",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
           "when": "never"
         },
         {
@@ -125,43 +187,102 @@
       ],
       "view/item/context": [
         {
+          "command": "vscode-ibmi-projectexplorer.setActiveProject",
+          "when": "view == projectExplorer && viewItem =~ /^project_inactive.*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
+          "when": "view == projectExplorer && viewItem =~ /^libraryList.*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
+          "when": "view == projectExplorer && viewItem =~ /^libraryList.*/",
+          "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
+          "when": "view == projectExplorer && viewItem =~ /^library_(current|user).*/",
+          "group": "inline@0"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
-          "when": "view == ifsBrowser && viewItem == directory",
+          "when": "view == ifsBrowser && viewItem =~ /^directory.*/",
           "group": "1_projectexplorer@1"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
+          "when": "view == projectExplorer && viewItem =~ /^includePaths.*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.revealInExplorer",
+          "when": "view == projectExplorer && viewItem =~ /^includePath_local.*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
+          "when": "view == projectExplorer && viewItem =~ /^includePath.*/",
+          "group": "inline@1"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
-          "when": "view == jobLog && viewItem == project",
+          "when": "view == jobLog && viewItem =~ /^project.*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
-          "when": "view == jobLog && viewItem == project",
+          "when": "view == jobLog && viewItem =~ /^project.*/",
           "group": "0_viewFile@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
-          "when": "view == jobLog && viewItem == project",
+          "when": "view == jobLog && viewItem =~ /^project.*/",
           "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
-          "when": "view == jobLog && viewItem == project",
+          "when": "view == jobLog && viewItem =~ /^project.*/",
           "group": "0_viewFile@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
-          "when": "view == jobLog && viewItem == project",
+          "when": "view == jobLog && viewItem =~ /^project.*/",
           "group": "1_modification@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
-          "when": "view == jobLog && viewItem == command",
+          "when": "view == jobLog && viewItem =~ /^command.*/",
           "group": "1_modification@0"
         }
       ]
     },
     "colors": [
+      {
+        "id": "projectExplorer.systemLibrary",
+        "description": "Color for system libraries",
+        "defaults": {
+          "dark": "#4CB1FF",
+          "light": "#4CB1FF"
+        }
+      },
+      {
+        "id": "projectExplorer.currentLibrary",
+        "description": "Color for current library",
+        "defaults": {
+          "dark": "#4CAF4F",
+          "light": "#4CAF4F"
+        }
+      },
+      {
+        "id": "projectExplorer.userLibrary",
+        "description": "Color for user libraries",
+        "defaults": {
+          "dark": "#C79F0C",
+          "light": "#C79F0C"
+        }
+      },
       {
         "id": "joblog.local",
         "description": "colors.joblog.local",
@@ -251,7 +372,7 @@
     "@vscode/l10n-dev": "^0.0.25"
   },
   "dependencies": {
-    "@halcyontech/vscode-ibmi-types": "^1.6.15",
+    "@halcyontech/vscode-ibmi-types": "^1.8.0",
     "dotenv": "^16.0.3"
   }
 }

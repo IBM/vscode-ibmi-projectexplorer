@@ -2,9 +2,9 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { CancellationToken, commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
+import { CancellationToken, commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, TreeItem, window, workspace } from "vscode";
 import { IProject } from "../../iproject";
-import ErrorItem from "../../test/errorItem";
+import ErrorItem from "../projectExplorer/errorItem";
 import { ProjectManager } from "../../projectManager";
 import Log from "./log";
 import Command from "./command";
@@ -99,7 +99,7 @@ export default class JobLog implements TreeDataProvider<any> {
             }
             ));
           } else {
-            items.push(new ErrorItem(l10n.t('No job log found')));
+            items.push(new ErrorItem(projectElement.workspaceFolder, l10n.t('No job log found')));
           }
 
           break;
@@ -136,7 +136,7 @@ export default class JobLog implements TreeDataProvider<any> {
           return new Project(folder);
         });
       } else {
-        return [new ErrorItem(l10n.t('Please open a local workspace folder'))];
+        return [new ErrorItem(undefined, l10n.t('Please open a local workspace folder'))];
       }
     }
   }

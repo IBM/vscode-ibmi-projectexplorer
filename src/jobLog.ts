@@ -2,7 +2,6 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import path = require("path");
 import { l10n } from "vscode";
 
 export interface CommandInfo {
