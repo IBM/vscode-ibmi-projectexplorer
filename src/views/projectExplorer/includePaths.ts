@@ -9,7 +9,7 @@ import { ProjectManager } from "../../projectManager";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
 import { getInstance } from "../../ibmi";
-import path = require("path");
+import * as path from "path";
 
 /**
  * Tree item for Include Paths heading
