@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
+import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 import * as vscodeIbmiTypes from "@halcyontech/vscode-ibmi-types";
@@ -20,12 +20,12 @@ export default class IFSFile extends ProjectExplorerTreeItem {
     this.ifsFileInfo = ifsFileInfo;
     this.contextValue = IFSFile.contextValue;
     this.iconPath = new ThemeIcon(`file`);
-    this.tooltip = `Name: ${ifsFileInfo.name}\n` +
-      `Path: ${ifsFileInfo.path}\n`;
+    this.tooltip = l10n.t('Name: {0}\n', ifsFileInfo.name) +
+      l10n.t('Path: {0}', ifsFileInfo.path);
     this.resourceUri = this.getIFSFileResourceUri();
     this.command = {
       command: `vscode.open`,
-      title: `Open Stream File`,
+      title: l10n.t('Open Stream File'),
       arguments: [this.resourceUri]
     };
   }

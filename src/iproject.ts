@@ -3,7 +3,7 @@
  */
 
 import * as path from "path";
-import { Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
@@ -108,7 +108,7 @@ export class IProject {
         if (!unresolvedState.includePath.includes(directoryToAdd)) {
           unresolvedState.includePath.push(directoryToAdd);
         } else {
-          window.showErrorMessage(`${directoryToAdd} already exists in includePaths`);
+          window.showErrorMessage(l10n.t('{0} already exists in includePaths', directoryToAdd));
           return;
         }
       } else {
@@ -117,7 +117,7 @@ export class IProject {
 
       await this.updateIProj(unresolvedState);
     } else {
-      window.showErrorMessage('No iproj.json found');
+      window.showErrorMessage(l10n.t('No iproj.json found'));
     }
   }
 
@@ -129,12 +129,12 @@ export class IProject {
       if (index > -1) {
         unresolvedState.includePath!.splice(index, 1);
       } else {
-        window.showErrorMessage(`${directoryToRemove} does not exist in includePaths`);
+        window.showErrorMessage(l10n.t('{0} does not exist in includePaths', directoryToRemove));
       }
 
       await this.updateIProj(unresolvedState);
     } else {
-      window.showErrorMessage('No iproj.json found');
+      window.showErrorMessage(l10n.t('No iproj.json found'));
     }
   }
 
@@ -216,7 +216,7 @@ export class IProject {
     if (unresolvedState && state) {
       if (unresolvedState[position] && state[position]) {
         if (state[position]!.includes(library)) {
-          window.showErrorMessage(`${library} already exists in ${position}`);
+          window.showErrorMessage(l10n.t('{0} already exists in {1}', library, position));
           return;
 
         } else {
@@ -232,7 +232,7 @@ export class IProject {
 
       await this.updateIProj(unresolvedState);
     } else {
-      window.showErrorMessage('No iproj.json found');
+      window.showErrorMessage(l10n.t('No iproj.json found'));
     }
   }
 
@@ -242,7 +242,7 @@ export class IProject {
 
     if (unresolvedState && state) {
       if (state.curlib === library) {
-        window.showErrorMessage(`Current library already set to ${library}`);
+        window.showErrorMessage(l10n.t('Current library already set to {0}', library));
         return;
       } else if (unresolvedState.curlib && unresolvedState.curlib.startsWith('&')) {
         //Update variable
@@ -255,7 +255,7 @@ export class IProject {
 
       await this.updateIProj(unresolvedState);
     } else {
-      window.showErrorMessage('No iproj.json found');
+      window.showErrorMessage(l10n.t('No iproj.json found'));
     }
   }
 
@@ -293,7 +293,7 @@ export class IProject {
           }
 
           if (libIndex < 0) {
-            window.showErrorMessage(`${library} does not exist in preUsrlibl or postUsrlibl`);
+            window.showErrorMessage(l10n.t('{0} does not exist in preUsrlibl or postUsrlibl', library));
             return;
           }
         }
@@ -301,7 +301,7 @@ export class IProject {
 
       await this.updateIProj(unresolvedState);
     } else {
-      window.showErrorMessage('No iproj.json found');
+      window.showErrorMessage(l10n.t('No iproj.json found'));
     }
   }
 
@@ -309,7 +309,7 @@ export class IProject {
     try {
       await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
     } catch {
-      window.showErrorMessage('Failed to update iproj.json');
+      window.showErrorMessage(l10n.t('Failed to update iproj.json'));
     }
   }
 

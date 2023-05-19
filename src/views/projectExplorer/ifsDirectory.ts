@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
+import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import IFSFile from "./ifsFile";
 import { getInstance } from "../../ibmi";
@@ -22,8 +22,8 @@ export default class IFSDirectory extends ProjectExplorerTreeItem {
 
     this.contextValue = IFSDirectory.contextValue;
     this.iconPath = new ThemeIcon(`symbol-folder`);
-    this.tooltip = `Name: ${ifsDirectoryInfo.name}\n` +
-      `Path: ${ifsDirectoryInfo.path}\n`;
+    this.tooltip = l10n.t('Name: {0}\n', ifsDirectoryInfo.name) +
+      l10n.t('Path: {0}', ifsDirectoryInfo.path);
     if (custom) {
       if (custom.label) {
         this.label = custom.label;

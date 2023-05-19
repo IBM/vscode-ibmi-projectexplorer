@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
+import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 
@@ -17,12 +17,12 @@ export default class Variable extends ProjectExplorerTreeItem {
 
     this.resourceUri = Uri.parse(`variable:${value ? 'resolved' : 'unresolved'}`, true);
     this.contextValue = Variable.contextValue;
-    this.description = value || `No value`;
+    this.description = value || l10n.t('No value');
     this.iconPath = new ThemeIcon(`pencil`);
     this.command = {
       command: `vscode-ibmi-projectexplorer.updateVariable`,
       arguments: [this.workspaceFolder, name, value],
-      title: `Update value`
+      title: l10n.t('Update value')
     };
   }
 

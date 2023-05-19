@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
+import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import { getInstance } from "../../ibmi";
@@ -46,11 +46,11 @@ export default class Project extends ProjectExplorerTreeItem {
     if (remoteDir) {
       items.push(new Source(this.workspaceFolder, remoteDir));
     } else {
-      items.push(new ErrorItem(this.workspaceFolder, `Source`, {
-        description: `Please configure remote directory`,
+      items.push(new ErrorItem(this.workspaceFolder, l10n.t('Source'), {
+        description: l10n.t('Please configure deploy location'),
         command: {
           command: `code-for-ibmi.setDeployLocation`,
-          title: `Set deploy location`,
+          title: l10n.t('Set deploy location'),
           arguments: [{}, this.resourceUri]
         }
       }));
@@ -69,12 +69,12 @@ export default class Project extends ProjectExplorerTreeItem {
       items.push(new Variables(this.workspaceFolder, unresolvedVariableCount));
 
     } else {
-      items.push(new ErrorItem(this.workspaceFolder, `Variables`, {
-        description: `Please configure environment file`,
+      items.push(new ErrorItem(this.workspaceFolder, l10n.t('Variables'), {
+        description: l10n.t('Please configure environment file'),
         command: {
           command: `vscode-ibmi-projectexplorer.createEnv`,
           arguments: [this.workspaceFolder],
-          title: `Create project .env`
+          title: l10n.t('Create project .env')
         }
       }));
     }

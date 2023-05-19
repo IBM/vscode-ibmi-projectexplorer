@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { CancellationToken, commands, env, EventEmitter, ExtensionContext, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
+import { CancellationToken, commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, TreeItem, window, workspace } from "vscode";
 import { IProject } from "../../iproject";
 import ErrorItem from "../projectExplorer/errorItem";
 import { ProjectManager } from "../../projectManager";
@@ -30,7 +30,7 @@ export default class JobLog implements TreeDataProvider<any> {
               await window.showTextDocument(jobLogDoc);
             });
           } else {
-            window.showErrorMessage('No job log found');
+            window.showErrorMessage(l10n.t('No job log found'));
           }
         }
       }),
@@ -44,7 +44,7 @@ export default class JobLog implements TreeDataProvider<any> {
               await window.showTextDocument(buildOutputDoc);
             });
           } else {
-            window.showErrorMessage('No build output found');
+            window.showErrorMessage(l10n.t('No build output found'));
           }
         }
       }),
@@ -59,7 +59,7 @@ export default class JobLog implements TreeDataProvider<any> {
         try {
           await env.clipboard.writeText(element.label!.toString());
         } catch (error) {
-          window.showErrorMessage('Failed to copy command');
+          window.showErrorMessage(l10n.t('Failed to copy command'));
         }
       })
     );
@@ -99,7 +99,7 @@ export default class JobLog implements TreeDataProvider<any> {
             }
             ));
           } else {
-            items.push(new ErrorItem(projectElement.workspaceFolder, `No job log found`));
+            items.push(new ErrorItem(projectElement.workspaceFolder, l10n.t('No job log found')));
           }
 
           break;
@@ -136,16 +136,8 @@ export default class JobLog implements TreeDataProvider<any> {
           return new Project(folder);
         });
       } else {
-        return [new ErrorItem(undefined, `Please open a local workspace folder`)];
+        return [new ErrorItem(undefined, l10n.t('Please open a local workspace folder'))];
       }
     }
-  }
-
-  getParent?(element: any) {
-    throw new Error("Method not implemented.");
-  }
-
-  resolveTreeItem?(item: TreeItem, element: any, token: CancellationToken): Promise<TreeItem> {
-    throw new Error("Method not implemented.");
   }
 }

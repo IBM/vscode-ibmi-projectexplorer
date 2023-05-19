@@ -7,6 +7,7 @@ import { JobLogInfo, MessageInfo, parseDateTime } from "../../jobLog";
 
 export default class Message extends TreeItem {
   static contextValue = `message`;
+
   constructor(public msg: MessageInfo) {
     const msgSeverity = String(msg.severity).padStart(2, `0`);
     const msgLabel = '[' + msgSeverity + '] ' + msg.msgid + ' - ' + msg.message_text;
@@ -42,6 +43,5 @@ export default class Message extends TreeItem {
         break;
     }
     this.iconPath = msgIcon;
-
   }
 }

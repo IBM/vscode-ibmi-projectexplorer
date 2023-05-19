@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ExtensionContext, QuickPickItem, StatusBarAlignment, StatusBarItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { ExtensionContext, l10n, StatusBarAlignment, StatusBarItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import { IProject } from "./iproject";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 import Project from "./views/projectExplorer/project";
@@ -55,19 +55,19 @@ export class ProjectManager {
     public static setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
         if (workspaceFolder) {
             this.activeProject = this.loaded[workspaceFolder.index];
-            this.activeProjectStatusBarItem.text = `$(root-folder) Project: ${this.activeProject.workspaceFolder.name}`;
-            this.activeProjectStatusBarItem.tooltip = `Active project: ${this.activeProject.workspaceFolder}`;
+            this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', this.activeProject.workspaceFolder.name);
+            this.activeProjectStatusBarItem.tooltip = l10n.t('Active project: {0}', this.activeProject.workspaceFolder);
             this.activeProjectStatusBarItem.command = {
                 command: `vscode-ibmi-projectexplorer.setActiveProject`,
-                title: `Set Active Project`
+                title: l10n.t('Set Active Project')
             };
         } else {
             this.activeProject = undefined;
-            this.activeProjectStatusBarItem.text = `$(root-folder) Project: $(circle-slash)`;
-            this.activeProjectStatusBarItem.tooltip = `Please open a local workspace folder`;
+            this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project:') + ' $(circle-slash)';
+            this.activeProjectStatusBarItem.tooltip = l10n.t('Please open a local workspace folder');
             this.activeProjectStatusBarItem.command = {
                 command: 'workbench.action.files.openFolder',
-                title: 'Open folder'
+                title: l10n.t('Open folder')
             };
         }
     }

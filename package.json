@@ -1,7 +1,7 @@
 {
   "name": "vscode-ibmi-projectexplorer",
   "displayName": "Project Explorer for IBM i",
-  "description": "Project Explorer for IBM i",
+  "description": "%description%",
   "publisher": "IBM",
   "version": "0.0.1",
   "repository": {
@@ -20,17 +20,18 @@
   "extensionDependencies": [
     "HalcyonTechLtd.code-for-ibmi"
   ],
+  "l10n": "./l10n",
   "contributes": {
     "views": {
       "explorer": [
         {
           "id": "projectExplorer",
-          "name": "Project Explorer",
+          "name": "%explorer.projectExplorer%",
           "icon": "$(remote-explorer)"
         },
         {
           "id": "jobLog",
-          "name": "Job Log",
+          "name": "%explorer.jobLog%",
           "icon": "$(book)"
         }
       ]
@@ -38,22 +39,22 @@
     "viewsWelcome": [
       {
         "view": "projectExplorer",
-        "contents": "No workspace folder opened",
+        "contents": "%viewsWelcome.projectExplorer.noWorkspace%",
         "when": "workspaceFolderCount == 0"
       },
       {
         "view": "projectExplorer",
-        "contents": "Scanning for projects...",
+        "contents": "%viewsWelcome.projectExplorer.scanning%",
         "when": "workspaceFolderCount > 0"
       },
       {
         "view": "jobLog",
-        "contents": "No workspace folder opened",
+        "contents": "%viewsWelcome.jobLog.noWorkspace%",
         "when": "workspaceFolderCount == 0"
       },
       {
         "view": "jobLog",
-        "contents": "Scanning for projects...",
+        "contents": "%viewsWelcome.jobLog.scanning%",
         "when": "workspaceFolderCount > 0"
       }
     ],
@@ -61,73 +62,73 @@
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.setActiveProject",
-        "title": "Set Active Project",
+        "title": "%commands.projectExplorer.setActiveProject%",
         "icon": "$(circle-filled)"
       },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
-        "title": "Add Library List Entry",
+        "title": "%commands.projectExplorer.addLibraryListEntry%",
         "icon": "$(add)"
       },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
-        "title": "Set Current Library",
+        "title": "%commands.projectExplorer.setCurrentLibrary%",
         "icon": "$(edit)"
       },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
-        "title": "Remove From Library List",
+        "title": "%commands.projectExplorer.removeFromLibraryList%",
         "icon": "$(close)"
       },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
-        "title": "Add to Include Paths",
+        "title": "%commands.projectExplorer.addToIncludePaths%",
         "icon": "$(add)"
       },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.revealInExplorer",
-        "title": "Reveal in Explorer",
+        "title": "%commands.projectExplorer.revealInExplorer%",
         "icon": "$(arrow-right)"
       },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
-        "title": "Remove From Include Paths",
+        "title": "%commands.projectExplorer.removeFromIncludePaths%",
         "icon": "$(close)"
       },
       {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
-        "title": "Refresh",
+        "title": "%commands.jobLog.refresh%",
         "icon": "$(refresh)"
       },
       {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
-        "title": "Show Job Log",
+        "title": "%commands.jobLog.showJobLog%",
         "icon": "$(book)"
       },
       {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
-        "title": "Show Build Output",
+        "title": "%commands.jobLog.showBuildOutput%",
         "icon": "$(note)"
       },
       {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
-        "title": "Clear Job Log",
+        "title": "%commands.jobLog.clearJobLogs%",
         "icon": "$(clear-all)"
       },
       {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.copy",
-        "title": "Copy"
+        "title": "%commands.jobLog.copy%"
       }
     ],
     "menus": {
@@ -260,7 +261,7 @@
     "colors": [
       {
         "id": "projectExplorer.systemLibrary",
-        "description": "Color for system libraries",
+        "description": "%colors.projectExplorer.systemLibraries%",
         "defaults": {
           "dark": "#4CB1FF",
           "light": "#4CB1FF"
@@ -268,7 +269,7 @@
       },
       {
         "id": "projectExplorer.currentLibrary",
-        "description": "Color for current library",
+        "description": "%colors.projectExplorer.currentLibrary%",
         "defaults": {
           "dark": "#4CAF4F",
           "light": "#4CAF4F"
@@ -276,7 +277,7 @@
       },
       {
         "id": "projectExplorer.userLibrary",
-        "description": "Color for user libraries",
+        "description": "%colors.projectExplorer.userLibraries%",
         "defaults": {
           "dark": "#C79F0C",
           "light": "#C79F0C"
@@ -284,7 +285,7 @@
       },
       {
         "id": "joblog.local",
-        "description": "Color for local job log",
+        "description": "%colors.jobLog.local%",
         "defaults": {
           "dark": "#FFA500",
           "light": "#FFA500"
@@ -292,7 +293,7 @@
       },
       {
         "id": "joblog.severity.0",
-        "description": "Color for job log severity 0 messages",
+        "description": "%colors.jobLog.severity.0%",
         "defaults": {
           "dark": "#87d167",
           "light": "#87d167"
@@ -300,7 +301,7 @@
       },
       {
         "id": "joblog.severity.10",
-        "description": "Color for job log severity 10 messages",
+        "description": "%colors.jobLog.severity.10%",
         "defaults": {
           "dark": "#b17cbc",
           "light": "#b17cbc"
@@ -308,7 +309,7 @@
       },
       {
         "id": "joblog.severity.20",
-        "description": "Color for job log severity 20 messages",
+        "description": "%colors.jobLog.severity.20%",
         "defaults": {
           "dark": "#6db5f8",
           "light": "#6db5f8"
@@ -316,7 +317,7 @@
       },
       {
         "id": "joblog.severity.30",
-        "description": "Color for job log severity 30 messages",
+        "description": "%colors.jobLog.severity.30%",
         "defaults": {
           "dark": "#eed329",
           "light": "#eed329"
@@ -324,7 +325,7 @@
       },
       {
         "id": "joblog.severity.40",
-        "description": "Color for job log severity 40 messages",
+        "description": "%colors.jobLog.severity.40%",
         "defaults": {
           "dark": "#FFA500",
           "light": "#FFA500"
@@ -332,7 +333,7 @@
       },
       {
         "id": "joblog.severity.50",
-        "description": "Color for job log severity 50 messages",
+        "description": "%colors.jobLog.severity.50%",
         "defaults": {
           "dark": "#ee816b",
           "light": "#ee816b"
@@ -349,7 +350,9 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "nls": "npx @vscode/l10n-dev export --outDir ./l10n ./src",
+    "pseudo-nls": "npx @vscode/l10n-dev generate-pseudo -o ./l10n/ ./l10n/bundle.l10n.json ./package.nls.json"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
@@ -365,7 +368,8 @@
     "ts-loader": "^9.3.1",
     "typescript": "^4.7.4",
     "webpack": "^5.76.0",
-    "webpack-cli": "^4.10.0"
+    "webpack-cli": "^4.10.0",
+    "@vscode/l10n-dev": "^0.0.25"
   },
   "dependencies": {
     "@halcyontech/vscode-ibmi-types": "^1.8.0",

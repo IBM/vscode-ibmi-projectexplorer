@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import ErrorItem from "./errorItem";
@@ -16,7 +16,7 @@ export default class Variables extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.variables;
 
   constructor(public workspaceFolder: WorkspaceFolder, unresolvedVariableCount: number) {
-    super(`Variables`, TreeItemCollapsibleState.Collapsed);
+    super(l10n.t('Variables'), TreeItemCollapsibleState.Collapsed);
 
     this.resourceUri = Uri.parse(`variables:${unresolvedVariableCount}`, true);
     this.contextValue = Variables.contextValue;
@@ -34,7 +34,7 @@ export default class Variables extends ProjectExplorerTreeItem {
 
     const actualValues = await iProject?.getEnv();
     if (!actualValues) {
-      return [new ErrorItem(this.workspaceFolder, `Unable to retrieve environment variables`)];
+      return [new ErrorItem(this.workspaceFolder, l10n.t('Unable to retrieve environment variables'))];
     }
 
     items.push(...possibleVariables.map(
