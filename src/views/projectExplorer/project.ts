@@ -38,11 +38,7 @@ export default class Project extends ProjectExplorerTreeItem {
     if (ibmi && ibmi.getConnection()) {
       const iProject = ProjectManager.get(this.workspaceFolder);
 
-      const deploymentDirs = ibmi?.getStorage().getDeployment()!;
-      const localDir = this.workspaceFolder.uri.fsPath!;
-      const remoteDir = deploymentDirs[localDir];
-
-      // First load the IFS browser stuff
+      const remoteDir = await iProject!.getRemoteDir();
       if (remoteDir) {
         items.push(new Source(this.workspaceFolder, remoteDir));
       } else {
