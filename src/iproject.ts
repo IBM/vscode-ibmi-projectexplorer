@@ -97,9 +97,7 @@ export class IProject {
   }
 
   public async addToIncludePaths(directoryToAdd: string) {
-    const ibmi = getInstance();
-    const deploymentDirs = ibmi?.getStorage().getDeployment()!;
-    const remoteDir = deploymentDirs[this.workspaceFolder.uri.fsPath];
+    const remoteDir = await this.getRemoteDir();
     directoryToAdd = directoryToAdd.startsWith(remoteDir) ? path.posix.relative(remoteDir, directoryToAdd) : directoryToAdd;
 
     const unresolvedState = await this.getUnresolvedState();
@@ -463,6 +461,12 @@ export class IProject {
 
       return objLibs;
     }
+  }
+
+  public async getRemoteDir() {
+    const ibmi = getInstance();
+    const deploymentDirs = ibmi?.getStorage().getDeployment()!;
+    return deploymentDirs[this.workspaceFolder.uri.fsPath];
   }
 
   public static validateIProject(content: string): IProjectT {
