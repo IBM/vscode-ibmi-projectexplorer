@@ -52,9 +52,7 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
               items.push(new RemoteIncludePath(this.workspaceFolder, includePath));
             } else {
               // Relative remote include path
-              const ibmi = getInstance();
-              const deploymentDirs = ibmi?.getStorage().getDeployment()!;
-              const remoteDir = deploymentDirs[this.workspaceFolder.uri.fsPath];
+              const remoteDir = await iProject!.getRemoteDir();
               const absoluteIncludePath = path.posix.join(remoteDir, includePath);
               items.push(new RemoteIncludePath(this.workspaceFolder, absoluteIncludePath, { label: includePath }));
             }
