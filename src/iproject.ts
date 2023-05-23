@@ -101,7 +101,7 @@ export class IProject {
       try {
         const ibmiJsonContent: IBMiJsonT = JSON.parse((await workspace.fs.readFile(ibmiJsonPath)).toString());
         if (ibmiJsonContent && ibmiJsonContent.build) {
-          buildMap.set(ibmiJsonPath.fsPath, ibmiJsonContent);
+          buildMap.set(path.dirname(ibmiJsonPath.fsPath), ibmiJsonContent);
         }
       } catch { }
     };
