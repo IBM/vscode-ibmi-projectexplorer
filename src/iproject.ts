@@ -11,6 +11,7 @@ import { TextEncoder } from "util";
 import { IProjectT } from "./iProjectT";
 import { getInstance } from "./ibmi";
 import { LibraryType } from "./views/projectExplorer/library";
+import { IBMiJsonT } from "./ibmiJsonT";
 
 const DEFAULT_CURLIB = '&CURLIB';
 
@@ -90,6 +91,22 @@ export class IProject {
 
   public setState(state: IProjectT | undefined) {
     this.state = state;
+  }
+
+  public async getBuildMap() {
+    let buildMap: Map<string, IBMiJsonT> = new Map();
+
+    const ibmiJsonPaths = await workspace.findFiles('**/.ibmi.json');
+    for await (const ibmiJsonPath of ibmiJsonPaths) {
+      try {
+        const ibmiJsonContent: IBMiJsonT = JSON.parse((await workspace.fs.readFile(ibmiJsonPath)).toString());
+        if (ibmiJsonContent && ibmiJsonContent.build) {
+          buildMap.set(ibmiJsonPath.fsPath, ibmiJsonContent);
+        }
+      } catch { }
+    };
+
+    return buildMap;
   }
 
   public getEnvFilePath(): Uri {
@@ -423,12 +440,15 @@ export class IProject {
       return [];
     }
 
+    const buildMap = await this.getBuildMap();
+
     const valueList: string[] = [
       unresolvedState.curlib,
       unresolvedState.objlib,
       ...(unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl : []),
       ...(unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl : []),
       ...(unresolvedState.includePath ? unresolvedState.includePath : []),
+      ...(Array.from(buildMap.values()).map(ibmiJson => ibmiJson.build.objlib))
     ].filter(x => x) as string[];
 
     // Get everything that starts with an &
