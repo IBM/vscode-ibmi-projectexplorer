@@ -106,6 +106,13 @@ export class IProject {
       } catch { }
     };
 
+    if (!buildMap.has(this.workspaceFolder.uri.fsPath)) {
+      const unresolvedState = await this.getUnresolvedState();
+      if (unresolvedState && unresolvedState.objlib) {
+        buildMap.set(this.workspaceFolder.uri.fsPath, { build: { objlib: unresolvedState.objlib } });
+      }
+    }
+
     return buildMap;
   }
 
@@ -448,7 +455,7 @@ export class IProject {
       ...(unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl : []),
       ...(unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl : []),
       ...(unresolvedState.includePath ? unresolvedState.includePath : []),
-      ...(Array.from(buildMap.values()).map(ibmiJson => ibmiJson.build.objlib))
+      ...(Array.from(buildMap.values()).filter(ibmiJson => ibmiJson.build).map(ibmiJson => ibmiJson.build!.objlib))
     ].filter(x => x) as string[];
 
     // Get everything that starts with an &
