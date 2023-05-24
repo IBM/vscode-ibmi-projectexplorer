@@ -20,11 +20,13 @@ export type EnvironmentVariables = { [name: string]: string };
 export class IProject {
   private name: string;
   private state: IProjectT | undefined;
+  private buildMap: Map<string, IBMiJsonT>;
   private jobLogs: RingBuffer<JobLogInfo>;
   private environmentValues: EnvironmentVariables;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
     this.name = workspaceFolder.name;
+    this.buildMap = new Map();
     this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
   }
@@ -93,27 +95,34 @@ export class IProject {
     this.state = state;
   }
 
-  public async getBuildMap() {
-    let buildMap: Map<string, IBMiJsonT> = new Map();
+  public async getBuildMap(): Promise<Map<string, IBMiJsonT>> {
+    if (!this.buildMap) {
+      return await this.updateBuildMap();
+    }
+    return this.buildMap;
+  }
+
+  public async updateBuildMap() {
+    this.buildMap.clear();
 
     const ibmiJsonPaths = await workspace.findFiles('**/.ibmi.json');
     for await (const ibmiJsonPath of ibmiJsonPaths) {
       try {
         const ibmiJsonContent: IBMiJsonT = JSON.parse((await workspace.fs.readFile(ibmiJsonPath)).toString());
         if (ibmiJsonContent && ibmiJsonContent.build) {
-          buildMap.set(path.dirname(ibmiJsonPath.fsPath), ibmiJsonContent);
+          this.buildMap.set(path.dirname(ibmiJsonPath.fsPath), ibmiJsonContent);
         }
       } catch { }
     };
 
-    if (!buildMap.has(this.workspaceFolder.uri.fsPath)) {
+    if (!this.buildMap.has(this.workspaceFolder.uri.fsPath)) {
       const unresolvedState = await this.getUnresolvedState();
       if (unresolvedState && unresolvedState.objlib) {
-        buildMap.set(this.workspaceFolder.uri.fsPath, { build: { objlib: unresolvedState.objlib } });
+        this.buildMap.set(this.workspaceFolder.uri.fsPath, { build: { objlib: unresolvedState.objlib } });
       }
     }
 
-    return buildMap;
+    return this.buildMap;
   }
 
   public getEnvFilePath(): Uri {

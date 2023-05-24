@@ -34,6 +34,7 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 		const iProject = ProjectManager.getProjectFromUri(uri);
 		if (iProject) {
 			await iProject.updateState();
+			await iProject.updateBuildMap();
 		}
 		projectExplorer.refresh();
 	});
