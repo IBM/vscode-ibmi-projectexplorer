@@ -37,14 +37,22 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 			await iProject.updateBuildMap();
 		}
 		projectExplorer.refresh();
+
+		ProjectManager.fire('projects');
 	});
-	projectWatcher.onDidCreate(async (uri) => { projectExplorer.refresh(); });
+	projectWatcher.onDidCreate(async (uri) => {
+		projectExplorer.refresh();
+
+		ProjectManager.fire('projects');
+	});
 	projectWatcher.onDidDelete(async (uri) => {
 		const iProject = ProjectManager.getProjectFromUri(uri);
 		if (iProject) {
 			iProject.setState(undefined);
 		}
 		projectExplorer.refresh();
+
+		ProjectManager.fire('projects');
 	});
 
 	const jobLog = new JobLog(context);
