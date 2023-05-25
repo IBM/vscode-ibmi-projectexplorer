@@ -6,7 +6,7 @@ import { ProjectManager } from "./projectManager";
 import ProjectExplorer from "./views/projectExplorer";
 
 export interface ProjectExplorerApi {
-  projectManager: ProjectManager,
+  projectManager: typeof ProjectManager,
   projectExplorer: ProjectExplorer
 }
 
