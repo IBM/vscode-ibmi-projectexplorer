@@ -12,6 +12,7 @@ import { IProjectT } from "./iProjectT";
 import { getInstance } from "./ibmi";
 import { LibraryType } from "./views/projectExplorer/library";
 import { IBMiJsonT } from "./ibmiJsonT";
+import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 
 const DEFAULT_CURLIB = '&CURLIB';
 
@@ -169,7 +170,7 @@ export class IProject {
     }
   }
 
-  public async getLibraryList() {
+  public async getLibraryList(): Promise<{ libraryInfo: IBMiObject; libraryType: string; }[] | undefined> {
     const ibmi = getInstance();
     const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;
 
