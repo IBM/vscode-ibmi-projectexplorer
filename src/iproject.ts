@@ -57,17 +57,18 @@ export class IProject {
     if (unresolvedState) {
       const values = await this.getEnv();
 
-      unresolvedState.preUsrlibl = unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl.map(preUsrlib => this.resolveLibrary(preUsrlib, values)) : undefined;
-      unresolvedState.postUsrlibl = unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl.map(postUsrlib => this.resolveLibrary(postUsrlib, values)) : undefined;
-      unresolvedState.curlib = unresolvedState.curlib ? this.resolveLibrary(unresolvedState.curlib, values) : undefined;
-      unresolvedState.objlib = unresolvedState.objlib ? this.resolveLibrary(unresolvedState.objlib, values) : undefined;
+      unresolvedState.preUsrlibl = unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl.map(preUsrlib => this.resolveVariable(preUsrlib, values)) : undefined;
+      unresolvedState.postUsrlibl = unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl.map(postUsrlib => this.resolveVariable(postUsrlib, values)) : undefined;
+      unresolvedState.curlib = unresolvedState.curlib ? this.resolveVariable(unresolvedState.curlib, values) : undefined;
+      unresolvedState.objlib = unresolvedState.objlib ? this.resolveVariable(unresolvedState.objlib, values) : undefined;
+      unresolvedState.includePath = unresolvedState.includePath ? unresolvedState.includePath.map(includePath => this.resolveVariable(includePath, values)) : undefined;
     }
 
     this.state = unresolvedState;
     return this.state;
   }
 
-  private resolveLibrary(lib: string, values: EnvironmentVariables): string {
+  private resolveVariable(lib: string, values: EnvironmentVariables): string {
     if (lib && lib.startsWith('&') && values[lib.substring(1)] && values[lib.substring(1)] !== '') {
       return values[lib.substring(1)];
     }
