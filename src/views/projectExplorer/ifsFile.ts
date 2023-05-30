@@ -39,6 +39,6 @@ export default class IFSFile extends ProjectExplorerTreeItem {
 
   getIFSFileResourceUri() {
     const path = this.ifsFileInfo.path;
-    return Uri.parse(path).with({ scheme: `streamfile`, path });
+    return Uri.parse(path).with({ scheme: `streamfile` });
   }
 }

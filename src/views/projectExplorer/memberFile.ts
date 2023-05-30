@@ -19,7 +19,7 @@ export default class MemberFile extends ProjectExplorerTreeItem {
     const extension = memberFileInfo.extension.trim() !== '' ? memberFileInfo.extension : 'MBR';
     super(`${memberFileInfo.name}.${extension}`, TreeItemCollapsibleState.None);
     this.memberFileInfo = memberFileInfo;
-    this.path = `${pathToObject}/${memberFileInfo.name}.${memberFileInfo.extension}`;
+    this.path = `${pathToObject}/${memberFileInfo.name}.${extension}`;
     this.contextValue = MemberFile.contextValue;
     this.iconPath = new ThemeIcon(`file`);
     this.description = memberFileInfo.text;
@@ -30,8 +30,8 @@ export default class MemberFile extends ProjectExplorerTreeItem {
       (memberFileInfo.asp ? l10n.t('ASP: {0}\n', memberFileInfo.asp) : ``) +
       (memberFileInfo.recordLength ? l10n.t('Record Length: {0}\n', memberFileInfo.recordLength) : ``) +
       (memberFileInfo.lines ? l10n.t('Lines: {0}\n', memberFileInfo.lines) : ``) +
-      (memberFileInfo.created ? l10n.t('Created: {0}\n', memberFileInfo.created) : ``) +
-      (memberFileInfo.changed ? l10n.t('Changed: {0}', memberFileInfo.changed) : ``);
+      (memberFileInfo.created ? l10n.t('Created: {0}\n', memberFileInfo.created.toLocaleString()) : ``) +
+      (memberFileInfo.changed ? l10n.t('Changed: {0}', memberFileInfo.changed.toLocaleString()) : ``);
     this.resourceUri = this.getMemberResourceUri();
     this.command = {
       command: `vscode.open`,
