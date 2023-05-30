@@ -224,7 +224,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
-          "when": "view == projectExplorer && viewItem =~ /^includePath.*/",
+          "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/",
           "group": "inline@1"
         },
         {

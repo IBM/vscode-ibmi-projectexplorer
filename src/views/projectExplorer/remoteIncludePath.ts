@@ -13,7 +13,7 @@ import * as path from "path";
 export default class RemoteIncludePath extends IFSDirectory {
   static contextValue = ContextValue.includePath;
 
-  constructor(public workspaceFolder: WorkspaceFolder, includePath: string, custom?: { label?: string}) {
+  constructor(public workspaceFolder: WorkspaceFolder, includePath: string, custom?: { label?: string, description?: string}) {
     super(workspaceFolder,
       {
         type: 'directory',
@@ -21,7 +21,8 @@ export default class RemoteIncludePath extends IFSDirectory {
         path: includePath
       },
       {
-        label: custom?.label || includePath
+        label: (custom && custom.label) ? custom.label : includePath,
+        description: (custom && custom.description) ? custom.description : includePath,
       }
     );
 
