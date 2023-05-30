@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { getCustomUI, getInstance } from "./ibmi";
+import { getCustomUI, getInstance } from "../../ibmi";
 import { l10n, window } from "vscode";
 import { IBMiFile } from "@halcyontech/vscode-ibmi-types";
 
@@ -22,7 +22,7 @@ export async function migrateToIFS(library: string) {
 
             const basePage = customUI
                 .addHeading(l10n.t('Migrate to IFS'), 1)
-                .addParagraph(l10n.t('Convert source physical file members in a source library to ASCII IFS files in the project\'s deploy location'))
+                .addParagraph(l10n.t('Convert all members in source physical files of a library to IFS files in the project\'s deploy location'))
                 .addInput(`srcLib`, l10n.t('Source Library'), undefined, { default: library, readonly: true })
                 .addInput(`defaultCCSID`, l10n.t('Default CCSID'), l10n.t('If the source file is 65535, this will be used instead'), { default: `*JOB` });
 

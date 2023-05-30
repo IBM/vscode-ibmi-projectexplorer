@@ -16,7 +16,7 @@ import LibraryList from "./libraryList";
 import Library from "./library";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
-import { migrateToIFS } from "../../migrateToIFS";
+import { migrateToIFS } from "./migrateToIFS";
 import * as path from "path";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
