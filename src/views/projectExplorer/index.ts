@@ -73,7 +73,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               }
             }
 
-            let migrationResult = true;
+            let migration = {
+              numFiles: migrationData.sourceFiles.length,
+              numSuccess: 0,
+              numFail: 0,
+              result: true
+            };
             await window.withProgress({
               location: ProgressLocation.Notification,
               title: l10n.t('Migrating to IFS'),
@@ -86,14 +91,25 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                   directory: remoteDir
                 });
 
-                migrationResult = migrationResult && (result?.code !== 0);
+                if (result?.code === 0) {
+                  migration.numSuccess++;
+                } else {
+                  migration.numFail++;
+                  migration.result = false;
+                }
               }
             });
 
-            if (migrationResult) {
-              window.showInformationMessage(l10n.t('Successfully migrated source to {0}', remoteDir));
+            if (migration.result) {
+              window.showInformationMessage(l10n.t('Successfully migrated {0}/{1} source file(s) to {2}',
+                migration.numSuccess, migration.numFiles, remoteDir));
             } else {
-              window.showInformationMessage(l10n.t('Failed to migrated source to {0}', remoteDir));
+              window.showErrorMessage(l10n.t('Failed to migrate {0}/{1} source file(s) to {2}',
+                migration.numFail, migration.numFiles, remoteDir), l10n.t('View log')).then(async choice => {
+                  if (choice === l10n.t('View log')) {
+                    ibmi?.getConnection().outputChannel?.show();
+                  }
+                });
             }
 
             this.refresh();
