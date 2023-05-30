@@ -23,12 +23,14 @@ export default class IFSDirectory extends ProjectExplorerTreeItem {
     this.contextValue = IFSDirectory.contextValue;
     this.iconPath = new ThemeIcon(`symbol-folder`);
     this.tooltip = l10n.t('Name: {0}\n', ifsDirectoryInfo.name) +
-      l10n.t('Path: {0}', ifsDirectoryInfo.path);
+      l10n.t('Path: {0}\n', ifsDirectoryInfo.path) +
+      (ifsDirectoryInfo.size ? l10n.t('Size: {0}\n', ifsDirectoryInfo.size) : ``) +
+      (ifsDirectoryInfo.owner ? l10n.t('Owner: {0}\n', ifsDirectoryInfo.owner) : ``) +
+      (ifsDirectoryInfo.modified ? l10n.t('Modified: {0}', ifsDirectoryInfo.modified.toLocaleString()) : ``);
     if (custom) {
       if (custom.label) {
         this.label = custom.label;
       }
-
       if (custom.description) {
         this.description = custom.description;
       }
