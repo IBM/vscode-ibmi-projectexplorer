@@ -13,6 +13,8 @@
   "commands.projectExplorer.addToIncludePaths": "Add To Include Paths",
   "commands.projectExplorer.revealInExplorer": "Reveal In Explorer",
   "commands.projectExplorer.removeFromIncludePaths": "Remove From Include Paths",
+  "commands.projectExplorer.moveUp": "Move Include Path Up",
+  "commands.projectExplorer.moveDown": "Move Include Path Down",
   "commands.jobLog.refresh": "Refresh",
   "commands.jobLog.showJobLog": "Show Job Log",
   "commands.jobLog.showBuildOutput": "Show Build Output",

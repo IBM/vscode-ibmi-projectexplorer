@@ -136,6 +136,50 @@ export class IProject {
     }
   }
 
+  public async moveUp(pathMovingUp: string){
+    const unresolvedState = await this.getUnresolvedState();
+
+    if(unresolvedState){
+     const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathMovingUp) : -1;
+     
+     if (index > -1) {
+       if(index > 0){
+         [unresolvedState.includePath![index - 1], unresolvedState.includePath![index]] = 
+           [unresolvedState.includePath![index], unresolvedState.includePath![index - 1]];
+       }
+     } else {
+       window.showErrorMessage(l10n.t('{0} does not exist in includePaths', pathMovingUp));
+     }
+     await this.updateIProj(unresolvedState);
+
+   } else {
+     window.showErrorMessage(l10n.t('No iproj.json found'));
+   }
+  }
+
+  public async moveDown(pathMovingDown: string){
+    const unresolvedState = await this.getUnresolvedState();
+
+    if(unresolvedState){
+     const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathMovingDown) : -1;
+
+     if (index > -1) {
+       if(index < unresolvedState.includePath!.length - 1){
+         [unresolvedState.includePath![index], unresolvedState.includePath![index + 1]] = 
+           [unresolvedState.includePath![index + 1], unresolvedState.includePath![index]];
+       }
+     
+     } else {
+       window.showErrorMessage(l10n.t('{0} does not exist in includePaths', pathMovingDown));
+     }
+     await this.updateIProj(unresolvedState);
+
+   } else {
+     window.showErrorMessage(l10n.t('No iproj.json found'));
+   }
+
+  }
+
   public async getLibraryList() {
     const ibmi = getInstance();
     const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;
