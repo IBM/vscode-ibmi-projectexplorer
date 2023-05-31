@@ -17,12 +17,15 @@ export default class LocalIncludePath extends ProjectExplorerTreeItem {
     super(includePath, TreeItemCollapsibleState.None);
     this.uri = uri;
 
-    this.contextValue = LocalIncludePath.contextValue + ContextValue.local;
-    this.iconPath = new ThemeIcon(`symbol-folder`);
     this.tooltip = l10n.t('Name: {0}\n', includePath) +
       l10n.t('Path: {0}', uri.fsPath);
     this.iconPath = new ThemeIcon(`link`);
     this.description = (custom && custom.description) ? custom.description : undefined;
+    this.contextValue = LocalIncludePath.contextValue + ContextValue.local;
+    if (!custom || !custom.description) {
+      this.contextValue += ContextValue.configurable;
+    }
+    this.iconPath = new ThemeIcon(`link`);
   }
 
   getChildren(): ProjectExplorerTreeItem[] {

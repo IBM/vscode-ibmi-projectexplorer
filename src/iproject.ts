@@ -11,8 +11,9 @@ import { TextEncoder } from "util";
 import { IProjectT } from "./iProjectT";
 import { getInstance } from "./ibmi";
 import { LibraryType } from "./views/projectExplorer/library";
+import envUpdater from "./envUpdater";
 
-const DEFAULT_CURLIB = '&CURLIB';
+const DEFAULT_CURLIB = 'CURLIB';
 
 export type EnvironmentVariables = { [name: string]: string };
 
@@ -120,6 +121,26 @@ export class IProject {
     }
   }
 
+  public async configureAsVariable(attribute: keyof IProjectT, variable: string, value: string) {
+    const unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      const index = (unresolvedState[attribute] as string[]).indexOf(value);
+      if (index > -1) {
+        (unresolvedState[attribute] as string[])[index] = `&${variable}`;
+      } else {
+        window.showErrorMessage(l10n.t('{0} does not exist in {1}', value, attribute));
+      }
+
+      const isIProjUpdated = await this.updateIProj(unresolvedState);
+      if (isIProjUpdated) {
+        await this.setEnv(variable, value);
+      }
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+  }
+
   public async removeFromIncludePaths(directoryToRemove: string) {
     const unresolvedState = await this.getUnresolvedState();
 
@@ -128,7 +149,7 @@ export class IProject {
       if (index > -1) {
         unresolvedState.includePath!.splice(index, 1);
       } else {
-        window.showErrorMessage(l10n.t('{0} does not exist in includePaths', directoryToRemove));
+        window.showErrorMessage(l10n.t('{0} does not exist in includePath', directoryToRemove));
       }
 
       await this.updateIProj(unresolvedState);
@@ -307,8 +328,10 @@ export class IProject {
   public async updateIProj(iProject: IProjectT) {
     try {
       await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+      return true;
     } catch {
       window.showErrorMessage(l10n.t('Failed to update iproj.json'));
+      return false;
     }
   }
 
@@ -404,14 +427,10 @@ export class IProject {
   }
 
   public async setEnv(variable: string, value: string) {
-    const env = await this.getEnv();
-    env[variable] = value;
-
-    let content = '';
-    for (const [key, value] of Object.entries(env)) {
-      content += `${key}=${value}\n`;
-    }
-    await workspace.fs.writeFile(this.getEnvFilePath(), new TextEncoder().encode(content));
+    const envPath = this.getEnvFilePath();
+    await envUpdater(envPath, {
+      [variable]: value
+    });
   }
 
   public getJobLogs() {

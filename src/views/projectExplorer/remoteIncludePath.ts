@@ -27,6 +27,9 @@ export default class RemoteIncludePath extends IFSDirectory {
     );
 
     this.contextValue = RemoteIncludePath.contextValue;
+    if (!custom || !custom.description) {
+      this.contextValue += ContextValue.configurable;
+    }
     this.iconPath = new ThemeIcon(`link`);
   }
 }

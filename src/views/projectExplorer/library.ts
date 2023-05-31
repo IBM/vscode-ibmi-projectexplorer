@@ -70,6 +70,10 @@ export default class Library extends ProjectExplorerTreeItem {
         this.contextValue = Library.contextValue;
     }
     this.iconPath = new ThemeIcon(`library`, iconColor);
+
+    if (![LibraryType.systemLibrary, LibraryType.defaultUserLibrary].includes(libraryType) && !variable) {
+      this.contextValue += ContextValue.configurable;
+    }
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {

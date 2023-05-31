@@ -12,6 +12,8 @@
   "commands.projectExplorer.removeFromLibraryList": "Remove From Library List",
   "commands.projectExplorer.addToIncludePaths": "Add To Include Paths",
   "commands.projectExplorer.revealInExplorer": "Reveal In Explorer",
+  "commands.projectExplorer.configureAsVariable": "Configure as Variable",
+  "commands.projectExplorer.assignToVariable": "Assign to Variable",
   "commands.projectExplorer.removeFromIncludePaths": "Remove From Include Paths",
   "commands.jobLog.refresh": "Refresh",
   "commands.jobLog.showJobLog": "Show Job Log",

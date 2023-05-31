@@ -24,6 +24,7 @@ export enum ContextValue {
   defaultUser = '_defaultUser',
   preUser = '_preUser',
   postUser = '_postUser',
+  configurable = '_configurable',
   objectFile = `objectFile`,
   memberFile = 'memberFile',
   ifsDirectory = 'ifsDirectory',
