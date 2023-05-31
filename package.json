@@ -227,6 +227,11 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",
+          "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
+          "group": "0_projectexplorer@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.assignToVariable",
           "when": "view == ifsBrowser && viewItem =~ /^directory.*/",
           "group": "0_projectexplorer@0"
         },
