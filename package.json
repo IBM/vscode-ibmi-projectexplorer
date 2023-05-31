@@ -204,7 +204,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
-          "when": "view == projectExplorer && viewItem =~ /^library_(current|user).*/",
+          "when": "view == projectExplorer && viewItem =~ /^library_(current|preUser|postUser).*/",
           "group": "inline@0"
         },
         {

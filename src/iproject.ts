@@ -68,7 +68,7 @@ export class IProject {
     return this.state;
   }
 
-  private resolveVariable(lib: string, values: EnvironmentVariables): string {
+  public resolveVariable(lib: string, values: EnvironmentVariables): string {
     if (lib && lib.startsWith('&') && values[lib.substring(1)] && values[lib.substring(1)] !== '') {
       return values[lib.substring(1)];
     }
@@ -441,24 +441,24 @@ export class IProject {
   }
 
   public async getObjectLibraries(): Promise<Set<string> | undefined> {
-    const state = await this.getState();
-    if (state) {
+    const unresolvedState = await this.getUnresolvedState();
+    if (unresolvedState) {
       const objLibs = new Set<string>();
-      if (state.curlib) {
-        objLibs.add(state.curlib.toUpperCase());
+      if (unresolvedState.curlib) {
+        objLibs.add(unresolvedState.curlib);
       }
-      if (state.preUsrlibl) {
-        for (const lib of state.preUsrlibl) {
-          objLibs.add(lib.toUpperCase());
+      if (unresolvedState.preUsrlibl) {
+        for (const lib of unresolvedState.preUsrlibl) {
+          objLibs.add(lib);
         }
       }
-      if (state.postUsrlibl) {
-        for (const lib of state.postUsrlibl) {
-          objLibs.add(lib.toUpperCase());
+      if (unresolvedState.postUsrlibl) {
+        for (const lib of unresolvedState.postUsrlibl) {
+          objLibs.add(lib);
         }
       }
 
-      state.objlib ? objLibs.add(state.objlib.toUpperCase()) : null;
+      unresolvedState.objlib ? objLibs.add(unresolvedState.objlib) : null;
 
       return objLibs;
     }
