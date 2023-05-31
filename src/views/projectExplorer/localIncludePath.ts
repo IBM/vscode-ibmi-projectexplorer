@@ -22,7 +22,7 @@ export default class LocalIncludePath extends ProjectExplorerTreeItem {
     this.tooltip = l10n.t('Name: {0}\n', includePath) +
       l10n.t('Path: {0}', uri.fsPath);
     this.iconPath = new ThemeIcon(`link`);
-    this.description = (custom && custom.description ? custom.description : undefined);
+    this.description = (custom && custom.description) ? custom.description : undefined;
   }
 
   getChildren(): ProjectExplorerTreeItem[] {

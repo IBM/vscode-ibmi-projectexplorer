@@ -22,7 +22,7 @@ export default class RemoteIncludePath extends IFSDirectory {
       },
       {
         label: (custom && custom.label) ? custom.label : includePath,
-        description: (custom && custom.description) ? custom.description : includePath,
+        description: (custom && custom.description) ? custom.description : undefined,
       }
     );
 
