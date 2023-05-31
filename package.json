@@ -133,7 +133,8 @@
       {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.copy",
-        "title": "%commands.jobLog.copy%"
+        "title": "%commands.jobLog.copy%",
+        "icon": "$(copy)"
       }
     ],
     "menus": {
@@ -268,7 +269,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
           "when": "view == jobLog && viewItem =~ /^command.*/",
-          "group": "1_modification@0"
+          "group": "inline"
         }
       ]
     },
