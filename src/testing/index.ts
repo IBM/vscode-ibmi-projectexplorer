@@ -10,7 +10,7 @@ import { iProjectSuite } from "./iProject";
 import { projectManagerSuite } from "./projectManager";
 import { jobLogSuite } from "./jobLog";
 
-const suites : TestSuite[] = [
+const suites: TestSuite[] = [
   iProjectSuite,
   projectManagerSuite,
   jobLogSuite
@@ -28,7 +28,7 @@ export interface TestCase {
   test: () => Promise<void>
 }
 
-let testSuitesTreeProvider : TestSuitesTreeProvider;
+let testSuitesTreeProvider: TestSuitesTreeProvider;
 export function initialise(context: vscode.ExtensionContext) {
   if (env.testing === `true`) {
     vscode.commands.executeCommand(`setContext`, `projectExplorer:testing`, true);
@@ -60,10 +60,10 @@ async function runTests() {
   for (const suite of suites) {
     console.log(`Running suite ${suite.name} (${suite.tests.length})`);
     console.log();
-    for (const test of suite.tests) {      
+    for (const test of suite.tests) {
       await runTest(test);
     }
-  }  
+  }
 }
 
 async function runTest(test: TestCase) {
@@ -76,7 +76,7 @@ async function runTest(test: TestCase) {
     test.status = "pass";
   }
 
-  catch (error: any){
+  catch (error: any) {
     console.log(error);
     test.status = "failed";
     test.failure = error.message;
@@ -87,7 +87,7 @@ async function runTest(test: TestCase) {
   }
 }
 
-function resetTests(){
+function resetTests() {
   suites.flatMap(ts => ts.tests).forEach(tc => {
     tc.status = undefined;
     tc.failure = undefined;
