@@ -33,6 +33,11 @@
           "id": "jobLog",
           "name": "%explorer.jobLog%",
           "icon": "$(book)"
+        },
+        {
+          "id": "testing",
+          "name": "Test cases",
+          "when": "code-for-ibmi:connected && projectExplorer:testing"
         }
       ]
     },

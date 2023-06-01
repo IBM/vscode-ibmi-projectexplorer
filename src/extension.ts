@@ -8,6 +8,7 @@ import JobLog from './views/jobLog';
 import ProjectExplorer from './views/projectExplorer';
 import { ExtensionContext, l10n, window, workspace } from 'vscode';
 import { ProjectExplorerApi } from './projectExplorerApi';
+import { initialise } from './testing';
 
 export function activate(context: ExtensionContext): ProjectExplorerApi {
 	console.log(l10n.t('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!'));
@@ -68,6 +69,12 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 			jobLog.refresh();
 		})
 	);
+
+	console.log(`Developer environment: ${process.env.DEV}`);
+	if (process.env.DEV) {
+	  // Run tests if not in production build
+	  initialise(context);
+	}
 
 	return { projectManager: ProjectManager, projectExplorer: projectExplorer };
 }
