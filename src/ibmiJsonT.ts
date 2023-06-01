@@ -14,7 +14,6 @@ export interface IBMiJsonT {
     build?: BuildT;
 }
 
-
 export interface BuildT {
     /**
      * Objects created by building source in this directory will be put into the `objlib` library.

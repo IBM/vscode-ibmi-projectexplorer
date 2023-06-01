@@ -104,7 +104,7 @@ export class IProject {
   }
 
   public async updateBuildMap() {
-    this.buildMap.clear();
+    this.buildMap = new Map();
 
     const ibmiJsonPaths = await workspace.findFiles('**/.ibmi.json');
     for await (const ibmiJsonPath of ibmiJsonPaths) {
@@ -124,6 +124,22 @@ export class IProject {
     }
 
     return this.buildMap;
+  }
+
+  public async getIbmiJson(ibmiJsonUri: Uri, buildMap?: Map<string, IBMiJsonT>): Promise<IBMiJsonT | undefined> {
+    buildMap = buildMap || await this.getBuildMap();
+    const ibmiJson = buildMap.get(ibmiJsonUri.fsPath);
+
+    if (ibmiJson) {
+      return ibmiJson;
+    } else {
+      // Recursively search in parent .ibmi.json as long as parent directory is in workspace folder
+      const parentDirectoryUri = Uri.file(path.parse(ibmiJsonUri.fsPath).dir);
+      const parentDirectoryWorkspaceFolder = workspace.getWorkspaceFolder(parentDirectoryUri);
+      if (parentDirectoryWorkspaceFolder === this.workspaceFolder) {
+        return await this.getIbmiJson(parentDirectoryUri, buildMap);
+      }
+    }
   }
 
   public getEnvFilePath(): Uri {
