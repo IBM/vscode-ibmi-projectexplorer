@@ -40,6 +40,10 @@ export class IProject {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.logs`, `output.log`));
   }
 
+  public getEnvFilePath(): Uri {
+    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.env`));
+  }
+
   public getName(): string {
     return this.name;
   }
@@ -90,10 +94,6 @@ export class IProject {
 
   public setState(state: IProjectT | undefined) {
     this.state = state;
-  }
-
-  public getEnvFilePath(): Uri {
-    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.env`));
   }
 
   public async addToIncludePaths(directoryToAdd: string) {
@@ -328,6 +328,10 @@ export class IProject {
     }
   }
 
+  public getJobLogs() {
+    return this.jobLogs.toArray();
+  }
+
   public async clearJobLogs() {
     const jobLogExists = await this.projectFileExists('joblog.json');
     if (jobLogExists) {
@@ -411,10 +415,6 @@ export class IProject {
       content += `${key}=${value}\n`;
     }
     await workspace.fs.writeFile(this.getEnvFilePath(), new TextEncoder().encode(content));
-  }
-
-  public getJobLogs() {
-    return this.jobLogs.toArray();
   }
 
   public async getVariables(): Promise<string[]> {
