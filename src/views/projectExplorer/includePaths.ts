@@ -11,7 +11,7 @@ import RemoteIncludePath from "./remoteIncludePath";
 import { getInstance } from "../../ibmi";
 import * as path from "path";
 
-export type Position = 'first' | 'last' | 'middle';
+export type Position = 'first' | 'last' | 'middle' | '';
 
 /**
  * Tree item for Include Paths heading
@@ -37,9 +37,12 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
 
       for await (const [index, includePath] of state.includePath.entries()) {
 
-        const position : Position = 
-          index === 0 ? 'first' :
-          (index === includePathLength - 1 ? 'last' : 'middle');
+        let position : Position = '';        
+        if(includePathLength > 1){
+          position = 
+            index === 0 ? 'first' :
+            (index === includePathLength - 1 ? 'last' : 'middle');
+        }
 
         let includePathUri = Uri.file(includePath);
         try {

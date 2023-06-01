@@ -15,6 +15,7 @@ import { LibraryType } from "./views/projectExplorer/library";
 const DEFAULT_CURLIB = '&CURLIB';
 
 export type EnvironmentVariables = { [name: string]: string };
+export type Direction = 'up' | 'down';
 
 export class IProject {
   private name: string;
@@ -136,48 +137,32 @@ export class IProject {
     }
   }
 
-  public async moveUp(pathMovingUp: string){
+  public async movePath(pathMoving: string, direction: Direction){
     const unresolvedState = await this.getUnresolvedState();
 
     if(unresolvedState){
-     const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathMovingUp) : -1;
+     const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathMoving) : -1;
      
      if (index > -1) {
-       if(index > 0){
+
+       if(direction === 'up'){
+          // if (index > 0) to guard against first elment moving up (even if guarded in UI)
          [unresolvedState.includePath![index - 1], unresolvedState.includePath![index]] = 
            [unresolvedState.includePath![index], unresolvedState.includePath![index - 1]];
+       }else{
+        // if(index < unresolvedState.includePath!.length - 1) to guard against last element moving down (even if it is guarded in UI)
+        [unresolvedState.includePath![index], unresolvedState.includePath![index + 1]] = 
+          [unresolvedState.includePath![index + 1], unresolvedState.includePath![index]];
        }
+
      } else {
-       window.showErrorMessage(l10n.t('{0} does not exist in includePaths', pathMovingUp));
+       window.showErrorMessage(l10n.t('{0} does not exist in includePaths', pathMoving));
      }
      await this.updateIProj(unresolvedState);
 
    } else {
      window.showErrorMessage(l10n.t('No iproj.json found'));
    }
-  }
-
-  public async moveDown(pathMovingDown: string){
-    const unresolvedState = await this.getUnresolvedState();
-
-    if(unresolvedState){
-     const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathMovingDown) : -1;
-
-     if (index > -1) {
-       if(index < unresolvedState.includePath!.length - 1){
-         [unresolvedState.includePath![index], unresolvedState.includePath![index + 1]] = 
-           [unresolvedState.includePath![index + 1], unresolvedState.includePath![index]];
-       }
-     
-     } else {
-       window.showErrorMessage(l10n.t('{0} does not exist in includePaths', pathMovingDown));
-     }
-     await this.updateIProj(unresolvedState);
-
-   } else {
-     window.showErrorMessage(l10n.t('No iproj.json found'));
-   }
-
   }
 
   public async getLibraryList() {

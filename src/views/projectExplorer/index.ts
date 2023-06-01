@@ -187,7 +187,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(element.workspaceFolder);
           
           if (iProject){
-            await iProject.moveUp(element.label!.toString());
+            await iProject.movePath(element.label!.toString(), 'up');
           }
         }
 
@@ -197,7 +197,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject){
-            await iProject.moveDown(element.label!.toString());
+            await iProject.movePath(element.label!.toString(), 'down');
           }
         }
 
