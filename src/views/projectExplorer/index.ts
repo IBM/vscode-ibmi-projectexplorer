@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands, EventEmitter, ExtensionContext, l10n, ProgressLocation, QuickPickItem, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
 import { getInstance } from "../../ibmi";
 import ErrorItem from "./errorItem";
 import { IProject } from "../../iproject";
@@ -16,8 +16,7 @@ import LibraryList from "./libraryList";
 import Library from "./library";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
-import { migrateToIFS } from "./migrateToIFS";
-import * as path from "path";
+import { migrateSource } from "./migrateSource";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -56,63 +55,16 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.migrateToIFS`, async (element: Library) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.migrateSource`, async (element: Library) => {
         if (element) {
-          const migrationData = await migrateToIFS(element.label!.toString());
-          if (migrationData) {
-            const ibmi = getInstance();
-            let deploymentDirs = ibmi?.getStorage().getDeployment()!;
-            let remoteDir = deploymentDirs[element.workspaceFolder.uri.fsPath];
-            if (!remoteDir) {
-              await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${ibmi?.getConfig().homeDirectory}${element.workspaceFolder.name}`);
+          const iProject = ProjectManager.get(element.workspaceFolder);
 
-              deploymentDirs = ibmi?.getStorage().getDeployment()!;
-              remoteDir = deploymentDirs[element.workspaceFolder.uri.fsPath];
-              if (!remoteDir) {
-                return;
-              }
+          if (iProject) {
+            const result = await migrateSource(iProject, element.label!.toString());
+
+            if (result) {
+              this.refresh();
             }
-
-            let migration = {
-              numFiles: migrationData.sourceFiles.length,
-              numSuccess: 0,
-              numFail: 0,
-              result: true
-            };
-            await window.withProgress({
-              location: ProgressLocation.Notification,
-              title: l10n.t('Migrating to IFS'),
-            }, async (progress) => {
-              for await (const file of migrationData.sourceFiles) {
-                progress.report({ message: file });
-
-                const result = await ibmi?.getConnection().sendCommand({
-                  command: `export PATH="/QOpenSys/pkgs/bin:$PATH:" && /QOpenSys/pkgs/bin/makei cvtsrcpf -c ${migrationData.defaultCCSID} ${path.parse(file).name} ${element.label}`,
-                  directory: remoteDir
-                });
-
-                if (result?.code === 0) {
-                  migration.numSuccess++;
-                } else {
-                  migration.numFail++;
-                  migration.result = false;
-                }
-              }
-            });
-
-            if (migration.result) {
-              window.showInformationMessage(l10n.t('Successfully migrated {0}/{1} source file(s) to {2}',
-                migration.numSuccess, migration.numFiles, remoteDir));
-            } else {
-              window.showErrorMessage(l10n.t('Failed to migrate {0}/{1} source file(s) to {2}',
-                migration.numFail, migration.numFiles, remoteDir), l10n.t('View log')).then(async choice => {
-                  if (choice === l10n.t('View log')) {
-                    ibmi?.getConnection().outputChannel?.show();
-                  }
-                });
-            }
-
-            this.refresh();
           }
         }
       }),

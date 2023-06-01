@@ -67,8 +67,8 @@
       },
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateToIFS",
-        "title": "%commands.projectExplorer.migrateToIFS%"
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
+        "title": "%commands.projectExplorer.migrateSource%"
       },
       {
         "category": "Project Explorer",
@@ -144,7 +144,7 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateToIFS",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
           "when": "never"
         },
         {
@@ -202,7 +202,7 @@
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateToIFS",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
           "group": "0_migrate@0"
         },

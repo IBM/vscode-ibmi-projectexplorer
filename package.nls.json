@@ -7,7 +7,7 @@
   "viewsWelcome.jobLog.noWorkspace": "No workspace folder opened",
   "viewsWelcome.jobLog.scanning": "Scanning for projects...",
   "commands.projectExplorer.setActiveProject": "Set Active Project",
-  "commands.projectExplorer.migrateToIFS": "Migrate To IFS",
+  "commands.projectExplorer.migrateSource": "Migrate Source",
   "commands.projectExplorer.addLibraryListEntry": "Add Library List Entry",
   "commands.projectExplorer.setCurrentLibrary": "Set Current Library",
   "commands.projectExplorer.removeFromLibraryList": "Remove From Library List",
