@@ -21,6 +21,9 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 		projectExplorer.refresh();
 		ProjectManager.getActiveProjectStatusBarItem().show();
 	});
+	ibmi?.onEvent(`deploy`, () => {
+		projectExplorer.refresh();
+	});
 	ibmi?.onEvent(`deployLocation`, () => {
 		projectExplorer.refresh();
 	});
