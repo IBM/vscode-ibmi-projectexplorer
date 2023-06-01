@@ -15,6 +15,7 @@ import { LibraryType } from "./views/projectExplorer/library";
 const DEFAULT_CURLIB = '&CURLIB';
 
 export type EnvironmentVariables = { [name: string]: string };
+export type ProjectFileType = 'iproj.json' | 'joblog.json' | 'output.log' | '.env';
 
 export class IProject {
   private name: string;
@@ -28,24 +29,25 @@ export class IProject {
     this.environmentValues = {};
   }
 
-  public getIProjFilePath(): Uri {
-    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `iproj.json`));
-  }
-
-  public getJobLogPath(): Uri {
-    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.logs`, `joblog.json`));
-  }
-
-  public getBuildOutputPath(): Uri {
-    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.logs`, `output.log`));
-  }
-
-  public getEnvFilePath(): Uri {
-    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.env`));
-  }
-
   public getName(): string {
     return this.name;
+  }
+
+  public getProjectFilePath(type: ProjectFileType): Uri {
+    const logDirectory = (type === 'joblog.json' || type === 'output.log') ? `.logs` : ``;
+
+    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, logDirectory, type));
+  }
+
+  public async projectFileExists(type: ProjectFileType): Promise<boolean> {
+    const fileUri = this.getProjectFilePath(type);
+
+    try {
+      const statResult = await workspace.fs.stat(fileUri);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   public async getState(): Promise<IProjectT | undefined> {
@@ -71,19 +73,15 @@ export class IProject {
     return this.state;
   }
 
-  private resolveLibrary(lib: string, values: EnvironmentVariables): string {
-    if (lib && lib.startsWith('&') && values[lib.substring(1)] && values[lib.substring(1)] !== '') {
-      return values[lib.substring(1)];
-    }
-
-    return lib;
+  public setState(state: IProjectT | undefined) {
+    this.state = state;
   }
 
   public async getUnresolvedState(): Promise<IProjectT | undefined> {
     let iproj: IProjectT | undefined;
 
     try {
-      const content = await workspace.fs.readFile(this.getIProjFilePath());
+      const content = await workspace.fs.readFile(this.getProjectFilePath('iproj.json'));
       iproj = IProject.validateIProject(content.toString());
     } catch (e) {
       iproj = undefined;
@@ -92,8 +90,12 @@ export class IProject {
     return iproj;
   }
 
-  public setState(state: IProjectT | undefined) {
-    this.state = state;
+  public resolveLibrary(lib: string, values: EnvironmentVariables): string {
+    if (lib && lib.startsWith('&') && values[lib.substring(1)] && values[lib.substring(1)] !== '') {
+      return values[lib.substring(1)];
+    }
+
+    return lib;
   }
 
   public async addToIncludePaths(directoryToAdd: string) {
@@ -305,7 +307,7 @@ export class IProject {
 
   public async updateIProj(iProject: IProjectT) {
     try {
-      await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+      await workspace.fs.writeFile(this.getProjectFilePath('iproj.json'), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
     } catch {
       window.showErrorMessage(l10n.t('Failed to update iproj.json'));
     }
@@ -314,7 +316,7 @@ export class IProject {
   public async readJobLog() {
     const jobLogExists = await this.projectFileExists('joblog.json');
     if (jobLogExists) {
-      const content = await workspace.fs.readFile(this.getJobLogPath());
+      const content = await workspace.fs.readFile(this.getProjectFilePath('joblog.json'));
       const jobLog = IProject.validateJobLog(content.toString());
 
       if (!this.jobLogs.isEmpty()) {
@@ -346,38 +348,13 @@ export class IProject {
     }
   }
 
-  public async projectFileExists(type: 'iproj.json' | 'joblog.json' | 'output.log' | '.env'): Promise<boolean> {
-    let fileUri: Uri;
-    switch (type) {
-      case "iproj.json":
-        fileUri = this.getIProjFilePath();
-        break;
-      case "joblog.json":
-        fileUri = this.getJobLogPath();
-        break;
-      case "output.log":
-        fileUri = this.getBuildOutputPath();
-        break;
-      case ".env":
-        fileUri = this.getEnvFilePath();
-        break;
-    }
-
-    try {
-      const statResult = await workspace.fs.stat(fileUri);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
   public async createProject(description: string): Promise<boolean> {
     try {
       const content = {
         description: description
       };
 
-      await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(content, null, 2)));
+      await workspace.fs.writeFile(this.getProjectFilePath('iproj.json'), new TextEncoder().encode(JSON.stringify(content, null, 2)));
       return true;
     } catch (e) {
       return false;
@@ -388,7 +365,7 @@ export class IProject {
     try {
       const variables = (await this.getVariables()).map(variable => variable + '=').join('\n');
 
-      await workspace.fs.writeFile(this.getEnvFilePath(), new TextEncoder().encode(variables));
+      await workspace.fs.writeFile(this.getProjectFilePath('.env'), new TextEncoder().encode(variables));
       return true;
     } catch (e) {
       return false;
@@ -397,7 +374,7 @@ export class IProject {
 
   public async getEnv() {
     try {
-      const content = await workspace.fs.readFile(this.getEnvFilePath());
+      const content = await workspace.fs.readFile(this.getProjectFilePath('.env'));
       this.environmentValues = dotenv.parse(Buffer.from(content));
     } catch (e) {
       this.environmentValues = {};
@@ -414,7 +391,7 @@ export class IProject {
     for (const [key, value] of Object.entries(env)) {
       content += `${key}=${value}\n`;
     }
-    await workspace.fs.writeFile(this.getEnvFilePath(), new TextEncoder().encode(content));
+    await workspace.fs.writeFile(this.getProjectFilePath('.env'), new TextEncoder().encode(content));
   }
 
   public async getVariables(): Promise<string[]> {
