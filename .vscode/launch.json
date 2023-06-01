@@ -32,6 +32,6 @@
 			"env": {
 				"testing": "true"
 			}
-		},
+		}
 	]
 }
