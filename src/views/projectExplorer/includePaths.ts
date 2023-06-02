@@ -11,6 +11,8 @@ import RemoteIncludePath from "./remoteIncludePath";
 import { getInstance } from "../../ibmi";
 import * as path from "path";
 
+export type Position = 'first' | 'last' | 'middle' | '';
+
 /**
  * Tree item for Include Paths heading
  */
@@ -30,14 +32,24 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
     const iProject = ProjectManager.get(this.workspaceFolder);
     const state = await iProject?.getState();
     if (state && state.includePath) {
-      for await (const includePath of state.includePath) {
+
+      const includePathLength = state.includePath.length;
+
+      for await (const [index, includePath] of state.includePath.entries()) {
+
+        let position : Position = '';        
+        if(includePathLength > 1){
+          position = 
+            index === 0 ? 'first' :
+            (index === includePathLength - 1 ? 'last' : 'middle');
+        }
 
         let includePathUri = Uri.file(includePath);
         try {
           const statResult = await workspace.fs.stat(includePathUri);
 
           // Absolute local include path
-          items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri));
+          items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, position));
         } catch (e) {
           includePathUri = Uri.joinPath(this.workspaceFolder.uri, includePath);
 
@@ -45,16 +57,16 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
             const statResult = await workspace.fs.stat(includePathUri);
 
             // Relative local include path
-            items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri));
+            items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, position));
           } catch (e) {
             if (includePath.startsWith('/')) {
               // Absolute remote include path
-              items.push(new RemoteIncludePath(this.workspaceFolder, includePath));
+              items.push(new RemoteIncludePath(this.workspaceFolder, includePath, position));
             } else {
               // Relative remote include path
               const remoteDir = await iProject!.getRemoteDir();
               const absoluteIncludePath = path.posix.join(remoteDir, includePath);
-              items.push(new RemoteIncludePath(this.workspaceFolder, absoluteIncludePath, { label: includePath }));
+              items.push(new RemoteIncludePath(this.workspaceFolder, absoluteIncludePath, position, { label: includePath }));
             }
           }
         }
