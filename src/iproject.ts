@@ -361,10 +361,13 @@ export class IProject {
   }
 
   public async removeFromLibraryList(library: string, type: LibraryType) {
-    const unresolvedState = await this.getUnresolvedState() as any;
+    const unresolvedState = await this.getUnresolvedState();
+    let attribute: keyof IProjectT;
 
     if (unresolvedState) {
       if (type === LibraryType.currentLibrary) {
+        attribute = 'curlib';
+
         if (unresolvedState.curlib?.startsWith('&')) {
           await this.setEnv(unresolvedState.curlib.substring(1), '');
           return;
@@ -372,29 +375,27 @@ export class IProject {
           unresolvedState.curlib = undefined;
         }
       } else {
-        const state = await this.getState() as any;
+        const state = await this.getState();
 
         if (state) {
-          // Search for library in preUsrlibl then postUsrlibl
-          let libIndex = -1;
-          for await (const usrlibl of ['preUsrlibl', 'postUsrlibl']) {
-            if (unresolvedState[usrlibl] && state[usrlibl] && state[usrlibl].includes(library)) {
-              libIndex = state[usrlibl].indexOf(library);
+          attribute = type === LibraryType.preUserLibrary ? 'preUsrlibl' : 'postUsrlibl';
 
-              if (libIndex > -1) {
-                if (unresolvedState[usrlibl][libIndex].startsWith('&')) {
-                  await this.setEnv(unresolvedState[usrlibl][libIndex].substring(1), '');
-                  return;
-                } else {
-                  unresolvedState[usrlibl].splice(libIndex, 1);
-                }
-                break;
+          let libIndex = -1;
+          if (unresolvedState[attribute] && state[attribute] && state[attribute]!.includes(library)) {
+            libIndex = state[attribute]!.indexOf(library);
+
+            if (libIndex > -1) {
+              if (unresolvedState[attribute]![libIndex].startsWith('&')) {
+                await this.setEnv(unresolvedState[attribute]![libIndex].substring(1), '');
+                return;
+              } else {
+                unresolvedState[attribute]!.splice(libIndex, 1);
               }
             }
           }
 
           if (libIndex < 0) {
-            window.showErrorMessage(l10n.t('{0} does not exist in preUsrlibl or postUsrlibl', library));
+            window.showErrorMessage(l10n.t('{0} does not exist in {1}', library, attribute));
             return;
           }
         }
