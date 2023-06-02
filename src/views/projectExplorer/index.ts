@@ -7,7 +7,6 @@ import { getInstance } from "../../ibmi";
 import ErrorItem from "./errorItem";
 import { IProject } from "../../iproject";
 import Project from "./project";
-import envUpdater from "../../envUpdater";
 import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
@@ -246,7 +245,6 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await iProject.moveIncludePath(pathToMove, 'up');
           }
         }
-
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.moveIncludePathDown`, async (element: RemoteIncludePath | LocalIncludePath) => {
         if (element) {
@@ -257,7 +255,6 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await iProject.moveIncludePath(pathToMove, 'down');
           }
         }
-
       })
 
     );

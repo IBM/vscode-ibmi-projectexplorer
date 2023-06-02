@@ -8,16 +8,15 @@ import { TestSuitesTreeProvider } from "./testCasesTree";
 import { getInstance } from "../ibmi";
 import { iProjectSuite } from "./iProject";
 import { projectManagerSuite } from "./projectManager";
-import { jobLogSuite } from "./jobLog";
 
 const suites: TestSuite[] = [
   iProjectSuite,
-  projectManagerSuite,
-  jobLogSuite
+  projectManagerSuite
 ];
 
 export type TestSuite = {
-  name: string
+  name: string,
+  beforeEach?: () => Promise<void>
   tests: TestCase[]
 };
 
@@ -39,7 +38,7 @@ export function initialise(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
       vscode.window.registerTreeDataProvider("testing", testSuitesTreeProvider),
-      vscode.commands.registerCommand(`projectExplorer.testing.specific`, (suiteName: string, testName: string) => {
+      vscode.commands.registerCommand(`projectExplorer.testing.specific`, async (suiteName: string, testName: string) => {
         if (suiteName && testName) {
           const suite = suites.find(suite => suite.name === suiteName);
 
@@ -47,7 +46,11 @@ export function initialise(context: vscode.ExtensionContext) {
             const testCase = suite.tests.find(testCase => testCase.name === testName);
 
             if (testCase) {
-              runTest(testCase);
+              if (suite.beforeEach) {
+                await suite.beforeEach();
+              }
+              
+              await runTest(testCase);
             }
           }
         }
@@ -60,7 +63,12 @@ async function runTests() {
   for (const suite of suites) {
     console.log(`Running suite ${suite.name} (${suite.tests.length})`);
     console.log();
-    for (const test of suite.tests) {
+
+    for await (const test of suite.tests) {
+      if (suite.beforeEach) {
+        await suite.beforeEach();
+      }
+
       await runTest(test);
     }
   }

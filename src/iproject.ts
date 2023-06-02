@@ -39,14 +39,14 @@ export class IProject {
     return this.name;
   }
 
-  public getProjectFilePath(type: ProjectFileType): Uri {
+  public getProjectFileUri(type: ProjectFileType): Uri {
     const logDirectory = (type === 'joblog.json' || type === 'output.log') ? `.logs` : ``;
 
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, logDirectory, type));
   }
 
   public async projectFileExists(type: ProjectFileType): Promise<boolean> {
-    const fileUri = this.getProjectFilePath(type);
+    const fileUri = this.getProjectFileUri(type);
 
     try {
       const statResult = await workspace.fs.stat(fileUri);
@@ -96,7 +96,7 @@ export class IProject {
     let iproj: IProjectT | undefined;
 
     try {
-      const content = await workspace.fs.readFile(this.getProjectFilePath('iproj.json'));
+      const content = await workspace.fs.readFile(this.getProjectFileUri('iproj.json'));
       iproj = IProject.validateIProject(content.toString());
     } catch (e) {
       iproj = undefined;
@@ -157,10 +157,6 @@ export class IProject {
         return await this.getIbmiJson(parentDirectoryUri, buildMap);
       }
     }
-  }
-
-  public getEnvFilePath(): Uri {
-    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.env`));
   }
 
   public async addToIncludePaths(directoryToAdd: string) {
@@ -423,7 +419,8 @@ export class IProject {
 
   public async updateIProj(iProject: IProjectT) {
     try {
-      await workspace.fs.writeFile(this.getProjectFilePath('iproj.json'), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+      await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+      this.state = undefined;
       return true;
     } catch {
       window.showErrorMessage(l10n.t('Failed to update iproj.json'));
@@ -434,7 +431,7 @@ export class IProject {
   public async readJobLog() {
     const jobLogExists = await this.projectFileExists('joblog.json');
     if (jobLogExists) {
-      const content = await workspace.fs.readFile(this.getProjectFilePath('joblog.json'));
+      const content = await workspace.fs.readFile(this.getProjectFileUri('joblog.json'));
       const jobLog = IProject.validateJobLog(content.toString());
 
       if (!this.jobLogs.isEmpty()) {
@@ -472,7 +469,7 @@ export class IProject {
         description: description
       };
 
-      await workspace.fs.writeFile(this.getProjectFilePath('iproj.json'), new TextEncoder().encode(JSON.stringify(content, null, 2)));
+      await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(JSON.stringify(content, null, 2)));
       return true;
     } catch (e) {
       return false;
@@ -483,7 +480,7 @@ export class IProject {
     try {
       const variables = (await this.getVariables()).map(variable => variable + '=').join('\n');
 
-      await workspace.fs.writeFile(this.getProjectFilePath('.env'), new TextEncoder().encode(variables));
+      await workspace.fs.writeFile(this.getProjectFileUri('.env'), new TextEncoder().encode(variables));
       return true;
     } catch (e) {
       return false;
@@ -492,7 +489,7 @@ export class IProject {
 
   public async getEnv() {
     try {
-      const content = await workspace.fs.readFile(this.getProjectFilePath('.env'));
+      const content = await workspace.fs.readFile(this.getProjectFileUri('.env'));
       this.environmentValues = dotenv.parse(Buffer.from(content));
     } catch (e) {
       this.environmentValues = {};
@@ -502,10 +499,12 @@ export class IProject {
   }
 
   public async setEnv(variable: string, value: string) {
-    const envPath = this.getProjectFilePath('.env');
-    await envUpdater(envPath, {
-      [variable]: value
-    });
+    const envUri = this.getProjectFileUri('.env');
+    const isEnvVarUpdated = await envUpdater(envUri, { [variable]: value });
+
+    if(isEnvVarUpdated) {
+      this.state = undefined;
+    }
   }
 
   public async getVariables(): Promise<string[]> {
