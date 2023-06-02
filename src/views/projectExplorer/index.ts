@@ -228,9 +228,6 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.revealInExplorer`, async (element: LocalIncludePath) => {
-        await commands.executeCommand('revealInExplorer', element.uri);
-      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.removeFromIncludePaths`, async (element: RemoteIncludePath | LocalIncludePath) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
@@ -239,7 +236,28 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await iProject.removeFromIncludePaths(element.label!.toString());
           }
         }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.moveUp`, async (element: RemoteIncludePath | LocalIncludePath) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+          
+          if (iProject){
+            await iProject.movePath(element.label!.toString(), 'up');
+          }
+        }
+
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.moveDown`, async (element: RemoteIncludePath | LocalIncludePath) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject){
+            await iProject.movePath(element.label!.toString(), 'down');
+          }
+        }
+
       })
+
     );
   }
 

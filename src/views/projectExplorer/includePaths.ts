@@ -11,6 +11,8 @@ import RemoteIncludePath from "./remoteIncludePath";
 import * as path from "path";
 import ErrorItem from "./errorItem";
 
+export type Position = 'first' | 'last' | 'middle';
+
 /**
  * Tree item for Include Paths heading
  */
@@ -49,12 +51,18 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
           continue;
         }
 
+        let position: Position | undefined;
+        const includePathLength = unresolvedState.includePath.length;
+        if (includePathLength > 1) {
+          position = index === 0 ? 'first' : (index === includePathLength - 1 ? 'last' : 'middle');
+        }
+
         let includePathUri = Uri.file(includePath);
         try {
           const statResult = await workspace.fs.stat(includePathUri);
 
           // Absolute local include path
-          items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, { description: variable }));
+          items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, position, { description: variable }));
         } catch (e) {
           includePathUri = Uri.joinPath(this.workspaceFolder.uri, includePath);
 
@@ -62,16 +70,16 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
             const statResult = await workspace.fs.stat(includePathUri);
 
             // Relative local include path
-            items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, { description: variable }));
+            items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, position, { description: variable }));
           } catch (e) {
             if (includePath.startsWith('/')) {
               // Absolute remote include path
-              items.push(new RemoteIncludePath(this.workspaceFolder, includePath, { description: variable }));
+              items.push(new RemoteIncludePath(this.workspaceFolder, includePath, position, { description: variable }));
             } else {
               // Relative remote include path
               const remoteDir = await iProject!.getRemoteDir();
               const absoluteIncludePath = path.posix.join(remoteDir, includePath);
-              items.push(new RemoteIncludePath(this.workspaceFolder, absoluteIncludePath, { label: includePath, description: variable }));
+              items.push(new RemoteIncludePath(this.workspaceFolder, absoluteIncludePath, position, { label: includePath, description: variable }));
             }
           }
         }

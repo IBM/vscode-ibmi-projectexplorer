@@ -6,6 +6,7 @@ import { ThemeIcon, WorkspaceFolder } from "vscode";
 import { ContextValue } from "../../projectExplorerApi";
 import IFSDirectory from "./ifsDirectory";
 import * as path from "path";
+import { Position } from "./includePaths";
 
 /**
  * Tree item for a remote include path
@@ -13,7 +14,7 @@ import * as path from "path";
 export default class RemoteIncludePath extends IFSDirectory {
   static contextValue = ContextValue.includePath;
 
-  constructor(public workspaceFolder: WorkspaceFolder, includePath: string, custom?: { label?: string, description?: string}) {
+  constructor(public workspaceFolder: WorkspaceFolder, includePath: string, position?: Position, custom?: { label?: string, description?: string }) {
     super(workspaceFolder,
       {
         type: 'directory',
@@ -26,10 +27,11 @@ export default class RemoteIncludePath extends IFSDirectory {
       }
     );
 
-    this.contextValue = RemoteIncludePath.contextValue;
-    if (!custom || !custom.description) {
-      this.contextValue += ContextValue.configurable;
-    }
+    this.contextValue = RemoteIncludePath.contextValue + ContextValue.remote +
+      (position === 'first' ? ContextValue.first : '') +
+      (position === 'last' ? ContextValue.last : '') +
+      (position === 'middle' ? ContextValue.middle : '') +
+      (!custom || !custom.description ? ContextValue.configurable : '');
     this.iconPath = new ThemeIcon(`link`);
   }
 }
