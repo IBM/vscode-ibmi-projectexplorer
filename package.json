@@ -107,14 +107,14 @@
       },
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectexplorer.moveUp",
-        "title": "%commands.projectExplorer.moveUp%",
+        "command": "vscode-ibmi-projectexplorer.moveIncludePathUp",
+        "title": "%commands.projectExplorer.moveIncludePathUp%",
         "icon": "$(arrow-up)"
       },
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectexplorer.moveDown",
-        "title": "%commands.projectExplorer.moveDown%",
+        "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
+        "title": "%commands.projectExplorer.moveIncludePathDown%",
         "icon": "$(arrow-down)"
       }, 
       {
@@ -183,11 +183,11 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.moveUp",
+          "command": "vscode-ibmi-projectexplorer.moveIncludePathUp",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.moveDown",
+          "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
           "when": "never"
         },
         {
@@ -271,12 +271,12 @@
           "group": "0_configure@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.moveUp",
+          "command": "vscode-ibmi-projectexplorer.moveIncludePathUp",
           "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_(middle|last).*/",
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.moveDown",
+          "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
            "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_(middle|first).*/",
            "group": "inline@1"
         },

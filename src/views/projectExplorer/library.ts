@@ -25,6 +25,7 @@ export default class Library extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.library;
   libraryInfo: IBMiObject;
   libraryType: LibraryType;
+  variable?: string;
   path: string;
 
   constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType, variable?: string) {
@@ -32,6 +33,7 @@ export default class Library extends ProjectExplorerTreeItem {
 
     this.libraryInfo = libraryInfo;
     this.libraryType = libraryType;
+    this.variable = variable;
     const type = libraryInfo.type.startsWith(`*`) ? libraryInfo.type.substring(1) : libraryInfo.type;
     this.path = `/${libraryInfo.library}.LIB/${libraryInfo.name}.${type}`;
     this.iconPath = new ThemeIcon(`library`);

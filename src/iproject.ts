@@ -209,26 +209,28 @@ export class IProject {
     }
   }
 
-  public async movePath(pathMoving: string, direction: Direction) {
+  public async moveIncludePath(pathToMove: string, direction: Direction) {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
-      const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathMoving) : -1;
+      const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathToMove) : -1;
 
       if (index > -1) {
 
         if (direction === 'up') {
-          // if (index > 0) to guard against first elment moving up (even if guarded in UI)
-          [unresolvedState.includePath![index - 1], unresolvedState.includePath![index]] =
-            [unresolvedState.includePath![index], unresolvedState.includePath![index - 1]];
+          if (index > 0) {
+            [unresolvedState.includePath![index - 1], unresolvedState.includePath![index]] =
+              [unresolvedState.includePath![index], unresolvedState.includePath![index - 1]];
+          }
         } else {
-          // if(index < unresolvedState.includePath!.length - 1) to guard against last element moving down (even if it is guarded in UI)
-          [unresolvedState.includePath![index], unresolvedState.includePath![index + 1]] =
-            [unresolvedState.includePath![index + 1], unresolvedState.includePath![index]];
+          if (index < unresolvedState.includePath!.length - 1) {
+            [unresolvedState.includePath![index], unresolvedState.includePath![index + 1]] =
+              [unresolvedState.includePath![index + 1], unresolvedState.includePath![index]];
+          }
         }
 
       } else {
-        window.showErrorMessage(l10n.t('{0} does not exist in includePaths', pathMoving));
+        window.showErrorMessage(l10n.t('{0} does not exist in includePath', pathToMove));
       }
       await this.updateIProj(unresolvedState);
 

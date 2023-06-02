@@ -13,8 +13,9 @@ import { Position } from "./includePaths";
  */
 export default class RemoteIncludePath extends IFSDirectory {
   static contextValue = ContextValue.includePath;
+  variable?: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, includePath: string, position?: Position, custom?: { label?: string, description?: string }) {
+  constructor(public workspaceFolder: WorkspaceFolder, includePath: string, position?: Position, variable?: string, custom?: { label?: string }) {
     super(workspaceFolder,
       {
         type: 'directory',
@@ -23,15 +24,16 @@ export default class RemoteIncludePath extends IFSDirectory {
       },
       {
         label: (custom && custom.label) ? custom.label : includePath,
-        description: (custom && custom.description) ? custom.description : undefined,
+        description: variable ? variable : undefined,
       }
     );
+    this.variable = variable;
 
     this.contextValue = RemoteIncludePath.contextValue + ContextValue.remote +
       (position === 'first' ? ContextValue.first : '') +
       (position === 'last' ? ContextValue.last : '') +
       (position === 'middle' ? ContextValue.middle : '') +
-      (!custom || !custom.description ? ContextValue.configurable : '');
+      (!variable ? ContextValue.configurable : '');
     this.iconPath = new ThemeIcon(`link`);
   }
 }

@@ -237,22 +237,24 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.moveUp`, async (element: RemoteIncludePath | LocalIncludePath) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.moveIncludePathUp`, async (element: RemoteIncludePath | LocalIncludePath) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
-          
-          if (iProject){
-            await iProject.movePath(element.label!.toString(), 'up');
+
+          if (iProject) {
+            const pathToMove = element.variable ? element.variable : element.label!.toString();
+            await iProject.moveIncludePath(pathToMove, 'up');
           }
         }
 
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.moveDown`, async (element: RemoteIncludePath | LocalIncludePath) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.moveIncludePathDown`, async (element: RemoteIncludePath | LocalIncludePath) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
-          if (iProject){
-            await iProject.movePath(element.label!.toString(), 'down');
+          if (iProject) {
+            const pathToMove = element.variable ? element.variable : element.label!.toString();
+            await iProject.moveIncludePath(pathToMove, 'down');
           }
         }
 
