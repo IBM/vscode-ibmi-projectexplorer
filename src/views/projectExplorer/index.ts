@@ -13,9 +13,10 @@ import { DecorationProvider } from "./decorationProvider";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import IncludePaths from "./includePaths";
 import LibraryList from "./libraryList";
-import Library from "./library";
+import Library, { LibraryType } from "./library";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
+import { IProjectT } from "../../iProjectT";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -116,10 +117,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             });
 
             if (newValue) {
-              const envPath = iProject.getEnvFilePath();
-              await envUpdater(envPath, {
-                [varName]: newValue
-              });
+              await iProject.setEnv(varName, newValue);
             }
           }
         }
@@ -147,6 +145,63 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.configureAsVariable`, async (element: Library | LocalIncludePath | RemoteIncludePath) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const variable = await window.showInputBox({
+              prompt: l10n.t('Enter variable name'),
+              placeHolder: l10n.t('Variable Name'),
+              validateInput(value) {
+                if (value.startsWith('&')) {
+                  return l10n.t('Enter variable name without "&" prefix');
+                }
+              },
+            });
+
+            if (variable) {
+              let attribute: keyof IProjectT;
+              if (element instanceof Library) {
+                if (element.libraryType === LibraryType.preUserLibrary) {
+                  attribute = 'preUsrlibl';
+                } else if (element.libraryType === LibraryType.postUserLibrary) {
+                  attribute = 'postUsrlibl';
+                }
+              } else {
+                attribute = 'includePath';
+              }
+
+              await iProject.configureAsVariable(attribute!, variable, element.label!.toString());
+            }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.assignToVariable`, async (element: any) => {
+        if (element) {
+          const value = element.name ? element.name : element.path;
+          if (value) {
+            const variableItems: QuickPickItem[] = [];
+            const activeProject = ProjectManager.getActiveProject();
+            if (activeProject) {
+              const variables = await activeProject?.getVariables();
+              const values = await activeProject.getEnv();
+
+              for (const variable of variables) {
+                variableItems.push({ label: `&${variable}`, description: values[variable] });
+              }
+
+              const variable = await window.showQuickPick(variableItems, {
+                placeHolder: l10n.t('Select a variable')
+              });
+
+              if (variable) {
+                await activeProject.setEnv(variable.label.substring(1), value);
+              }
+            }
+          }
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: TreeItem) => {
         if (element instanceof IncludePaths) {
           const iProject = ProjectManager.get(element.workspaceFolder);
@@ -154,7 +209,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const includePath = await window.showInputBox({
               prompt: l10n.t('Enter include path'),
-              placeHolder: l10n.t('Include Path')
+              placeHolder: l10n.t('Include path')
             });
 
             if (includePath) {
@@ -182,22 +237,24 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.moveUp`, async (element: RemoteIncludePath | LocalIncludePath) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.moveIncludePathUp`, async (element: RemoteIncludePath | LocalIncludePath) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
-          
-          if (iProject){
-            await iProject.movePath(element.label!.toString(), 'up');
+
+          if (iProject) {
+            const pathToMove = element.variable ? element.variable : element.label!.toString();
+            await iProject.moveIncludePath(pathToMove, 'up');
           }
         }
 
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.moveDown`, async (element: RemoteIncludePath | LocalIncludePath) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.moveIncludePathDown`, async (element: RemoteIncludePath | LocalIncludePath) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
-          if (iProject){
-            await iProject.movePath(element.label!.toString(), 'down');
+          if (iProject) {
+            const pathToMove = element.variable ? element.variable : element.label!.toString();
+            await iProject.moveIncludePath(pathToMove, 'down');
           }
         }
 

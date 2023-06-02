@@ -17,22 +17,17 @@ export default class IFSDirectory extends ProjectExplorerTreeItem {
   ifsDirectoryInfo: vscodeIbmiTypes.IFSFile;
 
   constructor(public workspaceFolder: WorkspaceFolder, ifsDirectoryInfo: vscodeIbmiTypes.IFSFile, custom?: { label?: string, description?: string }) {
-    super(ifsDirectoryInfo.name, TreeItemCollapsibleState.Collapsed);
+    super((custom && custom.label) ? custom.label : ifsDirectoryInfo.name, TreeItemCollapsibleState.Collapsed);
     this.ifsDirectoryInfo = ifsDirectoryInfo;
 
     this.contextValue = IFSDirectory.contextValue;
     this.iconPath = new ThemeIcon(`symbol-folder`);
     this.tooltip = l10n.t('Name: {0}\n', ifsDirectoryInfo.name) +
-      l10n.t('Path: {0}', ifsDirectoryInfo.path);
-    if (custom) {
-      if (custom.label) {
-        this.label = custom.label;
-      }
-
-      if (custom.description) {
-        this.description = custom.description;
-      }
-    }
+      l10n.t('Path: {0}\n', ifsDirectoryInfo.path) +
+      (ifsDirectoryInfo.size ? l10n.t('Size: {0}\n', ifsDirectoryInfo.size) : ``) +
+      (ifsDirectoryInfo.owner ? l10n.t('Owner: {0}\n', ifsDirectoryInfo.owner) : ``) +
+      (ifsDirectoryInfo.modified ? l10n.t('Modified: {0}', ifsDirectoryInfo.modified.toLocaleString()) : ``);
+    this.description = (custom && custom.description ? custom.description : undefined);
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {

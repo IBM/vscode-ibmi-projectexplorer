@@ -12,23 +12,24 @@ import { Position } from "./includePaths";
  */
 export default class LocalIncludePath extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.includePath;
+  variable?: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, includePath: string, uri: Uri, position: Position) {
+  constructor(public workspaceFolder: WorkspaceFolder, includePath: string, uri: Uri, position?: Position, variable?: string) {
     super(includePath, TreeItemCollapsibleState.None);
+    this.variable = variable;
 
-    this.contextValue = LocalIncludePath.contextValue + ContextValue.local;
-    this.contextValue +=
-      position === 'first' ? ContextValue.first : '' +
-      position === 'last' ? ContextValue.last : '' +
-      position === 'middle' ? ContextValue.middle : '';
- 
-    this.iconPath = new ThemeIcon(`symbol-folder`);
     this.tooltip = l10n.t('Name: {0}\n', includePath) +
       l10n.t('Path: {0}', uri.fsPath);
+    this.description = variable ? variable : undefined;
+    this.contextValue = LocalIncludePath.contextValue + ContextValue.local +
+      (position === 'first' ? ContextValue.first : '') +
+      (position === 'last' ? ContextValue.last : '') +
+      (position === 'middle' ? ContextValue.middle : '') +
+      (!variable ? ContextValue.configurable : '');
     this.iconPath = new ThemeIcon(`link`);
     this.command = {
       command: `revealInExplorer`,
-      title:l10n.t('Reveal in Explorer'),
+      title: l10n.t('Reveal in Explorer'),
       arguments: [uri]
     };
   }

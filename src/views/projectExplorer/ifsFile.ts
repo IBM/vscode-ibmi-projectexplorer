@@ -21,7 +21,10 @@ export default class IFSFile extends ProjectExplorerTreeItem {
     this.contextValue = IFSFile.contextValue;
     this.iconPath = new ThemeIcon(`file`);
     this.tooltip = l10n.t('Name: {0}\n', ifsFileInfo.name) +
-      l10n.t('Path: {0}', ifsFileInfo.path);
+      l10n.t('Path: {0}\n', ifsFileInfo.path) +
+      (ifsFileInfo.size ? l10n.t('Size: {0}\n', ifsFileInfo.size) : ``) +
+      (ifsFileInfo.owner ? l10n.t('Owner: {0}\n', ifsFileInfo.owner) : ``) +
+      (ifsFileInfo.modified ? l10n.t('Modified: {0}', ifsFileInfo.modified.toLocaleString()) : ``);
     this.resourceUri = this.getIFSFileResourceUri();
     this.command = {
       command: `vscode.open`,
@@ -36,6 +39,6 @@ export default class IFSFile extends ProjectExplorerTreeItem {
 
   getIFSFileResourceUri() {
     const path = this.ifsFileInfo.path;
-    return Uri.parse(path).with({ scheme: `streamfile`, path });
+    return Uri.parse(path).with({ scheme: `streamfile` });
   }
 }
