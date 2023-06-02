@@ -11,6 +11,8 @@ import { TextEncoder } from "util";
 import { IProjectT } from "./iProjectT";
 import { getInstance } from "./ibmi";
 import { LibraryType } from "./views/projectExplorer/library";
+import { IBMiJsonT } from "./ibmiJsonT";
+import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 
 const DEFAULT_CURLIB = '&CURLIB';
 
@@ -20,11 +22,13 @@ export type Direction = 'up' | 'down';
 export class IProject {
   private name: string;
   private state: IProjectT | undefined;
+  private buildMap: Map<string, IBMiJsonT>;
   private jobLogs: RingBuffer<JobLogInfo>;
   private environmentValues: EnvironmentVariables;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
     this.name = workspaceFolder.name;
+    this.buildMap = new Map();
     this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
   }
@@ -93,6 +97,52 @@ export class IProject {
     this.state = state;
   }
 
+  public async getBuildMap(): Promise<Map<string, IBMiJsonT>> {
+    if (!this.buildMap) {
+      return await this.updateBuildMap();
+    }
+    return this.buildMap;
+  }
+
+  public async updateBuildMap() {
+    this.buildMap = new Map();
+
+    const ibmiJsonPaths = await workspace.findFiles('**/.ibmi.json');
+    for await (const ibmiJsonPath of ibmiJsonPaths) {
+      try {
+        const ibmiJsonContent: IBMiJsonT = JSON.parse((await workspace.fs.readFile(ibmiJsonPath)).toString());
+        if (ibmiJsonContent && ibmiJsonContent.build) {
+          this.buildMap.set(path.dirname(ibmiJsonPath.fsPath), ibmiJsonContent);
+        }
+      } catch { }
+    };
+
+    if (!this.buildMap.has(this.workspaceFolder.uri.fsPath)) {
+      const unresolvedState = await this.getUnresolvedState();
+      if (unresolvedState && unresolvedState.objlib) {
+        this.buildMap.set(this.workspaceFolder.uri.fsPath, { build: { objlib: unresolvedState.objlib } });
+      }
+    }
+
+    return this.buildMap;
+  }
+
+  public async getIbmiJson(ibmiJsonUri: Uri, buildMap?: Map<string, IBMiJsonT>): Promise<IBMiJsonT | undefined> {
+    buildMap = buildMap || await this.getBuildMap();
+    const ibmiJson = buildMap.get(ibmiJsonUri.fsPath);
+
+    if (ibmiJson) {
+      return ibmiJson;
+    } else {
+      // Recursively search in parent .ibmi.json as long as parent directory is in workspace folder
+      const parentDirectoryUri = Uri.file(path.parse(ibmiJsonUri.fsPath).dir);
+      const parentDirectoryWorkspaceFolder = workspace.getWorkspaceFolder(parentDirectoryUri);
+      if (parentDirectoryWorkspaceFolder === this.workspaceFolder) {
+        return await this.getIbmiJson(parentDirectoryUri, buildMap);
+      }
+    }
+  }
+
   public getEnvFilePath(): Uri {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, `.env`));
   }
@@ -137,35 +187,35 @@ export class IProject {
     }
   }
 
-  public async movePath(pathMoving: string, direction: Direction){
+  public async movePath(pathMoving: string, direction: Direction) {
     const unresolvedState = await this.getUnresolvedState();
 
-    if(unresolvedState){
-     const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathMoving) : -1;
-     
-     if (index > -1) {
+    if (unresolvedState) {
+      const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathMoving) : -1;
 
-       if(direction === 'up'){
+      if (index > -1) {
+
+        if (direction === 'up') {
           // if (index > 0) to guard against first elment moving up (even if guarded in UI)
-         [unresolvedState.includePath![index - 1], unresolvedState.includePath![index]] = 
-           [unresolvedState.includePath![index], unresolvedState.includePath![index - 1]];
-       }else{
-        // if(index < unresolvedState.includePath!.length - 1) to guard against last element moving down (even if it is guarded in UI)
-        [unresolvedState.includePath![index], unresolvedState.includePath![index + 1]] = 
-          [unresolvedState.includePath![index + 1], unresolvedState.includePath![index]];
-       }
+          [unresolvedState.includePath![index - 1], unresolvedState.includePath![index]] =
+            [unresolvedState.includePath![index], unresolvedState.includePath![index - 1]];
+        } else {
+          // if(index < unresolvedState.includePath!.length - 1) to guard against last element moving down (even if it is guarded in UI)
+          [unresolvedState.includePath![index], unresolvedState.includePath![index + 1]] =
+            [unresolvedState.includePath![index + 1], unresolvedState.includePath![index]];
+        }
 
-     } else {
-       window.showErrorMessage(l10n.t('{0} does not exist in includePaths', pathMoving));
-     }
-     await this.updateIProj(unresolvedState);
+      } else {
+        window.showErrorMessage(l10n.t('{0} does not exist in includePaths', pathMoving));
+      }
+      await this.updateIProj(unresolvedState);
 
-   } else {
-     window.showErrorMessage(l10n.t('No iproj.json found'));
-   }
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
   }
 
-  public async getLibraryList() {
+  public async getLibraryList(): Promise<{ libraryInfo: IBMiObject; libraryType: string; }[] | undefined> {
     const ibmi = getInstance();
     const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;
 
@@ -452,12 +502,15 @@ export class IProject {
       return [];
     }
 
+    const buildMap = await this.getBuildMap();
+
     const valueList: string[] = [
       unresolvedState.curlib,
       unresolvedState.objlib,
       ...(unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl : []),
       ...(unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl : []),
       ...(unresolvedState.includePath ? unresolvedState.includePath : []),
+      ...(Array.from(buildMap.values()).filter(ibmiJson => ibmiJson.build).map(ibmiJson => ibmiJson.build!.objlib))
     ].filter(x => x) as string[];
 
     // Get everything that starts with an &
