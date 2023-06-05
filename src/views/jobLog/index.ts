@@ -2,17 +2,15 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { CancellationToken, commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, TreeItem, window, workspace } from "vscode";
-import { IProject } from "../../iproject";
+import { commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, window, workspace } from "vscode";
 import ErrorItem from "../projectExplorer/errorItem";
 import { ProjectManager } from "../../projectManager";
-import Log from "./log";
+import Project from "./project";
 import Command from "./command";
-import Message from "./message";
-import Project from "../projectExplorer/project";
+import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
 
 export default class JobLog implements TreeDataProvider<any> {
-  private _onDidChangeTreeData = new EventEmitter<TreeItem | undefined | null | void>();
+  private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   constructor(context: ExtensionContext) {
@@ -69,63 +67,13 @@ export default class JobLog implements TreeDataProvider<any> {
     this._onDidChangeTreeData.fire(null);
   }
 
-  getTreeItem(element: TreeItem): TreeItem | Thenable<TreeItem> {
+  getTreeItem(element: ProjectExplorerTreeItem): ProjectExplorerTreeItem | Thenable<ProjectExplorerTreeItem> {
     return element;
   }
 
-  async getChildren(element?: TreeItem): Promise<any[]> {
+  async getChildren(element?: ProjectExplorerTreeItem): Promise<any[]> {
     if (element) {
-      let items: TreeItem[] = [];
-      let iProject: IProject | undefined;
-
-      switch (element.contextValue) {
-        case Project.contextValue:
-          const projectElement = element as Project;
-
-          iProject = ProjectManager.get(projectElement.workspaceFolder);
-          await iProject?.readJobLog();
-          const jobLogs = iProject?.getJobLogs().slice().reverse();
-          const jobLogExists = await iProject?.projectFileExists('joblog.json');
-
-          if (jobLogs) {
-            items.push(...jobLogs?.map((jobLog, index) => {
-              if (index === 0 && jobLogExists) {
-                // Local job log
-                return new Log(jobLogs[0], true);
-              } else {
-                // Old job logs in memory
-                return new Log(jobLog);
-              }
-            }
-            ));
-          } else {
-            items.push(new ErrorItem(projectElement.workspaceFolder, l10n.t('No job log found')));
-          }
-
-          break;
-        case Log.contextValue:
-          const logElement = element as Log;
-          const jobLogInfo = logElement.jobLogInfo;
-
-          items.push(...jobLogInfo.commands?.map(
-            command => new Command(command)
-          ));
-          break;
-
-        case Command.contextValue:
-          const commandElement = element as Command;
-          const commandInfo = commandElement.commandInfo;
-          if (commandInfo.msgs) {
-            items.push(...commandInfo.msgs?.map(
-              msgs => new Message(msgs)
-            ));
-          }
-
-          break;
-      }
-
-      return items;
-
+      return element.getChildren();
     } else {
       const workspaceFolders = workspace.workspaceFolders;
 
