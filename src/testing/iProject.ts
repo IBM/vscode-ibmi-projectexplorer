@@ -6,11 +6,20 @@ import * as assert from "assert";
 import { TestSuite } from ".";
 import * as path from "path";
 import { ProjectManager } from "../projectManager";
-import { EnvironmentVariables } from "../iproject";
+import { EnvironmentVariables, ProjectFileType } from "../iproject";
 import { LibraryType } from "../views/projectExplorer/library";
+import { workspace } from "vscode";
 
 export const iProjectSuite: TestSuite = {
     name: `iProject Tests`,
+    beforeAll: async () => {
+        for await (const fileToDelete of ['joblog.json', 'output.log']) {
+            try {
+                const iProject = ProjectManager.getProjects()[0];
+                await workspace.fs.delete(iProject.getProjectFileUri(fileToDelete as ProjectFileType));
+            } catch { }
+        }
+    },
     beforeEach: async () => {
         const iProject = ProjectManager.getProjects()[0];
 

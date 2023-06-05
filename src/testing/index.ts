@@ -16,7 +16,8 @@ const suites: TestSuite[] = [
 
 export type TestSuite = {
   name: string,
-  beforeEach?: () => Promise<void>
+  beforeAll?: () => Promise<void>,
+  beforeEach?: () => Promise<void>,
   tests: TestCase[]
 };
 
@@ -46,10 +47,14 @@ export function initialise(context: vscode.ExtensionContext) {
             const testCase = suite.tests.find(testCase => testCase.name === testName);
 
             if (testCase) {
+              if (suite.beforeAll) {
+                await suite.beforeAll();
+              }
+
               if (suite.beforeEach) {
                 await suite.beforeEach();
               }
-              
+
               await runTest(testCase);
             }
           }
@@ -63,6 +68,10 @@ async function runTests() {
   for (const suite of suites) {
     console.log(`Running suite ${suite.name} (${suite.tests.length})`);
     console.log();
+
+    if (suite.beforeAll) {
+      await suite.beforeAll();
+    }
 
     for await (const test of suite.tests) {
       if (suite.beforeEach) {
