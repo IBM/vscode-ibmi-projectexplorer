@@ -8,9 +8,11 @@ import { TestSuitesTreeProvider } from "./testCasesTree";
 import { getInstance } from "../ibmi";
 import { iProjectSuite } from "./iProject";
 import { projectManagerSuite } from "./projectManager";
+import { jobLogSuite } from "./jobLog";
 
 const suites: TestSuite[] = [
   iProjectSuite,
+  jobLogSuite,
   projectManagerSuite
 ];
 
