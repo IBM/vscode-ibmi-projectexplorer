@@ -15,91 +15,102 @@ export const projectManagerSuite: TestSuite = {
     tests: [
         {
             name: `Test load`, test: async () => {
+                const workspaceFolder = workspace.workspaceFolders![0];
                 ProjectManager.clear();
-                ProjectManager.load(workspace.workspaceFolders![0]);
+                ProjectManager.load(workspaceFolder);
                 const iProject = ProjectManager.getProjects()[0];
 
-                assert.strictEqual(iProject.getName(), 'bob-recursive-example');
+                assert.strictEqual(iProject.getName(), workspaceFolder.name);
             }
         },
         {
             name: `Test get`, test: async () => {
-                const iProject = ProjectManager.get(workspace.workspaceFolders![0])!;
+                const workspaceFolder = workspace.workspaceFolders![0];
+                const iProject = ProjectManager.get(workspaceFolder)!;
 
-                assert.strictEqual(iProject.getName(), 'bob-recursive-example');
+                assert.strictEqual(iProject.getName(), workspaceFolder.name);
             }
         },
         {
             name: `Test getActiveProject`, test: async () => {
+                const workspaceFolder = workspace.workspaceFolders![0];
                 const iProject = ProjectManager.getActiveProject()!;
 
-                assert.strictEqual(iProject.getName(), 'bob-recursive-example');
+                assert.strictEqual(iProject.getName(), workspaceFolder.name);
             }
         },
         {
             name: `Test setActiveProject`, test: async () => {
+                const workspaceFolder = workspace.workspaceFolders![0];
                 ProjectManager.setActiveProject(undefined);
-                ProjectManager.setActiveProject(workspace.workspaceFolders![0]);
+                ProjectManager.setActiveProject(workspaceFolder);
                 const iProject = ProjectManager.getProjects()[0];
 
-                assert.strictEqual(iProject.getName(), 'bob-recursive-example');
+                assert.strictEqual(iProject.getName(), workspaceFolder.name);
             }
         },
         {
             name: `Test getActiveProjectStatusBarItem`, test: async () => {
+                const workspaceFolder = workspace.workspaceFolders![0];
                 const activeStatusBarItem = ProjectManager.getActiveProjectStatusBarItem();
 
-                assert.ok(activeStatusBarItem.text.includes('Project: bob-recursive-example'));
+                assert.ok(activeStatusBarItem.text.includes(`Project: ${workspaceFolder.name}`));
             }
         },
         {
             name: `Test getProjects`, test: async () => {
+                const workspaceFolder = workspace.workspaceFolders![0];
                 const iProject = ProjectManager.getProjects()[0];
 
-                assert.strictEqual(iProject.getName(), 'bob-recursive-example');
+                assert.strictEqual(iProject.getName(), workspaceFolder.name);
             }
         },
         {
             name: `Test getProjectFromName`, test: async () => {
-                const iProject = ProjectManager.getProjectFromName('bob-recursive-example')!;
+                const workspaceFolder = workspace.workspaceFolders![0];
+                const iProject = ProjectManager.getProjectFromName(workspaceFolder.name)!;
 
-                assert.strictEqual(iProject.getName(), 'bob-recursive-example');
+                assert.strictEqual(iProject.getName(), workspaceFolder.name);
             }
         },
         {
             name: `Test getProjectFromActiveTextEditor`, test: async () => {
+                const workspaceFolder = workspace.workspaceFolders![0];
                 const iProjUri = ProjectManager.getProjects()[0].getProjectFileUri('iproj.json');
                 const doc = await workspace.openTextDocument(iProjUri);
                 await window.showTextDocument(doc);
                 const iProject = ProjectManager.getProjectFromActiveTextEditor()!;
                 await commands.executeCommand("workbench.action.closeActiveEditor");
 
-                assert.strictEqual(iProject!.getName(), 'bob-recursive-example');
+                assert.strictEqual(iProject!.getName(), workspaceFolder.name);
             }
         },
         {
             name: `Test getProjectFromUri`, test: async () => {
+                const workspaceFolder = workspace.workspaceFolders![0];
                 const iProjUri = ProjectManager.getProjects()[0].getProjectFileUri('iproj.json');
                 const iProject = ProjectManager.getProjectFromUri(iProjUri)!;
 
-                assert.strictEqual(iProject.getName(), 'bob-recursive-example');
+                assert.strictEqual(iProject.getName(), workspaceFolder.name);
             }
         },
         {
             name: `Test getProjectFromTreeItem`, test: async () => {
+                const workspaceFolder = workspace.workspaceFolders![0];
                 const projectExplorerTreeItem: ProjectExplorerTreeItem = {
-                    workspaceFolder: workspace.workspaceFolders![0],
+                    workspaceFolder: workspaceFolder,
                     getChildren: () => {
                         return [];
                     }
                 };
                 const iProject = ProjectManager.getProjectFromTreeItem(projectExplorerTreeItem)!;
 
-                assert.strictEqual(iProject.getName(), 'bob-recursive-example');
+                assert.strictEqual(iProject.getName(), workspaceFolder.name);
             }
         },
         {
             name: `Test pushExtensibleChildren`, test: async () => {
+                const workspaceFolder = workspace.workspaceFolders![0];
                 ProjectManager.pushExtensibleChildren(async (iProject: IProject) => {
                     const projectExplorerTreeItem: ProjectExplorerTreeItem = {
                         workspaceFolder: iProject.workspaceFolder,
@@ -111,7 +122,7 @@ export const projectManagerSuite: TestSuite = {
 
                     return [projectExplorerTreeItem];
                 });
-                const projectTreeItem = new Project(workspace.workspaceFolders![0], 'SAMPLE PROJECT');
+                const projectTreeItem = new Project(workspaceFolder, 'SAMPLE PROJECT');
                 const children = await projectTreeItem.getChildren();
                 Project.callBack = [];
 

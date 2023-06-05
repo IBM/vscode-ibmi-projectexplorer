@@ -28,8 +28,7 @@ export const iProjectSuite: TestSuite = {
             "includePath": ["includes", "QPROTOSRC", "&path1", "&path2"],
             "preUsrlibl": ["&lib1", "&lib2"],
             "postUsrlibl": ["&lib3", "&lib4"],
-            "setIBMiEnvCmd": [],
-            "repository": "https://github.com/edmundreinhardt/bob-recursive-example.git"
+            "setIBMiEnvCmd": []
         });
     },
     tests: [
@@ -74,8 +73,7 @@ export const iProjectSuite: TestSuite = {
                     "includePath": ["includes", "QPROTOSRC", "PATH1", "&path2"],
                     "preUsrlibl": ["SYSTOOLS", "&lib2"],
                     "postUsrlibl": ["QSYSINC", "&lib4"],
-                    "setIBMiEnvCmd": [],
-                    "repository": "https://github.com/edmundreinhardt/bob-recursive-example.git"
+                    "setIBMiEnvCmd": []
                 });
             }
         },
@@ -94,8 +92,7 @@ export const iProjectSuite: TestSuite = {
                     "includePath": ["includes", "QPROTOSRC", "PATH1", "&path2"],
                     "preUsrlibl": ["SYSTOOLS", "&lib2"],
                     "postUsrlibl": ["QSYSINC", "&lib4"],
-                    "setIBMiEnvCmd": [],
-                    "repository": "https://github.com/edmundreinhardt/bob-recursive-example.git"
+                    "setIBMiEnvCmd": []
                 });
             }
         },
@@ -127,8 +124,7 @@ export const iProjectSuite: TestSuite = {
                     "includePath": ["includes", "QPROTOSRC", "&path1", "&path2"],
                     "preUsrlibl": ["&lib1", "&lib2"],
                     "postUsrlibl": ["&lib3", "&lib4"],
-                    "setIBMiEnvCmd": [],
-                    "repository": "https://github.com/edmundreinhardt/bob-recursive-example.git"
+                    "setIBMiEnvCmd": []
                 });
             }
         },
@@ -163,8 +159,7 @@ export const iProjectSuite: TestSuite = {
                     "includePath": ["includes", "QPROTOSRC", "PATH1", "&path2", "/some/path"],
                     "preUsrlibl": ["SYSTOOLS", "&lib2"],
                     "postUsrlibl": ["QSYSINC", "&lib4"],
-                    "setIBMiEnvCmd": [],
-                    "repository": "https://github.com/edmundreinhardt/bob-recursive-example.git"
+                    "setIBMiEnvCmd": []
                 });
             }
         },
@@ -183,8 +178,7 @@ export const iProjectSuite: TestSuite = {
                     "includePath": ["QPROTOSRC", "&path2"],
                     "preUsrlibl": ["SYSTOOLS", "&lib2"],
                     "postUsrlibl": ["QSYSINC", "&lib4"],
-                    "setIBMiEnvCmd": [],
-                    "repository": "https://github.com/edmundreinhardt/bob-recursive-example.git"
+                    "setIBMiEnvCmd": []
                 });
             }
         },
@@ -213,8 +207,7 @@ export const iProjectSuite: TestSuite = {
                     "includePath": ["includes", "QPROTOSRC", "PATH1", "&path2"],
                     "preUsrlibl": ["MYLIB1", "SYSTOOLS", "&lib2"],
                     "postUsrlibl": ["QSYSINC", "&lib4", "MYLIB2"],
-                    "setIBMiEnvCmd": [],
-                    "repository": "https://github.com/edmundreinhardt/bob-recursive-example.git"
+                    "setIBMiEnvCmd": []
                 });
             }
         },
@@ -232,8 +225,7 @@ export const iProjectSuite: TestSuite = {
                     "includePath": ["includes", "QPROTOSRC", "PATH1", "&path2"],
                     "preUsrlibl": ["SYSTOOLS", "&lib2"],
                     "postUsrlibl": ["QSYSINC", "&lib4"],
-                    "setIBMiEnvCmd": [],
-                    "repository": "https://github.com/edmundreinhardt/bob-recursive-example.git"
+                    "setIBMiEnvCmd": []
                 });
             }
         },
@@ -253,8 +245,7 @@ export const iProjectSuite: TestSuite = {
                     "includePath": ["includes", "QPROTOSRC", "PATH1", "&path2"],
                     "preUsrlibl": ["&lib1", "&lib2"],
                     "postUsrlibl": ["&lib3", "&lib4"],
-                    "setIBMiEnvCmd": [],
-                    "repository": "https://github.com/edmundreinhardt/bob-recursive-example.git"
+                    "setIBMiEnvCmd": []
                 });
             }
         },
