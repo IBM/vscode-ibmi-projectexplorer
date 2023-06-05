@@ -14,6 +14,7 @@ import { IProject } from "../../iproject";
 import IncludePaths from "./includePaths";
 import Source from "./source";
 import LibraryList from "./libraryList";
+import * as path from "path";
 
 /**
  * Tree item for a project
@@ -42,16 +43,19 @@ export default class Project extends ProjectExplorerTreeItem {
       if (remoteDir) {
         items.push(new Source(this.workspaceFolder, remoteDir));
       } else {
+        const ibmi = getInstance();
+        const homeDirectory = (ibmi?.getConfig().homeDirectory.endsWith('/') ? ibmi?.getConfig().homeDirectory.slice(0, -1) : ibmi?.getConfig().homeDirectory);
+        const defaultDeployLocation = homeDirectory ? path.posix.join(homeDirectory, this.workspaceFolder.name) : '';
+
         items.push(new ErrorItem(this.workspaceFolder, l10n.t('Source'), {
           description: l10n.t('Please configure deploy location'),
           command: {
             command: `code-for-ibmi.setDeployLocation`,
             title: l10n.t('Set deploy location'),
-            arguments: [{}, this.workspaceFolder.uri]
+            arguments: [undefined, this.workspaceFolder, defaultDeployLocation]
           }
         }));
       }
-
       const hasEnv = await iProject?.projectFileExists('.env');
       if (hasEnv) {
         let unresolvedVariableCount = 0;

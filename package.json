@@ -84,9 +84,15 @@
       },
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectexplorer.setActiveProject",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
         "title": "%commands.projectExplorer.setActiveProject%",
         "icon": "$(circle-filled)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
+        "title": "%commands.projectExplorer.editDeployLocation%",
+        "icon": "$(edit)"
       },
       {
         "category": "Project Explorer",
@@ -164,7 +170,11 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "vscode-ibmi-projectexplorer.setActiveProject",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
           "when": "never"
         },
         {
@@ -243,8 +253,13 @@
       ],
       "view/item/context": [
         {
-          "command": "vscode-ibmi-projectexplorer.setActiveProject",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
           "when": "view == projectExplorer && viewItem =~ /^project_inactive.*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
+          "when": "view == projectExplorer && viewItem =~ /^source.*/",
           "group": "inline@0"
         },
         {

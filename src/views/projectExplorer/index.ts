@@ -16,6 +16,7 @@ import LibraryList from "./libraryList";
 import Library from "./library";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
+import Source from "./source";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -35,7 +36,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
         this.refresh();
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.setActiveProject`, async (element?: Project) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, async (element?: Project) => {
         if (element) {
           ProjectManager.setActiveProject(element.workspaceFolder!);
           this.refresh();
@@ -61,6 +62,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               this.refresh();
             }
           }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation`, async (element: Source) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${element.description}`);
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList) => {
@@ -194,8 +200,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.moveUp`, async (element: RemoteIncludePath | LocalIncludePath) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
-          
-          if (iProject){
+
+          if (iProject) {
             await iProject.movePath(element.label!.toString(), 'up');
           }
         }
@@ -205,7 +211,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
-          if (iProject){
+          if (iProject) {
             await iProject.movePath(element.label!.toString(), 'down');
           }
         }

@@ -11,6 +11,7 @@
   "commands.projectExplorer.goToIFSBrowser": "Go To IFS Browser",
   "commands.projectExplorer.refreshProjectExplorer": "Refresh Project Explorer",
   "commands.projectExplorer.setActiveProject": "Set Active Project",
+  "commands.projectExplorer.editDeployLocation": "Edit Deploy Location",
   "commands.projectExplorer.addLibraryListEntry": "Add Library List Entry",
   "commands.projectExplorer.setCurrentLibrary": "Set Current Library",
   "commands.projectExplorer.removeFromLibraryList": "Remove From Library List",
