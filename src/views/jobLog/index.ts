@@ -15,7 +15,7 @@ export default class JobLog implements TreeDataProvider<any> {
 
   constructor(context: ExtensionContext) {
     context.subscriptions.push(
-      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.refresh`, () => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.refreshJobLog`, () => {
         this.refresh();
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showJobLog`, async (element: Project) => {
@@ -84,7 +84,15 @@ export default class JobLog implements TreeDataProvider<any> {
           return new Project(folder);
         });
       } else {
-        return [new ErrorItem(undefined, l10n.t('Please open a local workspace folder'))];
+        return [new ErrorItem(
+          undefined,
+          l10n.t('Please open a local workspace folder'),
+          {
+            command: {
+              command: 'workbench.action.addRootFolder',
+              title: l10n.t('Add folder to workspace')
+            }
+          })];
       }
     }
   }

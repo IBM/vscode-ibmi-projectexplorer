@@ -31,6 +31,7 @@ export class ProjectManager {
         this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
         context.subscriptions.push(this.activeProjectStatusBarItem);
         this.setActiveProject(undefined);
+        this.activeProjectStatusBarItem.show();
 
         const workspaceFolders = workspace.workspaceFolders;
         if (workspaceFolders && workspaceFolders.length > 0) {
@@ -79,7 +80,7 @@ export class ProjectManager {
             this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', this.activeProject.workspaceFolder.name);
             this.activeProjectStatusBarItem.tooltip = l10n.t('Active project: {0}', this.activeProject.workspaceFolder);
             this.activeProjectStatusBarItem.command = {
-                command: `vscode-ibmi-projectexplorer.setActiveProject`,
+                command: `vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`,
                 title: l10n.t('Set Active Project')
             };
         } else {
@@ -87,8 +88,8 @@ export class ProjectManager {
             this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project:') + ' $(circle-slash)';
             this.activeProjectStatusBarItem.tooltip = l10n.t('Please open a local workspace folder');
             this.activeProjectStatusBarItem.command = {
-                command: 'workbench.action.files.openFolder',
-                title: l10n.t('Open folder')
+                command: 'workbench.action.addRootFolder',
+                title: l10n.t('Add folder to workspace')
             };
         }
 
