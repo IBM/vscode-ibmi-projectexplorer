@@ -8,6 +8,9 @@ import { ContextValue } from "../../projectExplorerApi";
 import { ProjectManager } from "../../projectManager";
 import Library, { LibraryType } from "./library";
 import { getInstance } from "../../ibmi";
+import ErrorItem from "./errorItem";
+
+export type Position = 'first' | 'last' | 'middle';
 
 /**
  * Tree item for the Library List heading
@@ -47,23 +50,36 @@ export default class LibraryList extends ProjectExplorerTreeItem {
 
           case `USR`:
             let libraryType = LibraryType.defaultUserLibrary;
+            let position: Position | undefined;
+
             if (state?.preUsrlibl && state.preUsrlibl.includes(library.libraryInfo.name)) {
+              const listLength = state.preUsrlibl.length;
               libraryType = LibraryType.preUserLibrary;
 
               const index = state.preUsrlibl.indexOf(library.libraryInfo.name);
               if (unresolvedState?.preUsrlibl![index].startsWith('&')) {
                 variable = unresolvedState?.preUsrlibl![index];
               }
+
+              if (listLength > 1) {
+                position = index === 0 ? 'first' : (index === listLength - 1 ? 'last' : 'middle');
+              }
+              
             } else if (state?.postUsrlibl && state.postUsrlibl.includes(library.libraryInfo.name)) {
+              const listLength = state.postUsrlibl.length;
               libraryType = LibraryType.postUserLibrary;
 
               const index = state.postUsrlibl.indexOf(library.libraryInfo.name);
               if (unresolvedState?.postUsrlibl![index].startsWith('&')) {
                 variable = unresolvedState?.postUsrlibl![index];
               }
+
+              if (listLength > 1) {
+                position = index === 0 ? 'first' : (index === listLength - 1 ? 'last' : 'middle');
+              }
             }
 
-            items.push(new Library(this.workspaceFolder, library.libraryInfo, libraryType, variable));
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, libraryType, variable, position));
             break;
         }
       }

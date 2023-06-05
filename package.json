@@ -85,6 +85,18 @@
       },
       {
         "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListUp",
+        "title": "%commands.projectExplorer.moveLibraryListUp%",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListDown",
+        "title": "%commands.projectExplorer.moveLibraryListDown%",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
         "title": "%commands.projectExplorer.addToIncludePaths%",
         "icon": "$(add)"
@@ -167,6 +179,14 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListUp",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListDown",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "never"
         },
@@ -233,7 +253,17 @@
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
           "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(current|preUser|postUser).*/",
+          "group": "inline@2"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListUp",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(current|preUser|postUser).*/ && viewItem =~ /^.*_(middle|last).*/",
           "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListDown",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(current|preUser|postUser).*/ && viewItem =~ /^.*_(middle|first).*/",
+          "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",

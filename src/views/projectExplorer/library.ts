@@ -8,6 +8,7 @@ import { getInstance } from "../../ibmi";
 import ObjectFile from "./objectFile";
 import { ContextValue } from "../../projectExplorerApi";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { Position } from './libraryList';
 
 export enum LibraryType {
   library,
@@ -28,7 +29,7 @@ export default class Library extends ProjectExplorerTreeItem {
   variable?: string;
   path: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType, variable?: string) {
+  constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType, variable?: string, position? : Position ) {
     super(libraryInfo.name, TreeItemCollapsibleState.Collapsed);
 
     this.libraryInfo = libraryInfo;
@@ -76,6 +77,12 @@ export default class Library extends ProjectExplorerTreeItem {
     if (![LibraryType.systemLibrary, LibraryType.defaultUserLibrary].includes(libraryType) && !variable) {
       this.contextValue += ContextValue.configurable;
     }
+
+    this.contextValue += 
+      (position === 'first' ? ContextValue.first : '') +
+      (position === 'last' ? ContextValue.last : '') +
+      (position === 'middle' ? ContextValue.middle : ''); +
+      (!variable ? ContextValue.configurable : '');
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {

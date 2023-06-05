@@ -407,6 +407,46 @@ export class IProject {
     }
   }
 
+  public async moveLibraryList(library: string, type: LibraryType, direction: Direction) {
+    const unresolvedState = await this.getUnresolvedState();
+    let attribute: keyof IProjectT;
+
+    if (unresolvedState) {
+      if (type === LibraryType.preUserLibrary || LibraryType.postUserLibrary) {
+
+          attribute = type === LibraryType.preUserLibrary ? 'preUsrlibl' : 'postUsrlibl';
+
+          let libIndex = -1;
+          if (unresolvedState[attribute] && unresolvedState[attribute]!.includes(library)) {
+            libIndex = unresolvedState[attribute]!.indexOf(library);
+
+            if (direction === 'up') {
+              if (libIndex > -1) {
+                if (libIndex > 0) {
+                  [unresolvedState[attribute]![libIndex - 1], unresolvedState[attribute]![libIndex]] =
+                    [unresolvedState[attribute]![libIndex], unresolvedState[attribute]![libIndex - 1]];
+                }
+              }
+            }else{
+              if (libIndex < unresolvedState.includePath!.length - 1) {
+                [unresolvedState[attribute]![libIndex], unresolvedState[attribute]![libIndex + 1]] =
+                  [unresolvedState[attribute]![libIndex + 1], unresolvedState[attribute]![libIndex]];
+              }
+            }
+          }
+
+          if (libIndex < 0) {
+            window.showErrorMessage(l10n.t('{0} does not exist in {1}', library, attribute));
+            return;
+          }
+      }
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+  }
+
   public async updateIProj(iProject: IProjectT) {
     try {
       await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
