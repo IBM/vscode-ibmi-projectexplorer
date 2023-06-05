@@ -334,6 +334,85 @@
         }
       ]
     },
+      "languages": [
+          {
+              "id": "bnd",
+              "extensions": [
+                  ".bnd"
+              ]
+          },
+          {
+              "id": "cl",
+              "extensions": [
+                ".cl",
+                ".clp",
+                ".clp38",
+                ".bnddir",
+                ".bnddirsrc",
+                ".clle",
+                ".pgm.clle",
+                ".cls",
+                ".cmd",
+                ".dtaara",
+                ".dtaq",
+                ".jobd",
+                ".jobq",
+                ".msgd",
+                ".msgf",
+                ".msgq",
+                ".outq",
+                ".sbsd",
+                ".seqview",
+                ".systrg",
+                ".ilepgm",
+                ".ilesrvpgm"
+              ]
+          },
+          {
+              "id": "cmd",
+              "extensions": [
+                  ".cmd",
+                  ".cmdsrc"
+              ]
+          },
+          {
+            "id": "pnlgrp",
+            "aliases": [
+              "PNLGRP",
+              "IBM UIM Panel Group Definition Language"
+          ],
+            "extensions": [
+                ".pnlgrp",
+                ".pnlgrpsrc",
+                ".menusrc",
+                ".menu"
+            ]
+          },
+          {
+            "id": "sql",
+            "aliases": [
+              "sql"
+            ],
+            "extensions": [
+              ".sql",
+              ".sqlalias",
+              ".sqlc",
+              ".sqlcpp",
+              ".sqlmask",
+              ".sqlperm",
+              ".sqlprc",
+              ".sqlseq",
+              ".sqltrg",
+              ".sqludf",
+              ".sqludt",
+              ".sqlvar",
+              ".sqlxsr",
+              ".table",
+              ".view",
+              ".cblle"
+            ]
+          }
+      ],
     "colors": [
       {
         "id": "projectExplorer.activeProject",
