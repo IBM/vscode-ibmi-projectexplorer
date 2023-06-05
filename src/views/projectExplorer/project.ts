@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import { getInstance } from "../../ibmi";
@@ -27,7 +27,6 @@ export default class Project extends ProjectExplorerTreeItem {
   constructor(public workspaceFolder: WorkspaceFolder, description?: string) {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
 
-    this.resourceUri = workspaceFolder.uri;
     this.iconPath = new ThemeIcon(`symbol-folder`);
     this.contextValue = Project.contextValue + ContextValue.inactive;
     this.description = description;
@@ -36,62 +35,71 @@ export default class Project extends ProjectExplorerTreeItem {
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
     let items: ProjectExplorerTreeItem[] = [];
 
-    const iProject = ProjectManager.get(this.workspaceFolder);
+    const ibmi = getInstance();
+    if (ibmi && ibmi.getConnection()) {
+      const iProject = ProjectManager.get(this.workspaceFolder);
 
-    const remoteDir = await iProject!.getRemoteDir();
-    if (remoteDir) {
-      items.push(new Source(this.workspaceFolder, remoteDir));
-    } else {
-      const ibmi = getInstance();
-      const homeDirectory = (ibmi?.getConfig().homeDirectory.endsWith('/') ? ibmi?.getConfig().homeDirectory.slice(0, -1) : ibmi?.getConfig().homeDirectory);
-      const defaultDeployLocation = homeDirectory ? path.posix.join(homeDirectory, this.workspaceFolder.name) : '';
+      const remoteDir = await iProject!.getRemoteDir();
+      if (remoteDir) {
+        items.push(new Source(this.workspaceFolder, remoteDir));
+      } else {
+        const ibmi = getInstance();
+        const homeDirectory = (ibmi?.getConfig().homeDirectory.endsWith('/') ? ibmi?.getConfig().homeDirectory.slice(0, -1) : ibmi?.getConfig().homeDirectory);
+        const defaultDeployLocation = homeDirectory ? path.posix.join(homeDirectory, this.workspaceFolder.name) : '';
 
-      items.push(new ErrorItem(this.workspaceFolder, l10n.t('Source'), {
-        description: l10n.t('Please configure deploy location'),
-        command: {
-          command: `code-for-ibmi.setDeployLocation`,
-          title: l10n.t('Set deploy location'),
-          arguments: [undefined, this.workspaceFolder, defaultDeployLocation]
+        items.push(new ErrorItem(this.workspaceFolder, l10n.t('Source'), {
+          description: l10n.t('Please configure deploy location'),
+          command: {
+            command: `code-for-ibmi.setDeployLocation`,
+            title: l10n.t('Set deploy location'),
+            arguments: [undefined, this.workspaceFolder, defaultDeployLocation]
+          }
+        }));
+      }
+      const hasEnv = await iProject?.projectFileExists('.env');
+      if (hasEnv) {
+        let unresolvedVariableCount = 0;
+
+        const possibleVariables = await iProject?.getVariables();
+        const actualValues = await iProject?.getEnv();
+        if (possibleVariables && actualValues) {
+          unresolvedVariableCount = possibleVariables.filter(varName => !actualValues[varName]).length;
         }
-      }));
-    }
 
-    const hasEnv = await iProject?.projectFileExists('.env');
-    if (hasEnv) {
-      let unresolvedVariableCount = 0;
+        items.push(new Variables(this.workspaceFolder, unresolvedVariableCount));
 
-      const possibleVariables = await iProject?.getVariables();
-      const actualValues = await iProject?.getEnv();
-      if (possibleVariables && actualValues) {
-        unresolvedVariableCount = possibleVariables.filter(varName => !actualValues[varName]).length;
+      } else {
+        items.push(new ErrorItem(this.workspaceFolder, l10n.t('Variables'), {
+          description: l10n.t('Please configure environment file'),
+          command: {
+            command: `vscode-ibmi-projectexplorer.createEnv`,
+            arguments: [this.workspaceFolder],
+            title: l10n.t('Create project .env')
+          }
+        }));
       }
 
-      items.push(new Variables(this.workspaceFolder, unresolvedVariableCount));
+      items.push(new LibraryList(this.workspaceFolder));
+      items.push(new ObjectLibraries(this.workspaceFolder));
+      items.push(new IncludePaths(this.workspaceFolder));
 
+      for await (const extensibleChildren of Project.callBack) {
+        let children: ProjectExplorerTreeItem[] = [];
+        try {
+          children = await extensibleChildren(iProject!);
+        } catch (error) { }
+
+        this.extensibleChildren.push(...children);
+      }
+      items.push(...this.extensibleChildren);
     } else {
-      items.push(new ErrorItem(this.workspaceFolder, l10n.t('Variables'), {
-        description: l10n.t('Please configure environment file'),
+      items.push(new ErrorItem(undefined, l10n.t('Please connect to an IBM i'), {
         command: {
-          command: `vscode-ibmi-projectexplorer.createEnv`,
-          arguments: [this.workspaceFolder],
-          title: l10n.t('Create project .env')
+          command: `connectionBrowser.focus`,
+          title: l10n.t('Focus on connection browser')
         }
       }));
     }
-
-    items.push(new LibraryList(this.workspaceFolder));
-    items.push(new ObjectLibraries(this.workspaceFolder));
-    items.push(new IncludePaths(this.workspaceFolder));
-
-    for await (const extensibleChildren of Project.callBack) {
-      let children: ProjectExplorerTreeItem[] = [];
-      try {
-        children = await extensibleChildren(iProject!);
-      } catch (error) { }
-
-      this.extensibleChildren.push(...children);
-    }
-    items.push(...this.extensibleChildren);
 
     return items;
   }
@@ -102,6 +110,6 @@ export default class Project extends ProjectExplorerTreeItem {
 
   setActive() {
     this.contextValue = Project.contextValue + ContextValue.active;
-    this.iconPath = new ThemeIcon(`root-folder`);
+    this.iconPath = new ThemeIcon(`root-folder`, new ThemeColor('projectExplorer.activeProject'));
   }
 }

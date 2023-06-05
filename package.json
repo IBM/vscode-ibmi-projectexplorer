@@ -58,7 +58,30 @@
         "when": "workspaceFolderCount > 0"
       }
     ],
+    "submenus": [
+      {
+        "id": "projectExplorer.goTo",
+        "label": "%submenus.projectExplorer.gotTo%",
+        "icon": "$(server-environment)"
+      }
+    ],
     "commands": [
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.goToObjectBrowser",
+        "title": "%commands.projectExplorer.goToObjectBrowser%"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.goToIFSBrowser",
+        "title": "%commands.projectExplorer.goToIFSBrowser%"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer",
+        "title": "%commands.projectExplorer.refreshProjectExplorer%",
+        "icon": "$(refresh)"
+      },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
@@ -97,20 +120,26 @@
       },
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectexplorer.revealInExplorer",
-        "title": "%commands.projectExplorer.revealInExplorer%",
-        "icon": "$(arrow-right)"
-      },
-      {
-        "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
         "title": "%commands.projectExplorer.removeFromIncludePaths%",
         "icon": "$(close)"
       },
       {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.moveUp",
+        "title": "%commands.projectExplorer.moveUp%",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.moveDown",
+        "title": "%commands.projectExplorer.moveDown%",
+        "icon": "$(arrow-down)"
+      }, 
+      {
         "category": "Job Log",
-        "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
-        "title": "%commands.jobLog.refresh%",
+        "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
+        "title": "%commands.jobLog.refreshJobLog%",
         "icon": "$(refresh)"
       },
       {
@@ -134,7 +163,8 @@
       {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.copy",
-        "title": "%commands.jobLog.copy%"
+        "title": "%commands.jobLog.copy%",
+        "icon": "$(copy)"
       }
     ],
     "menus": {
@@ -164,11 +194,15 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.revealInExplorer",
+          "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
+          "command": "vscode-ibmi-projectexplorer.moveUp",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.moveDown",
           "when": "never"
         },
         {
@@ -188,9 +222,31 @@
           "when": "never"
         }
       ],
+      "projectExplorer.goTo": [
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.goToObjectBrowser",
+          "when": "view == projectExplorer",
+          "group": "0_goTo@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.goToIFSBrowser",
+          "when": "view == projectExplorer",
+          "group": "0_goTo@1"
+        }
+      ],
       "view/title": [
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
+          "submenu": "projectExplorer.goTo",
+          "when": "view == projectExplorer && code-for-ibmi:connected",
+          "group": "navigation@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer",
+          "when": "view == projectExplorer",
+          "group": "navigation@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
           "when": "view == jobLog",
           "group": "navigation@0"
         }
@@ -232,14 +288,19 @@
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.revealInExplorer",
-          "when": "view == projectExplorer && viewItem =~ /^includePath_local.*/",
-          "group": "inline@0"
+          "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
+          "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/",
+          "group": "inline@3"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
-          "when": "view == projectExplorer && viewItem =~ /^includePath.*/",
+          "command": "vscode-ibmi-projectexplorer.moveUp",
+          "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_(middle|last).*/",
           "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.moveDown",
+           "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_(middle|first).*/",
+           "group": "inline@2"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
@@ -269,11 +330,19 @@
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
           "when": "view == jobLog && viewItem =~ /^command.*/",
-          "group": "1_modification@0"
+          "group": "inline"
         }
       ]
     },
     "colors": [
+      {
+        "id": "projectExplorer.activeProject",
+        "description": "%colors.projectExplorer.activeProject%",
+        "defaults": {
+          "dark": "#4CAF4F",
+          "light": "#4CAF4F"
+        }
+      },
       {
         "id": "projectExplorer.systemLibrary",
         "description": "%colors.projectExplorer.systemLibraries%",
@@ -371,7 +440,7 @@
     "types": "npx -p typescript tsc ./src/extension.ts --excludeDirectories ./src/test --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node"
   },
   "devDependencies": {
-    "@halcyontech/vscode-ibmi-types": "^1.8.0",
+    "@halcyontech/vscode-ibmi-types": "^1.9.0",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "16.x",

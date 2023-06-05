@@ -2,13 +2,18 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { JobLogInfo, MessageInfo, parseDateTime } from "../../jobLog";
+import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
+import { ContextValue } from "../../projectExplorerApi";
 
-export default class Message extends TreeItem {
-  static contextValue = `message`;
+/**
+ * Tree item for a message
+ */
+export default class Message extends ProjectExplorerTreeItem {
+  static contextValue = ContextValue.message;
 
-  constructor(public msg: MessageInfo) {
+  constructor(public workspaceFolder: WorkspaceFolder, msg: MessageInfo) {
     const msgSeverity = String(msg.severity).padStart(2, `0`);
     const msgLabel = '[' + msgSeverity + '] ' + msg.msgid + ' - ' + msg.message_text;
     super(msgLabel, TreeItemCollapsibleState.None);
@@ -43,5 +48,9 @@ export default class Message extends TreeItem {
         break;
     }
     this.iconPath = msgIcon;
+  }
+
+  getChildren(): ProjectExplorerTreeItem[] {
+    return [];
   }
 }

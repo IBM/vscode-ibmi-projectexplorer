@@ -27,6 +27,15 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.goToObjectBrowser`, async () => {
+        await commands.executeCommand(`objectBrowser.focus`);
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.goToIFSBrowser`, async () => {
+        await commands.executeCommand(`ifsBrowser.focus`);
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
+        this.refresh();
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, async (element?: Project) => {
         if (element) {
           ProjectManager.setActiveProject(element.workspaceFolder!);
@@ -179,9 +188,6 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.revealInExplorer`, async (element: LocalIncludePath) => {
-        await commands.executeCommand('revealInExplorer', element.uri);
-      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.removeFromIncludePaths`, async (element: RemoteIncludePath | LocalIncludePath) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
@@ -190,7 +196,28 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await iProject.removeFromIncludePaths(element.label!.toString());
           }
         }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.moveUp`, async (element: RemoteIncludePath | LocalIncludePath) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            await iProject.movePath(element.label!.toString(), 'up');
+          }
+        }
+
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.moveDown`, async (element: RemoteIncludePath | LocalIncludePath) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            await iProject.movePath(element.label!.toString(), 'down');
+          }
+        }
+
       })
+
     );
   }
 
@@ -208,64 +235,58 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     } else {
       const items: ProjectExplorerTreeItem[] = [];
 
-      const ibmi = getInstance();
+      const workspaceFolders = workspace.workspaceFolders;
 
-      if (ibmi && ibmi.getConnection()) {
-        const workspaceFolders = workspace.workspaceFolders;
+      if (workspaceFolders && workspaceFolders.length > 0) {
+        for await (const folder of workspaceFolders) {
+          ProjectManager.load(folder);
 
-        if (workspaceFolders && workspaceFolders.length > 0) {
-          for await (const folder of workspaceFolders) {
-            ProjectManager.load(folder);
-
-            const iProject = ProjectManager.get(folder);
-            if (iProject) {
-              const metadataExists = await iProject.projectFileExists('iproj.json');
-              if (metadataExists) {
-                const state = await iProject.getState();
-                if (state) {
-                  items.push(new Project(folder, state.description));
-                } else {
-                  items.push(new Project(folder));
-                }
+          const iProject = ProjectManager.get(folder);
+          if (iProject) {
+            const metadataExists = await iProject.projectFileExists('iproj.json');
+            if (metadataExists) {
+              const state = await iProject.getState();
+              if (state) {
+                items.push(new Project(folder, state.description));
               } else {
-                items.push(new ErrorItem(
-                  folder,
-                  folder.name,
-                  {
-                    description: l10n.t('Please configure project metadata'),
-                    command: {
-                      command: 'vscode-ibmi-projectexplorer.createProject',
-                      arguments: [folder],
-                      title: l10n.t('Create project iproj.json')
-                    }
-                  }));
+                items.push(new Project(folder));
               }
-            }
-
-            this.projectTreeItems = items as Project[];
-          };
-
-          const activeProject = ProjectManager.getActiveProject();
-          if (activeProject) {
-            const projectTreeItem = this.getProjectTreeItem(activeProject);
-            if (projectTreeItem) {
-              projectTreeItem.setActive();
+            } else {
+              items.push(new ErrorItem(
+                folder,
+                folder.name,
+                {
+                  description: l10n.t('Please configure project metadata'),
+                  command: {
+                    command: 'vscode-ibmi-projectexplorer.createProject',
+                    arguments: [folder],
+                    title: l10n.t('Create project iproj.json')
+                  }
+                }));
             }
           }
 
-        } else {
-          items.push(new ErrorItem(
-            undefined,
-            l10n.t('Please open a local workspace folder'),
-            {
-              command: {
-                command: 'workbench.action.files.openFolder',
-                title: l10n.t('Open folder')
-              }
-            }));
+          this.projectTreeItems = items as Project[];
+        };
+
+        const activeProject = ProjectManager.getActiveProject();
+        if (activeProject) {
+          const projectTreeItem = this.getProjectTreeItem(activeProject);
+          if (projectTreeItem) {
+            projectTreeItem.setActive();
+          }
         }
+
       } else {
-        items.push(new ErrorItem(undefined, l10n.t('Please connect to an IBM i')));
+        items.push(new ErrorItem(
+          undefined,
+          l10n.t('Please open a local workspace folder'),
+          {
+            command: {
+              command: 'workbench.action.addRootFolder',
+              title: l10n.t('Add folder to workspace')
+            }
+          }));
       }
 
       return items;
