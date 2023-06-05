@@ -60,6 +60,7 @@ export class ProjectManager {
         this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
         context.subscriptions.push(this.activeProjectStatusBarItem);
         this.setActiveProject(undefined);
+        this.activeProjectStatusBarItem.show();
 
         const workspaceFolders = workspace.workspaceFolders;
         if (workspaceFolders && workspaceFolders.length > 0) {
@@ -91,8 +92,8 @@ export class ProjectManager {
             this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project:') + ' $(circle-slash)';
             this.activeProjectStatusBarItem.tooltip = l10n.t('Please open a local workspace folder');
             this.activeProjectStatusBarItem.command = {
-                command: 'workbench.action.files.openFolder',
-                title: l10n.t('Open folder')
+                command: 'workbench.action.addRootFolder',
+                title: l10n.t('Add folder to workspace')
             };
         }
 
