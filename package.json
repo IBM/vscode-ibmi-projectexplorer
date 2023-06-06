@@ -336,12 +336,6 @@
     },
       "languages": [
           {
-              "id": "bnd",
-              "extensions": [
-                  ".bnd"
-              ]
-          },
-          {
               "id": "cl",
               "extensions": [
                 ".cl",
@@ -408,8 +402,7 @@
               ".sqlvar",
               ".sqlxsr",
               ".table",
-              ".view",
-              ".cblle"
+              ".view"
             ]
           }
       ],
