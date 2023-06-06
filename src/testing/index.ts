@@ -9,11 +9,13 @@ import { getInstance } from "../ibmi";
 import { iProjectSuite } from "./iProject";
 import { projectManagerSuite } from "./projectManager";
 import { jobLogSuite } from "./jobLog";
+import { treeItemsSuite } from "./treeItems";
 
 const suites: TestSuite[] = [
   iProjectSuite,
   jobLogSuite,
-  projectManagerSuite
+  projectManagerSuite,
+  treeItemsSuite
 ];
 
 export type TestSuite = {
