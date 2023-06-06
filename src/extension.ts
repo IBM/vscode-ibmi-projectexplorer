@@ -75,6 +75,12 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 
 			projectExplorer.refresh();
 			jobLog.refresh();
+		}),
+		window.onDidChangeActiveTextEditor((event) => {
+			if(event && event.document.uri) {
+				const workspaceFolder = workspace.getWorkspaceFolder(event?.document.uri);
+				ProjectManager.setActiveProject(workspaceFolder);
+			}
 		})
 	);
 
