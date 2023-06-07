@@ -10,8 +10,7 @@ import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
 import * as path from "path";
 import ErrorItem from "./errorItem";
-
-export type Position = 'first' | 'last' | 'middle';
+import { Position } from "../../iproject";
 
 /**
  * Tree item for Include Paths heading

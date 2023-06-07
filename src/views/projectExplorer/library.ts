@@ -8,7 +8,7 @@ import { getInstance } from "../../ibmi";
 import ObjectFile from "./objectFile";
 import { ContextValue } from "../../projectExplorerApi";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
-import { Position } from './libraryList';
+import { Position } from '../../iproject';
 
 export enum LibraryType {
   library,
@@ -74,15 +74,11 @@ export default class Library extends ProjectExplorerTreeItem {
     }
     this.iconPath = new ThemeIcon(`library`, iconColor);
 
-    if (![LibraryType.systemLibrary, LibraryType.defaultUserLibrary].includes(libraryType) && !variable) {
-      this.contextValue += ContextValue.configurable;
-    }
-
     this.contextValue += 
       (position === 'first' ? ContextValue.first : '') +
       (position === 'last' ? ContextValue.last : '') +
-      (position === 'middle' ? ContextValue.middle : ''); +
-      (!variable ? ContextValue.configurable : '');
+      (position === 'middle' ? ContextValue.middle : '') +
+      ((![LibraryType.systemLibrary, LibraryType.defaultUserLibrary].includes(libraryType) && !variable) ? ContextValue.configurable : '');
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {

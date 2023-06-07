@@ -106,7 +106,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListUp`, async (element: Library) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.moveLibraryUp`, async (element: Library) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
@@ -116,7 +116,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListDown`, async (element: Library) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.moveLibraryDown`, async (element: Library) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 

@@ -85,14 +85,14 @@
       },
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListUp",
-        "title": "%commands.projectExplorer.moveLibraryListUp%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryUp",
+        "title": "%commands.projectExplorer.moveLibraryUp%",
         "icon": "$(arrow-up)"
       },
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListDown",
-        "title": "%commands.projectExplorer.moveLibraryListDown%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryDown",
+        "title": "%commands.projectExplorer.moveLibraryDown%",
         "icon": "$(arrow-down)"
       },
       {
@@ -179,11 +179,11 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListUp",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryUp",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListDown",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryDown",
           "when": "never"
         },
         {
@@ -256,13 +256,13 @@
           "group": "inline@2"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListUp",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(current|preUser|postUser).*/ && viewItem =~ /^.*_(middle|last).*/",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryUp",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(preUser|postUser).*/ && viewItem =~ /^.*_(middle|last).*/",
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryListDown",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(current|preUser|postUser).*/ && viewItem =~ /^.*_(middle|first).*/",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryDown",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(preUser|postUser).*/ && viewItem =~ /^.*_(middle|first).*/",
           "group": "inline@1"
         },
         {

@@ -9,8 +9,7 @@ import { ProjectManager } from "../../projectManager";
 import Library, { LibraryType } from "./library";
 import { getInstance } from "../../ibmi";
 import ErrorItem from "./errorItem";
-
-export type Position = 'first' | 'last' | 'middle';
+import { Position } from "../../iproject";
 
 /**
  * Tree item for the Library List heading
@@ -53,7 +52,8 @@ export default class LibraryList extends ProjectExplorerTreeItem {
             let position: Position | undefined;
 
             if (state?.preUsrlibl && state.preUsrlibl.includes(library.libraryInfo.name)) {
-              const listLength = state.preUsrlibl.length;
+              // const listLength = state.preUsrlibl.length;
+              const listLength = state.preUsrlibl.filter(lib => !lib.startsWith('&')).length;
               libraryType = LibraryType.preUserLibrary;
 
               const index = state.preUsrlibl.indexOf(library.libraryInfo.name);
@@ -66,7 +66,7 @@ export default class LibraryList extends ProjectExplorerTreeItem {
               }
               
             } else if (state?.postUsrlibl && state.postUsrlibl.includes(library.libraryInfo.name)) {
-              const listLength = state.postUsrlibl.length;
+              const listLength = state.postUsrlibl.filter(lib => !lib.startsWith('&')).length;
               libraryType = LibraryType.postUserLibrary;
 
               const index = state.postUsrlibl.indexOf(library.libraryInfo.name);
