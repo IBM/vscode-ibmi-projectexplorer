@@ -112,7 +112,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (iProject) {
             const library = element.variable ? element.variable : element.label!.toString();
-            await iProject.moveLibraryList(library, element.libraryType, 'up');
+            await iProject.moveLibrary(library, element.libraryType, 'up');
           }
         }
       }),
@@ -122,7 +122,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (iProject) {
             const library = element.variable ? element.variable : element.label!.toString();
-            await iProject.moveLibraryList(library, element.libraryType, 'down');
+            await iProject.moveLibrary(library, element.libraryType, 'down');
           }
         }
       }),
@@ -266,7 +266,6 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await iProject.moveIncludePath(pathToMove, 'up');
           }
         }
-
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.moveIncludePathDown`, async (element: RemoteIncludePath | LocalIncludePath) => {
         if (element) {
@@ -277,9 +276,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await iProject.moveIncludePath(pathToMove, 'down');
           }
         }
-
       })
-
     );
   }
 

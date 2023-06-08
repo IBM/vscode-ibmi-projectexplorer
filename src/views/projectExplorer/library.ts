@@ -29,7 +29,7 @@ export default class Library extends ProjectExplorerTreeItem {
   variable?: string;
   path: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType, variable?: string, position? : Position ) {
+  constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType, variable?: string, position?: Position) {
     super(libraryInfo.name, TreeItemCollapsibleState.Collapsed);
 
     this.libraryInfo = libraryInfo;
@@ -73,8 +73,7 @@ export default class Library extends ProjectExplorerTreeItem {
         this.contextValue = Library.contextValue;
     }
     this.iconPath = new ThemeIcon(`library`, iconColor);
-
-    this.contextValue += 
+    this.contextValue +=
       (position === 'first' ? ContextValue.first : '') +
       (position === 'last' ? ContextValue.last : '') +
       (position === 'middle' ? ContextValue.middle : '') +

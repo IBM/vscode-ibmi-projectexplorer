@@ -7,8 +7,6 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 import { ProjectManager } from "../../projectManager";
 import Library, { LibraryType } from "./library";
-import { getInstance } from "../../ibmi";
-import ErrorItem from "./errorItem";
 import { Position } from "../../iproject";
 
 /**
@@ -52,8 +50,6 @@ export default class LibraryList extends ProjectExplorerTreeItem {
             let position: Position | undefined;
 
             if (state?.preUsrlibl && state.preUsrlibl.includes(library.libraryInfo.name)) {
-              // const listLength = state.preUsrlibl.length;
-              const listLength = state.preUsrlibl.filter(lib => !lib.startsWith('&')).length;
               libraryType = LibraryType.preUserLibrary;
 
               const index = state.preUsrlibl.indexOf(library.libraryInfo.name);
@@ -61,12 +57,12 @@ export default class LibraryList extends ProjectExplorerTreeItem {
                 variable = unresolvedState?.preUsrlibl![index];
               }
 
+              const listLength = state.preUsrlibl.filter(lib => !lib.startsWith('&')).length;
               if (listLength > 1) {
                 position = index === 0 ? 'first' : (index === listLength - 1 ? 'last' : 'middle');
               }
-              
+
             } else if (state?.postUsrlibl && state.postUsrlibl.includes(library.libraryInfo.name)) {
-              const listLength = state.postUsrlibl.filter(lib => !lib.startsWith('&')).length;
               libraryType = LibraryType.postUserLibrary;
 
               const index = state.postUsrlibl.indexOf(library.libraryInfo.name);
@@ -74,6 +70,7 @@ export default class LibraryList extends ProjectExplorerTreeItem {
                 variable = unresolvedState?.postUsrlibl![index];
               }
 
+              const listLength = state.postUsrlibl.filter(lib => !lib.startsWith('&')).length;
               if (listLength > 1) {
                 position = index === 0 ? 'first' : (index === listLength - 1 ? 'last' : 'middle');
               }
