@@ -19,14 +19,12 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 	const ibmi = getInstance();
 	ibmi?.onEvent(`connected`, () => {
 		projectExplorer.refresh();
-		ProjectManager.getActiveProjectStatusBarItem().show();
 	});
 	ibmi?.onEvent(`deployLocation`, () => {
 		projectExplorer.refresh();
 	});
 	ibmi?.onEvent(`disconnected`, () => {
 		projectExplorer.refresh();
-		ProjectManager.getActiveProjectStatusBarItem().hide();
 	});
 
 	const projectWatcher = workspace.createFileSystemWatcher(`**/{iproj.json,.ibmi.json,.env}`);
@@ -61,9 +59,11 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 	jobLogWatcher.onDidCreate(() => { jobLog.refresh(); });
 	jobLogWatcher.onDidDelete(() => { jobLog.refresh(); });
 
+	const projectExplorerTreeView = window.createTreeView(`projectExplorer`, { treeDataProvider: projectExplorer, showCollapseAll: true });
+	const jobLogTreeView = window.createTreeView(`jobLog`, { treeDataProvider: jobLog, showCollapseAll: true });
 	context.subscriptions.push(
-		window.registerTreeDataProvider(`projectExplorer`, projectExplorer),
-		window.registerTreeDataProvider(`jobLog`, jobLog),
+		projectExplorerTreeView,
+		jobLogTreeView,
 		workspace.onDidChangeWorkspaceFolders((event) => {
 			ProjectManager.clear();
 
