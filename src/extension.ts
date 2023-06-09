@@ -19,7 +19,6 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 	const ibmi = getInstance();
 	ibmi?.onEvent(`connected`, () => {
 		projectExplorer.refresh();
-		ProjectManager.getActiveProjectStatusBarItem().show();
 	});
 	ibmi?.onEvent(`deploy`, () => {
 		projectExplorer.refresh();
@@ -29,7 +28,6 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 	});
 	ibmi?.onEvent(`disconnected`, () => {
 		projectExplorer.refresh();
-		ProjectManager.getActiveProjectStatusBarItem().hide();
 	});
 
 	const projectWatcher = workspace.createFileSystemWatcher(`**/{iproj.json,.ibmi.json,.env}`);
@@ -37,16 +35,25 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 		const iProject = ProjectManager.getProjectFromUri(uri);
 		if (iProject) {
 			await iProject.updateState();
+			await iProject.updateBuildMap();
 		}
 		projectExplorer.refresh();
+
+		ProjectManager.fire('projects');
 	});
-	projectWatcher.onDidCreate(async (uri) => { projectExplorer.refresh(); });
+	projectWatcher.onDidCreate(async (uri) => {
+		projectExplorer.refresh();
+
+		ProjectManager.fire('projects');
+	});
 	projectWatcher.onDidDelete(async (uri) => {
 		const iProject = ProjectManager.getProjectFromUri(uri);
 		if (iProject) {
 			iProject.setState(undefined);
 		}
 		projectExplorer.refresh();
+
+		ProjectManager.fire('projects');
 	});
 
 	const jobLog = new JobLog(context);
@@ -55,9 +62,11 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 	jobLogWatcher.onDidCreate(() => { jobLog.refresh(); });
 	jobLogWatcher.onDidDelete(() => { jobLog.refresh(); });
 
+	const projectExplorerTreeView = window.createTreeView(`projectExplorer`, { treeDataProvider: projectExplorer, showCollapseAll: true });
+	const jobLogTreeView = window.createTreeView(`jobLog`, { treeDataProvider: jobLog, showCollapseAll: true });
 	context.subscriptions.push(
-		window.registerTreeDataProvider(`projectExplorer`, projectExplorer),
-		window.registerTreeDataProvider(`jobLog`, jobLog),
+		projectExplorerTreeView,
+		jobLogTreeView,
 		workspace.onDidChangeWorkspaceFolders((event) => {
 			ProjectManager.clear();
 
