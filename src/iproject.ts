@@ -318,8 +318,9 @@ export class IProject {
               });
             }
 
-            if (!this.libraryList || libl.toString() !== this.libraryList.toString()) {
-              this.libraryList = libl;
+            this.libraryList = libl;
+
+            if (libl.toString() !== this.libraryList.toString()) {
               ProjectManager.fire({ type: 'libraryList', iProject: this });
             }
           }
