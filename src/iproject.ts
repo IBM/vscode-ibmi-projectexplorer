@@ -14,9 +14,11 @@ import { LibraryType } from "./views/projectExplorer/library";
 import envUpdater from "./envUpdater";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { ProjectManager } from "./projectManager";
 
 const DEFAULT_CURLIB = 'CURLIB';
 
+export type LibraryList = { libraryInfo: IBMiObject; libraryType: string; }[];
 export type EnvironmentVariables = { [name: string]: string };
 export type Direction = 'up' | 'down';
 
@@ -24,12 +26,15 @@ export class IProject {
   private name: string;
   private state: IProjectT | undefined;
   private buildMap: Map<string, IBMiJsonT>;
+  private libraryList: LibraryList | undefined;
   private jobLogs: RingBuffer<JobLogInfo>;
   private environmentValues: EnvironmentVariables;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
     this.name = workspaceFolder.name;
+    this.state = undefined;
     this.buildMap = new Map();
+    this.libraryList = undefined;
     this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
   }
@@ -52,7 +57,7 @@ export class IProject {
 
   public async getState(): Promise<IProjectT | undefined> {
     if (!this.state) {
-      return await this.updateState();
+      await this.updateState();
     }
     return this.state;
   }
@@ -71,7 +76,6 @@ export class IProject {
     }
 
     this.state = unresolvedState;
-    return this.state;
   }
 
   public resolveVariable(lib: string, values: EnvironmentVariables): string {
@@ -239,7 +243,18 @@ export class IProject {
     }
   }
 
-  public async getLibraryList(): Promise<{ libraryInfo: IBMiObject; libraryType: string; }[] | undefined> {
+  public async getLibraryList(): Promise<LibraryList | undefined> {
+    if (!this.libraryList) {
+      await this.updateLibraryList();
+    }
+    return this.libraryList;
+  }
+
+  public setLibraryList(libraryList: LibraryList | undefined) {
+    this.libraryList = libraryList;
+  }
+
+  public async updateLibraryList() {
     const ibmi = getInstance();
     const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;
 
@@ -303,7 +318,10 @@ export class IProject {
               });
             }
 
-            return libl;
+            if (!this.libraryList || libl.toString() !== this.libraryList.toString()) {
+              this.libraryList = libl;
+              ProjectManager.fire({ type: 'libraryList', iProject: this });
+            }
           }
         }
       }
@@ -410,6 +428,8 @@ export class IProject {
   public async updateIProj(iProject: IProjectT) {
     try {
       await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+      this.state = undefined;
+      this.libraryList = undefined;
       return true;
     } catch {
       window.showErrorMessage(l10n.t('Failed to update iproj.json'));

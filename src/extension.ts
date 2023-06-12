@@ -31,7 +31,7 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 		for (const [workspaceFolderPath, deployLocation] of Object.entries(newDeploymentStorage)) {
 			if (!currentDeploymentStorage || currentDeploymentStorage[workspaceFolderPath] !== deployLocation) {
 				const iProject = ProjectManager.getProjectFromUri(Uri.file(workspaceFolderPath));
-				ProjectManager.fire({ name: 'deployLocation', iProject: iProject });
+				ProjectManager.fire({ type: 'deployLocation', iProject: iProject });
 			}
 		}
 
@@ -47,24 +47,26 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 		if (iProject) {
 			await iProject.updateState();
 			await iProject.updateBuildMap();
+			await iProject.updateLibraryList();
 		}
 		projectExplorer.refresh();
 
-		ProjectManager.fire({ name: 'projects' });
+		ProjectManager.fire({ type: 'projects' });
 	});
 	projectWatcher.onDidCreate(async (uri) => {
 		projectExplorer.refresh();
 
-		ProjectManager.fire({ name: 'projects' });
+		ProjectManager.fire({ type: 'projects' });
 	});
 	projectWatcher.onDidDelete(async (uri) => {
 		const iProject = ProjectManager.getProjectFromUri(uri);
 		if (iProject) {
 			iProject.setState(undefined);
+			iProject.setLibraryList(undefined);
 		}
 		projectExplorer.refresh();
 
-		ProjectManager.fire({ name: 'projects' });
+		ProjectManager.fire({ type: 'projects' });
 	});
 
 	const jobLog = new JobLog(context);
