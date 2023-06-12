@@ -407,7 +407,7 @@ export class IProject {
     }
   }
 
-  public async updateIProj(iProject: IProjectT) {
+  public async updateIProj(iProject: IProjectT): Promise<boolean> {
     try {
       await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
       return true;
