@@ -9,11 +9,23 @@ import Project from "./views/projectExplorer/project";
 
 /**
  * Project explorer related events
- * 
- * * `projects` event is fired when there is a change to some project (create, update, or delete)
- * * `activeProject` event is fired when there is a change to the active project
  */
-export type ProjectExplorerEvent = 'projects' | 'activeProject';
+export interface ProjectExplorerEvent {
+    /**
+     * Name of event
+     * 
+     * * `projects` event is fired when there is a change to some project (create, update, or delete)
+     * * `activeProject` event is fired when there is a change to the active project
+     * * `libraryList` event is fired when there is a change to a project's library list
+     * * `deployLocation` event is fired when there is a change to a project's deploy location
+     */
+    name: 'projects' | 'activeProject' | 'libraryList' | 'deployLocation';
+
+    /**
+     * Project associated with event
+     */
+    iProject?: IProject
+}
 
 export class ProjectManager {
     private static loaded: { [index: number]: IProject } = {};
@@ -32,7 +44,7 @@ export class ProjectManager {
             }
         }
 
-        ProjectManager.fire('projects');
+        ProjectManager.fire({ name: 'projects' });
     }
 
     public static get(workspaceFolder: WorkspaceFolder): IProject | undefined {
@@ -97,7 +109,7 @@ export class ProjectManager {
             };
         }
 
-        this.fire('activeProject');
+        this.fire({ name: 'activeProject', iProject: this.activeProject });
     }
 
     public static getProjects(): IProject[] {
