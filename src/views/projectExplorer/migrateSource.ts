@@ -39,7 +39,7 @@ export async function migrateSource(iProject: IProject, library: string) {
             command: `ls -p /QOpenSys/pkgs/bin/makei`
         });
         if (isCvtsrcpfInstalled?.code !== 0 || isCvtsrcpfInstalled.stdout !== '/QOpenSys/pkgs/bin/makei') {
-            window.showErrorMessage(l10n.t('Required component ({0}) to migrate source not installed on host IBM i', '/QOpenSys/pkgs/bin/makei'));
+            window.showErrorMessage(l10n.t('Required component ({0}) to migrate source not installed on host IBM i. Run {1} to get it.', 'bob', '\'yum install bob\''));
             return;
         }
 
