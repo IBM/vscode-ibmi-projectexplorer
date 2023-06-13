@@ -20,6 +20,9 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 	ibmi?.onEvent(`connected`, () => {
 		projectExplorer.refresh();
 	});
+	ibmi?.onEvent(`deploy`, () => {
+		projectExplorer.refresh();
+	});
 	ibmi?.onEvent(`deployLocation`, () => {
 		projectExplorer.refresh();
 	});

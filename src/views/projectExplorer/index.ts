@@ -3,11 +3,9 @@
  */
 
 import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
-import { getInstance } from "../../ibmi";
 import ErrorItem from "./errorItem";
 import { IProject } from "../../iproject";
 import Project from "./project";
-import envUpdater from "../../envUpdater";
 import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
@@ -16,6 +14,7 @@ import LibraryList from "./libraryList";
 import Library, { LibraryType } from "./library";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
+import { migrateSource } from "./migrateSource";
 import { IProjectT } from "../../iProjectT";
 import Source from "./source";
 
@@ -60,6 +59,19 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const iProject = ProjectManager.getProjectFromName(newActiveProject.label.split(' ')[1]);
             if (iProject) {
               ProjectManager.setActiveProject(iProject.workspaceFolder);
+              this.refresh();
+            }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.migrateSource`, async (element: Library) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const result = await migrateSource(iProject, element.label!.toString());
+
+            if (result) {
               this.refresh();
             }
           }
@@ -185,17 +197,16 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
-            const variable = await window.showInputBox({
+            let variable = await window.showInputBox({
               prompt: l10n.t('Enter variable name'),
-              placeHolder: l10n.t('Variable Name'),
-              validateInput(value) {
-                if (value.startsWith('&')) {
-                  return l10n.t('Enter variable name without "&" prefix');
-                }
-              },
+              placeHolder: l10n.t('Variable Name')
             });
 
             if (variable) {
+              while (variable.startsWith('&')) {
+                variable = variable.substring(1);
+              }
+
               let attribute: keyof IProjectT;
               if (element instanceof Library) {
                 if (element.libraryType === LibraryType.preUserLibrary) {

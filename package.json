@@ -90,6 +90,10 @@
       },
       {
         "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
+        "title": "%commands.projectExplorer.migrateSource%"
+      },
+      {
         "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
         "title": "%commands.projectExplorer.editDeployLocation%",
         "icon": "$(edit)"
@@ -157,7 +161,7 @@
         "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
         "title": "%commands.projectExplorer.moveIncludePathDown%",
         "icon": "$(arrow-down)"
-      }, 
+      },
       {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
@@ -193,6 +197,10 @@
       "commandPalette": [
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
           "when": "never"
         },
         {
@@ -296,6 +304,11 @@
           "group": "inline@0"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
+          "group": "0_migrate@0"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
           "when": "view == projectExplorer && viewItem =~ /^source.*/",
           "group": "inline@0"
@@ -367,8 +380,8 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
-           "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_(middle|first).*/",
-           "group": "inline@1"
+          "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_(middle|first).*/",
+          "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
@@ -402,6 +415,78 @@
         }
       ]
     },
+    "languages": [
+      {
+        "id": "cl",
+        "extensions": [
+          ".cl",
+          ".clp",
+          ".clp38",
+          ".bnddir",
+          ".bnddirsrc",
+          ".clle",
+          ".pgm.clle",
+          ".cls",
+          ".cmd",
+          ".dtaara",
+          ".dtaq",
+          ".jobd",
+          ".jobq",
+          ".msgd",
+          ".msgf",
+          ".msgq",
+          ".outq",
+          ".sbsd",
+          ".seqview",
+          ".systrg",
+          ".ilepgm",
+          ".ilesrvpgm"
+        ]
+      },
+      {
+        "id": "cmd",
+        "extensions": [
+          ".cmd",
+          ".cmdsrc"
+        ]
+      },
+      {
+        "id": "pnlgrp",
+        "aliases": [
+          "PNLGRP",
+          "IBM UIM Panel Group Definition Language"
+        ],
+        "extensions": [
+          ".pnlgrp",
+          ".pnlgrpsrc",
+          ".menusrc",
+          ".menu"
+        ]
+      },
+      {
+        "id": "sql",
+        "aliases": [
+          "sql"
+        ],
+        "extensions": [
+          ".sql",
+          ".sqlalias",
+          ".sqlc",
+          ".sqlcpp",
+          ".sqlmask",
+          ".sqlperm",
+          ".sqlprc",
+          ".sqlseq",
+          ".sqltrg",
+          ".sqludf",
+          ".sqludt",
+          ".sqlvar",
+          ".sqlxsr",
+          ".table",
+          ".view"
+        ]
+      }
+    ],
     "colors": [
       {
         "id": "projectExplorer.activeProject",
