@@ -14,6 +14,7 @@ import LibraryList from "./libraryList";
 import Library, { LibraryType } from "./library";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
+import { migrateSource } from "./migrateSource";
 import { IProjectT } from "../../iProjectT";
 import Source from "./source";
 
@@ -58,6 +59,19 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const iProject = ProjectManager.getProjectFromName(newActiveProject.label.split(' ')[1]);
             if (iProject) {
               ProjectManager.setActiveProject(iProject.workspaceFolder);
+              this.refresh();
+            }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.migrateSource`, async (element: Library) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const result = await migrateSource(iProject, element.label!.toString());
+
+            if (result) {
               this.refresh();
             }
           }
@@ -269,9 +283,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await iProject.moveIncludePath(pathToMove, 'down');
           }
         }
-
       })
-
     );
   }
 
