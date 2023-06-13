@@ -92,26 +92,22 @@ export async function migrateSource(iProject: IProject, library: string) {
             }
         });
 
+        // Set project's deploy location if it is not set or it changed
+        const storage = ibmi?.getStorage()!;
+        const existingPaths = storage.getDeployment();
+        const currentDeployDir = existingPaths[migrationConfig.workspaceFolderUri.fsPath];
+        if (!currentDeployDir || currentDeployDir !== migrationConfig.deployLocation) {
+            existingPaths[migrationConfig.workspaceFolderUri.fsPath] = migrationConfig.deployLocation;
+            await storage.setDeployment(existingPaths);
+            ibmi?.fire('deployLocation');
+        }
+
         // Add folder to workspace if it was downloaded to a new directory
         const isInWorkspace = workspace.getWorkspaceFolder(migrationConfig.workspaceFolderUri);
         if (!isInWorkspace) {
             const updateWorkspaceFolders = workspace.updateWorkspaceFolders(workspace.workspaceFolders ? workspace.workspaceFolders.length : 0, null, { uri: migrationConfig.workspaceFolderUri });
             if (!updateWorkspaceFolders) {
                 window.showErrorMessage(l10n.t('Failed to add folder to workspace'));
-            }
-        }
-
-        // Set project's deploy location if it is changed or it is a new project
-        const migrationProject = ProjectManager.getProjectFromUri(migrationConfig.workspaceFolderUri);
-        if (migrationProject) {
-            const deployDir = migrationProject.getDeployDir();
-
-            if (!deployDir || deployDir !== migrationConfig.deployLocation) {
-                const storage = ibmi?.getStorage()!;
-                const existingPaths = storage.getDeployment();
-                existingPaths[migrationConfig.workspaceFolderUri.fsPath] = migrationConfig.deployLocation;
-                await storage.setDeployment(existingPaths);
-                ibmi?.fire('deployLocation');
             }
         }
 
