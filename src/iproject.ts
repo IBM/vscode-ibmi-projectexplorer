@@ -21,6 +21,7 @@ const DEFAULT_CURLIB = 'CURLIB';
 export type LibraryList = { libraryInfo: IBMiObject; libraryType: string; }[];
 export type EnvironmentVariables = { [name: string]: string };
 export type Direction = 'up' | 'down';
+export type Position = 'first' | 'last' | 'middle';
 
 export class IProject {
   private name: string;
@@ -220,7 +221,6 @@ export class IProject {
       const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathToMove) : -1;
 
       if (index > -1) {
-
         if (direction === 'up') {
           if (index > 0) {
             [unresolvedState.includePath![index - 1], unresolvedState.includePath![index]] =
@@ -236,8 +236,8 @@ export class IProject {
       } else {
         window.showErrorMessage(l10n.t('{0} does not exist in includePath', pathToMove));
       }
-      await this.updateIProj(unresolvedState);
 
+      await this.updateIProj(unresolvedState);
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
@@ -426,7 +426,42 @@ export class IProject {
     }
   }
 
-  public async updateIProj(iProject: IProjectT) {
+  public async moveLibrary(library: string, type: LibraryType, direction: Direction) {
+    const unresolvedState = await this.getUnresolvedState();
+    let attribute: keyof IProjectT;
+
+    if (unresolvedState) {
+      if (type === LibraryType.preUserLibrary || LibraryType.postUserLibrary) {
+        attribute = type === LibraryType.preUserLibrary ? 'preUsrlibl' : 'postUsrlibl';
+        const libIndex = unresolvedState[attribute] ? unresolvedState[attribute]!.indexOf(library) : -1;
+
+        if (libIndex > -1) {
+          if (direction === 'up') {
+            if (libIndex > 0) {
+              [unresolvedState[attribute]![libIndex - 1], unresolvedState[attribute]![libIndex]] =
+                [unresolvedState[attribute]![libIndex], unresolvedState[attribute]![libIndex - 1]];
+            }
+          } else {
+            if (libIndex < unresolvedState[attribute]!.length - 1) {
+              [unresolvedState[attribute]![libIndex], unresolvedState[attribute]![libIndex + 1]] =
+                [unresolvedState[attribute]![libIndex + 1], unresolvedState[attribute]![libIndex]];
+            }
+          }
+        }
+
+        if (libIndex < 0) {
+          window.showErrorMessage(l10n.t('{0} does not exist in {1}', library, attribute));
+          return;
+        }
+
+        await this.updateIProj(unresolvedState);
+      }
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+  }
+
+  public async updateIProj(iProject: IProjectT): Promise<boolean> {
     try {
       await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
       this.state = undefined;

@@ -5,7 +5,7 @@
 import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
 import { ContextValue } from "../../projectExplorerApi";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
-import { Position } from "./includePaths";
+import { Position } from "../../iproject";
 
 /**
  * Tree item for a local include path

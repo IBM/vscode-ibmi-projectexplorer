@@ -8,6 +8,7 @@ import { getInstance } from "../../ibmi";
 import ObjectFile from "./objectFile";
 import { ContextValue } from "../../projectExplorerApi";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { Position } from '../../iproject';
 
 export enum LibraryType {
   library,
@@ -28,7 +29,7 @@ export default class Library extends ProjectExplorerTreeItem {
   variable?: string;
   path: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType, variable?: string) {
+  constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType, variable?: string, position?: Position) {
     super(libraryInfo.name, TreeItemCollapsibleState.Collapsed);
 
     this.libraryInfo = libraryInfo;
@@ -72,10 +73,11 @@ export default class Library extends ProjectExplorerTreeItem {
         this.contextValue = Library.contextValue;
     }
     this.iconPath = new ThemeIcon(`library`, iconColor);
-
-    if (![LibraryType.systemLibrary, LibraryType.defaultUserLibrary].includes(libraryType) && !variable) {
-      this.contextValue += ContextValue.configurable;
-    }
+    this.contextValue +=
+      (position === 'first' ? ContextValue.first : '') +
+      (position === 'last' ? ContextValue.last : '') +
+      (position === 'middle' ? ContextValue.middle : '') +
+      ((![LibraryType.systemLibrary, LibraryType.defaultUserLibrary].includes(libraryType) && !variable) ? ContextValue.configurable : '');
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
@@ -85,7 +87,11 @@ export default class Library extends ProjectExplorerTreeItem {
     const objectFiles = await ibmi?.getContent().getObjectList({ library: this.libraryInfo.name, }, 'name');
     if (objectFiles) {
       for (const objectFile of objectFiles) {
-        items.push(new ObjectFile(this.workspaceFolder, objectFile, this.path));
+        if (objectFile.type === "*LIB") {
+          items.push(new Library(this.workspaceFolder, objectFile, LibraryType.library));
+        } else {
+          items.push(new ObjectFile(this.workspaceFolder, objectFile, this.path));
+        }
       }
     }
 

@@ -24,6 +24,9 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 
 		currentDeploymentStorage = ibmi?.getStorage().getDeployment();
 	});
+	ibmi?.onEvent(`deploy`, () => {
+		projectExplorer.refresh();
+	});
 	ibmi?.onEvent(`deployLocation`, () => {
 		projectExplorer.refresh();
 
