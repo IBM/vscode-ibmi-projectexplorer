@@ -52,7 +52,7 @@ export default class ObjectLibraries extends ProjectExplorerTreeItem {
         try {
           const libraryInfo = await ibmi?.getContent().getObjectList({ library: 'QSYS', object: objLib, types: ['*LIB'] }, 'name');
           if (libraryInfo) {
-            const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0], LibraryType.library, variable);
+            const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0], LibraryType.library, undefined, variable);
             items.push(libTreeItem);
           }
         } catch (error: any) {
