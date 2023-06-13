@@ -42,7 +42,7 @@ export default class LibraryList extends ProjectExplorerTreeItem {
             if (unresolvedState?.curlib?.startsWith('&')) {
               variable = unresolvedState?.curlib;
             }
-            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.currentLibrary, variable));
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.currentLibrary, undefined, variable));
             break;
 
           case `USR`:
@@ -76,7 +76,7 @@ export default class LibraryList extends ProjectExplorerTreeItem {
               }
             }
 
-            items.push(new Library(this.workspaceFolder, library.libraryInfo, libraryType, variable, position));
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, libraryType, position, variable));
             break;
         }
       }
