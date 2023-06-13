@@ -118,6 +118,18 @@
       },
       {
         "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryUp",
+        "title": "%commands.projectExplorer.moveLibraryUp%",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryDown",
+        "title": "%commands.projectExplorer.moveLibraryDown%",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
         "title": "%commands.projectExplorer.addToIncludePaths%",
         "icon": "$(add)"
@@ -205,6 +217,14 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryUp",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryDown",
           "when": "never"
         },
         {
@@ -306,7 +326,17 @@
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
           "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(current|preUser|postUser).*/",
+          "group": "inline@2"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryUp",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(preUser|postUser).*/ && viewItem =~ /^.*_(middle|last).*/",
           "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryDown",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(preUser|postUser).*/ && viewItem =~ /^.*_(middle|first).*/",
+          "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",
