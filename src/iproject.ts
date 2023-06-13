@@ -11,10 +11,11 @@ import { TextEncoder } from "util";
 import { IProjectT } from "./iProjectT";
 import { getInstance } from "./ibmi";
 import { LibraryType } from "./views/projectExplorer/library";
+import envUpdater from "./envUpdater";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 
-const DEFAULT_CURLIB = '&CURLIB';
+const DEFAULT_CURLIB = 'CURLIB';
 
 export type EnvironmentVariables = { [name: string]: string };
 export type Direction = 'up' | 'down';
@@ -62,17 +63,18 @@ export class IProject {
     if (unresolvedState) {
       const values = await this.getEnv();
 
-      unresolvedState.preUsrlibl = unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl.map(preUsrlib => this.resolveLibrary(preUsrlib, values)) : undefined;
-      unresolvedState.postUsrlibl = unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl.map(postUsrlib => this.resolveLibrary(postUsrlib, values)) : undefined;
-      unresolvedState.curlib = unresolvedState.curlib ? this.resolveLibrary(unresolvedState.curlib, values) : undefined;
-      unresolvedState.objlib = unresolvedState.objlib ? this.resolveLibrary(unresolvedState.objlib, values) : undefined;
+      unresolvedState.preUsrlibl = unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl.map(preUsrlib => this.resolveVariable(preUsrlib, values)) : undefined;
+      unresolvedState.postUsrlibl = unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl.map(postUsrlib => this.resolveVariable(postUsrlib, values)) : undefined;
+      unresolvedState.curlib = unresolvedState.curlib ? this.resolveVariable(unresolvedState.curlib, values) : undefined;
+      unresolvedState.objlib = unresolvedState.objlib ? this.resolveVariable(unresolvedState.objlib, values) : undefined;
+      unresolvedState.includePath = unresolvedState.includePath ? unresolvedState.includePath.map(includePath => this.resolveVariable(includePath, values)) : undefined;
     }
 
     this.state = unresolvedState;
     return this.state;
   }
 
-  private resolveLibrary(lib: string, values: EnvironmentVariables): string {
+  public resolveVariable(lib: string, values: EnvironmentVariables): string {
     if (lib && lib.startsWith('&') && values[lib.substring(1)] && values[lib.substring(1)] !== '') {
       return values[lib.substring(1)];
     }
@@ -148,8 +150,8 @@ export class IProject {
   }
 
   public async addToIncludePaths(directoryToAdd: string) {
-    const remoteDir = await this.getRemoteDir();
-    directoryToAdd = directoryToAdd.startsWith(remoteDir) ? path.posix.relative(remoteDir, directoryToAdd) : directoryToAdd;
+    const deployDir = this.getDeployDir();
+    directoryToAdd = (deployDir && directoryToAdd.startsWith(deployDir)) ? path.posix.relative(deployDir, directoryToAdd) : directoryToAdd;
 
     const unresolvedState = await this.getUnresolvedState();
     if (unresolvedState) {
@@ -170,6 +172,26 @@ export class IProject {
     }
   }
 
+  public async configureAsVariable(attribute: keyof IProjectT, variable: string, value: string) {
+    const unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      const index = (unresolvedState[attribute] as string[]).indexOf(value);
+      if (index > -1) {
+        (unresolvedState[attribute] as string[])[index] = `&${variable}`;
+      } else {
+        window.showErrorMessage(l10n.t('{0} does not exist in {1}', value, attribute));
+      }
+
+      const isIProjUpdated = await this.updateIProj(unresolvedState);
+      if (isIProjUpdated) {
+        await this.setEnv(variable, value);
+      }
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+  }
+
   public async removeFromIncludePaths(directoryToRemove: string) {
     const unresolvedState = await this.getUnresolvedState();
 
@@ -178,7 +200,7 @@ export class IProject {
       if (index > -1) {
         unresolvedState.includePath!.splice(index, 1);
       } else {
-        window.showErrorMessage(l10n.t('{0} does not exist in includePaths', directoryToRemove));
+        window.showErrorMessage(l10n.t('{0} does not exist in includePath', directoryToRemove));
       }
 
       await this.updateIProj(unresolvedState);
@@ -187,26 +209,28 @@ export class IProject {
     }
   }
 
-  public async movePath(pathMoving: string, direction: Direction) {
+  public async moveIncludePath(pathToMove: string, direction: Direction) {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
-      const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathMoving) : -1;
+      const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathToMove) : -1;
 
       if (index > -1) {
 
         if (direction === 'up') {
-          // if (index > 0) to guard against first elment moving up (even if guarded in UI)
-          [unresolvedState.includePath![index - 1], unresolvedState.includePath![index]] =
-            [unresolvedState.includePath![index], unresolvedState.includePath![index - 1]];
+          if (index > 0) {
+            [unresolvedState.includePath![index - 1], unresolvedState.includePath![index]] =
+              [unresolvedState.includePath![index], unresolvedState.includePath![index - 1]];
+          }
         } else {
-          // if(index < unresolvedState.includePath!.length - 1) to guard against last element moving down (even if it is guarded in UI)
-          [unresolvedState.includePath![index], unresolvedState.includePath![index + 1]] =
-            [unresolvedState.includePath![index + 1], unresolvedState.includePath![index]];
+          if (index < unresolvedState.includePath!.length - 1) {
+            [unresolvedState.includePath![index], unresolvedState.includePath![index + 1]] =
+              [unresolvedState.includePath![index + 1], unresolvedState.includePath![index]];
+          }
         }
 
       } else {
-        window.showErrorMessage(l10n.t('{0} does not exist in includePaths', pathMoving));
+        window.showErrorMessage(l10n.t('{0} does not exist in includePath', pathToMove));
       }
       await this.updateIProj(unresolvedState);
 
@@ -337,10 +361,13 @@ export class IProject {
   }
 
   public async removeFromLibraryList(library: string, type: LibraryType) {
-    const unresolvedState = await this.getUnresolvedState() as any;
+    const unresolvedState = await this.getUnresolvedState();
+    let attribute: keyof IProjectT;
 
     if (unresolvedState) {
       if (type === LibraryType.currentLibrary) {
+        attribute = 'curlib';
+
         if (unresolvedState.curlib?.startsWith('&')) {
           await this.setEnv(unresolvedState.curlib.substring(1), '');
           return;
@@ -348,29 +375,27 @@ export class IProject {
           unresolvedState.curlib = undefined;
         }
       } else {
-        const state = await this.getState() as any;
+        const state = await this.getState();
 
         if (state) {
-          // Search for library in preUsrlibl then postUsrlibl
-          let libIndex = -1;
-          for await (const usrlibl of ['preUsrlibl', 'postUsrlibl']) {
-            if (unresolvedState[usrlibl] && state[usrlibl] && state[usrlibl].includes(library)) {
-              libIndex = state[usrlibl].indexOf(library);
+          attribute = type === LibraryType.preUserLibrary ? 'preUsrlibl' : 'postUsrlibl';
 
-              if (libIndex > -1) {
-                if (unresolvedState[usrlibl][libIndex].startsWith('&')) {
-                  await this.setEnv(unresolvedState[usrlibl][libIndex].substring(1), '');
-                  return;
-                } else {
-                  unresolvedState[usrlibl].splice(libIndex, 1);
-                }
-                break;
+          let libIndex = -1;
+          if (unresolvedState[attribute] && state[attribute] && state[attribute]!.includes(library)) {
+            libIndex = state[attribute]!.indexOf(library);
+
+            if (libIndex > -1) {
+              if (unresolvedState[attribute]![libIndex].startsWith('&')) {
+                await this.setEnv(unresolvedState[attribute]![libIndex].substring(1), '');
+                return;
+              } else {
+                unresolvedState[attribute]!.splice(libIndex, 1);
               }
             }
           }
 
           if (libIndex < 0) {
-            window.showErrorMessage(l10n.t('{0} does not exist in preUsrlibl or postUsrlibl', library));
+            window.showErrorMessage(l10n.t('{0} does not exist in {1}', library, attribute));
             return;
           }
         }
@@ -382,11 +407,13 @@ export class IProject {
     }
   }
 
-  public async updateIProj(iProject: IProjectT) {
+  public async updateIProj(iProject: IProjectT): Promise<boolean> {
     try {
       await workspace.fs.writeFile(this.getIProjFilePath(), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+      return true;
     } catch {
       window.showErrorMessage(l10n.t('Failed to update iproj.json'));
+      return false;
     }
   }
 
@@ -482,14 +509,10 @@ export class IProject {
   }
 
   public async setEnv(variable: string, value: string) {
-    const env = await this.getEnv();
-    env[variable] = value;
-
-    let content = '';
-    for (const [key, value] of Object.entries(env)) {
-      content += `${key}=${value}\n`;
-    }
-    await workspace.fs.writeFile(this.getEnvFilePath(), new TextEncoder().encode(content));
+    const envPath = this.getEnvFilePath();
+    await envUpdater(envPath, {
+      [variable]: value
+    });
   }
 
   public getJobLogs() {
@@ -522,30 +545,30 @@ export class IProject {
   }
 
   public async getObjectLibraries(): Promise<Set<string> | undefined> {
-    const state = await this.getState();
-    if (state) {
+    const unresolvedState = await this.getUnresolvedState();
+    if (unresolvedState) {
       const objLibs = new Set<string>();
-      if (state.curlib) {
-        objLibs.add(state.curlib.toUpperCase());
+      if (unresolvedState.curlib) {
+        objLibs.add(unresolvedState.curlib);
       }
-      if (state.preUsrlibl) {
-        for (const lib of state.preUsrlibl) {
-          objLibs.add(lib.toUpperCase());
+      if (unresolvedState.preUsrlibl) {
+        for (const lib of unresolvedState.preUsrlibl) {
+          objLibs.add(lib);
         }
       }
-      if (state.postUsrlibl) {
-        for (const lib of state.postUsrlibl) {
-          objLibs.add(lib.toUpperCase());
+      if (unresolvedState.postUsrlibl) {
+        for (const lib of unresolvedState.postUsrlibl) {
+          objLibs.add(lib);
         }
       }
 
-      state.objlib ? objLibs.add(state.objlib.toUpperCase()) : null;
+      unresolvedState.objlib ? objLibs.add(unresolvedState.objlib) : null;
 
       return objLibs;
     }
   }
 
-  public async getRemoteDir() {
+  public getDeployDir(): string | undefined {
     const ibmi = getInstance();
     const deploymentDirs = ibmi?.getStorage().getDeployment()!;
     return deploymentDirs[this.workspaceFolder.uri.fsPath];

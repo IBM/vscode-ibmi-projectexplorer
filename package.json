@@ -124,20 +124,30 @@
       },
       {
         "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.configureAsVariable",
+        "title": "%commands.projectExplorer.configureAsVariable%"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.assignToVariable",
+        "title": "%commands.projectExplorer.assignToVariable%"
+      },
+      {
+        "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
         "title": "%commands.projectExplorer.removeFromIncludePaths%",
         "icon": "$(close)"
       },
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectexplorer.moveUp",
-        "title": "%commands.projectExplorer.moveUp%",
+        "command": "vscode-ibmi-projectexplorer.moveIncludePathUp",
+        "title": "%commands.projectExplorer.moveIncludePathUp%",
         "icon": "$(arrow-up)"
       },
       {
         "category": "Project Explorer",
-        "command": "vscode-ibmi-projectexplorer.moveDown",
-        "title": "%commands.projectExplorer.moveDown%",
+        "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
+        "title": "%commands.projectExplorer.moveIncludePathDown%",
         "icon": "$(arrow-down)"
       },
       {
@@ -202,15 +212,23 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.configureAsVariable",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.assignToVariable",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.moveUp",
+          "command": "vscode-ibmi-projectexplorer.moveIncludePathUp",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.moveDown",
+          "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
           "when": "never"
         },
         {
@@ -287,13 +305,23 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
-          "when": "view == projectExplorer && viewItem =~ /^library_(current|user).*/",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(current|preUser|postUser).*/",
           "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.assignToVariable",
+          "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
+          "group": "0_projectexplorer@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.assignToVariable",
+          "when": "view == ifsBrowser && viewItem =~ /^directory.*/",
+          "group": "0_projectexplorer@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "view == ifsBrowser && viewItem =~ /^directory.*/",
-          "group": "1_projectexplorer@1"
+          "group": "0_projectexplorer@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
@@ -303,17 +331,27 @@
         {
           "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
           "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/",
-          "group": "inline@3"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.moveUp",
-          "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_(middle|last).*/",
-          "group": "inline@1"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.moveDown",
-          "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_(middle|first).*/",
           "group": "inline@2"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.configureAsVariable",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_configurable.*/",
+          "group": "0_configure@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.configureAsVariable",
+          "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_configurable.*/",
+          "group": "0_configure@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.moveIncludePathUp",
+          "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_(middle|last).*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
+          "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_(middle|first).*/",
+          "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
@@ -347,6 +385,78 @@
         }
       ]
     },
+    "languages": [
+      {
+        "id": "cl",
+        "extensions": [
+          ".cl",
+          ".clp",
+          ".clp38",
+          ".bnddir",
+          ".bnddirsrc",
+          ".clle",
+          ".pgm.clle",
+          ".cls",
+          ".cmd",
+          ".dtaara",
+          ".dtaq",
+          ".jobd",
+          ".jobq",
+          ".msgd",
+          ".msgf",
+          ".msgq",
+          ".outq",
+          ".sbsd",
+          ".seqview",
+          ".systrg",
+          ".ilepgm",
+          ".ilesrvpgm"
+        ]
+      },
+      {
+        "id": "cmd",
+        "extensions": [
+          ".cmd",
+          ".cmdsrc"
+        ]
+      },
+      {
+        "id": "pnlgrp",
+        "aliases": [
+          "PNLGRP",
+          "IBM UIM Panel Group Definition Language"
+        ],
+        "extensions": [
+          ".pnlgrp",
+          ".pnlgrpsrc",
+          ".menusrc",
+          ".menu"
+        ]
+      },
+      {
+        "id": "sql",
+        "aliases": [
+          "sql"
+        ],
+        "extensions": [
+          ".sql",
+          ".sqlalias",
+          ".sqlc",
+          ".sqlcpp",
+          ".sqlmask",
+          ".sqlperm",
+          ".sqlprc",
+          ".sqlseq",
+          ".sqltrg",
+          ".sqludf",
+          ".sqludt",
+          ".sqlvar",
+          ".sqlxsr",
+          ".table",
+          ".view"
+        ]
+      }
+    ],
     "colors": [
       {
         "id": "projectExplorer.activeProject",

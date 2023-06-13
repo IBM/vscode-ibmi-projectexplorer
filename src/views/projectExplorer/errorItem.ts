@@ -12,12 +12,14 @@ import { ContextValue } from "../../projectExplorerApi";
 export default class ErrorItem extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.error;
 
-  constructor(public workspaceFolder: WorkspaceFolder | undefined, label: string, options: { description?: string, command?: Command } = {}) {
+  constructor(public workspaceFolder: WorkspaceFolder | undefined, label: string, options: { description?: string, contextValue?: string, command?: Command, tooltip?: string } = {}) {
     super(label, TreeItemCollapsibleState.None);
 
     this.contextValue = ErrorItem.contextValue;
     this.description = options.description;
+    this.contextValue = options.contextValue;
     this.command = options.command;
+    this.tooltip = options.tooltip;
     this.iconPath = new ThemeIcon(`error`);
   }
 

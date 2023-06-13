@@ -8,10 +8,10 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
-import { getInstance } from "../../ibmi";
 import * as path from "path";
+import ErrorItem from "./errorItem";
 
-export type Position = 'first' | 'last' | 'middle' | '';
+export type Position = 'first' | 'last' | 'middle';
 
 /**
  * Tree item for Include Paths heading
@@ -30,18 +30,34 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
     let items: ProjectExplorerTreeItem[] = [];
 
     const iProject = ProjectManager.get(this.workspaceFolder);
+    const unresolvedState = await iProject?.getUnresolvedState();
     const state = await iProject?.getState();
-    if (state && state.includePath) {
+    if (unresolvedState && unresolvedState.includePath) {
+      for await (let [index, includePath] of unresolvedState.includePath.entries()) {
+        let position: Position | undefined;
+        const includePathLength = unresolvedState.includePath.length;
+        if (includePathLength > 1) {
+          position = index === 0 ? 'first' : (index === includePathLength - 1 ? 'last' : 'middle');
+        }
 
-      const includePathLength = state.includePath.length;
+        let variable = undefined;
+        if (includePath.startsWith('&')) {
+          variable = includePath;
+          includePath = state!.includePath![index];
+        }
 
-      for await (const [index, includePath] of state.includePath.entries()) {
-
-        let position : Position = '';        
-        if(includePathLength > 1){
-          position = 
-            index === 0 ? 'first' :
-            (index === includePathLength - 1 ? 'last' : 'middle');
+        if (includePath.startsWith('&')) {
+          items.push(new ErrorItem(
+            this.workspaceFolder,
+            includePath,
+            {
+              description: l10n.t('Not specified'),
+              contextValue: ContextValue.includePath +
+                (position === 'first' ? ContextValue.first : '') +
+                (position === 'last' ? ContextValue.last : '') +
+                (position === 'middle' ? ContextValue.middle : '')
+            }));
+          continue;
         }
 
         let includePathUri = Uri.file(includePath);
@@ -49,7 +65,7 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
           const statResult = await workspace.fs.stat(includePathUri);
 
           // Absolute local include path
-          items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, position));
+          items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, position, variable));
         } catch (e) {
           includePathUri = Uri.joinPath(this.workspaceFolder.uri, includePath);
 
@@ -57,16 +73,16 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
             const statResult = await workspace.fs.stat(includePathUri);
 
             // Relative local include path
-            items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, position));
+            items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, position, variable));
           } catch (e) {
-            if (includePath.startsWith('/')) {
+            const deployDir = iProject!.getDeployDir();
+            if (includePath.startsWith('/') || !deployDir) {
               // Absolute remote include path
-              items.push(new RemoteIncludePath(this.workspaceFolder, includePath, position));
+              items.push(new RemoteIncludePath(this.workspaceFolder, includePath, position, variable));
             } else {
               // Relative remote include path
-              const remoteDir = await iProject!.getRemoteDir();
-              const absoluteIncludePath = path.posix.join(remoteDir, includePath);
-              items.push(new RemoteIncludePath(this.workspaceFolder, absoluteIncludePath, position, { label: includePath }));
+              const absoluteIncludePath = path.posix.join(deployDir, includePath);
+              items.push(new RemoteIncludePath(this.workspaceFolder, absoluteIncludePath, position, variable, { label: includePath }));
             }
           }
         }

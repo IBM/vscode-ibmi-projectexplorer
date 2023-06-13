@@ -13,7 +13,9 @@ export enum LibraryType {
   library,
   systemLibrary,
   currentLibrary,
-  userLibrary
+  preUserLibrary,
+  postUserLibrary,
+  defaultUserLibrary
 }
 
 /**
@@ -23,17 +25,20 @@ export default class Library extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.library;
   libraryInfo: IBMiObject;
   libraryType: LibraryType;
+  variable?: string;
   path: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType) {
+  constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType, variable?: string) {
     super(libraryInfo.name, TreeItemCollapsibleState.Collapsed);
 
     this.libraryInfo = libraryInfo;
     this.libraryType = libraryType;
+    this.variable = variable;
     const type = libraryInfo.type.startsWith(`*`) ? libraryInfo.type.substring(1) : libraryInfo.type;
     this.path = `/${libraryInfo.library}.LIB/${libraryInfo.name}.${type}`;
     this.iconPath = new ThemeIcon(`library`);
-    this.description = (libraryInfo.text.trim() !== '' ? `${libraryInfo.text} ` : ``) +
+    this.description = (variable ? `${variable} - ` : ``) +
+      (libraryInfo.text.trim() !== '' ? `${libraryInfo.text} ` : ``) +
       (libraryInfo.attribute?.trim() !== '' ? `(${libraryInfo.attribute})` : ``);
     this.tooltip = l10n.t('Name: {0}\n', libraryInfo.name) +
       l10n.t('Path: {0}\n', this.path) +
@@ -50,15 +55,27 @@ export default class Library extends ProjectExplorerTreeItem {
         iconColor = new ThemeColor('projectExplorer.currentLibrary');
         this.contextValue = Library.contextValue + ContextValue.current;
         break;
-      case LibraryType.userLibrary:
+      case LibraryType.preUserLibrary:
         iconColor = new ThemeColor('projectExplorer.userLibrary');
-        this.contextValue = Library.contextValue + ContextValue.user;
+        this.contextValue = Library.contextValue + ContextValue.preUser;
+        break;
+      case LibraryType.postUserLibrary:
+        iconColor = new ThemeColor('projectExplorer.userLibrary');
+        this.contextValue = Library.contextValue + ContextValue.postUser;
+        break;
+      case LibraryType.defaultUserLibrary:
+        iconColor = new ThemeColor('projectExplorer.userLibrary');
+        this.contextValue = Library.contextValue + ContextValue.defaultUser;
         break;
       default:
         iconColor = undefined;
         this.contextValue = Library.contextValue;
     }
     this.iconPath = new ThemeIcon(`library`, iconColor);
+
+    if (![LibraryType.systemLibrary, LibraryType.defaultUserLibrary].includes(libraryType) && !variable) {
+      this.contextValue += ContextValue.configurable;
+    }
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
