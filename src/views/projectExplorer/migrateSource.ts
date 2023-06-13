@@ -104,9 +104,9 @@ export async function migrateSource(iProject: IProject, library: string) {
         // Set project's deploy location if it is changed or it is a new project
         const migrationProject = ProjectManager.getProjectFromUri(migrationConfig.workspaceFolderUri);
         if (migrationProject) {
-            const remoteDir = await migrationProject.getRemoteDir();
+            const deployDir = migrationProject.getDeployDir();
 
-            if (!remoteDir || remoteDir !== migrationConfig.deployLocation) {
+            if (!deployDir || deployDir !== migrationConfig.deployLocation) {
                 const storage = ibmi?.getStorage()!;
                 const existingPaths = storage.getDeployment();
                 existingPaths[migrationConfig.workspaceFolderUri.fsPath] = migrationConfig.deployLocation;
@@ -133,7 +133,7 @@ export async function migrateSource(iProject: IProject, library: string) {
 }
 
 export async function getMigrationConfig(iProject: IProject, library: string): Promise<MigrationConfig | undefined> {
-    let remoteDir: string | undefined;
+    let deployDir: string | undefined;
     let sourceFiles: IBMiFile[] | undefined;
     await window.withProgress({
         location: { viewId: `projectExplorer` },
@@ -141,12 +141,12 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
     }, async () => {
         const ibmi = getInstance();
         sourceFiles = await ibmi?.getContent().getObjectList({ library: library, types: ['*SRCPF'] });
-        remoteDir = await iProject.getRemoteDir();
+        deployDir = iProject.getDeployDir();
 
-        if (!remoteDir) {
+        if (!deployDir) {
             const ibmi = getInstance();
             const homeDirectory = (ibmi?.getConfig().homeDirectory.endsWith('/') ? ibmi?.getConfig().homeDirectory.slice(0, -1) : ibmi?.getConfig().homeDirectory);
-            remoteDir = homeDirectory ? path.posix.join(homeDirectory, iProject.getName()) : '';
+            deployDir = homeDirectory ? path.posix.join(homeDirectory, iProject.getName()) : '';
         }
     });
 
@@ -174,7 +174,7 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                 .addInput(`srcLib`, l10n.t('Source Library'), l10n.t('The name of the library containing the source files to migrate.'), { default: library, readonly: true })
                 .addInput(`defaultCCSID`, l10n.t('Default CCSID'), l10n.t('The CCSID to be used when the source file is 65535.'), { default: `*JOB` })
                 .addSelect(`workspaceFolder`, l10n.t('Workspace folder'), projectSelectItems, l10n.t('The workspace folder to which the files are to be downloaded to once they are migrated to the project\'s deploy location.'))
-                .addInput(`deployLocation`, l10n.t('Deploy Location'), l10n.t('The location in IFS to which the files are to be deployed to.'), { default: remoteDir ? remoteDir : `` });
+                .addInput(`deployLocation`, l10n.t('Deploy Location'), l10n.t('The location in IFS to which the files are to be deployed to.'), { default: deployDir ? deployDir : `` });
 
 
             sourceFiles.forEach(srcPf => {
