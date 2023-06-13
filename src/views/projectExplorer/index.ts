@@ -163,16 +163,17 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
-            let variable = await window.showInputBox({
+            const variable = await window.showInputBox({
               prompt: l10n.t('Enter variable name'),
               placeHolder: l10n.t('Variable Name'),
+              validateInput(value) {
+                if (value.startsWith('&')) {
+                  return l10n.t('Enter variable name without "&" prefix');
+                }
+              },
             });
 
             if (variable) {
-              while (variable.startsWith('&')) {
-                variable = variable.substring(1);
-              }
-
               let attribute: keyof IProjectT;
               if (element instanceof Library) {
                 if (element.libraryType === LibraryType.preUserLibrary) {

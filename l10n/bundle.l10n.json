@@ -56,6 +56,7 @@
   "Description": "Description",
   "Enter variable name": "Enter variable name",
   "Variable Name": "Variable Name",
+  "Enter variable name without \"&\" prefix": "Enter variable name without \"&\" prefix",
   "Select a variable": "Select a variable",
   "Enter include path": "Enter include path",
   "Include path": "Include path",
