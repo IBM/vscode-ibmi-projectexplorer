@@ -169,7 +169,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             });
 
             if (variable) {
-              if (variable.startsWith('&')) {
+              while (variable.startsWith('&')) {
                 variable = variable.substring(1);
               }
 
