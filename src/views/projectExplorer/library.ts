@@ -85,7 +85,12 @@ export default class Library extends ProjectExplorerTreeItem {
     const objectFiles = await ibmi?.getContent().getObjectList({ library: this.libraryInfo.name, }, 'name');
     if (objectFiles) {
       for (const objectFile of objectFiles) {
-        items.push(new ObjectFile(this.workspaceFolder, objectFile, this.path));
+        if (objectFile.type === "*LIB"){ //TODO what type of library?
+          items.push(new Library(this.workspaceFolder, objectFile, LibraryType.library));
+
+        }else{
+          items.push(new ObjectFile(this.workspaceFolder, objectFile, this.path));
+        }
       }
     }
 
