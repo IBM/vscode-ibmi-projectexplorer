@@ -25,22 +25,45 @@ export default class LibraryList extends ProjectExplorerTreeItem {
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
     let items: ProjectExplorerTreeItem[] = [];
 
-    const ibmi = getInstance();
     const iProject = ProjectManager.get(this.workspaceFolder);
+    const unresolvedState = await iProject?.getUnresolvedState();
+    const state = await iProject?.getState();
     const libraryList = await iProject?.getLibraryList();
     if (libraryList) {
       for (const library of libraryList) {
+        let variable = undefined;
+
         switch (library.libraryType) {
           case `SYS`:
             items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.systemLibrary));
             break;
 
           case `CUR`:
-            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.currentLibrary));
+            if (unresolvedState?.curlib?.startsWith('&')) {
+              variable = unresolvedState?.curlib;
+            }
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.currentLibrary, variable));
             break;
 
           case `USR`:
-            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.userLibrary));
+            let libraryType = LibraryType.defaultUserLibrary;
+            if (state?.preUsrlibl && state.preUsrlibl.includes(library.libraryInfo.name)) {
+              libraryType = LibraryType.preUserLibrary;
+
+              const index = state.preUsrlibl.indexOf(library.libraryInfo.name);
+              if (unresolvedState?.preUsrlibl![index].startsWith('&')) {
+                variable = unresolvedState?.preUsrlibl![index];
+              }
+            } else if (state?.postUsrlibl && state.postUsrlibl.includes(library.libraryInfo.name)) {
+              libraryType = LibraryType.postUserLibrary;
+
+              const index = state.postUsrlibl.indexOf(library.libraryInfo.name);
+              if (unresolvedState?.postUsrlibl![index].startsWith('&')) {
+                variable = unresolvedState?.postUsrlibl![index];
+              }
+            }
+
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, libraryType, variable));
             break;
         }
       }

@@ -2,12 +2,13 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n, window } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import Library, { LibraryType } from "./library";
 import { ContextValue } from "../../projectExplorerApi";
 import { getInstance } from "../../ibmi";
+import ErrorItem from "./errorItem";
 
 /**
  * Tree item for the Object Libraries heading
@@ -28,12 +29,42 @@ export default class ObjectLibraries extends ProjectExplorerTreeItem {
     const ibmi = getInstance();
     const iProject = ProjectManager.get(this.workspaceFolder);
     const objLibs = await iProject?.getObjectLibraries();
+    const values = await iProject!.getEnv();
     if (objLibs) {
-      for (const objLib of objLibs) {
-        const libraryInfo = await ibmi?.getContent().getObjectList({ library: 'QSYS', object: objLib, types: ['*LIB'] }, 'name');
-        if (libraryInfo) {
-          const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0], LibraryType.library);
-          items.push(libTreeItem);
+      for (let objLib of objLibs) {
+        let variable = undefined;
+        if (objLib.startsWith('&')) {
+          variable = objLib;
+          objLib = iProject!.resolveVariable(objLib, values);
+        }
+
+        if (objLib.startsWith('&')) {
+          items.push(new ErrorItem(
+            this.workspaceFolder,
+            objLib,
+            {
+              description: l10n.t('Not specified'),
+              contextValue: Library.contextValue
+            }));
+          continue;
+        }
+
+        try {
+          const libraryInfo = await ibmi?.getContent().getObjectList({ library: 'QSYS', object: objLib, types: ['*LIB'] }, 'name');
+          if (libraryInfo) {
+            const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0], LibraryType.library, variable);
+            items.push(libTreeItem);
+          }
+        } catch (error: any) {
+          items.push(new ErrorItem(
+            this.workspaceFolder,
+            objLib,
+            {
+              description: variable,
+              contextValue: Library.contextValue,
+              tooltip: error
+            }));
+          continue;
         }
       }
     }
