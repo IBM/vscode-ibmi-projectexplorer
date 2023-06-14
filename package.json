@@ -324,7 +324,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
-          "when": "view == projectExplorer && viewItem =~ /^source.*/",
+          "when": "view == projectExplorer && viewItem =~ /^project.*/",
           "group": "inline@1"
         },
         {

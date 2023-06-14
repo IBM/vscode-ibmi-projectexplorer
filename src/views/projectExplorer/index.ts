@@ -84,13 +84,15 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${element.description}`);
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut`, async (element: Source) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut`, async (element: Project) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
-          const fPath = iProject!.getIProjFilePath();
-          const document = await vscode.workspace.openTextDocument(fPath.path);
-          await vscode.window.showTextDocument(document);
+          if (iProject) {
+            const fPath = iProject.getIProjFilePath();
+            const document = await vscode.workspace.openTextDocument(fPath.path);
+            await vscode.window.showTextDocument(document);
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList) => {
