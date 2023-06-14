@@ -3,7 +3,7 @@
  */
 
 import { TextEncoder } from "util";
-import { Uri, window, workspace } from "vscode";
+import { Uri, l10n, window, workspace } from "vscode";
 import { EnvironmentVariables } from "./iproject";
 
 export default async function envUpdater(envUri: Uri, variables: EnvironmentVariables) {
@@ -28,7 +28,7 @@ export default async function envUpdater(envUri: Uri, variables: EnvironmentVari
     await workspace.fs.writeFile(envUri, new TextEncoder().encode(lines.join(eol)));
     return true;
   } catch (e) {
-    window.showErrorMessage('Failed to update .env');
+    window.showErrorMessage(l10n.t('Failed to update .env'));
     return false;
   }
 }
