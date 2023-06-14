@@ -3,7 +3,7 @@ class EventsFileParserCore {
     static LOGGER: any;
 
   private _exception: null;
-  private _processor: QSYSEventsFileProcessorBlockCore;
+  private _processor: QSYSEventsFileProcessorBlockCore | undefined;
   private _lastOutputFile: null;
   private _currentOutputFile: null;
   private _sourceTable: Object;

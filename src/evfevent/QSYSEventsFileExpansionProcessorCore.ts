@@ -3,18 +3,18 @@ class QSYSEventsFileProcessorBlockCore {
     private _errors: null;
     private _inputFile: null;
     private _outputFile: null;
-    private _currentProcessor: EvfeventRecord;
+    private _currentProcessor: EvfeventRecord | null;
     private _mappingTable: QSYSEventsFileMapTable;
-    private _previousProcessorBlock: QSYSEventsFileProcessorBlockCore;
+    private _previousProcessorBlock: QSYSEventsFileProcessorBlockCore | null;
     private _containsExpansionEvents: boolean;
     private _isFirstInEventsFile: boolean;
     private _mappingSupported: boolean;
     private _totalNumberOfLinesInOutputFile: number;
     private _totalNumberOfLinesInInputFiles: number;
-    _connection: string;
-    private _profile: string;
-    private _type: string;
-    private _project: string;
+    _connection: string | null;
+    private _profile: string | null;
+    private _type: string | null;
+    private _project: string | null;
     
     constructor(record : EvfeventRecord ) {
       this.INPUT_FILE_ID = '001';
