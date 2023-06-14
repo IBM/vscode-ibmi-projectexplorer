@@ -1,7 +1,7 @@
 /* IBM Confidential
  * OCO Source Materials
  * 5900-AN9
- * (c) Copyright IBM Corp. 2003, 2021
+ * (c) Copyright IBM Corp. 2003, 2023
  * The source code for this program is not published or otherwise divested of its trade secrets,
  * irrespective of what has been deposited with the U.S. Copyright Office.
  *
@@ -10,25 +10,43 @@
 /**
  * This class represents a Error Information record in an events file.
  */
-public class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
-
+class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	
-	private String version;
-	private String fileId;
-	private String annotClass;
-	private String stmtLine;
-	private String startErrLine;
-	private String tokenStart;
-	private String endErrLine;
-	private String tokenEnd;
-	private String msgId;
-	private String sevChar;
-	private String sevNum;
-	private String length;
-	private String msg;
+	private version: string;
+	private fileId: string;
+	private annotClass: string;
+	private stmtLine: string;
+	private startErrLine: string;
+	private tokenStart: string;
+	private endErrLine: string;
+	private tokenEnd: string;
+	private msgId: string;
+	private sevChar: string;
+	private sevNum: string;
+	private length: string;
+	private msg: string;
 
 	// source file name corresponding to file id - is computed later
-	private String fileName;
+	private fileName: string;
+
+	constructor(version: string, fileId: string, annotClass: string, stmtLine: string,
+		startErrLine: string, tokenStart: string, endErrLine: string, tokenEnd: string,
+		msgId: string, sevChar: string, sevNum: string, length: string, msg: string){
+		this.version = version;
+		this.fileId = fileId;
+		this.annotClass = annotClass;
+		this.stmtLine = stmtLine;
+		this.startErrLine = startErrLine;
+		this.tokenStart = tokenStart;
+		this.endErrLine = endErrLine;
+		this.tokenEnd = tokenEnd;
+		this.msgId = msgId;
+		this.sevChar = sevChar;
+		this.sevNum = sevNum;
+		this.length = length;
+		this.msg = msg;
+		this.fileName = "";
+	}
 
 	/**
 	 * @see com.ibm.etools.iseries.core.evfparser.IISeriesEventsFileRecordType#getRecordType()
@@ -37,27 +55,20 @@ public class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 		return IQSYSEventsFileRecordType.ERROR_INFORMATION;
 	}
 	
-	/**
-	 * Set the version.
-	 * @param the version
-	 */
-	public void setVersion(String version) {
-		this.version = version;
-	}
 	
 	/**
 	 * Get the version.
 	 * @return the version
 	 */
-	public String getVersion() {
-		return version;
+	public getVersion(): string {
+		return this.version;
 	}
 	
 	/**
 	 * Set the file id.
 	 * @param the file id
 	 */
-	public void setFileId(String fileId) {
+	public setFileId(fileId: string) {
 		this.fileId = fileId;
 	}
 	
@@ -65,14 +76,14 @@ public class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	 * Get the file id.
 	 * @return the file id
 	 */
-	public String getFileId() {
-		return fileId;
+	public getFileId(): string {
+		return this.fileId;
 	}
 	/**
 	 * Set the file name.
 	 * @param the file id
 	 */
-	public void setFileName(String fileName) {
+	public setFileName(fileName: string) {
 		this.fileName = fileName;
 	}
 	
@@ -80,14 +91,14 @@ public class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	 * Get the file name.
 	 * @return the file id
 	 */
-	public String getFileName() {
-		return fileName;
+	public getFileName(): string {
+		return this.fileName;
 	}
 	/**
 	 * Set the annotation class.
 	 * @param the annotation class
 	 */
-	public void setAnnotClass(String annotClass) {
+	public setAnnotClass(annotClass: string) {
 		this.annotClass = annotClass;
 	}
 	
@@ -95,15 +106,15 @@ public class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	 * Get the annotation class.
 	 * @return the annotation class
 	 */
-	public String getAnnotClass() {
-		return annotClass;
+	public getAnnotClass(): string {
+		return this.annotClass;
 	}
 	
 	/**
 	 * Set the statement line.
 	 * @param the statement line
 	 */
-	public void setStmtLine(String stmtLine) {
+	public setStmtLine(stmtLine: string) {
 		this.stmtLine = stmtLine;
 	}
 	
@@ -111,15 +122,15 @@ public class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	 * Get the statement line.
 	 * @return the statement line
 	 */
-	public String getStmtLine() {
-		return stmtLine;
+	public getStmtLine(): string {
+		return this.stmtLine;
 	}
 	
 	/**
 	 * Set the starting error line.
 	 * @param the starting error line
 	 */
-	public void setStartErrLine(String startErrLine) {
+	public setStartErrLine(startErrLine: string) {
 		this.startErrLine = startErrLine;
 	}
 	
@@ -127,15 +138,15 @@ public class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	 * Get the starting error line.
 	 * @return the starting error line
 	 */
-	public String getStartErrLine() {
-		return startErrLine;
+	public getStartErrLine(): string {
+		return this.startErrLine;
 	}
 	
 	/**
 	 * Set the starting error column.
 	 * @param the starting error column
 	 */
-	public void setTokenStart(String tokenStart) {
+	public setTokenStart(tokenStart: string) {
 		this.tokenStart = tokenStart;
 	}
 	
@@ -143,15 +154,15 @@ public class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	 * Get the starting error column.
 	 * @return the starting error column
 	 */
-	public String getTokenStart() {
-		return tokenStart;
+	public getTokenStart(): string {
+		return this.tokenStart;
 	}
 	
 	/**
 	 * Set the ending error line.
 	 * @param the ending error line
 	 */
-	public void setEndErrLine(String endErrLine) {
+	public setEndErrLine(endErrLine: string) {
 		this.endErrLine = endErrLine;
 	}
 	
@@ -159,15 +170,15 @@ public class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	 * Get the ending error line.
 	 * @return the ending error line
 	 */
-	public String getEndErrLine() {
-		return endErrLine;
+	public getEndErrLine(): string {
+		return this.endErrLine;
 	}
 	
 	/**
 	 * Set the ending error column.
 	 * @param the ending error column
 	 */
-	public void setTokenEnd(String tokenEnd) {
+	public setTokenEnd(tokenEnd: string) {
 		this.tokenEnd = tokenEnd;
 	}
 	
@@ -175,63 +186,39 @@ public class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	 * Get the ending error column.
 	 * @return the ending error column
 	 */
-	public String getTokenEnd() {
-		return tokenEnd;
-	}
-	
-	/**
-	 * Set the message id.
-	 * @param the message id
-	 */
-	public void setMsgId(String msgId) {
-		this.msgId = msgId;
+	public getTokenEnd(): string {
+		return this.tokenEnd;
 	}
 	
 	/**
 	 * Get the message id.
 	 * @return the message id
 	 */
-	public String getMsgId() {
-		return msgId;
-	}
-	
-	/**
-	 * Set the severity code.
-	 * @param the severity code
-	 */
-	public void setSevChar(String sevChar) {
-		this.sevChar = sevChar;
+	public getMsgId(): string {
+		return this.msgId;
 	}
 	
 	/**
 	 * Get the severity code.
 	 * @return the severity code
 	 */
-	public String getSevChar() {
-		return sevChar;
-	}
-	
-	/**
-	 * Set the severity level number.
-	 * @param the severity level number
-	 */
-	public void setSevNum(String sevNum) {
-		this.sevNum = sevNum;
+	public getSevChar(): string {
+		return this.sevChar;
 	}
 	
 	/**
 	 * Get the severity level number.
 	 * @return the severity level number
 	 */
-	public String getSevNum() {
-		return sevNum;
+	public getSevNum(): string {
+		return this.sevNum;
 	}
 	
 	/**
 	 * Set the length of the message.
 	 * @param the length of the message
 	 */
-	public void setLength(String length) {
+	public setLength(length: string) {
 		this.length = length;
 	}
 	
@@ -239,94 +226,23 @@ public class QSYSEventsFileErrorInformationRecord implements EvfeventRecord {
 	 * Get the length of the message.
 	 * @return the length of the message
 	 */
-	public String getLength() {
-		return length;
-	}
-	
-	/**
-	 * Set the message.
-	 * @param the message
-	 */
-	public void setMsg(String msg) {
-		this.msg = msg;
+	public getLength(): string {
+		return this.length;
 	}
 	
 	/**
 	 * Get the message.
 	 * @return the message
 	 */
-	public String getMsg() {
-		return msg;
+	public getMsg(): string {
+		return this.msg;
 	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	public String toString()
+	public toString(): string
 	{
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(ERROR_INFORMATION);
-		buffer.append("      ");
-		buffer.append(version);
-		buffer.append(" ");
-		buffer.append(fileId);
-		buffer.append(" ");
-		buffer.append(annotClass);
-		buffer.append(" ");
-		buffer.append(stmtLine);
-		buffer.append(" ");
-		buffer.append(startErrLine);
-		buffer.append(" ");
-		buffer.append(tokenStart);
-		buffer.append(" ");
-		buffer.append(endErrLine);
-		buffer.append(" ");
-		buffer.append(tokenEnd);
-		buffer.append(" ");
-		buffer.append(msgId);
-		buffer.append(" ");
-		buffer.append(sevChar);
-		buffer.append(" ");
-		buffer.append(sevNum);
-		buffer.append(" ");
-		buffer.append(length);
-		buffer.append(" ");
-		buffer.append(msg);
-		return buffer.toString();
-	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	public String toJUnitString()
-	{
-		StringBuffer buffer = new StringBuffer();
-		buffer.append(ERROR_INFORMATION);
-		buffer.append("      ");
-		buffer.append(version);
-		buffer.append(" ");
-		buffer.append(fileName);
-		buffer.append(" ");
-		buffer.append(annotClass);
-		buffer.append(" ");
-		buffer.append(stmtLine);
-		buffer.append(" ");
-		buffer.append(startErrLine);
-		buffer.append(" ");
-		buffer.append(tokenStart);
-		buffer.append(" ");
-		buffer.append(endErrLine);
-		buffer.append(" ");
-		buffer.append(tokenEnd);
-		buffer.append(" ");
-		buffer.append(msgId);
-		buffer.append(" ");
-		buffer.append(sevChar);
-		buffer.append(" ");
-		buffer.append(sevNum);
-		buffer.append(" ");
-		buffer.append(length);
-		buffer.append(" ");
-		buffer.append(msg);
-		return buffer.toString();
+		return JSON.stringify(this);
 	}
 }
