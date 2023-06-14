@@ -306,7 +306,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.objectBrowser.setObjLib`, async (element: any) => {
         if (element) {
           const iProject = ProjectManager.getActiveProject();
-          if (iProject){
+          if (iProject) {
             const libLabel = element.name;
             iProject.setLibrary(libLabel, 'objlib');
           }
@@ -315,9 +315,30 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.objectBrowser.setCurLib`, async (element: any) => {
         if (element) {
           const iProject = ProjectManager.getActiveProject();
-          if (iProject){
+          if (iProject) {
             const libLabel = element.name;
             iProject.setLibrary(libLabel, 'curlib');
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.objectBrowser.addToPrePost`, async (element: any) => {
+        if (element) {
+          const iProject = ProjectManager.getActiveProject();
+          if (iProject) {
+
+            const preLib = "Add to Pre User Library List";
+            const postLib = "Add to Post User Library List";
+
+            const selectedPosition = await window.showQuickPick([
+              (preLib),
+              (postLib)],
+              { placeHolder:'Choose a library list' });
+
+            if (selectedPosition === preLib) {
+                iProject.setLibrary(element.name, "pre");
+            }else if (selectedPosition === postLib){
+              iProject.setLibrary(element.name, "post");
+            }
           }
         }
       })

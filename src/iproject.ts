@@ -20,7 +20,7 @@ const DEFAULT_CURLIB = 'CURLIB';
 export type EnvironmentVariables = { [name: string]: string };
 export type Direction = 'up' | 'down';
 export type Position = 'first' | 'last' | 'middle';
-export type LibraryOption = 'objlib' | 'curlib';
+export type LibraryOption = 'objlib' | 'curlib' | 'pre' | 'post';
 export class IProject {
   private name: string;
   private state: IProjectT | undefined;
@@ -242,19 +242,24 @@ export class IProject {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
-    
-      if(libOption === "objlib"){
+
+      if (libOption === 'objlib') {
         unresolvedState.objlib = libName;
-      }else{
+      } else if (libOption === 'curlib') {
         unresolvedState.curlib = libName;
+      } else if (libOption === 'pre') {
+        unresolvedState.preUsrlibl?.push(libName);
+      } else if (libOption === 'post') {
+        unresolvedState.postUsrlibl?.push(libName);
       }
 
       await this.updateIProj(unresolvedState);
-    
+
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
   }
+
 
   public async getLibraryList(): Promise<{ libraryInfo: IBMiObject; libraryType: string; }[] | undefined> {
     const ibmi = getInstance();

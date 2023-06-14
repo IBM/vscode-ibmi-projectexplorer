@@ -31,6 +31,7 @@
   "commands.jobLog.copy": "Copy",
   "commands.objectBrowser.setObjLib": "Set as Object Library",
   "commands.objectBrowser.setCurLib": "Set as Current Library",
+  "commands.objectBrowser.addToPrePost": "Add to User Library Lists",
   "colors.projectExplorer.activeProject": "Color for active project",
   "colors.projectExplorer.systemLibraries": "Color for system libraries",
   "colors.projectExplorer.currentLibrary": "Color for current library",
