@@ -14,6 +14,7 @@ import LibraryList from "./libraryList";
 import Library, { LibraryType } from "./library";
 import LocalIncludePath from "./localIncludePath";
 import RemoteIncludePath from "./remoteIncludePath";
+import { migrateSource } from "./migrateSource";
 import { IProjectT } from "../../iProjectT";
 import Source from "./source";
 
@@ -58,6 +59,19 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const iProject = ProjectManager.getProjectFromName(newActiveProject.label.split(' ')[1]);
             if (iProject) {
               ProjectManager.setActiveProject(iProject.workspaceFolder);
+              this.refresh();
+            }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.migrateSource`, async (element: Library) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const result = await migrateSource(iProject, element.label!.toString());
+
+            if (result) {
               this.refresh();
             }
           }
@@ -119,6 +133,26 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.moveLibraryUp`, async (element: Library) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const library = element.variable ? element.variable : element.label!.toString();
+            await iProject.moveLibrary(library, element.libraryType, 'up');
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.moveLibraryDown`, async (element: Library) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const library = element.variable ? element.variable : element.label!.toString();
+            await iProject.moveLibrary(library, element.libraryType, 'down');
+          }
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
         if (workspaceFolder && varName) {
           const iProject = ProjectManager.get(workspaceFolder);
@@ -163,17 +197,16 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
-            const variable = await window.showInputBox({
+            let variable = await window.showInputBox({
               prompt: l10n.t('Enter variable name'),
-              placeHolder: l10n.t('Variable Name'),
-              validateInput(value) {
-                if (value.startsWith('&')) {
-                  return l10n.t('Enter variable name without "&" prefix');
-                }
-              },
+              placeHolder: l10n.t('Variable Name')
             });
 
             if (variable) {
+              while (variable.startsWith('&')) {
+                variable = variable.substring(1);
+              }
+
               let attribute: keyof IProjectT;
               if (element instanceof Library) {
                 if (element.libraryType === LibraryType.preUserLibrary) {
@@ -270,7 +303,6 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       })
-
     );
   }
 

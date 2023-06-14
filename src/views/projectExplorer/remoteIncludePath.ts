@@ -6,7 +6,7 @@ import { ThemeIcon, WorkspaceFolder } from "vscode";
 import { ContextValue } from "../../projectExplorerApi";
 import IFSDirectory from "./ifsDirectory";
 import * as path from "path";
-import { Position } from "./includePaths";
+import { Position } from "../../iproject";
 
 /**
  * Tree item for a remote include path

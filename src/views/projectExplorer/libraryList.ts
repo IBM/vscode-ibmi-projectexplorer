@@ -7,7 +7,7 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 import { ProjectManager } from "../../projectManager";
 import Library, { LibraryType } from "./library";
-import { getInstance } from "../../ibmi";
+import { Position } from "../../iproject";
 
 /**
  * Tree item for the Library List heading
@@ -42,11 +42,13 @@ export default class LibraryList extends ProjectExplorerTreeItem {
             if (unresolvedState?.curlib?.startsWith('&')) {
               variable = unresolvedState?.curlib;
             }
-            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.currentLibrary, variable));
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.currentLibrary, undefined, variable));
             break;
 
           case `USR`:
             let libraryType = LibraryType.defaultUserLibrary;
+            let position: Position | undefined;
+
             if (state?.preUsrlibl && state.preUsrlibl.includes(library.libraryInfo.name)) {
               libraryType = LibraryType.preUserLibrary;
 
@@ -54,6 +56,12 @@ export default class LibraryList extends ProjectExplorerTreeItem {
               if (unresolvedState?.preUsrlibl![index].startsWith('&')) {
                 variable = unresolvedState?.preUsrlibl![index];
               }
+
+              const listLength = state.preUsrlibl.filter(lib => !lib.startsWith('&')).length;
+              if (listLength > 1) {
+                position = index === 0 ? 'first' : (index === listLength - 1 ? 'last' : 'middle');
+              }
+
             } else if (state?.postUsrlibl && state.postUsrlibl.includes(library.libraryInfo.name)) {
               libraryType = LibraryType.postUserLibrary;
 
@@ -61,9 +69,14 @@ export default class LibraryList extends ProjectExplorerTreeItem {
               if (unresolvedState?.postUsrlibl![index].startsWith('&')) {
                 variable = unresolvedState?.postUsrlibl![index];
               }
+
+              const listLength = state.postUsrlibl.filter(lib => !lib.startsWith('&')).length;
+              if (listLength > 1) {
+                position = index === 0 ? 'first' : (index === listLength - 1 ? 'last' : 'middle');
+              }
             }
 
-            items.push(new Library(this.workspaceFolder, library.libraryInfo, libraryType, variable));
+            items.push(new Library(this.workspaceFolder, library.libraryInfo, libraryType, position, variable));
             break;
         }
       }
