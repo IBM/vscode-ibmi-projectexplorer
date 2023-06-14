@@ -196,6 +196,11 @@
         "category": "Object Browser",
         "command": "vscode-ibmi-projectexplorer.objectBrowser.setObjLib",
         "title": "%commands.objectBrowser.setObjLib%"
+      },
+      {
+        "category": "Object Browser",
+        "command": "vscode-ibmi-projectexplorer.objectBrowser.setCurLib",
+        "title": "%commands.objectBrowser.setCurLib%"
       }
     ],
     "menus": {
@@ -274,6 +279,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.objectBrowser.setObjLib",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.objectBrowser.setCurLib",
           "when": "never"
         }
       ],
@@ -426,6 +435,11 @@
           "command": "vscode-ibmi-projectexplorer.objectBrowser.setObjLib",
           "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
           "group": "0_objectBroswer@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.objectBrowser.setCurLib",
+          "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
+          "group": "0_objectBroswer@1"
         }
       ]
     },

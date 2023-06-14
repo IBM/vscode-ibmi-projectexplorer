@@ -304,16 +304,23 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.objectBrowser.setObjLib`, async (element: any) => {
-        
         if (element) {
           const iProject = ProjectManager.getActiveProject();
           if (iProject){
             const libLabel = element.name;
-            iProject.setObjectLibrary(libLabel);
+            iProject.setLibrary(libLabel, 'objlib');
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.objectBrowser.setCurLib`, async (element: any) => {
+        if (element) {
+          const iProject = ProjectManager.getActiveProject();
+          if (iProject){
+            const libLabel = element.name;
+            iProject.setLibrary(libLabel, 'curlib');
           }
         }
       })
-      
     );
   }
 

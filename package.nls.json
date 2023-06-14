@@ -30,6 +30,7 @@
   "commands.jobLog.clearJobLogs": "Clear Job Log",
   "commands.jobLog.copy": "Copy",
   "commands.objectBrowser.setObjLib": "Set as Object Library",
+  "commands.objectBrowser.setCurLib": "Set as Current Library",
   "colors.projectExplorer.activeProject": "Color for active project",
   "colors.projectExplorer.systemLibraries": "Color for system libraries",
   "colors.projectExplorer.currentLibrary": "Color for current library",

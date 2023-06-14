@@ -10,7 +10,7 @@ import { JobLogInfo } from "./jobLog";
 import { TextEncoder } from "util";
 import { IProjectT } from "./iProjectT";
 import { getInstance } from "./ibmi";
-import  { LibraryType } from "./views/projectExplorer/library";
+import { LibraryType } from "./views/projectExplorer/library";
 import envUpdater from "./envUpdater";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
@@ -20,7 +20,7 @@ const DEFAULT_CURLIB = 'CURLIB';
 export type EnvironmentVariables = { [name: string]: string };
 export type Direction = 'up' | 'down';
 export type Position = 'first' | 'last' | 'middle';
-
+export type LibraryOption = 'objlib' | 'curlib';
 export class IProject {
   private name: string;
   private state: IProjectT | undefined;
@@ -238,20 +238,23 @@ export class IProject {
     }
   }
 
-  public async setObjectLibrary(libName: string) {
+  public async setLibrary(libName: string, libOption: LibraryOption) {
     const unresolvedState = await this.getUnresolvedState();
 
-    if(unresolvedState){
-      unresolvedState.objlib = libName;
-      
+    if (unresolvedState) {
+    
+      if(libOption === "objlib"){
+        unresolvedState.objlib = libName;
+      }else{
+        unresolvedState.curlib = libName;
+      }
+
       await this.updateIProj(unresolvedState);
-    }else{
+    
+    } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
-
-    console.log('');
   }
-
 
   public async getLibraryList(): Promise<{ libraryInfo: IBMiObject; libraryType: string; }[] | undefined> {
     const ibmi = getInstance();
