@@ -191,6 +191,11 @@
         "command": "vscode-ibmi-projectexplorer.jobLog.copy",
         "title": "%commands.jobLog.copy%",
         "icon": "$(copy)"
+      },
+      {
+        "category": "Object Browser",
+        "command": "vscode-ibmi-projectexplorer.objectBrowser.setObjLib",
+        "title": "%commands.objectBrowser.setObjLib%"
       }
     ],
     "menus": {
@@ -265,6 +270,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.objectBrowser.setObjLib",
           "when": "never"
         }
       ],
@@ -412,6 +421,11 @@
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
           "when": "view == jobLog && viewItem =~ /^command.*/",
           "group": "inline"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.objectBrowser.setObjLib",
+          "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
+          "group": "0_objectBroswer@0"
         }
       ]
     },

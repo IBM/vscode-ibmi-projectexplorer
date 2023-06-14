@@ -10,7 +10,7 @@ import { JobLogInfo } from "./jobLog";
 import { TextEncoder } from "util";
 import { IProjectT } from "./iProjectT";
 import { getInstance } from "./ibmi";
-import { LibraryType } from "./views/projectExplorer/library";
+import  { LibraryType } from "./views/projectExplorer/library";
 import envUpdater from "./envUpdater";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
@@ -209,7 +209,6 @@ export class IProject {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
   }
-
   public async moveIncludePath(pathToMove: string, direction: Direction) {
     const unresolvedState = await this.getUnresolvedState();
 
@@ -238,6 +237,21 @@ export class IProject {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
   }
+
+  public async setObjectLibrary(libName: string) {
+    const unresolvedState = await this.getUnresolvedState();
+
+    if(unresolvedState){
+      unresolvedState.objlib = libName;
+      
+      await this.updateIProj(unresolvedState);
+    }else{
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+
+    console.log('');
+  }
+
 
   public async getLibraryList(): Promise<{ libraryInfo: IBMiObject; libraryType: string; }[] | undefined> {
     const ibmi = getInstance();

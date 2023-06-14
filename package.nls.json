@@ -29,6 +29,7 @@
   "commands.jobLog.showBuildOutput": "Show Build Output",
   "commands.jobLog.clearJobLogs": "Clear Job Log",
   "commands.jobLog.copy": "Copy",
+  "commands.objectBrowser.setObjLib": "Set as Object Library",
   "colors.projectExplorer.activeProject": "Color for active project",
   "colors.projectExplorer.systemLibraries": "Color for system libraries",
   "colors.projectExplorer.currentLibrary": "Color for current library",
