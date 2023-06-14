@@ -37,35 +37,6 @@ export class ProjectManager {
     private static emitter: EventEmitter<ProjectExplorerEvent> = new EventEmitter();
     private static events: { event: ProjectExplorerEventT, func: Function }[] = [];
 
-    public static load(workspaceFolder: WorkspaceFolder) {
-        if (!this.loaded[workspaceFolder.index]) {
-            const iProject = new IProject(workspaceFolder);
-            this.loaded[workspaceFolder.index] = iProject;
-
-            if (!this.activeProject) {
-                this.setActiveProject(workspaceFolder);
-            }
-        }
-
-        ProjectManager.fire({ type: 'projects' });
-    }
-
-    public static get(workspaceFolder: WorkspaceFolder): IProject | undefined {
-        return this.loaded[workspaceFolder.index];
-    }
-
-    public static getActiveProject(): IProject | undefined {
-        return this.activeProject;
-    }
-
-    public static getActiveProjectStatusBarItem(): StatusBarItem {
-        return this.activeProjectStatusBarItem;
-    }
-
-    public static clear() {
-        this.loaded = {};
-    }
-
     public static initialize(context: ExtensionContext) {
         this.emitter.event(e => {
             this.events.filter(event => event.event === e.type)
@@ -93,6 +64,31 @@ export class ProjectManager {
         this.emitter?.fire(event);
     }
 
+    public static load(workspaceFolder: WorkspaceFolder) {
+        if (!this.loaded[workspaceFolder.index]) {
+            const iProject = new IProject(workspaceFolder);
+            this.loaded[workspaceFolder.index] = iProject;
+
+            if (!this.activeProject) {
+                this.setActiveProject(workspaceFolder);
+            }
+        }
+
+        ProjectManager.fire({ type: 'projects' });
+    }
+
+    public static get(workspaceFolder: WorkspaceFolder): IProject | undefined {
+        return this.loaded[workspaceFolder.index];
+    }
+
+    public static clear() {
+        this.loaded = {};
+    }
+
+    public static getActiveProject(): IProject | undefined {
+        return this.activeProject;
+    }
+
     public static setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
         if (workspaceFolder) {
             this.activeProject = this.loaded[workspaceFolder.index];
@@ -113,6 +109,10 @@ export class ProjectManager {
         }
 
         this.fire({ type: 'activeProject', iProject: this.activeProject });
+    }
+
+    public static getActiveProjectStatusBarItem(): StatusBarItem {
+        return this.activeProjectStatusBarItem;
     }
 
     public static getProjects(): IProject[] {

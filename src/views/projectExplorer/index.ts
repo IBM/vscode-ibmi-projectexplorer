@@ -164,7 +164,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             });
 
             if (newValue) {
-              await iProject.setEnv(varName, newValue);
+              await iProject.updateEnv(varName, newValue);
             }
           }
         }
@@ -242,7 +242,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               });
 
               if (variable) {
-                await activeProject.setEnv(variable.label.substring(1), value);
+                await activeProject.updateEnv(variable.label.substring(1), value);
               }
             }
           }
