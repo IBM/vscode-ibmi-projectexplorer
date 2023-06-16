@@ -99,6 +99,11 @@
         "icon": "$(edit)"
       },
       {
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
+        "title": "%commands.projectExplorer.iprojShortcut%",
+        "icon": "$(go-to-file)"
+      },
+      {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
         "title": "%commands.projectExplorer.addLibraryListEntry%",
@@ -208,6 +213,10 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
           "when": "never"
         },
@@ -312,6 +321,11 @@
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
           "when": "view == projectExplorer && viewItem =~ /^source.*/",
           "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
+          "when": "view == projectExplorer && viewItem =~ /^project.*/",
+          "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",

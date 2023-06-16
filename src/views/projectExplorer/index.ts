@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, TreeItem, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, TreeItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import ErrorItem from "./errorItem";
 import { IProject } from "../../iproject";
 import Project from "./project";
@@ -17,6 +17,8 @@ import RemoteIncludePath from "./remoteIncludePath";
 import { migrateSource } from "./migrateSource";
 import { IProjectT } from "../../iProjectT";
 import Source from "./source";
+import * as vscode from 'vscode';
+
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -80,6 +82,17 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation`, async (element: Source) => {
         if (element) {
           await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${element.description}`);
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut`, async (element: Project) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const fPath = iProject.getIProjFilePath();
+            const document = await vscode.workspace.openTextDocument(fPath.path);
+            await vscode.window.showTextDocument(document);
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList) => {
@@ -302,6 +315,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await iProject.moveIncludePath(pathToMove, 'down');
           }
         }
+
       })
     );
   }
