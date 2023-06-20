@@ -82,15 +82,19 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${element.description}`);
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList | any) => {
         if (element) {
-          const iProject = ProjectManager.get(element.workspaceFolder);
+          const iProject = ProjectManager.getActiveProject();
 
           if (iProject) {
-            const library = await window.showInputBox({
-              prompt: l10n.t('Enter library name'),
-              placeHolder: l10n.t('Library name')
-            });
+            let library = element.name;
+
+            if (element instanceof LibraryList) {
+                library = await window.showInputBox({
+                prompt: l10n.t('Enter library name'),
+                placeHolder: l10n.t('Library name')
+              });
+            }
 
             if (library) {
               const selectedPosition = await window.showQuickPick([
@@ -104,6 +108,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 await iProject.addToLibraryList(library, position);
               }
             }
+
           }
         }
       }),
@@ -120,6 +125,24 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             if (library) {
               await iProject.setCurrentLibrary(library);
             }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setAsObjectLibrary`, async (element: any) => {
+        if (element) {
+          const iProject = ProjectManager.getActiveProject();
+          if (iProject) {
+            const libraryLabel = element.name;
+            iProject.setObjectLibrary(libraryLabel);
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setAsCurrentLibrary`, async (element: any) => {
+        if (element) {
+          const iProject = ProjectManager.getActiveProject();
+          if (iProject) {
+            const libraryLabel = element.name;
+            await iProject.setCurrentLibrary(libraryLabel);
           }
         }
       }),
@@ -302,46 +325,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await iProject.moveIncludePath(pathToMove, 'down');
           }
         }
-      }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.objectBrowser.setObjLib`, async (element: any) => {
-        if (element) {
-          const iProject = ProjectManager.getActiveProject();
-          if (iProject) {
-            const libLabel = element.name;
-            iProject.setLibrary(libLabel, 'objlib');
-          }
-        }
-      }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.objectBrowser.setCurLib`, async (element: any) => {
-        if (element) {
-          const iProject = ProjectManager.getActiveProject();
-          if (iProject) {
-            const libLabel = element.name;
-            iProject.setLibrary(libLabel, 'curlib');
-          }
-        }
-      }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.objectBrowser.addToPrePost`, async (element: any) => {
-        if (element) {
-          const iProject = ProjectManager.getActiveProject();
-          if (iProject) {
-
-            const preLib = "Add to Pre User Library List";
-            const postLib = "Add to Post User Library List";
-
-            const selectedPosition = await window.showQuickPick([
-              (preLib),
-              (postLib)],
-              { placeHolder:'Choose a library list' });
-
-            if (selectedPosition === preLib) {
-                iProject.setLibrary(element.name, "pre");
-            }else if (selectedPosition === postLib){
-              iProject.setLibrary(element.name, "post");
-            }
-          }
-        }
       })
+
     );
   }
 

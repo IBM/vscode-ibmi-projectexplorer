@@ -15,12 +15,12 @@ import envUpdater from "./envUpdater";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 
-const DEFAULT_CURLIB = 'CURLIB';
+const DEFAULT_CURLIB = '&CURLIB';
+const DEFAULT_OBJLIB = '&OBJLIB';
 
 export type EnvironmentVariables = { [name: string]: string };
 export type Direction = 'up' | 'down';
 export type Position = 'first' | 'last' | 'middle';
-export type LibraryOption = 'objlib' | 'curlib' | 'pre' | 'post';
 export class IProject {
   private name: string;
   private state: IProjectT | undefined;
@@ -238,23 +238,23 @@ export class IProject {
     }
   }
 
-  public async setLibrary(libName: string, libOption: LibraryOption) {
+  public async setObjectLibrary(library: string) {
+
     const unresolvedState = await this.getUnresolvedState();
+    const state = await this.getState();
 
-    if (unresolvedState) {
-
-      if (libOption === 'objlib') {
-        unresolvedState.objlib = libName;
-      } else if (libOption === 'curlib') {
-        unresolvedState.curlib = libName;
-      } else if (libOption === 'pre') {
-        unresolvedState.preUsrlibl?.push(libName);
-      } else if (libOption === 'post') {
-        unresolvedState.postUsrlibl?.push(libName);
+    if (unresolvedState && state) {
+      if (state.objlib === library) {
+        window.showErrorMessage(l10n.t('Object library already set to {0}', library));
+        return;
+      } else if (unresolvedState.objlib && unresolvedState.objlib.startsWith('&')) {
+        await this.setEnv(unresolvedState.objlib.substring(1), library);
+      } else {
+        await this.setEnv(DEFAULT_OBJLIB.substring(1), library);
+        unresolvedState.objlib = DEFAULT_OBJLIB;
       }
 
       await this.updateIProj(unresolvedState);
-
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
@@ -371,7 +371,7 @@ export class IProject {
         //Update variable
         await this.setEnv(unresolvedState.curlib.substring(1), library);
       } else {
-        await this.setEnv(DEFAULT_CURLIB, library);
+        await this.setEnv(DEFAULT_CURLIB.substring(1), library);
 
         unresolvedState.curlib = DEFAULT_CURLIB;
       }

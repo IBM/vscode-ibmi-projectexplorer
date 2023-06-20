@@ -112,6 +112,16 @@
       },
       {
         "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsObjectLibrary",
+        "title": "%commands.projectExplorer.setAsObjectLibrary%"
+      },
+      {
+        "category": "Project Explorer",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsCurrentLibrary",
+        "title": "%commands.projectExplorer.setAsCurrentLibrary%"
+      },
+      {
+        "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
         "title": "%commands.projectExplorer.removeFromLibraryList%",
         "icon": "$(close)"
@@ -191,21 +201,6 @@
         "command": "vscode-ibmi-projectexplorer.jobLog.copy",
         "title": "%commands.jobLog.copy%",
         "icon": "$(copy)"
-      },
-      {
-        "category": "Object Browser",
-        "command": "vscode-ibmi-projectexplorer.objectBrowser.setObjLib",
-        "title": "%commands.objectBrowser.setObjLib%"
-      },
-      {
-        "category": "Object Browser",
-        "command": "vscode-ibmi-projectexplorer.objectBrowser.setCurLib",
-        "title": "%commands.objectBrowser.setCurLib%"
-      },
-      {
-        "category": "Object Browser",
-        "command": "vscode-ibmi-projectexplorer.objectBrowser.addToPrePost",
-        "title": "%commands.objectBrowser.addToPrePost%"
       }
     ],
     "menus": {
@@ -228,6 +223,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsCurrentLibrary",
           "when": "never"
         },
         {
@@ -283,15 +282,7 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.objectBrowser.setObjLib",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.objectBrowser.setCurLib",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.objectBrowser.addToPrePost",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsObjectLibrary",
           "when": "never"
         }
       ],
@@ -441,20 +432,21 @@
           "group": "inline"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.objectBrowser.setObjLib",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsObjectLibrary",
           "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
           "group": "0_objectBroswer@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.objectBrowser.setCurLib",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsCurrentLibrary",
           "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
           "group": "0_objectBroswer@1"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.objectBrowser.addToPrePost",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
           "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
           "group": "0_objectBroswer@2"
         }
+       
       ]
     },
     "languages": [
