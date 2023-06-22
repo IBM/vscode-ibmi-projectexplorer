@@ -371,7 +371,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         const activeProject = ProjectManager.getActiveProject();
         if (activeProject) {
           const projectTreeItem = this.getProjectTreeItem(activeProject);
-          if (projectTreeItem) {
+          if (projectTreeItem && projectTreeItem instanceof Project) {
             projectTreeItem.setActive();
           }
         }
