@@ -318,6 +318,11 @@
           "group": "0_migrate@0"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
+          "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
+          "group": "0_projectexplorer@1"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
           "when": "view == projectExplorer && viewItem =~ /^source.*/",
           "group": "inline@0"

@@ -66,12 +66,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.migrateSource`, async (element: Library) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.migrateSource`, async (element: Library | any) => {
         if (element) {
-          const iProject = ProjectManager.get(element.workspaceFolder);
+          const library = element.name ? element.name : element.label.toString();
+          const iProject = element.name ? ProjectManager.getActiveProject() : ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
-            const result = await migrateSource(iProject, element.label!.toString());
+            const result = await migrateSource(iProject, library);
 
             if (result) {
               this.refresh();
