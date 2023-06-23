@@ -67,29 +67,29 @@
     ],
     "commands": [
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.goToObjectBrowser",
         "title": "%commands.projectExplorer.goToObjectBrowser%"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.goToIFSBrowser",
         "title": "%commands.projectExplorer.goToIFSBrowser%"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer",
         "title": "%commands.projectExplorer.refreshProjectExplorer%",
         "icon": "$(refresh)"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
         "title": "%commands.projectExplorer.setActiveProject%",
         "icon": "$(circle-filled)"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
         "title": "%commands.projectExplorer.migrateSource%"
       },
@@ -104,68 +104,93 @@
         "icon": "$(go-to-file)"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
         "title": "%commands.projectExplorer.addLibraryListEntry%",
         "icon": "$(add)"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.setCurrentLibrary",
         "title": "%commands.projectExplorer.setCurrentLibrary%",
         "icon": "$(edit)"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
         "title": "%commands.projectExplorer.removeFromLibraryList%",
         "icon": "$(close)"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryUp",
         "title": "%commands.projectExplorer.moveLibraryUp%",
         "icon": "$(arrow-up)"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryDown",
         "title": "%commands.projectExplorer.moveLibraryDown%",
         "icon": "$(arrow-down)"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
         "title": "%commands.projectExplorer.addToIncludePaths%",
         "icon": "$(add)"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.configureAsVariable",
         "title": "%commands.projectExplorer.configureAsVariable%"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.assignToVariable",
         "title": "%commands.projectExplorer.assignToVariable%"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.removeFromIncludePaths",
         "title": "%commands.projectExplorer.removeFromIncludePaths%",
         "icon": "$(close)"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.moveIncludePathUp",
         "title": "%commands.projectExplorer.moveIncludePathUp%",
         "icon": "$(arrow-up)"
       },
       {
-        "category": "Project Explorer",
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
         "title": "%commands.projectExplorer.moveIncludePathDown%",
         "icon": "$(arrow-down)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.changeObjectDescription",
+        "title": "%commands.projectExplorer.changeObjectDescription%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.copyObject",
+        "title": "%commands.projectExplorer.copyObject%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.deleteObject",
+        "title": "%commands.projectExplorer.deleteObject%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.renameObject",
+        "title": "%commands.projectExplorer.renameObject%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.moveObject",
+        "title": "%commands.projectExplorer.moveObject%"
       },
       {
         "category": "Job Log",
@@ -258,6 +283,26 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.changeObjectDescription",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.copyObject",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.deleteObject",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.renameObject",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.moveObject",
           "when": "never"
         },
         {
@@ -401,6 +446,31 @@
           "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
           "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_(middle|first).*/",
           "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.changeObjectDescription",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
+          "group": "0_objectActions@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.copyObject",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
+          "group": "0_objectActions@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.deleteObject",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
+          "group": "0_objectActions@2"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.renameObject",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
+          "group": "0_objectActions@3"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.moveObject",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
+          "group": "0_objectActions@4"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
