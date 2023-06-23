@@ -24,7 +24,8 @@ export default class ObjectFile extends ProjectExplorerTreeItem {
     this.objectFileInfo = objectFileInfo;
     this.path = `${pathToLibrary}/${objectFileInfo.name}.${type}`;
     this.collapsibleState = objectFileInfo.attribute === 'PF' ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None;
-    this.contextValue = ObjectFile.contextValue;
+    this.contextValue = ObjectFile.contextValue +
+      (objectFileInfo.attribute ? `_${objectFileInfo.attribute}` : ``);
     const icon = objectFileIcons.get(type.toLowerCase()) || `file`;
     this.iconPath = new ThemeIcon(icon);
     this.description = (objectFileInfo.text.trim() !== '' ? `${objectFileInfo.text} ` : ``) +

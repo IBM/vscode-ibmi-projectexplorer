@@ -31,6 +31,7 @@
   "commands.projectExplorer.deleteObject": "Delete Object",
   "commands.projectExplorer.renameObject": "Rename Object",
   "commands.projectExplorer.moveObject": "Move Object",
+  "commands.projectExplorer.createMember": "Create Member",
   "commands.jobLog.refreshJobLog": "Refresh Job Log",
   "commands.jobLog.showJobLog": "Show Job Log",
   "commands.jobLog.showBuildOutput": "Show Build Output",

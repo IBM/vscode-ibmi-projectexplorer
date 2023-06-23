@@ -193,6 +193,11 @@
         "title": "%commands.projectExplorer.moveObject%"
       },
       {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.createMember",
+        "title": "%commands.projectExplorer.createMember%"
+      },
+      {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
         "title": "%commands.jobLog.refreshJobLog%",
@@ -303,6 +308,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.moveObject",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createMember",
           "when": "never"
         },
         {
@@ -471,6 +480,11 @@
           "command": "vscode-ibmi-projectexplorer.moveObject",
           "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
           "group": "0_objectActions@4"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createMember",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile_PF.*/",
+          "group": "1_memberActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
