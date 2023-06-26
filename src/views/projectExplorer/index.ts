@@ -319,6 +319,47 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.changeLibraryDescription`, async (element: Library) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.changeObjectDesc`, {
+            path: `${element.libraryInfo.library}/${element.libraryInfo.name}`,
+            type: element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type,
+            text: element.libraryInfo.text
+          });
+
+          this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.copyLibrary`, async (element: Library) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.copyObject`, {
+            path: `${element.libraryInfo.library}/${element.libraryInfo.name}`,
+            type: element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type
+          });
+
+          this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.renameLibrary`, async (element: Library) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.renameObject`, {
+            path: `${element.libraryInfo.library}/${element.libraryInfo.name}`,
+            type: element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type
+          });
+
+          this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.deleteLibrary`, async (element: Library) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.deleteObject`, {
+            path: `${element.libraryInfo.library}/${element.libraryInfo.name}`,
+            type: element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type
+          });
+
+          this.refresh();
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.changeObjectDescription`, async (element: ObjectFile) => {
         if (element) {
           await commands.executeCommand(`code-for-ibmi.changeObjectDesc`, {

@@ -169,6 +169,26 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.changeLibraryDescription",
+        "title": "%commands.projectExplorer.changeLibraryDescription%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.copyLibrary",
+        "title": "%commands.projectExplorer.copyLibrary%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.renameLibrary",
+        "title": "%commands.projectExplorer.renameLibrary%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.deleteLibrary",
+        "title": "%commands.projectExplorer.deleteLibrary%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.changeObjectDescription",
         "title": "%commands.projectExplorer.changeObjectDescription%"
       },
@@ -333,6 +353,22 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.moveIncludePathDown",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.changeLibraryDescription",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.copyLibrary",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.renameLibrary",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.deleteLibrary",
           "when": "never"
         },
         {
@@ -538,6 +574,26 @@
           "group": "inline@1"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.changeLibraryDescription",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "group": "0_libraryActions@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.copyLibrary",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "group": "0_libraryActions@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.renameLibrary",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "group": "0_libraryActions@2"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.deleteLibrary",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "group": "0_libraryActions@3"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.changeObjectDescription",
           "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
           "group": "0_objectActions@0"
@@ -550,12 +606,12 @@
         {
           "command": "vscode-ibmi-projectexplorer.renameObject",
           "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
-          "group": "0_objectActions@3"
+          "group": "0_objectActions@2"
         },
         {
           "command": "vscode-ibmi-projectexplorer.deleteObject",
           "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
-          "group": "0_objectActions@2"
+          "group": "0_objectActions@3"
         },
         {
           "command": "vscode-ibmi-projectexplorer.moveObject",
