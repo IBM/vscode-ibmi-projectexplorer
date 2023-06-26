@@ -113,12 +113,14 @@
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsObjectLibrary",
-        "title": "%commands.projectExplorer.setAsObjectLibrary%"
+        "title": "%commands.projectExplorer.setAsObjectLibrary%",
+        "icon": "$(target)"
       },
       {
         "category": "Project Explorer",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsCurrentLibrary",
-        "title": "%commands.projectExplorer.setAsCurrentLibrary%"
+        "title": "%commands.projectExplorer.setAsCurrentLibrary%",
+        "icon": "$(library)"
       },
       {
         "category": "Project Explorer",
@@ -434,17 +436,17 @@
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsObjectLibrary",
           "when": "view == objectBrowser && viewItem =~ /^object.lib.*/ && vscode-ibmi-projectexplorer.hasActiveProject == true",
-          "group": "0_objectBrowser@0"
+          "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsCurrentLibrary",
           "when": "view == objectBrowser && viewItem =~ /^object.lib.*/ && vscode-ibmi-projectexplorer.hasActiveProject == true",
-          "group": "0_objectBrowser@1"
+          "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
           "when": "view == objectBrowser && viewItem =~ /^object.lib.*/ && vscode-ibmi-projectexplorer.hasActiveProject == true",
-          "group": "0_objectBrowser@2"
+          "group": "inline@2"
         }
        
       ]

@@ -15,7 +15,7 @@
   "commands.projectExplorer.editDeployLocation": "Edit Deploy Location",
   "commands.projectExplorer.addLibraryListEntry": "Add Library List Entry",
   "commands.projectExplorer.setCurrentLibrary": "Set Current Library",
-  "commands.projectExplorer.setAsObjectLibrary": "Set as Object Library",
+  "commands.projectExplorer.setAsObjectLibrary": "Set as the target library for compiles done by IBM i Project Explorer",
   "commands.projectExplorer.setAsCurrentLibrary": "Set as Current Library",
   "commands.projectExplorer.removeFromLibraryList": "Remove From Library List",
   "commands.projectExplorer.moveLibraryUp": "Move Up",
