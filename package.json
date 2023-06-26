@@ -486,7 +486,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "0_migrate@0"
+          "group": "2_migrate@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
@@ -530,6 +530,11 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "group": "1_variable@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.assignToVariable",
           "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
           "group": "0_projectexplorer@0"
         },
@@ -556,12 +561,12 @@
         {
           "command": "vscode-ibmi-projectexplorer.configureAsVariable",
           "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_configurable.*/",
-          "group": "0_configure@0"
+          "group": "1_variable@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.configureAsVariable",
           "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_configurable.*/",
-          "group": "0_configure@0"
+          "group": "0_variable@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.moveIncludePathUp",
