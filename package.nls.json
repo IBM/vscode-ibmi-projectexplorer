@@ -30,6 +30,7 @@
   "commands.projectExplorer.copyLibrary": "Copy Library",
   "commands.projectExplorer.renameLibrary": "Rename Library",
   "commands.projectExplorer.deleteLibrary": "Delete Library",
+  "commands.projectExplorer.runAction": "Run Action",
   "commands.projectExplorer.changeObjectDescription": "Change Object Description",
   "commands.projectExplorer.copyObject": "Copy Object",
   "commands.projectExplorer.renameObject": "Rename Object",

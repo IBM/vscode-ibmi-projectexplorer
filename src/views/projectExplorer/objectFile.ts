@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import MemberFile from "./memberFile";
 import { getInstance } from "../../ibmi";
@@ -35,6 +35,7 @@ export default class ObjectFile extends ProjectExplorerTreeItem {
       (objectFileInfo.text.trim() !== '' ? l10n.t('Text: {0}\n', objectFileInfo.text) : ``) +
       (objectFileInfo.attribute ? l10n.t('Attribute: {0}\n', objectFileInfo.attribute) : ``) +
       l10n.t('Type: {0}', objectFileInfo.type);
+    this.resourceUri = this.getObjectResourceUri();
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
@@ -49,6 +50,12 @@ export default class ObjectFile extends ProjectExplorerTreeItem {
     }
 
     return items;
+  }
+
+  getObjectResourceUri() {
+    const type = this.objectFileInfo.type.startsWith(`*`) ? this.objectFileInfo.type.substring(1) : this.objectFileInfo.type;
+    const path = `${this.objectFileInfo.library}/${this.objectFileInfo.name}.${type}`;
+    return Uri.parse(path).with({ scheme: `object`, path: `/${path}` });
   }
 }
 

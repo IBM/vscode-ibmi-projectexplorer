@@ -360,6 +360,15 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           this.refresh();
         }
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: ObjectFile | MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.runAction`, {
+            resourceUri: element.resourceUri
+          });
+
+          this.refresh();
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.changeObjectDescription`, async (element: ObjectFile) => {
         if (element) {
           await commands.executeCommand(`code-for-ibmi.changeObjectDesc`, {
