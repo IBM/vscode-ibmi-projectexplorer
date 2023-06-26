@@ -433,18 +433,18 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsObjectLibrary",
-          "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
-          "group": "0_objectBroswer@0"
+          "when": "view == objectBrowser && viewItem =~ /^object.lib.*/ && vscode-ibmi-projectexplorer.hasActiveProject == true",
+          "group": "0_objectBrowser@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setAsCurrentLibrary",
-          "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
-          "group": "0_objectBroswer@1"
+          "when": "view == objectBrowser && viewItem =~ /^object.lib.*/ && vscode-ibmi-projectexplorer.hasActiveProject == true",
+          "group": "0_objectBrowser@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
-          "when": "view == objectBrowser && viewItem =~ /^object.lib.*/",
-          "group": "0_objectBroswer@2"
+          "when": "view == objectBrowser && viewItem =~ /^object.lib.*/ && vscode-ibmi-projectexplorer.hasActiveProject == true",
+          "group": "0_objectBrowser@2"
         }
        
       ]
