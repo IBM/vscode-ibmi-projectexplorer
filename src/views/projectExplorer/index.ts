@@ -19,6 +19,7 @@ import { IProjectT } from "../../iProjectT";
 import Source from "./source";
 import * as vscode from 'vscode';
 import ObjectFile from "./objectFile";
+import MemberFile from "./memberFile";
 
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
@@ -339,9 +340,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           this.refresh();
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.deleteObject`, async (element: ObjectFile) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.renameObject`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.deleteObject`, {
+          await commands.executeCommand(`code-for-ibmi.renameObject`, {
             path: `${element.objectFileInfo.library}/${element.objectFileInfo.name}`,
             type: element.objectFileInfo.type.startsWith(`*`) ? element.objectFileInfo.type.substring(1) : element.objectFileInfo.type
           });
@@ -349,9 +350,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           this.refresh();
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.renameObject`, async (element: ObjectFile) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.deleteObject`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.renameObject`, {
+          await commands.executeCommand(`code-for-ibmi.deleteObject`, {
             path: `${element.objectFileInfo.library}/${element.objectFileInfo.name}`,
             type: element.objectFileInfo.type.startsWith(`*`) ? element.objectFileInfo.type.substring(1) : element.objectFileInfo.type
           });
@@ -373,6 +374,82 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         if (element) {
           await commands.executeCommand(`code-for-ibmi.createMember`, {
             path: `${element.objectFileInfo.library}/${element.objectFileInfo.name}`
+          });
+
+          this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.searchSourceFile`, async (element: ObjectFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.searchSourceFile`, {
+            path: `${element.objectFileInfo.library}/${element.objectFileInfo.name}`,
+            memberFilter: ``
+          });
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.selectForCompare`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.selectForCompare`, {
+            path: element.resourceUri?.path,
+            resourceUri: element.resourceUri
+          });
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.compareWithSelected`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.compareWithSelected`, {
+            resourceUri: element.resourceUri
+          });
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.updateMemberText`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.updateMemberText`, {
+            path: element.resourceUri?.path,
+            description: element.memberFileInfo.text
+          });
+
+          this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.copyMember`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.copyMember`, {
+            path: element.resourceUri?.path
+          });
+
+          this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.renameMember`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.renameMember`, {
+            path: element.resourceUri?.path
+          });
+
+          this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.deleteMember`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.deleteMember`, {
+            path: element.resourceUri?.path
+          });
+
+          this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.download`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.downloadMemberAsFile`, {
+            path: element.resourceUri?.path
+          });
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.uploadAndReplace`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.uploadAndReplaceMemberAsFile`, {
+            path: element.resourceUri?.path
           });
 
           this.refresh();
