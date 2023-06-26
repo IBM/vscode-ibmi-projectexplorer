@@ -440,7 +440,7 @@
         "fileMatch": [
           ".ibmi.json"
         ],
-        "url": "./schema/.ibmi.schema.json"
+        "url": "./schema/ibmi.schema.json"
       }
     ],
     "languages": [
