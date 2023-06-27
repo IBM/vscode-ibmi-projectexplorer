@@ -20,7 +20,7 @@ import Source from "./source";
 import * as vscode from 'vscode';
 import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
-
+import { getInstance } from "../../ibmi";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -348,6 +348,31 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           });
 
           this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.clearLibrary`, async (element: Library) => {
+        if (element) {
+          const library = element.label?.toString();
+          const path = `${element.libraryInfo.library}/${element.libraryInfo.name}`;
+          const type = element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type;
+
+          const result = await vscode.window.showWarningMessage(l10n.t('Are you sure you want to clear {0} *{1}?', path, type), l10n.t(`Yes`), l10n.t(`Cancel`));
+
+          if (result === l10n.t(`Yes`)) {
+            const ibmi = getInstance();
+            const connection = ibmi!.getConnection();
+
+            try {
+              await connection.remoteCommand(
+                `CLRLIB LIB(${library})`,
+              );
+
+              vscode.window.showInformationMessage(l10n.t('Cleared {0} *{1}.', path, type));
+              this.refresh();
+            } catch (e: any) {
+              vscode.window.showErrorMessage(l10n.t('Error clearing library! {0}', e));
+            }
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.deleteLibrary`, async (element: Library) => {

@@ -184,6 +184,11 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.clearLibrary",
+        "title": "%commands.projectExplorer.clearLibrary%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.deleteLibrary",
         "title": "%commands.projectExplorer.deleteLibrary%"
       },
@@ -222,11 +227,11 @@
         "command": "vscode-ibmi-projectexplorer.createMember",
         "title": "%commands.projectExplorer.createMember%"
       },
-			{
+      {
         "category": "%commands.projectExplorer%",
-				"command": "vscode-ibmi-projectexplorer.searchSourceFile",
+        "command": "vscode-ibmi-projectexplorer.searchSourceFile",
         "title": "%commands.projectExplorer.searchSourceFile%"
-			},
+      },
       {
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.selectForCompare",
@@ -370,6 +375,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.renameLibrary",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.clearLibrary",
           "when": "never"
         },
         {
@@ -603,9 +612,14 @@
           "group": "0_libraryActions@2"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.deleteLibrary",
+          "command": "vscode-ibmi-projectexplorer.clearLibrary",
           "when": "view == projectExplorer && viewItem =~ /^library.*/",
           "group": "0_libraryActions@3"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.deleteLibrary",
+          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "group": "0_libraryActions@4"
         },
         {
           "command": "vscode-ibmi-projectexplorer.runAction",
