@@ -653,12 +653,12 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.createMember",
-          "when": "view == projectExplorer && viewItem =~ /^objectFile_PF.*/",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile_PHY.*/",
           "group": "2_memberActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.searchSourceFile",
-          "when": "view == projectExplorer && viewItem =~ /^objectFile_PF.*/",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile_PHY.*/",
           "group": "3_search@0"
         },
         {

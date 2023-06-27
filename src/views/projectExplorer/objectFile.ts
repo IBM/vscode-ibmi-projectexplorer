@@ -17,7 +17,7 @@ export default class ObjectFile extends ProjectExplorerTreeItem {
   objectFileInfo: IBMiObject;
   path: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, objectFileInfo: IBMiObject, pathToLibrary: string) {
+  constructor(public workspaceFolder: WorkspaceFolder, objectFileInfo: IBMiObject, pathToLibrary: string, sourcePhysicalFileInfo?: IBMiObject) {
     const type = objectFileInfo.type.startsWith(`*`) ? objectFileInfo.type.substring(1) : objectFileInfo.type;
     super(`${objectFileInfo.name}.${type}`);
 
@@ -25,7 +25,9 @@ export default class ObjectFile extends ProjectExplorerTreeItem {
     this.path = `${pathToLibrary}/${objectFileInfo.name}.${type}`;
     this.collapsibleState = objectFileInfo.attribute === 'PF' ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None;
     this.contextValue = ObjectFile.contextValue +
-      (objectFileInfo.attribute ? `_${objectFileInfo.attribute}` : ``);
+      (sourcePhysicalFileInfo && sourcePhysicalFileInfo.attribute ?
+        (sourcePhysicalFileInfo.attribute.startsWith(`*`) ? `_${sourcePhysicalFileInfo.attribute.substring(1)}` : `_${sourcePhysicalFileInfo.attribute}`) :
+        (objectFileInfo.attribute ? `_${objectFileInfo.attribute}` : ``));
     const icon = objectFileIcons.get(type.toLowerCase()) || `file`;
     this.iconPath = new ThemeIcon(icon);
     this.description = (objectFileInfo.text.trim() !== '' ? `${objectFileInfo.text} ` : ``) +
