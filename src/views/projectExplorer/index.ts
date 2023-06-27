@@ -98,19 +98,15 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList | any) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList) => {
         if (element) {
-          const iProject = element.name ? ProjectManager.getActiveProject() : ProjectManager.get(element.workspaceFolder);
+          const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
-            let library = element.name;
-
-            if (!library) {
-                library = await window.showInputBox({
-                prompt: l10n.t('Enter library name'),
-                placeHolder: l10n.t('Library name')
-              });
-            }
+            const library = await window.showInputBox({
+              prompt: l10n.t('Enter library name'),
+              placeHolder: l10n.t('Library name')
+            });
 
             if (library) {
               const selectedPosition = await window.showQuickPick([
@@ -124,7 +120,6 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 await iProject.addToLibraryList(library, position);
               }
             }
-
           }
         }
       }),
@@ -144,21 +139,57 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setAsObjectLibrary`, async (element: any) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addToLibraryList`, async (element: any) => {
         if (element) {
           const iProject = ProjectManager.getActiveProject();
+
           if (iProject) {
-            const libraryLabel = element.name;
-            iProject.setObjectLibrary(libraryLabel);
+            const library = element.name;
+
+            if (library) {
+              const selectedPosition = await window.showQuickPick([
+                l10n.t('Beginning of Library List'),
+                l10n.t('End of Library List')], {
+                placeHolder: l10n.t('Choose where to position the library'),
+              });
+
+              if (selectedPosition) {
+                const position = (selectedPosition === l10n.t('Beginning of Library List')) ? 'preUsrlibl' : 'postUsrlibl';
+                await iProject.addToLibraryList(library, position);
+              }
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve library'));
+            }
           }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setAsCurrentLibrary`, async (element: any) => {
         if (element) {
-          const iProject = ProjectManager.getActiveProject();
-          if (iProject) {
-            const libraryLabel = element.name;
-            await iProject.setCurrentLibrary(libraryLabel);
+          const library = element.name;
+
+          if (library) {
+            const iProject = ProjectManager.getActiveProject();
+            if (iProject) {
+              await iProject.setCurrentLibrary(library);
+            }
+
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve library'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setAsTargetLibraryForCompiles`, async (element: any) => {
+        if (element) {
+          const library = element.name;
+
+          if (library) {
+            const iProject = ProjectManager.getActiveProject();
+            if (iProject) {
+              await iProject.setTargetLibraryForCompiles(library);
+            }
+
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve library'));
           }
         }
       }),
@@ -287,7 +318,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: TreeItem) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: IncludePaths | any) => {
         if (element instanceof IncludePaths) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
@@ -302,7 +333,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             }
           }
         } else {
-          const includePath = (element as any).path;
+          const includePath = element.path;
           if (includePath) {
             const iProject = ProjectManager.getActiveProject();
             if (iProject) {
@@ -379,9 +410,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const path = `${element.libraryInfo.library}/${element.libraryInfo.name}`;
           const type = element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type;
 
-          const result = await vscode.window.showWarningMessage(l10n.t('Are you sure you want to clear {0} *{1}?', path, type), l10n.t(`Yes`), l10n.t(`Cancel`));
+          const result = await vscode.window.showWarningMessage(l10n.t('Are you sure you want to clear {0} *{1}?', path, type), l10n.t('Yes'), l10n.t('Cancel'));
 
-          if (result === l10n.t(`Yes`)) {
+          if (result === l10n.t('Yes')) {
             const ibmi = getInstance();
             const connection = ibmi!.getConnection();
 
