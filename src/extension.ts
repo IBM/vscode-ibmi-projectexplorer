@@ -6,8 +6,9 @@ import { loadBase, getInstance } from './ibmi';
 import { ProjectManager } from './projectManager';
 import JobLog from './views/jobLog';
 import ProjectExplorer from './views/projectExplorer';
-import { ExtensionContext, l10n, window, workspace } from 'vscode';
+import { ExtensionContext, Uri, l10n, window, workspace } from 'vscode';
 import { ProjectExplorerApi } from './projectExplorerApi';
+import { DeploymentPath } from '@halcyontech/vscode-ibmi-types/api/Storage';
 
 export function activate(context: ExtensionContext): ProjectExplorerApi {
 	console.log(l10n.t('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!'));
@@ -15,16 +16,29 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 	loadBase();
 	ProjectManager.initialize(context);
 
-	const projectExplorer = new ProjectExplorer(context);
 	const ibmi = getInstance();
+	const projectExplorer = new ProjectExplorer(context);
+	let currentDeploymentStorage: DeploymentPath;
 	ibmi?.onEvent(`connected`, () => {
 		projectExplorer.refresh();
+
+		currentDeploymentStorage = ibmi?.getStorage().getDeployment();
 	});
 	ibmi?.onEvent(`deploy`, () => {
 		projectExplorer.refresh();
 	});
 	ibmi?.onEvent(`deployLocation`, () => {
 		projectExplorer.refresh();
+
+		const newDeploymentStorage = ibmi?.getStorage().getDeployment();
+		for (const [workspaceFolderPath, deployLocation] of Object.entries(newDeploymentStorage)) {
+			if (!currentDeploymentStorage || currentDeploymentStorage[workspaceFolderPath] !== deployLocation) {
+				const iProject = ProjectManager.getProjectFromUri(Uri.file(workspaceFolderPath));
+				ProjectManager.fire({ type: 'deployLocation', iProject: iProject });
+			}
+		}
+
+		currentDeploymentStorage = newDeploymentStorage;
 	});
 	ibmi?.onEvent(`disconnected`, () => {
 		projectExplorer.refresh();
@@ -36,24 +50,26 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 		if (iProject) {
 			await iProject.updateState();
 			await iProject.updateBuildMap();
+			await iProject.updateLibraryList();
 		}
 		projectExplorer.refresh();
 
-		ProjectManager.fire('projects');
+		ProjectManager.fire({ type: 'projects' });
 	});
 	projectWatcher.onDidCreate(async (uri) => {
 		projectExplorer.refresh();
 
-		ProjectManager.fire('projects');
+		ProjectManager.fire({ type: 'projects' });
 	});
 	projectWatcher.onDidDelete(async (uri) => {
 		const iProject = ProjectManager.getProjectFromUri(uri);
 		if (iProject) {
 			iProject.setState(undefined);
+			iProject.setLibraryList(undefined);
 		}
 		projectExplorer.refresh();
 
-		ProjectManager.fire('projects');
+		ProjectManager.fire({ type: 'projects' });
 	});
 
 	const jobLog = new JobLog(context);
@@ -78,6 +94,12 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 
 			projectExplorer.refresh();
 			jobLog.refresh();
+		}),
+		window.onDidChangeActiveTextEditor((event) => {
+			if (event && event.document.uri) {
+				const workspaceFolder = workspace.getWorkspaceFolder(event?.document.uri);
+				ProjectManager.setActiveProject(workspaceFolder);
+			}
 		})
 	);
 
