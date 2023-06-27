@@ -97,12 +97,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry`, async (element: LibraryList | any) => {
         if (element) {
-          const iProject = ProjectManager.getActiveProject();
+          const iProject = element.name ? ProjectManager.getActiveProject() : ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
             let library = element.name;
 
-            if (element instanceof LibraryList) {
+            if (!library) {
                 library = await window.showInputBox({
                 prompt: l10n.t('Enter library name'),
                 placeHolder: l10n.t('Library name')

@@ -82,7 +82,7 @@ export class ProjectManager {
         if (workspaceFolder) {
             this.activeProject = this.loaded[workspaceFolder.index];
             this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', this.activeProject.workspaceFolder.name);
-            this.activeProjectStatusBarItem.tooltip = l10n.t('Active project: {0}', this.activeProject.workspaceFolder);
+            this.activeProjectStatusBarItem.tooltip = l10n.t('Active project: {0}', this.activeProject.workspaceFolder.name);
             this.activeProjectStatusBarItem.command = {
                 command: `vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`,
                 title: l10n.t('Set Active Project')
