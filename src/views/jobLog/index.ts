@@ -23,7 +23,7 @@ export default class JobLog implements TreeDataProvider<any> {
         if (iProject) {
           const jobLogExists = await iProject.projectFileExists('joblog.json');
           if (jobLogExists) {
-            const jobLogUri = iProject.getJobLogPath();
+            const jobLogUri = iProject.getProjectFileUri('joblog.json');
             await workspace.openTextDocument(jobLogUri).then(async jobLogDoc => {
               await window.showTextDocument(jobLogDoc);
             });
@@ -37,7 +37,7 @@ export default class JobLog implements TreeDataProvider<any> {
         if (iProject) {
           const buildOutputExists = await iProject.projectFileExists('output.log');
           if (buildOutputExists) {
-            const buildOutputUri = iProject.getBuildOutputPath();
+            const buildOutputUri = iProject.getProjectFileUri('output.log');
             await workspace.openTextDocument(buildOutputUri).then(async buildOutputDoc => {
               await window.showTextDocument(buildOutputDoc);
             });

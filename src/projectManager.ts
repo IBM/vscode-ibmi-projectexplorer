@@ -8,53 +8,39 @@ import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorer
 import Project from "./views/projectExplorer/project";
 
 /**
- * Project explorer related events
- * 
  * * `projects` event is fired when there is a change to some project (create, update, or delete)
  * * `activeProject` event is fired when there is a change to the active project
+ * * `libraryList` event is fired when there is a change to a project's library list
+ * * `deployLocation` event is fired when there is a change to a project's deploy location
  */
-export type ProjectExplorerEvent = 'projects' | 'activeProject';
+export type ProjectExplorerEventT = 'projects' | 'activeProject' | 'libraryList' | 'deployLocation';
+
+/**
+ * Project explorer event
+ */
+export interface ProjectExplorerEvent {
+    /**
+     * Type of event
+     */
+    type: ProjectExplorerEventT;
+
+    /**
+     * Project associated with event
+     */
+    iProject?: IProject
+}
 
 export class ProjectManager {
     private static loaded: { [index: number]: IProject } = {};
     private static activeProject: IProject | undefined;
     private static activeProjectStatusBarItem: StatusBarItem;
     private static emitter: EventEmitter<ProjectExplorerEvent> = new EventEmitter();
-    private static events: { event: ProjectExplorerEvent, func: Function }[] = [];
-
-    public static load(workspaceFolder: WorkspaceFolder) {
-        if (!this.loaded[workspaceFolder.index]) {
-            const iProject = new IProject(workspaceFolder);
-            this.loaded[workspaceFolder.index] = iProject;
-
-            if (!this.activeProject) {
-                this.setActiveProject(workspaceFolder);
-            }
-        }
-
-        ProjectManager.fire('projects');
-    }
-
-    public static get(workspaceFolder: WorkspaceFolder): IProject | undefined {
-        return this.loaded[workspaceFolder.index];
-    }
-
-    public static getActiveProject(): IProject | undefined {
-        return this.activeProject;
-    }
-
-    public static getActiveProjectStatusBarItem(): StatusBarItem {
-        return this.activeProjectStatusBarItem;
-    }
-
-    public static clear() {
-        this.loaded = {};
-    }
+    private static events: { event: ProjectExplorerEventT, func: Function }[] = [];
 
     public static initialize(context: ExtensionContext) {
         this.emitter.event(e => {
-            this.events.filter(event => event.event === e)
-                .forEach(event => event.func());
+            this.events.filter(event => event.event === e.type)
+                .forEach(event => event.func(e.iProject));
         });
 
         this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
@@ -70,12 +56,37 @@ export class ProjectManager {
         }
     }
 
-    public static onEvent(event: ProjectExplorerEvent, func: Function) {
+    public static onEvent(event: ProjectExplorerEventT, func: Function) {
         this.events.push({ event, func });
     }
 
     public static fire(event: ProjectExplorerEvent) {
         this.emitter?.fire(event);
+    }
+
+    public static load(workspaceFolder: WorkspaceFolder) {
+        if (!this.loaded[workspaceFolder.index]) {
+            const iProject = new IProject(workspaceFolder);
+            this.loaded[workspaceFolder.index] = iProject;
+
+            if (!this.activeProject) {
+                this.setActiveProject(workspaceFolder);
+            }
+        }
+
+        ProjectManager.fire({ type: 'projects' });
+    }
+
+    public static get(workspaceFolder: WorkspaceFolder): IProject | undefined {
+        return this.loaded[workspaceFolder.index];
+    }
+
+    public static clear() {
+        this.loaded = {};
+    }
+
+    public static getActiveProject(): IProject | undefined {
+        return this.activeProject;
     }
 
     public static setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
@@ -97,7 +108,11 @@ export class ProjectManager {
             };
         }
 
-        this.fire('activeProject');
+        this.fire({ type: 'activeProject', iProject: this.activeProject });
+    }
+
+    public static getActiveProjectStatusBarItem(): StatusBarItem {
+        return this.activeProjectStatusBarItem;
     }
 
     public static getProjects(): IProject[] {

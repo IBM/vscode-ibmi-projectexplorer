@@ -16,6 +16,7 @@
   "Current library already set to {0}": "Current library already set to {0}",
   "Failed to update iproj.json": "Failed to update iproj.json",
   "Congratulations, your extension \"vscode-ibmi-projectexplorer\" is now active!": "Congratulations, your extension \"vscode-ibmi-projectexplorer\" is now active!",
+  "Failed to update .env": "Failed to update .env",
   "Variables": "Variables",
   "Unable to retrieve environment variables": "Unable to retrieve environment variables",
   "No value": "No value",
