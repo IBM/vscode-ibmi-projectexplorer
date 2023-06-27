@@ -22,14 +22,15 @@ export class ProjectManager {
     private static emitter: EventEmitter<ProjectExplorerEvent> = new EventEmitter();
     private static events: { event: ProjectExplorerEvent, func: Function }[] = [];
 
-    public static load(workspaceFolder: WorkspaceFolder) {
-        if (!this.loaded[workspaceFolder.index]) {
-            const iProject = new IProject(workspaceFolder);
-            this.loaded[workspaceFolder.index] = iProject;
+    public static async load(workspaceFolder: WorkspaceFolder) {
+        const iProject = new IProject(workspaceFolder);
 
-            if (!this.activeProject) {
-                this.setActiveProject(workspaceFolder);
-            }
+        if (!this.loaded[workspaceFolder.index]) {
+            this.loaded[workspaceFolder.index] = iProject;
+        }
+
+        if (!this.activeProject && await iProject.projectFileExists('iproj.json')) {
+            this.setActiveProject(workspaceFolder);
         }
 
         ProjectManager.fire('projects');
@@ -51,7 +52,7 @@ export class ProjectManager {
         this.loaded = {};
     }
 
-    public static initialize(context: ExtensionContext) {
+    public static async initialize(context: ExtensionContext) {
         this.emitter.event(e => {
             this.events.filter(event => event.event === e)
                 .forEach(event => event.func());
@@ -64,9 +65,9 @@ export class ProjectManager {
 
         const workspaceFolders = workspace.workspaceFolders;
         if (workspaceFolders && workspaceFolders.length > 0) {
-            workspaceFolders.map(folder => {
-                this.load(folder);
-            });
+            for await (const folder of workspaceFolders) {
+                await this.load(folder);
+            };
         }
     }
 
@@ -82,7 +83,7 @@ export class ProjectManager {
         if (workspaceFolder) {
             this.activeProject = this.loaded[workspaceFolder.index];
             this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', this.activeProject.workspaceFolder.name);
-            this.activeProjectStatusBarItem.tooltip = l10n.t('Active project: {0}', this.activeProject.workspaceFolder);
+            this.activeProjectStatusBarItem.tooltip = l10n.t('Active project: {0}', this.activeProject.workspaceFolder.name);
             this.activeProjectStatusBarItem.command = {
                 command: `vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`,
                 title: l10n.t('Set Active Project')

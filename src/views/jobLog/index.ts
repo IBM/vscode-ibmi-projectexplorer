@@ -78,8 +78,8 @@ export default class JobLog implements TreeDataProvider<any> {
       const workspaceFolders = workspace.workspaceFolders;
 
       if (workspaceFolders && workspaceFolders.length > 0) {
-        return workspaceFolders.map(folder => {
-          ProjectManager.load(folder);
+        return workspaceFolders.map(async folder => {
+          await ProjectManager.load(folder);
 
           return new Project(folder);
         });

@@ -9,11 +9,11 @@ import ProjectExplorer from './views/projectExplorer';
 import { ExtensionContext, l10n, window, workspace } from 'vscode';
 import { ProjectExplorerApi } from './projectExplorerApi';
 
-export function activate(context: ExtensionContext): ProjectExplorerApi {
+export async function activate(context: ExtensionContext): Promise<ProjectExplorerApi> {
 	console.log(l10n.t('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!'));
 
 	loadBase();
-	ProjectManager.initialize(context);
+	await ProjectManager.initialize(context);
 
 	const projectExplorer = new ProjectExplorer(context);
 	const ibmi = getInstance();
