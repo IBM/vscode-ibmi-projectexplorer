@@ -13,6 +13,7 @@
   "commands.projectExplorer.setActiveProject": "Set Active Project",
   "commands.projectExplorer.migrateSource": "Migrate Source",
   "commands.projectExplorer.editDeployLocation": "Edit Deploy Location",
+  "commands.projectExplorer.iprojShortcut": "Open iproj.json",
   "commands.projectExplorer.addLibraryListEntry": "Add Library List Entry",
   "commands.projectExplorer.setCurrentLibrary": "Set Current Library",
   "commands.projectExplorer.setAsObjectLibrary": "Set as the target library for compiles done by IBM i Project Explorer",
