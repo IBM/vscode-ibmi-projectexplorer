@@ -92,8 +92,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
-            const fPath = iProject.getIProjFilePath();
-            const document = await vscode.workspace.openTextDocument(fPath.path);
+            const fileUri = iProject.getProjectFileUri('iproj.json');
+            const document = await vscode.workspace.openTextDocument(fileUri);
             await vscode.window.showTextDocument(document);
           }
         }
