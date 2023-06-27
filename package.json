@@ -429,6 +429,20 @@
         }
       ]
     },
+    "jsonValidation": [
+      {
+        "fileMatch": [
+          "iproj.json"
+        ],
+        "url": "./schema/iproj.schema.json"
+      },
+      {
+        "fileMatch": [
+          ".ibmi.json"
+        ],
+        "url": "./schema/ibmi.schema.json"
+      }
+    ],
     "languages": [
       {
         "id": "cl",
