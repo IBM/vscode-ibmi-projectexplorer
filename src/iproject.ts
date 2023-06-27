@@ -16,7 +16,8 @@ import { IBMiJsonT } from "./ibmiJsonT";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import { ProjectManager } from "./projectManager";
 
-const DEFAULT_CURLIB = 'CURLIB';
+const DEFAULT_CURLIB = '&CURLIB';
+const DEFAULT_OBJLIB = '&OBJLIB';
 
 export type ProjectFileType = 'iproj.json' | 'joblog.json' | 'output.log' | '.env';
 export type LibraryList = { libraryInfo: IBMiObject; libraryType: string; }[];
@@ -73,6 +74,10 @@ export class IProject {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
+      if (!unresolvedState.objlib && unresolvedState.curlib) {
+        unresolvedState.objlib = unresolvedState.curlib;
+      }
+
       const values = await this.getEnv();
 
       unresolvedState.preUsrlibl = unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl.map(preUsrlib => this.resolveVariable(preUsrlib, values)) : undefined;
@@ -98,16 +103,12 @@ export class IProject {
   }
 
   public async getUnresolvedState(): Promise<IProjectT | undefined> {
-    let iproj: IProjectT | undefined;
-
     try {
       const content = await workspace.fs.readFile(this.getProjectFileUri('iproj.json'));
-      iproj = IProject.validateIProject(content.toString());
+      return IProject.validateIProject(content.toString());
     } catch (e) {
-      iproj = undefined;
+      return undefined;
     }
-
-    return iproj;
   }
 
   public async getBuildMap(): Promise<Map<string, IBMiJsonT>> {
@@ -132,8 +133,8 @@ export class IProject {
 
     if (!this.buildMap.has(this.workspaceFolder.uri.fsPath)) {
       const unresolvedState = await this.getUnresolvedState();
-      if (unresolvedState && unresolvedState.objlib) {
-        this.buildMap.set(this.workspaceFolder.uri.fsPath, { build: { objlib: unresolvedState.objlib } });
+      if (unresolvedState && (unresolvedState.objlib || unresolvedState.curlib)) {
+        this.buildMap.set(this.workspaceFolder.uri.fsPath, { build: { objlib: unresolvedState.objlib || unresolvedState.curlib } });
       }
     }
   }
@@ -235,6 +236,27 @@ export class IProject {
 
       } else {
         window.showErrorMessage(l10n.t('{0} does not exist in includePath', pathToMove));
+      }
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+  }
+
+  public async setTargetLibraryForCompiles(library: string) {
+    const unresolvedState = await this.getUnresolvedState();
+    const state = await this.getState();
+
+    if (unresolvedState && state) {
+      if (state.objlib === library && unresolvedState.objlib) {
+        window.showErrorMessage(l10n.t('Target library for compiles already set to {0}', library));
+        return;
+      } else if (unresolvedState.objlib && unresolvedState.objlib.startsWith('&')) {
+        await this.updateEnv(unresolvedState.objlib.substring(1), library);
+      } else {
+        await this.updateEnv(DEFAULT_OBJLIB.substring(1), library);
+        unresolvedState.objlib = DEFAULT_OBJLIB;
       }
 
       await this.updateIProj(unresolvedState);
@@ -368,7 +390,7 @@ export class IProject {
         //Update variable
         await this.updateEnv(unresolvedState.curlib.substring(1), library);
       } else {
-        await this.updateEnv(DEFAULT_CURLIB, library);
+        await this.updateEnv(DEFAULT_CURLIB.substring(1), library);
 
         unresolvedState.curlib = DEFAULT_CURLIB;
       }
@@ -611,9 +633,7 @@ export class IProject {
   public static validateIProject(content: string): IProjectT {
     const iproj = JSON.parse(content);
 
-    if (!iproj.objlib && iproj.curlib) {
-      iproj.objlib = iproj.curlib;
-    }
+    // Validate iproj here
 
     return iproj;
   }

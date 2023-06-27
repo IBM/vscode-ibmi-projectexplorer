@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { EventEmitter, ExtensionContext, l10n, StatusBarAlignment, StatusBarItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { EventEmitter, ExtensionContext, l10n, StatusBarAlignment, StatusBarItem, Uri, window, workspace, WorkspaceFolder, commands } from "vscode";
 import { IProject } from "./iproject";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 import Project from "./views/projectExplorer/project";
@@ -93,7 +93,7 @@ export class ProjectManager {
         if (workspaceFolder) {
             this.activeProject = this.loaded[workspaceFolder.index];
             this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', this.activeProject.workspaceFolder.name);
-            this.activeProjectStatusBarItem.tooltip = l10n.t('Active project: {0}', this.activeProject.workspaceFolder);
+            this.activeProjectStatusBarItem.tooltip = l10n.t('Active project: {0}', this.activeProject.workspaceFolder.name);
             this.activeProjectStatusBarItem.command = {
                 command: `vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`,
                 title: l10n.t('Set Active Project')
@@ -108,6 +108,7 @@ export class ProjectManager {
             };
         }
 
+        commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer.hasActiveProject', this.activeProject ? true : false);
         this.fire({ type: 'activeProject', iProject: this.activeProject });
     }
 
