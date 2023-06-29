@@ -2,30 +2,45 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { EventEmitter, ExtensionContext, l10n, StatusBarAlignment, StatusBarItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { EventEmitter, ExtensionContext, l10n, StatusBarAlignment, StatusBarItem, Uri, window, workspace, WorkspaceFolder, commands } from "vscode";
 import { IProject } from "./iproject";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 import Project from "./views/projectExplorer/project";
 
 /**
- * Project explorer related events
- * 
  * * `projects` event is fired when there is a change to some project (create, update, or delete)
  * * `activeProject` event is fired when there is a change to the active project
+ * * `libraryList` event is fired when there is a change to a project's library list
+ * * `deployLocation` event is fired when there is a change to a project's deploy location
  */
-export type ProjectExplorerEvent = 'projects' | 'activeProject';
+export type ProjectExplorerEventT = 'projects' | 'activeProject' | 'libraryList' | 'deployLocation';
+
+/**
+ * Project explorer event
+ */
+export interface ProjectExplorerEvent {
+    /**
+     * Type of event
+     */
+    type: ProjectExplorerEventT;
+
+    /**
+     * Project associated with event
+     */
+    iProject?: IProject
+}
 
 export class ProjectManager {
     private static loaded: { [index: number]: IProject } = {};
     private static activeProject: IProject | undefined;
     private static activeProjectStatusBarItem: StatusBarItem;
     private static emitter: EventEmitter<ProjectExplorerEvent> = new EventEmitter();
-    private static events: { event: ProjectExplorerEvent, func: Function }[] = [];
+    private static events: { event: ProjectExplorerEventT, func: Function }[] = [];
 
     public static initialize(context: ExtensionContext) {
         this.emitter.event(e => {
-            this.events.filter(event => event.event === e)
-                .forEach(event => event.func());
+            this.events.filter(event => event.event === e.type)
+                .forEach(event => event.func(e.iProject));
         });
 
         this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
@@ -41,7 +56,7 @@ export class ProjectManager {
         }
     }
 
-    public static onEvent(event: ProjectExplorerEvent, func: Function) {
+    public static onEvent(event: ProjectExplorerEventT, func: Function) {
         this.events.push({ event, func });
     }
 
@@ -59,7 +74,7 @@ export class ProjectManager {
             }
         }
 
-        ProjectManager.fire('projects');
+        ProjectManager.fire({ type: 'projects' });
     }
 
     public static get(workspaceFolder: WorkspaceFolder): IProject | undefined {
@@ -78,7 +93,7 @@ export class ProjectManager {
         if (workspaceFolder) {
             this.activeProject = this.loaded[workspaceFolder.index];
             this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', this.activeProject.workspaceFolder.name);
-            this.activeProjectStatusBarItem.tooltip = l10n.t('Active project: {0}', this.activeProject.workspaceFolder);
+            this.activeProjectStatusBarItem.tooltip = l10n.t('Active project: {0}', this.activeProject.workspaceFolder.name);
             this.activeProjectStatusBarItem.command = {
                 command: `vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`,
                 title: l10n.t('Set Active Project')
@@ -93,7 +108,8 @@ export class ProjectManager {
             };
         }
 
-        this.fire('activeProject');
+        commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer.hasActiveProject', this.activeProject ? true : false);
+        this.fire({ type: 'activeProject', iProject: this.activeProject });
     }
 
     public static getActiveProjectStatusBarItem(): StatusBarItem {
