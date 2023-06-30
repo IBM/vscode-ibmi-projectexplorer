@@ -52,7 +52,7 @@ export class IProject {
     return Uri.file(path.join(this.workspaceFolder.uri.fsPath, logDirectory, type));
   }
 
-  public async projectFileExists(type: 'iproj.json' | 'joblog.json' | 'output.log' | '.env'): Promise<boolean> {
+  public async projectFileExists(type: ProjectFileType): Promise<boolean> {
     const fileUri = this.getProjectFileUri(type);
 
     try {

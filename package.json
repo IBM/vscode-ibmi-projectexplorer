@@ -33,6 +33,11 @@
           "id": "jobLog",
           "name": "%explorer.jobLog%",
           "icon": "$(book)"
+        },
+        {
+          "id": "testing",
+          "name": "Test cases",
+          "when": "code-for-ibmi:connected && projectExplorer:testing"
         }
       ]
     },
@@ -969,23 +974,17 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
     "nls": "npx @vscode/l10n-dev export --outDir ./l10n ./src",
     "pseudo-nls": "npx @vscode/l10n-dev generate-pseudo -o ./l10n/ ./l10n/bundle.l10n.json ./package.nls.json",
-    "types": "npx -p typescript tsc ./src/extension.ts --excludeDirectories ./src/test --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node"
+    "types": "npx -p typescript tsc ./src/extension.ts --excludeDirectories ./src/testing --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node"
   },
   "devDependencies": {
     "@halcyontech/vscode-ibmi-types": "^1.9.0",
-    "@types/glob": "^7.2.0",
-    "@types/mocha": "^9.1.1",
     "@types/node": "16.x",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
-    "@vscode/test-electron": "^2.1.5",
     "eslint": "^8.20.0",
-    "glob": "^8.0.3",
-    "mocha": "^10.0.0",
     "ts-loader": "^9.3.1",
     "typescript": "^4.7.4",
     "webpack": "^5.76.0",

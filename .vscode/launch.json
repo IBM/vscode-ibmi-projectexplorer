@@ -16,6 +16,22 @@
 				"${workspaceFolder}/dist/**/*.js"
 			],
 			"preLaunchTask": "npm: compile"
+		},
+		{
+			"name": "Extension Tests",
+			"type": "extensionHost",
+			"request": "launch",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}"
+			],
+			"outFiles": [
+				"${workspaceFolder}/dist/**/*.js"
+			],			
+			"sourceMaps": true,
+			"preLaunchTask": "npm: compile",
+			"env": {
+				"testing": "true"
+			}
 		}
 	]
 }
