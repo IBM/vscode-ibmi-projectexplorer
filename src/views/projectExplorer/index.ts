@@ -169,6 +169,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (library) {
             const iProject = ProjectManager.getActiveProject();
+
             if (iProject) {
               await iProject.setCurrentLibrary(library);
             }
@@ -184,12 +185,45 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (library) {
             const iProject = ProjectManager.getActiveProject();
+
             if (iProject) {
               await iProject.setTargetLibraryForCompiles(library);
             }
 
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve library'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetLibraryForCompiles`, async (element: Uri) => {
+        if (element) {
+          const iProject = ProjectManager.getProjectFromUri(element);
+
+          if (iProject) {
+            const library = await window.showInputBox({
+              prompt: l10n.t('Enter library name'),
+              placeHolder: l10n.t('Library name')
+            });
+
+            if (library) {
+              await iProject.setDirectoryTargetLibraryForCompiles(library, element);
+            }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles`, async (element: Uri) => {
+        if (element) {
+          const iProject = ProjectManager.getProjectFromUri(element);
+
+          if (iProject) {
+            const targetCCSID = await window.showInputBox({
+              prompt: l10n.t('Enter target CCSID'),
+              placeHolder: l10n.t('Target CCSID')
+            });
+
+            if (targetCCSID) {
+              await iProject.setDirectoryTargetCCSIDForCompiles(targetCCSID, element);
+            }
           }
         }
       }),
