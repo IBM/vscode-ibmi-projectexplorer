@@ -9,19 +9,21 @@ import { getInstance } from "../ibmi";
 import { iProjectSuite } from "./iProject";
 import { projectManagerSuite } from "./projectManager";
 import { jobLogSuite } from "./jobLog";
-import { treeItemsSuite } from "./treeItems";
+import { projectExplorerSuite } from "./projectExplorer";
 
 const suites: TestSuite[] = [
   iProjectSuite,
   jobLogSuite,
   projectManagerSuite,
-  treeItemsSuite
+  projectExplorerSuite
 ];
 
 export type TestSuite = {
   name: string,
   beforeAll?: () => Promise<void>,
   beforeEach?: () => Promise<void>,
+  afterAll?: () => Promise<void>,
+  afterEach?: () => Promise<void>,
   tests: TestCase[]
 };
 
@@ -60,6 +62,14 @@ export function initialise(context: vscode.ExtensionContext) {
               }
 
               await runTest(testCase);
+
+              if (suite.afterEach) {
+                await suite.afterEach();
+              }
+
+              if (suite.afterAll) {
+                await suite.afterAll();
+              }
             }
           }
         }
@@ -83,6 +93,14 @@ async function runTests() {
       }
 
       await runTest(test);
+
+      if (suite.afterEach) {
+        await suite.afterEach();
+      }
+    }
+
+    if (suite.afterAll) {
+      await suite.afterAll();
     }
   }
 }
