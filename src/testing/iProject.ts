@@ -24,10 +24,10 @@ export const iProjectSuite: TestSuite = {
         const iProject = ProjectManager.getProjects()[0];
 
         await iProject.createEnv();
-        await iProject.setEnv('curlib', 'QGPL');
-        await iProject.setEnv('lib1', 'SYSTOOLS');
-        await iProject.setEnv('lib3', 'QSYSINC');
-        await iProject.setEnv('path1', 'PATH1');
+        await iProject.updateEnv('curlib', 'QGPL');
+        await iProject.updateEnv('lib1', 'SYSTOOLS');
+        await iProject.updateEnv('lib3', 'QSYSINC');
+        await iProject.updateEnv('path1', 'PATH1');
 
         await iProject.updateIProj({
             "version": "0.0.1",
@@ -145,9 +145,9 @@ export const iProjectSuite: TestSuite = {
                 };
 
                 const iProject = ProjectManager.getProjects()[0];
-                const env1 = iProject.resolveLibrary('&lib1', envVars);
-                const env2 = iProject.resolveLibrary('&lib2', envVars);
-                const env3 = iProject.resolveLibrary('&lib3', envVars);
+                const env1 = iProject.resolveVariable('&lib1', envVars);
+                const env2 = iProject.resolveVariable('&lib2', envVars);
+                const env3 = iProject.resolveVariable('&lib3', envVars);
 
                 assert.strictEqual(env1, 'TEMP_LIB_1');
                 assert.strictEqual(env2, 'TEMP_LIB_2');
@@ -310,10 +310,10 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
-            name: `Test setEnv`, test: async () => {
+            name: `Test updateEnv`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
-                await iProject.setEnv('var', 'VAR');
-                await iProject.setEnv('lib2', 'MYLIB');
+                await iProject.updateEnv('var', 'VAR');
+                await iProject.updateEnv('lib2', 'MYLIB');
                 const env = await iProject.getEnv();
 
                 assert.deepStrictEqual(env, {

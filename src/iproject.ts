@@ -14,23 +14,30 @@ import { LibraryType } from "./views/projectExplorer/library";
 import envUpdater from "./envUpdater";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { ProjectManager } from "./projectManager";
 
-const DEFAULT_CURLIB = 'CURLIB';
+const DEFAULT_CURLIB = '&CURLIB';
+const DEFAULT_OBJLIB = '&OBJLIB';
 
-export type EnvironmentVariables = { [name: string]: string };
 export type ProjectFileType = 'iproj.json' | 'joblog.json' | 'output.log' | '.env';
+export type LibraryList = { libraryInfo: IBMiObject; libraryType: string; }[];
+export type EnvironmentVariables = { [name: string]: string };
 export type Direction = 'up' | 'down';
+export type Position = 'first' | 'last' | 'middle';
 
 export class IProject {
   private name: string;
   private state: IProjectT | undefined;
   private buildMap: Map<string, IBMiJsonT>;
+  private libraryList: LibraryList | undefined;
   private jobLogs: RingBuffer<JobLogInfo>;
   private environmentValues: EnvironmentVariables;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
     this.name = workspaceFolder.name;
+    this.state = undefined;
     this.buildMap = new Map();
+    this.libraryList = undefined;
     this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
   }
@@ -58,7 +65,7 @@ export class IProject {
 
   public async getState(): Promise<IProjectT | undefined> {
     if (!this.state) {
-      return await this.updateState();
+      await this.updateState();
     }
     return this.state;
   }
@@ -67,6 +74,10 @@ export class IProject {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
+      if (!unresolvedState.objlib && unresolvedState.curlib) {
+        unresolvedState.objlib = unresolvedState.curlib;
+      }
+
       const values = await this.getEnv();
 
       unresolvedState.preUsrlibl = unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl.map(preUsrlib => this.resolveVariable(preUsrlib, values)) : undefined;
@@ -77,7 +88,6 @@ export class IProject {
     }
 
     this.state = unresolvedState;
-    return this.state;
   }
 
   public setState(state: IProjectT | undefined) {
@@ -93,29 +103,17 @@ export class IProject {
   }
 
   public async getUnresolvedState(): Promise<IProjectT | undefined> {
-    let iproj: IProjectT | undefined;
-
     try {
       const content = await workspace.fs.readFile(this.getProjectFileUri('iproj.json'));
-      iproj = IProject.validateIProject(content.toString());
+      return IProject.validateIProject(content.toString());
     } catch (e) {
-      iproj = undefined;
+      return undefined;
     }
-
-    return iproj;
-  }
-
-  public resolveLibrary(lib: string, values: EnvironmentVariables): string {
-    if (lib && lib.startsWith('&') && values[lib.substring(1)] && values[lib.substring(1)] !== '') {
-      return values[lib.substring(1)];
-    }
-
-    return lib;
   }
 
   public async getBuildMap(): Promise<Map<string, IBMiJsonT>> {
     if (!this.buildMap) {
-      return await this.updateBuildMap();
+      await this.updateBuildMap();
     }
     return this.buildMap;
   }
@@ -135,12 +133,10 @@ export class IProject {
 
     if (!this.buildMap.has(this.workspaceFolder.uri.fsPath)) {
       const unresolvedState = await this.getUnresolvedState();
-      if (unresolvedState && unresolvedState.objlib) {
-        this.buildMap.set(this.workspaceFolder.uri.fsPath, { build: { objlib: unresolvedState.objlib } });
+      if (unresolvedState && (unresolvedState.objlib || unresolvedState.curlib)) {
+        this.buildMap.set(this.workspaceFolder.uri.fsPath, { build: { objlib: unresolvedState.objlib || unresolvedState.curlib } });
       }
     }
-
-    return this.buildMap;
   }
 
   public async getIbmiJson(ibmiJsonUri: Uri, buildMap?: Map<string, IBMiJsonT>): Promise<IBMiJsonT | undefined> {
@@ -160,8 +156,8 @@ export class IProject {
   }
 
   public async addToIncludePaths(directoryToAdd: string) {
-    const remoteDir = await this.getRemoteDir();
-    directoryToAdd = directoryToAdd.startsWith(remoteDir) ? path.posix.relative(remoteDir, directoryToAdd) : directoryToAdd;
+    const deployDir = this.getDeployDir();
+    directoryToAdd = (deployDir && directoryToAdd.startsWith(deployDir)) ? path.posix.relative(deployDir, directoryToAdd) : directoryToAdd;
 
     const unresolvedState = await this.getUnresolvedState();
     if (unresolvedState) {
@@ -195,7 +191,7 @@ export class IProject {
 
       const isIProjUpdated = await this.updateIProj(unresolvedState);
       if (isIProjUpdated) {
-        await this.setEnv(variable, value);
+        await this.updateEnv(variable, value);
       }
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
@@ -226,7 +222,6 @@ export class IProject {
       const index = unresolvedState.includePath ? unresolvedState.includePath.indexOf(pathToMove) : -1;
 
       if (index > -1) {
-
         if (direction === 'up') {
           if (index > 0) {
             [unresolvedState.includePath![index - 1], unresolvedState.includePath![index]] =
@@ -242,14 +237,46 @@ export class IProject {
       } else {
         window.showErrorMessage(l10n.t('{0} does not exist in includePath', pathToMove));
       }
-      await this.updateIProj(unresolvedState);
 
+      await this.updateIProj(unresolvedState);
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
   }
 
-  public async getLibraryList(): Promise<{ libraryInfo: IBMiObject; libraryType: string; }[] | undefined> {
+  public async setTargetLibraryForCompiles(library: string) {
+    const unresolvedState = await this.getUnresolvedState();
+    const state = await this.getState();
+
+    if (unresolvedState && state) {
+      if (state.objlib === library && unresolvedState.objlib) {
+        window.showErrorMessage(l10n.t('Target library for compiles already set to {0}', library));
+        return;
+      } else if (unresolvedState.objlib && unresolvedState.objlib.startsWith('&')) {
+        await this.updateEnv(unresolvedState.objlib.substring(1), library);
+      } else {
+        await this.updateEnv(DEFAULT_OBJLIB.substring(1), library);
+        unresolvedState.objlib = DEFAULT_OBJLIB;
+      }
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+  }
+
+  public async getLibraryList(): Promise<LibraryList | undefined> {
+    if (!this.libraryList) {
+      await this.updateLibraryList();
+    }
+    return this.libraryList;
+  }
+
+  public setLibraryList(libraryList: LibraryList | undefined) {
+    this.libraryList = libraryList;
+  }
+
+  public async updateLibraryList() {
     const ibmi = getInstance();
     const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;
 
@@ -313,7 +340,11 @@ export class IProject {
               });
             }
 
-            return libl;
+            this.libraryList = libl;
+
+            if (libl.toString() !== this.libraryList.toString()) {
+              ProjectManager.fire({ type: 'libraryList', iProject: this });
+            }
           }
         }
       }
@@ -357,9 +388,9 @@ export class IProject {
         return;
       } else if (unresolvedState.curlib && unresolvedState.curlib.startsWith('&')) {
         //Update variable
-        await this.setEnv(unresolvedState.curlib.substring(1), library);
+        await this.updateEnv(unresolvedState.curlib.substring(1), library);
       } else {
-        await this.setEnv(DEFAULT_CURLIB, library);
+        await this.updateEnv(DEFAULT_CURLIB.substring(1), library);
 
         unresolvedState.curlib = DEFAULT_CURLIB;
       }
@@ -379,7 +410,7 @@ export class IProject {
         attribute = 'curlib';
 
         if (unresolvedState.curlib?.startsWith('&')) {
-          await this.setEnv(unresolvedState.curlib.substring(1), '');
+          await this.updateEnv(unresolvedState.curlib.substring(1), '');
           return;
         } else {
           unresolvedState.curlib = undefined;
@@ -396,7 +427,7 @@ export class IProject {
 
             if (libIndex > -1) {
               if (unresolvedState[attribute]![libIndex].startsWith('&')) {
-                await this.setEnv(unresolvedState[attribute]![libIndex].substring(1), '');
+                await this.updateEnv(unresolvedState[attribute]![libIndex].substring(1), '');
                 return;
               } else {
                 unresolvedState[attribute]!.splice(libIndex, 1);
@@ -417,49 +448,50 @@ export class IProject {
     }
   }
 
-  public async updateIProj(iProject: IProjectT) {
+  public async moveLibrary(library: string, type: LibraryType, direction: Direction) {
+    const unresolvedState = await this.getUnresolvedState();
+    let attribute: keyof IProjectT;
+
+    if (unresolvedState) {
+      if (type === LibraryType.preUserLibrary || LibraryType.postUserLibrary) {
+        attribute = type === LibraryType.preUserLibrary ? 'preUsrlibl' : 'postUsrlibl';
+        const libIndex = unresolvedState[attribute] ? unresolvedState[attribute]!.indexOf(library) : -1;
+
+        if (libIndex > -1) {
+          if (direction === 'up') {
+            if (libIndex > 0) {
+              [unresolvedState[attribute]![libIndex - 1], unresolvedState[attribute]![libIndex]] =
+                [unresolvedState[attribute]![libIndex], unresolvedState[attribute]![libIndex - 1]];
+            }
+          } else {
+            if (libIndex < unresolvedState[attribute]!.length - 1) {
+              [unresolvedState[attribute]![libIndex], unresolvedState[attribute]![libIndex + 1]] =
+                [unresolvedState[attribute]![libIndex + 1], unresolvedState[attribute]![libIndex]];
+            }
+          }
+        }
+
+        if (libIndex < 0) {
+          window.showErrorMessage(l10n.t('{0} does not exist in {1}', library, attribute));
+          return;
+        }
+
+        await this.updateIProj(unresolvedState);
+      }
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+  }
+
+  public async updateIProj(iProject: IProjectT): Promise<boolean> {
     try {
       await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
       this.state = undefined;
+      this.libraryList = undefined;
       return true;
     } catch {
       window.showErrorMessage(l10n.t('Failed to update iproj.json'));
       return false;
-    }
-  }
-
-  public async readJobLog() {
-    const jobLogExists = await this.projectFileExists('joblog.json');
-    if (jobLogExists) {
-      const content = await workspace.fs.readFile(this.getProjectFileUri('joblog.json'));
-      const jobLog = IProject.validateJobLog(content.toString());
-
-      if (!this.jobLogs.isEmpty()) {
-        const latestJobLog = this.jobLogs.get(-1);
-        if (latestJobLog && latestJobLog.commands[0].cmd_time !== jobLog.commands[0].cmd_time) {
-          this.jobLogs.add(jobLog);
-        }
-      } else {
-        this.jobLogs.add(jobLog);
-      }
-    }
-  }
-
-  public getJobLogs() {
-    return this.jobLogs.toArray();
-  }
-
-  public async clearJobLogs() {
-    const jobLogExists = await this.projectFileExists('joblog.json');
-    if (jobLogExists) {
-      const localJobLog = this.jobLogs.get(-1);
-
-      this.jobLogs.fromArray([]);
-      if (localJobLog) {
-        this.jobLogs.add(localJobLog);
-      }
-    } else {
-      this.jobLogs.fromArray([]);
     }
   }
 
@@ -487,7 +519,7 @@ export class IProject {
     }
   }
 
-  public async getEnv() {
+  public async getEnv(): Promise<EnvironmentVariables> {
     try {
       const content = await workspace.fs.readFile(this.getProjectFileUri('.env'));
       this.environmentValues = dotenv.parse(Buffer.from(content));
@@ -498,12 +530,13 @@ export class IProject {
     return this.environmentValues;
   }
 
-  public async setEnv(variable: string, value: string) {
+  public async updateEnv(variable: string, value: string) {
     const envUri = this.getProjectFileUri('.env');
     const isEnvVarUpdated = await envUpdater(envUri, { [variable]: value });
 
-    if(isEnvVarUpdated) {
+    if (isEnvVarUpdated) {
       this.state = undefined;
+      this.libraryList = undefined;
     }
   }
 
@@ -556,18 +589,51 @@ export class IProject {
     }
   }
 
-  public async getRemoteDir() {
+  public getDeployDir(): string | undefined {
     const ibmi = getInstance();
     const deploymentDirs = ibmi?.getStorage().getDeployment()!;
     return deploymentDirs[this.workspaceFolder.uri.fsPath];
   }
 
+  public getJobLogs(): JobLogInfo[] {
+    return this.jobLogs.toArray();
+  }
+
+  public async readJobLog() {
+    const jobLogExists = await this.projectFileExists('joblog.json');
+    if (jobLogExists) {
+      const content = await workspace.fs.readFile(this.getProjectFileUri('joblog.json'));
+      const jobLog = IProject.validateJobLog(content.toString());
+
+      if (!this.jobLogs.isEmpty()) {
+        const latestJobLog = this.jobLogs.get(-1);
+        if (latestJobLog && latestJobLog.commands[0].cmd_time !== jobLog.commands[0].cmd_time) {
+          this.jobLogs.add(jobLog);
+        }
+      } else {
+        this.jobLogs.add(jobLog);
+      }
+    }
+  }
+
+  public async clearJobLogs() {
+    const jobLogExists = await this.projectFileExists('joblog.json');
+    if (jobLogExists) {
+      const localJobLog = this.jobLogs.get(-1);
+
+      this.jobLogs.fromArray([]);
+      if (localJobLog) {
+        this.jobLogs.add(localJobLog);
+      }
+    } else {
+      this.jobLogs.fromArray([]);
+    }
+  }
+
   public static validateIProject(content: string): IProjectT {
     const iproj = JSON.parse(content);
 
-    if (!iproj.objlib && iproj.curlib) {
-      iproj.objlib = iproj.curlib;
-    }
+    // Validate iproj here
 
     return iproj;
   }
