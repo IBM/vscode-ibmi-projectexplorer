@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import * as vscode from "vscode";
+import { ExtensionContext, commands, window } from "vscode";
 import { env } from "process";
 import { TestSuitesTreeProvider } from "./testCasesTree";
 import { getInstance } from "../ibmi";
@@ -35,17 +35,18 @@ export interface TestCase {
 }
 
 let testSuitesTreeProvider: TestSuitesTreeProvider;
-export function initialise(context: vscode.ExtensionContext) {
+export function initialise(context: ExtensionContext) {
   if (env.testing === `true`) {
-    vscode.commands.executeCommand(`setContext`, `projectExplorer:testing`, true);
+    commands.executeCommand(`setContext`, `projectExplorer:testing`, true);
     const ibmi = getInstance()!;
     ibmi.onEvent(`connected`, runTests);
     ibmi.onEvent(`disconnected`, resetTests);
     testSuitesTreeProvider = new TestSuitesTreeProvider(suites);
+    const testSuitesTreeView = window.createTreeView(`testing`, { treeDataProvider: testSuitesTreeProvider, showCollapseAll: true });
 
     context.subscriptions.push(
-      vscode.window.registerTreeDataProvider("testing", testSuitesTreeProvider),
-      vscode.commands.registerCommand(`projectExplorer.testing.specific`, async (suiteName: string, testName: string) => {
+      testSuitesTreeView,
+      commands.registerCommand(`projectExplorer.testing.specific`, async (suiteName: string, testName: string) => {
         if (suiteName && testName) {
           const suite = suites.find(suite => suite.name === suiteName);
 
