@@ -606,7 +606,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
       if (workspaceFolders && workspaceFolders.length > 0) {
         for await (const folder of workspaceFolders) {
-          ProjectManager.load(folder);
+          await ProjectManager.load(folder);
 
           const iProject = ProjectManager.get(folder);
           if (iProject) {

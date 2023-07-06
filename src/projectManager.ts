@@ -37,7 +37,7 @@ export class ProjectManager {
     private static emitter: EventEmitter<ProjectExplorerEvent> = new EventEmitter();
     private static events: { event: ProjectExplorerEventT, func: Function }[] = [];
 
-    public static initialize(context: ExtensionContext) {
+    public static async initialize(context: ExtensionContext) {
         this.emitter.event(e => {
             this.events.filter(event => event.event === e.type)
                 .forEach(event => event.func(e.iProject));
@@ -50,9 +50,9 @@ export class ProjectManager {
 
         const workspaceFolders = workspace.workspaceFolders;
         if (workspaceFolders && workspaceFolders.length > 0) {
-            workspaceFolders.map(folder => {
-                this.load(folder);
-            });
+            for await (const folder of workspaceFolders) {
+                await this.load(folder);
+            }
         }
     }
 
@@ -64,14 +64,14 @@ export class ProjectManager {
         this.emitter?.fire(event);
     }
 
-    public static load(workspaceFolder: WorkspaceFolder) {
+    public static async load(workspaceFolder: WorkspaceFolder) {
+        const iProject = new IProject(workspaceFolder);
         if (!this.loaded[workspaceFolder.index]) {
-            const iProject = new IProject(workspaceFolder);
             this.loaded[workspaceFolder.index] = iProject;
+        }
 
-            if (!this.activeProject) {
-                this.setActiveProject(workspaceFolder);
-            }
+        if (!this.activeProject && await iProject.projectFileExists('iproj.json')) {
+            this.setActiveProject(workspaceFolder);
         }
 
         ProjectManager.fire({ type: 'projects' });
@@ -79,6 +79,14 @@ export class ProjectManager {
 
     public static get(workspaceFolder: WorkspaceFolder): IProject | undefined {
         return this.loaded[workspaceFolder.index];
+    }
+
+    public static remove(workspaceFolder: WorkspaceFolder) {
+        delete this.loaded[workspaceFolder.index];
+
+        if (workspaceFolder === this.activeProject?.workspaceFolder) {
+            this.setActiveProject(undefined);
+        }
     }
 
     public static clear() {

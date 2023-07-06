@@ -17,7 +17,7 @@ export const projectManagerSuite: TestSuite = {
             name: `Test load`, test: async () => {
                 const workspaceFolder = workspace.workspaceFolders![0];
                 ProjectManager.clear();
-                ProjectManager.load(workspaceFolder);
+                await ProjectManager.load(workspaceFolder);
                 const iProject = ProjectManager.getProjects()[0];
 
                 assert.strictEqual(iProject.getName(), workspaceFolder.name);

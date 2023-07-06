@@ -11,11 +11,11 @@ import { ProjectExplorerApi } from './projectExplorerApi';
 import { initialise } from './testing';
 import { DeploymentPath } from '@halcyontech/vscode-ibmi-types/api/Storage';
 
-export function activate(context: ExtensionContext): ProjectExplorerApi {
+export async function activate(context: ExtensionContext): Promise<ProjectExplorerApi> {
 	console.log(l10n.t('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!'));
 
 	loadBase();
-	ProjectManager.initialize(context);
+	await ProjectManager.initialize(context);
 
 	const ibmi = getInstance();
 	const projectExplorer = new ProjectExplorer(context);
@@ -63,14 +63,12 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 		ProjectManager.fire({ type: 'projects' });
 	});
 	projectWatcher.onDidDelete(async (uri) => {
-		const iProject = ProjectManager.getProjectFromUri(uri);
-		if (iProject) {
-			iProject.setState(undefined);
-			iProject.setLibraryList(undefined);
-		}
-		projectExplorer.refresh();
+		const workspaceFolder = workspace.getWorkspaceFolder(uri);
 
-		ProjectManager.fire({ type: 'projects' });
+		if (workspaceFolder) {
+			ProjectManager.remove(workspaceFolder);
+			projectExplorer.refresh();
+		}
 	});
 
 	const jobLog = new JobLog(context);
@@ -100,6 +98,7 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 			if (event && event.document.uri) {
 				const workspaceFolder = workspace.getWorkspaceFolder(event?.document.uri);
 				ProjectManager.setActiveProject(workspaceFolder);
+				projectExplorer.refresh();
 			}
 		})
 	);
