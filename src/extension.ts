@@ -94,11 +94,17 @@ export async function activate(context: ExtensionContext): Promise<ProjectExplor
 			projectExplorer.refresh();
 			jobLog.refresh();
 		}),
-		window.onDidChangeActiveTextEditor((event) => {
+		window.onDidChangeActiveTextEditor(async (event) => {
 			if (event && event.document.uri) {
 				const workspaceFolder = workspace.getWorkspaceFolder(event?.document.uri);
-				ProjectManager.setActiveProject(workspaceFolder);
-				projectExplorer.refresh();
+
+				if (workspaceFolder) {
+					const iProject = ProjectManager.get(workspaceFolder);
+					if (iProject && await iProject.projectFileExists('iproj.json')) {
+						ProjectManager.setActiveProject(workspaceFolder);
+						projectExplorer.refresh();
+					}
+				}
 			}
 		})
 	);
