@@ -36,7 +36,7 @@
         },
         {
           "id": "testing",
-          "name": "Test cases",
+          "name": "Test Cases",
           "when": "code-for-ibmi:connected && projectExplorer:testing"
         }
       ]
