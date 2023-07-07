@@ -10,24 +10,21 @@
             "type": "string",
             "description": "Version of this file format, used for migration purposes"
         },
-        "includePath": {
-            "type": "array",
-            "description": "Directories to be searched for includes/copy file (can contain variable references)",
-            "items": {
-                "type": "string"
-            }
-        },
         "repository": {
             "type": "string",
             "description": "URL of repository of this projects home"
         },
+        "license": {
+            "type": "string",
+            "description": "Licensing terms for this project"
+        },
         "objlib": {
             "type": "string",
-            "description": "Target library for compiled objects (if not specified defaults to *CURLIB)"
+            "description": "Target library for compiled objects (can contain references to named libraries). If not specified defaults to *CURLIB"
         },
         "curlib": {
             "type": "string",
-            "description": "Library that is CURLIB in the LIBL for project's connection.  Note that if objlib is not specified, then this will also serve as the objlib"
+            "description": "Library that is CURLIB in the LIBL for project's connection (can contain references to named libraries). If the objlib is not specified, then this will also serve as the objlib"
         },
         "preUsrlibl": {
             "type": "array",
@@ -43,53 +40,27 @@
                 "type": "string"
             }
         },
-        "license": {
-            "type": "string",
-            "description": "Licensing terms for this project"
-        },
         "setIBMiEnvCmd": {
             "type": "array",
-            "description": "List of CL commands to be executed whenever this project connects to the IBM i.  Typically this involves LIBL, ENVVAR and iASP setup.",
+            "description": "List of CL commands to be executed whenever this project connects to the IBM i (typically this involves LIBL, ENVVAR and iASP setup)",
+            "items": {
+                "type": "string"
+            }
+        },
+        "includePath": {
+            "type": "array",
+            "description": "Directories to be searched for includes/copy file (can contain references to named directories)",
             "items": {
                 "type": "string"
             }
         },
         "buildCommand": {
             "type": "string",
-            "description": "PASE command line used to build this entire project. The following substitution variables are supported:\n {path} resolves to the full IFS path corresponding to the source in the editor.\n {host} resolves to the IBM i hostname.\n {usrprf} the user profile that the command will be executed under.\n {branch} resolves to the name of the current git branch if this project is managed by git."
+            "description": "PASE command line used to build this entire project. The following substitution variables are supported:\n {filename} resolves to the base file name being edited.\n {path} resolves to the full IFS path corresponding to the source in the editor.\n {host} resolves to the IBM i hostname.\n {usrprf} the user profile that the command will be executed under.\n {branch} resolves to the name of the current git branch if this project is managed by git."
         },
         "compileCommand": {
             "type": "string",
-            "description": "PASE command line used to compile a specific source file in this project. The following substitution variables are supported:\n {files} resolves to the list of files being selected or the active editor.\n {path} resolves to the full IFS path corresponding to the source in the editor.\n {host} resolves to the IBM i hostname.\n {usrprf} the user profile that the command will be executed under.\n {branch} resolves to the name of the current git branch if this project is managed by git."
-        },
-        "iasp": {
-            "type": "string",
-            "description": "Setting the current IASP allows this project access to a set of libraries and directories. IASP is a collection of disk units that can be brought on-line or taken off-line independently from the remaining storage on a system, including the system ASP, basic user ASPs, and other independent ASPs."
-        },
-        "sql": {
-            "type": "object",
-            "description": "The properties specified when connecting to DB2 for IBM i using JDBC",
-            "properties": {
-                "defaultSchema": {
-                    "type": "string",
-                    "description": "The system uses this SQL schema to resolve unqualified names in SQL statements"
-                },
-                "naming": {
-                    "type": "string",
-                    "description": "Specifies the naming convention used when referring to tables",
-                    "enum": [
-                        "sql",
-                        "system"
-                    ]
-                },
-                "currentPath": {
-                    "type": "array",
-                    "description": "The system uses this path to resolve the schema name for unqualified types, functions, variables, and procedures",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
+            "description": "PASE command line used to compile a specific source file in this project. The following substitution variables are supported:\n {filename} resolves to the base file name being edited.\n {files} resolves to the list of files being selected or the active editor.\n {path} resolves to the full IFS path corresponding to the source in the editor.\n {host} resolves to the IBM i hostname.\n {usrprf} the user profile that the command will be executed under.\n {branch} resolves to the name of the current git branch if this project is managed by git."
         },
         "extensions": {
             "type": "object",
