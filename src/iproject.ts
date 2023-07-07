@@ -157,7 +157,13 @@ export class IProject {
 
   public async addToIncludePaths(directoryToAdd: string) {
     const deployDir = this.getDeployDir();
-    directoryToAdd = (deployDir && directoryToAdd.startsWith(deployDir)) ? path.posix.relative(deployDir, directoryToAdd) : directoryToAdd;
+    if (deployDir) {
+      const relative = path.posix.relative(deployDir, directoryToAdd);
+
+      if (!relative.startsWith("..") && relative !== '') {
+        directoryToAdd = relative;
+      }
+    }
 
     const unresolvedState = await this.getUnresolvedState();
     if (unresolvedState) {
