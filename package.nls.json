@@ -42,6 +42,7 @@
   "commands.projectExplorer.moveObject": "Move Object",
   "commands.projectExplorer.createMember": "Create Member",
   "commands.projectExplorer.searchSourceFile": "Search Source File",
+  "commands.projectExplorer.debugProgram": "Debug Program",
   "commands.projectExplorer.selectForCompare": "Select for Compare",
   "commands.projectExplorer.compareWithSelected": "Compare with Selected",
   "commands.projectExplorer.updateMemberText": "Update Member Text",
