@@ -105,7 +105,14 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const library = await window.showInputBox({
               prompt: l10n.t('Enter library name'),
-              placeHolder: l10n.t('Library name')
+              placeHolder: l10n.t('Library name'),
+              validateInput: (library) => {
+                if (library.length > 10) {
+                  return l10n.t('Library must be 10 characters or less.');
+                } else {
+                  return null;
+                }
+              }
             });
 
             if (library) {
@@ -128,9 +135,20 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
+            const state = await iProject.getState();
+
             const library = await window.showInputBox({
               prompt: l10n.t('Enter library name'),
-              placeHolder: l10n.t('Library name')
+              placeHolder: l10n.t('Library name'),
+              validateInput: (library) => {
+                if (state && library === state.curlib) {
+                  return l10n.t('Current library already set to {0}', library);
+                } else if (library.length > 10) {
+                  return l10n.t('Library must be 10 characters or less.');
+                } else {
+                  return null;
+                }
+              }
             });
 
             if (library) {
