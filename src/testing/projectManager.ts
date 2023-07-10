@@ -32,6 +32,15 @@ export const projectManagerSuite: TestSuite = {
             }
         },
         {
+            name: `Test clear`, test: async () => {
+                const workspaceFolder = workspace.workspaceFolders![0];
+                ProjectManager.clear();
+                const iProjects = ProjectManager.getProjects();
+
+                assert.strictEqual(iProjects.length, 0);
+            }
+        },
+        {
             name: `Test getActiveProject`, test: async () => {
                 const workspaceFolder = workspace.workspaceFolders![0];
                 const iProject = ProjectManager.getActiveProject()!;
@@ -43,10 +52,12 @@ export const projectManagerSuite: TestSuite = {
             name: `Test setActiveProject`, test: async () => {
                 const workspaceFolder = workspace.workspaceFolders![0];
                 ProjectManager.setActiveProject(undefined);
+                const iProject1 = ProjectManager.getActiveProject();
                 ProjectManager.setActiveProject(workspaceFolder);
-                const iProject = ProjectManager.getProjects()[0];
+                const iProject2 = ProjectManager.getActiveProject();
 
-                assert.strictEqual(iProject.getName(), workspaceFolder.name);
+                assert.strictEqual(iProject1, undefined);
+                assert.strictEqual(iProject2?.getName(), workspaceFolder.name);
             }
         },
         {
