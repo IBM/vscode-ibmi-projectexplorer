@@ -12,6 +12,14 @@ import Project from "../views/projectExplorer/project";
 
 export const projectManagerSuite: TestSuite = {
     name: `Project Manager Tests`,
+    beforeEach: async () => {
+        const workspaceFolders = workspace.workspaceFolders;
+        if (workspaceFolders && workspaceFolders.length > 0) {
+            workspaceFolders.map(folder => {
+                ProjectManager.load(folder);
+            });
+        }
+    },
     tests: [
         {
             name: `Test load`, test: async () => {
