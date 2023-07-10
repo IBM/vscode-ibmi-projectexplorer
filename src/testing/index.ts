@@ -10,12 +10,14 @@ import { iProjectSuite } from "./iProject";
 import { projectManagerSuite } from "./projectManager";
 import { jobLogSuite } from "./jobLog";
 import { projectExplorerSuite } from "./projectExplorer";
+import { decorationProviderSuite } from "./decorationProvider";
 
 const suites: TestSuite[] = [
   iProjectSuite,
   jobLogSuite,
   projectManagerSuite,
-  projectExplorerSuite
+  projectExplorerSuite,
+  decorationProviderSuite
 ];
 
 export type TestSuite = {
