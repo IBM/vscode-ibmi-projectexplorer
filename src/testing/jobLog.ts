@@ -48,10 +48,10 @@ export const jobLogSuite: TestSuite = {
             name: `Test readJobLog`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 await iProject.readJobLog();
-                const jobLog = iProject.getJobLogs();
+                const jobLogs = iProject.getJobLogs();
 
-                assert.strictEqual(jobLog.length, 1);
-                assert.deepStrictEqual(jobLog[0], new JobLogInfo(jobLogContent));
+                assert.strictEqual(jobLogs.length, 1);
+                assert.deepStrictEqual(jobLogs[0], new JobLogInfo(jobLogContent));
             }
         },
         {
