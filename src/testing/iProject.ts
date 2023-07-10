@@ -83,7 +83,7 @@ export const iProjectSuite: TestSuite = {
         {
             name: `Test getState`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
-                const state = await iProject.getState()!;
+                const state = await iProject.getState();
 
                 assert.deepStrictEqual(state, {
                     "version": "0.0.1",
@@ -102,7 +102,7 @@ export const iProjectSuite: TestSuite = {
                 const iProject = ProjectManager.getProjects()[0];
                 iProject.setState(undefined);
                 await iProject.updateState();
-                const state = await iProject.getState()!;
+                const state = await iProject.getState();
 
                 assert.deepStrictEqual(state, {
                     "version": "0.0.1",
@@ -123,7 +123,7 @@ export const iProjectSuite: TestSuite = {
                     "version": "0.0.2",
                     "description": "NEW SAMPLE PROJECT"
                 });
-                const state = await iProject.getState()!;
+                const state = await iProject.getState();
 
                 assert.deepStrictEqual(state, {
                     "version": "0.0.2",
@@ -157,7 +157,7 @@ export const iProjectSuite: TestSuite = {
         {
             name: `Test getUnresolvedState`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
-                const unresolvedState = await iProject.getUnresolvedState()!;
+                const unresolvedState = await iProject.getUnresolvedState();
 
                 assert.deepStrictEqual(unresolvedState, {
                     "version": "0.0.1",
@@ -193,14 +193,14 @@ export const iProjectSuite: TestSuite = {
                 await iProject.addToIncludePaths(deployLocation);
                 await iProject.addToIncludePaths(path.parse(deployLocation).dir);
                 await iProject.addToIncludePaths('/some/path');
-                const state1 = await iProject.getState()!;
-                const unresolvedState1 = await iProject.getUnresolvedState()!;
+                const state1 = await iProject.getState();
+                const unresolvedState1 = await iProject.getUnresolvedState();
                 await iProject.updateIProj({
                     "version": "0.0.2"
                 });
                 await iProject.addToIncludePaths('/some/path');
-                const state2 = await iProject.getState()!;
-                const unresolvedState2 = await iProject.getUnresolvedState()!;
+                const state2 = await iProject.getState();
+                const unresolvedState2 = await iProject.getUnresolvedState();
 
                 assert.deepStrictEqual(state1?.includePath, ['includes', 'QPROTOSRC', 'PATH1', '&path2', deployLocation, path.parse(deployLocation).dir, '/some/path']);
                 assert.deepStrictEqual(unresolvedState1?.includePath, ['includes', 'QPROTOSRC', '&path1', '&path2', deployLocation, path.parse(deployLocation).dir, '/some/path']);
@@ -221,8 +221,8 @@ export const iProjectSuite: TestSuite = {
                 await iProject.configureAsVariable('includePath', 'path1', 'path1',);
                 await iProject.configureAsVariable('preUsrlibl', 'lib1', 'SYSTOOLS');
                 await iProject.configureAsVariable('postUsrlibl', 'lib2', 'QSYSINC');
-                const state = await iProject.getState()!;
-                const unresolvedState = await iProject.getUnresolvedState()!;
+                const state = await iProject.getState();
+                const unresolvedState = await iProject.getUnresolvedState();
 
                 assert.deepStrictEqual(state, {
                     "version": "0.0.2",
@@ -244,8 +244,8 @@ export const iProjectSuite: TestSuite = {
                 await iProject.removeFromIncludePaths('includes');
                 await iProject.removeFromIncludePaths('&path1');
                 await iProject.removeFromIncludePaths('/some/path');
-                const state = await iProject.getState()!;
-                const unresolvedState = await iProject.getUnresolvedState()!;
+                const state = await iProject.getState();
+                const unresolvedState = await iProject.getUnresolvedState();
 
                 assert.deepStrictEqual(state?.includePath, ['QPROTOSRC', '&path2']);
                 assert.deepStrictEqual(unresolvedState?.includePath, ['QPROTOSRC', '&path2']);
@@ -257,12 +257,12 @@ export const iProjectSuite: TestSuite = {
                 await iProject.moveIncludePath('includes', 'up');
                 await iProject.moveIncludePath('&path2', 'down');
                 await iProject.moveIncludePath('/some/path', 'down');
-                const state1 = await iProject.getState()!;
-                const unresolvedState1 = await iProject.getUnresolvedState()!;
+                const state1 = await iProject.getState();
+                const unresolvedState1 = await iProject.getUnresolvedState();
                 await iProject.moveIncludePath('includes', 'down');
                 await iProject.moveIncludePath('&path2', 'up');
-                const state2 = await iProject.getState()!;
-                const unresolvedState2 = await iProject.getUnresolvedState()!;
+                const state2 = await iProject.getState();
+                const unresolvedState2 = await iProject.getUnresolvedState();
 
                 assert.deepStrictEqual(state1?.includePath, ['includes', 'QPROTOSRC', 'PATH1', '&path2']);
                 assert.deepStrictEqual(unresolvedState1?.includePath, ['includes', 'QPROTOSRC', '&path1', '&path2']);
@@ -274,14 +274,14 @@ export const iProjectSuite: TestSuite = {
             name: `Test setTargetLibraryForCompiles`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 await iProject.setTargetLibraryForCompiles('MYLIB1');
-                const state1 = await iProject.getState()!;
-                const unresolvedState1 = await iProject.getUnresolvedState()!;
+                const state1 = await iProject.getState();
+                const unresolvedState1 = await iProject.getUnresolvedState();
                 await iProject.updateIProj({
                     "version": "0.0.2"
                 });
                 await iProject.setTargetLibraryForCompiles('MYLIB2');
-                const state2 = await iProject.getState()!;
-                const unresolvedState2 = await iProject.getUnresolvedState()!;
+                const state2 = await iProject.getState();
+                const unresolvedState2 = await iProject.getUnresolvedState();
 
                 assert.strictEqual(state1?.objlib, 'MYLIB1');
                 assert.strictEqual(unresolvedState1?.objlib, '&objlib');
@@ -362,12 +362,12 @@ export const iProjectSuite: TestSuite = {
                 const iProject = ProjectManager.getProjects()[0];
                 await iProject.addToLibraryList('SYSTOOLS', 'preUsrlibl');
                 await iProject.addToLibraryList('QSYSINC', 'postUsrlibl');
-                const state1 = await iProject.getState()!;
-                const unresolvedState1 = await iProject.getUnresolvedState()!;
+                const state1 = await iProject.getState();
+                const unresolvedState1 = await iProject.getUnresolvedState();
                 await iProject.addToLibraryList('MYLIB1', 'preUsrlibl');
                 await iProject.addToLibraryList('MYLIB2', 'postUsrlibl');
-                const state2 = await iProject.getState()!;
-                const unresolvedState2 = await iProject.getUnresolvedState()!;
+                const state2 = await iProject.getState();
+                const unresolvedState2 = await iProject.getUnresolvedState();
 
                 assert.deepStrictEqual(state1?.preUsrlibl, ['SYSTOOLS', '&lib2']);
                 assert.deepStrictEqual(unresolvedState1?.preUsrlibl, ['&lib1', '&lib2']);
@@ -383,14 +383,14 @@ export const iProjectSuite: TestSuite = {
             name: `Test setCurrentLibrary`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 await iProject.setCurrentLibrary('MYLIB1');
-                const state1 = await iProject.getState()!;
-                const unresolvedState1 = await iProject.getUnresolvedState()!;
+                const state1 = await iProject.getState();
+                const unresolvedState1 = await iProject.getUnresolvedState();
                 await iProject.updateIProj({
                     "version": "0.0.2"
                 });
                 await iProject.setCurrentLibrary('MYLIB2');
-                const state2 = await iProject.getState()!;
-                const unresolvedState2 = await iProject.getUnresolvedState()!;
+                const state2 = await iProject.getState();
+                const unresolvedState2 = await iProject.getUnresolvedState();
 
                 assert.strictEqual(state1?.curlib, 'MYLIB1');
                 assert.strictEqual(unresolvedState1?.curlib, '&curlib');
@@ -406,8 +406,8 @@ export const iProjectSuite: TestSuite = {
                 await iProject.removeFromLibraryList('QSYSINC', LibraryType.postUserLibrary);
                 await iProject.removeFromLibraryList('MYLIB1', LibraryType.preUserLibrary);
                 await iProject.removeFromLibraryList('MYLIB2', LibraryType.postUserLibrary);
-                const state = await iProject.getState()!;
-                const unresolvedState = await iProject.getUnresolvedState()!;
+                const state = await iProject.getState();
+                const unresolvedState = await iProject.getUnresolvedState();
 
                 assert.strictEqual(state?.curlib, '&curlib');
                 assert.strictEqual(unresolvedState?.curlib, '&curlib');
@@ -431,13 +431,13 @@ export const iProjectSuite: TestSuite = {
                 await iProject.moveLibrary('MYLIB4', LibraryType.postUserLibrary, 'down');
                 await iProject.moveLibrary('INVALID', LibraryType.preUserLibrary, 'up');
                 await iProject.moveLibrary('INVALID', LibraryType.postUserLibrary, 'up');
-                const state1 = await iProject.getState()!;
+                const state1 = await iProject.getState();
                 await iProject.moveLibrary('MYLIB1', LibraryType.preUserLibrary, 'down');
                 await iProject.moveLibrary('MYLIB3', LibraryType.postUserLibrary, 'down');
-                const state2 = await iProject.getState()!;
+                const state2 = await iProject.getState();
                 await iProject.moveLibrary('MYLIB1', LibraryType.preUserLibrary, 'up');
                 await iProject.moveLibrary('MYLIB3', LibraryType.postUserLibrary, 'up');
-                const state3 = await iProject.getState()!;
+                const state3 = await iProject.getState();
 
                 assert.deepStrictEqual(state1, {
                     "version": "0.0.2",
@@ -463,7 +463,7 @@ export const iProjectSuite: TestSuite = {
                     "version": "0.0.2",
                     "description": "NEW SAMPLE PROJECT"
                 });
-                const state = await iProject.getState()!;
+                const state = await iProject.getState();
 
                 assert.deepStrictEqual(state, {
                     "version": "0.0.2",
@@ -475,7 +475,7 @@ export const iProjectSuite: TestSuite = {
             name: `Test createProject`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 await iProject.createProject('NEW SAMPLE PROJECT');
-                const state = await iProject.getState()!;
+                const state = await iProject.getState();
 
                 assert.deepStrictEqual(state, {
                     "description": "NEW SAMPLE PROJECT"
