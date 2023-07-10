@@ -13,11 +13,11 @@ import { projectExplorerSuite } from "./projectExplorer";
 import { decorationProviderSuite } from "./decorationProvider";
 
 const suites: TestSuite[] = [
+  decorationProviderSuite,
   iProjectSuite,
   jobLogSuite,
-  projectManagerSuite,
   projectExplorerSuite,
-  decorationProviderSuite
+  projectManagerSuite
 ];
 
 export type TestSuite = {
