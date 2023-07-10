@@ -11,7 +11,6 @@ import { ProjectExplorerApi } from "../projectExplorerApi";
 import ProjectExplorer from "../views/projectExplorer";
 import { getDeploy, getInstance } from "../ibmi";
 import { ProjectExplorerTreeItem } from "../views/projectExplorer/projectExplorerTreeItem";
-import { IProject } from "../iproject";
 import MemberFile from "../views/projectExplorer/memberFile";
 import IFSDirectory from "../views/projectExplorer/ifsDirectory";
 
