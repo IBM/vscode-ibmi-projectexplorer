@@ -64,6 +64,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             if (iProject) {
               ProjectManager.setActiveProject(iProject.workspaceFolder);
               this.refresh();
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve project'));
             }
           }
         }
@@ -79,6 +81,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             if (result) {
               this.refresh();
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -95,6 +99,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const fileUri = iProject.getProjectFileUri('iproj.json');
             const document = await vscode.workspace.openTextDocument(fileUri);
             await vscode.window.showTextDocument(document);
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -120,6 +126,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 await iProject.addToLibraryList(library, position);
               }
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -136,6 +144,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             if (library) {
               await iProject.setCurrentLibrary(library);
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -160,6 +170,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             } else {
               window.showErrorMessage(l10n.t('Failed to retrieve library'));
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -172,6 +184,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
             if (iProject) {
               await iProject.setCurrentLibrary(library);
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve project'));
             }
 
           } else {
@@ -188,6 +202,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
             if (iProject) {
               await iProject.setAsTargetLibraryForCompiles(library);
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve project'));
             }
 
           } else {
@@ -254,6 +270,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             if (library && variable) {
               await iProject.setTargetLibraryForCompiles(library, element, variable);
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -267,6 +285,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const library = element.label!.toString();
             await iProject.removeFromLibraryList(library, element.libraryType);
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -277,6 +297,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const library = element.variable ? element.variable : element.label!.toString();
             await iProject.moveLibrary(library, element.libraryType, 'up');
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -287,6 +309,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const library = element.variable ? element.variable : element.label!.toString();
             await iProject.moveLibrary(library, element.libraryType, 'down');
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -303,6 +327,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             if (newValue) {
               await iProject.updateEnv(varName, newValue);
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -318,6 +344,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             if (description) {
               await iProject.createProject(description);
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -326,6 +354,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
             await iProject.createEnv();
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -357,12 +387,15 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
               await iProject.configureAsVariable(attribute!, variable, element.label!.toString());
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.assignToVariable`, async (element: any) => {
         if (element) {
           const value = element.name ? element.name : element.path;
+
           if (value) {
             const variableItems: QuickPickItem[] = [];
             const activeProject = ProjectManager.getActiveProject();
@@ -398,13 +431,18 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             if (includePath) {
               await iProject.addToIncludePaths(includePath);
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         } else {
           const includePath = element.path;
+
           if (includePath) {
             const iProject = ProjectManager.getActiveProject();
             if (iProject) {
               await iProject.addToIncludePaths(includePath);
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve project'));
             }
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve path to directory'));
@@ -417,6 +455,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (iProject) {
             await iProject.removeFromIncludePaths(element.label!.toString());
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -427,6 +467,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const pathToMove = element.variable ? element.variable : element.label!.toString();
             await iProject.moveIncludePath(pathToMove, 'up');
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -437,6 +479,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const pathToMove = element.variable ? element.variable : element.label!.toString();
             await iProject.moveIncludePath(pathToMove, 'down');
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
