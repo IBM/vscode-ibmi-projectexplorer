@@ -70,6 +70,7 @@
   "Select a project": "Select a project",
   "Enter library name": "Enter library name",
   "Library name": "Library name",
+  "Library must be 10 characters or less": "Library must be 10 characters or less",
   "Beginning of Library List": "Beginning of Library List",
   "End of Library List": "End of Library List",
   "Choose where to position the library": "Choose where to position the library",
