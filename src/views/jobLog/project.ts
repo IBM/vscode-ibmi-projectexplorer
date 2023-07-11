@@ -44,7 +44,9 @@ export default class Project extends ProjectExplorerTreeItem {
       }
       ));
     } else {
-      items.push(new ErrorItem(this.workspaceFolder, l10n.t('No job log found')));
+      items.push(new ErrorItem(
+        this.workspaceFolder, l10n.t('No job log found'))
+      );
     }
 
     return items;
