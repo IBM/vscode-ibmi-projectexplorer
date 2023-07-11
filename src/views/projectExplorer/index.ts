@@ -303,7 +303,14 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const tgtCcsid = await window.showInputBox({
               prompt: l10n.t('Enter target CCSID'),
               placeHolder: l10n.t('Target CCSID'),
-              value: ibmiJson?.build?.tgtCcsid
+              value: ibmiJson?.build?.tgtCcsid,
+              validateInput: (tgtCcsid) => {
+                if (!/^\d+$/.test(tgtCcsid)) {
+                  return l10n.t('Target CCSID must be a number');
+                } else {
+                  return null;
+                }
+              }
             });
 
             if (tgtCcsid) {
