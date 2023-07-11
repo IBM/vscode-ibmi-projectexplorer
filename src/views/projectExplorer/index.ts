@@ -187,7 +187,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const iProject = ProjectManager.getActiveProject();
 
             if (iProject) {
-              await iProject.setTargetLibraryForCompiles(library);
+              await iProject.setAsTargetLibraryForCompiles(library);
             }
 
           } else {
@@ -200,32 +200,65 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.getProjectFromUri(element);
 
           if (iProject) {
-            const library = await window.showInputBox({
+            const ibmiJson = await iProject.getIBMiJson(element);
+            const values = await iProject.getEnv();
+
+            let library: string | undefined;
+            let variable: string | undefined;
+            if (ibmiJson && ibmiJson.build?.objlib && ibmiJson.build?.objlib.startsWith('&')) {
+              variable = ibmiJson.build?.objlib.substring(1);
+              library = values[variable];
+            } else {
+              const variables = await iProject?.getVariables();
+              if (variables.length > 0) {
+                const variableItems: QuickPickItem[] = [{ label: l10n.t('{0} Create new variable', '$(add)') }];
+
+                for (const variable of variables) {
+                  variableItems.push({ label: `&${variable}`, description: values[variable] });
+                }
+
+                let variableSelection = await window.showQuickPick(variableItems, {
+                  placeHolder: l10n.t('Select a variable')
+                });
+
+                if (variableSelection) {
+                  if (variableSelection.label !== l10n.t('{0} Create new variable', '$(add)')) {
+                    variable = variableSelection.label.substring(1);
+                    library = values[variable];
+                  }
+                } else {
+                  return;
+                }
+              }
+            }
+
+            if (!variable) {
+              variable = await window.showInputBox({
+                prompt: l10n.t('Enter variable name'),
+                placeHolder: l10n.t('Variable name')
+              });
+
+              if (variable) {
+                while (variable.startsWith('&')) {
+                  variable = variable.substring(1);
+                }
+              }
+            }
+
+            library = await window.showInputBox({
               prompt: l10n.t('Enter library name'),
-              placeHolder: l10n.t('Library name')
+              placeHolder: l10n.t('Library name'),
+              value: library
             });
 
-            if (library) {
-              await iProject.setDirectoryTargetLibraryForCompiles(library, element);
+            if (library && variable) {
+              await iProject.setTargetLibraryForCompiles(library, element, variable);
             }
           }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles`, async (element: Uri) => {
-        if (element) {
-          const iProject = ProjectManager.getProjectFromUri(element);
 
-          if (iProject) {
-            const targetCCSID = await window.showInputBox({
-              prompt: l10n.t('Enter target CCSID'),
-              placeHolder: l10n.t('Target CCSID')
-            });
-
-            if (targetCCSID) {
-              await iProject.setDirectoryTargetCCSIDForCompiles(targetCCSID, element);
-            }
-          }
-        }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList`, async (element: Library) => {
         if (element) {
@@ -303,7 +336,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             let variable = await window.showInputBox({
               prompt: l10n.t('Enter variable name'),
-              placeHolder: l10n.t('Variable Name')
+              placeHolder: l10n.t('Variable name')
             });
 
             if (variable) {
