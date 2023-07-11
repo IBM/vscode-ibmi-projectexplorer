@@ -271,15 +271,15 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
-            name: `Test setTargetLibraryForCompiles`, test: async () => {
+            name: `Test setAsTargetLibraryForCompiles`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
-                await iProject.setTargetLibraryForCompiles('MYLIB1');
+                await iProject.setAsTargetLibraryForCompiles('MYLIB1');
                 const state1 = await iProject.getState();
                 const unresolvedState1 = await iProject.getUnresolvedState();
                 await iProject.updateIProj({
                     "version": "0.0.2"
                 });
-                await iProject.setTargetLibraryForCompiles('MYLIB2');
+                await iProject.setAsTargetLibraryForCompiles('MYLIB2');
                 const state2 = await iProject.getState();
                 const unresolvedState2 = await iProject.getUnresolvedState();
 
