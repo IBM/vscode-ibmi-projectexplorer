@@ -2,12 +2,22 @@
 
 'use strict';
 
+const webpack = require(`webpack`);
+
 const path = require('path');
 
-//@ts-check
-/** @typedef {import('webpack').Configuration} WebpackConfig **/
+const npm_runner = process.env[`npm_lifecycle_script`];
+const isProduction = (npm_runner && npm_runner.includes(`production`));
 
-/** @type WebpackConfig */
+console.log(`Is production build: ${isProduction}`);
+
+let exclude = undefined;
+
+if (isProduction) {
+  exclude = path.resolve(__dirname, `src`, `testing`);
+}
+
+/**@type {webpack.Configuration}*/
 const extensionConfig = {
   target: 'node', // VS Code extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
 	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
@@ -27,8 +37,17 @@ const extensionConfig = {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
     extensions: ['.ts', '.js']
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env.DEV': JSON.stringify(!isProduction),
+    })
+  ],
   module: {
     rules: [
+      {
+        test: /\.ts$/,
+        exclude
+      },
       {
         test: /\.ts$/,
         exclude: /node_modules/,

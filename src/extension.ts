@@ -8,6 +8,7 @@ import JobLog from './views/jobLog';
 import ProjectExplorer from './views/projectExplorer';
 import { ExtensionContext, Uri, l10n, window, workspace } from 'vscode';
 import { ProjectExplorerApi } from './projectExplorerApi';
+import { initialise } from './testing';
 import { DeploymentPath } from '@halcyontech/vscode-ibmi-types/api/Storage';
 
 export function activate(context: ExtensionContext): ProjectExplorerApi {
@@ -102,6 +103,12 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 			}
 		})
 	);
+
+	console.log(`Developer environment: ${process.env.DEV}`);
+	if (process.env.DEV) {
+		// Run tests if not in production build
+		initialise(context);
+	}
 
 	return { projectManager: ProjectManager, projectExplorer: projectExplorer };
 }

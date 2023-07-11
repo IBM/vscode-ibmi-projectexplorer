@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { CodeForIBMi } from "@halcyontech/vscode-ibmi-types";
+import { CodeForIBMi, DeploymentParameters } from "@halcyontech/vscode-ibmi-types";
 import { CustomUI } from "@halcyontech/vscode-ibmi-types/api/CustomUI";
 import Instance from "@halcyontech/vscode-ibmi-types/api/Instance";
 import { Extension, extensions } from "vscode";
@@ -19,6 +19,10 @@ export function loadBase(): CodeForIBMi | undefined {
 
 export function getInstance(): Instance | undefined {
   return (baseExtension && baseExtension.isActive && baseExtension.exports ? baseExtension.exports.instance : undefined);
+}
+
+export function getDeploy(): ((parameters: DeploymentParameters) => Promise<boolean>) | undefined {
+  return (baseExtension && baseExtension.isActive && baseExtension.exports ? baseExtension.exports.deploy : undefined);
 }
 
 export function getCustomUI(): CustomUI | undefined {
