@@ -10,12 +10,14 @@ import { iProjectSuite } from "./iProject";
 import { projectManagerSuite } from "./projectManager";
 import { jobLogSuite } from "./jobLog";
 import { projectExplorerSuite } from "./projectExplorer";
+import { decorationProviderSuite } from "./decorationProvider";
 
 const suites: TestSuite[] = [
+  decorationProviderSuite,
   iProjectSuite,
   jobLogSuite,
-  projectManagerSuite,
-  projectExplorerSuite
+  projectExplorerSuite,
+  projectManagerSuite
 ];
 
 export type TestSuite = {
@@ -24,7 +26,9 @@ export type TestSuite = {
   beforeEach?: () => Promise<void>,
   afterAll?: () => Promise<void>,
   afterEach?: () => Promise<void>,
-  tests: TestCase[]
+  tests: TestCase[],
+  failure?: string,
+  status?: "running" | "done"
 };
 
 export interface TestCase {
@@ -32,6 +36,7 @@ export interface TestCase {
   status?: "running" | "failed" | "pass"
   failure?: string
   test: () => Promise<void>
+  duration?: number
 }
 
 let testSuitesTreeProvider: TestSuitesTreeProvider;
@@ -81,27 +86,48 @@ export function initialise(context: ExtensionContext) {
 
 async function runTests() {
   for (const suite of suites) {
-    console.log(`Running suite ${suite.name} (${suite.tests.length})`);
-    console.log();
+    try {
+      suite.status = "running";
+      testSuitesTreeProvider.refresh(suite);
 
-    if (suite.beforeAll) {
-      await suite.beforeAll();
-    }
-
-    for await (const test of suite.tests) {
-      if (suite.beforeEach) {
-        await suite.beforeEach();
+      if (suite.beforeAll) {
+        console.log(`Pre-processing suite ${suite.name}`);
+        await suite.beforeAll();
       }
 
-      await runTest(test);
+      console.log(`Running suite ${suite.name} (${suite.tests.length})`);
+      console.log();
+      for await (const test of suite.tests) {
+        if (suite.beforeEach) {
+          await suite.beforeEach();
+        }
 
-      if (suite.afterEach) {
-        await suite.afterEach();
+        await runTest(test);
+
+        if (suite.afterEach) {
+          await suite.afterEach();
+        }
       }
-    }
+    } catch (error: any) {
+      console.log(error);
+      suite.failure = `${error.message ? error.message : error}`;
+    } finally {
+      suite.status = "done";
+      testSuitesTreeProvider.refresh(suite);
 
-    if (suite.afterAll) {
-      await suite.afterAll();
+      if (suite.afterAll) {
+        console.log();
+        console.log(`Post-processing suite ${suite.name}`);
+
+        try {
+          await suite.afterAll();
+        } catch (error: any) {
+          console.log(error);
+          suite.failure = `${error.message ? error.message : error}`;
+        }
+      }
+
+      testSuitesTreeProvider.refresh(suite);
     }
   }
 }
@@ -109,21 +135,19 @@ async function runTests() {
 async function runTest(test: TestCase) {
   console.log(`\tRunning ${test.name}`);
   test.status = "running";
-  testSuitesTreeProvider.refresh();
+  testSuitesTreeProvider.refresh(test);
+  const start = +(new Date());
 
   try {
     await test.test();
     test.status = "pass";
-  }
-
-  catch (error: any) {
+  } catch (error: any) {
     console.log(error);
     test.status = "failed";
-    test.failure = error.message;
-  }
-
-  finally {
-    testSuitesTreeProvider.refresh();
+    test.failure = `${error.message ? error.message : error}`;
+  } finally {
+    test.duration = +(new Date()) - start;
+    testSuitesTreeProvider.refresh(test);
   }
 }
 

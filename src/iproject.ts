@@ -80,11 +80,25 @@ export class IProject {
 
       const values = await this.getEnv();
 
-      unresolvedState.preUsrlibl = unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl.map(preUsrlib => this.resolveVariable(preUsrlib, values)) : undefined;
-      unresolvedState.postUsrlibl = unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl.map(postUsrlib => this.resolveVariable(postUsrlib, values)) : undefined;
-      unresolvedState.curlib = unresolvedState.curlib ? this.resolveVariable(unresolvedState.curlib, values) : undefined;
-      unresolvedState.objlib = unresolvedState.objlib ? this.resolveVariable(unresolvedState.objlib, values) : undefined;
-      unresolvedState.includePath = unresolvedState.includePath ? unresolvedState.includePath.map(includePath => this.resolveVariable(includePath, values)) : undefined;
+      if (unresolvedState.preUsrlibl) {
+        unresolvedState.preUsrlibl = unresolvedState.preUsrlibl.map(preUsrlib => this.resolveVariable(preUsrlib, values));
+      }
+
+      if (unresolvedState.postUsrlibl) {
+        unresolvedState.postUsrlibl = unresolvedState.postUsrlibl.map(postUsrlib => this.resolveVariable(postUsrlib, values));
+      }
+
+      if (unresolvedState.curlib) {
+        unresolvedState.curlib = this.resolveVariable(unresolvedState.curlib, values);
+      }
+
+      if (unresolvedState.objlib) {
+        unresolvedState.objlib = this.resolveVariable(unresolvedState.objlib, values);
+      }
+
+      if (unresolvedState.includePath) {
+        unresolvedState.includePath = unresolvedState.includePath.map(includePath => this.resolveVariable(includePath, values));
+      }
     }
 
     this.state = unresolvedState;
@@ -195,10 +209,8 @@ export class IProject {
         window.showErrorMessage(l10n.t('{0} does not exist in {1}', value, attribute));
       }
 
-      const isIProjUpdated = await this.updateIProj(unresolvedState);
-      if (isIProjUpdated) {
-        await this.updateEnv(variable, value);
-      }
+      await this.updateEnv(variable, value);
+      await this.updateIProj(unresolvedState);
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
@@ -260,6 +272,7 @@ export class IProject {
         return;
       } else if (unresolvedState.objlib && unresolvedState.objlib.startsWith('&')) {
         await this.updateEnv(unresolvedState.objlib.substring(1), library);
+        return;
       } else {
         await this.updateEnv(DEFAULT_OBJLIB.substring(1), library);
         unresolvedState.objlib = DEFAULT_OBJLIB;
@@ -393,8 +406,8 @@ export class IProject {
         window.showErrorMessage(l10n.t('Current library already set to {0}', library));
         return;
       } else if (unresolvedState.curlib && unresolvedState.curlib.startsWith('&')) {
-        //Update variable
         await this.updateEnv(unresolvedState.curlib.substring(1), library);
+        return;
       } else {
         await this.updateEnv(DEFAULT_CURLIB.substring(1), library);
 
