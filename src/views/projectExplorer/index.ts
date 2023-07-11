@@ -276,7 +276,25 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles`, async (element: Uri) => {
+        if (element) {
+          const iProject = ProjectManager.getProjectFromUri(element);
 
+          if (iProject) {
+            const ibmiJson = await iProject.getIBMiJson(element);
+
+            const tgtCcsid = await window.showInputBox({
+              prompt: l10n.t('Enter target CCSID'),
+              placeHolder: l10n.t('Target CCSID'),
+              value: ibmiJson?.build?.tgtCcsid
+            });
+
+            if (tgtCcsid) {
+              await iProject.setTargetCCSIDForCompiles(tgtCcsid, element);
+            }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
+        }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList`, async (element: Library) => {
         if (element) {

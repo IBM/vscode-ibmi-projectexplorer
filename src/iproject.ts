@@ -111,6 +111,15 @@ export class IProject {
     }
   }
 
+  public async getUnresolvedIBMiJson(ibmiJsonUri: Uri): Promise<IBMiJsonT | undefined> {
+    try {
+      const content = await workspace.fs.readFile(this.getProjectFileUri('.ibmi.json', ibmiJsonUri));
+      return IProject.validateIBMiJson(content.toString());
+    } catch (e) {
+      return undefined;
+    }
+  }
+
   public async getBuildMap(): Promise<Map<string, IBMiJsonT> | undefined> {
     if (!this.buildMap) {
       await this.updateBuildMap();
@@ -314,9 +323,8 @@ export class IProject {
   }
 
   public async setTargetLibraryForCompiles(library: string, ibmiJsonUri: Uri, variable: string) {
-    const buildMap = await this.getBuildMap();
+    let ibmiJson = await this.getUnresolvedIBMiJson(ibmiJsonUri);
 
-    let ibmiJson: IBMiJsonT | undefined = buildMap?.get(ibmiJsonUri.fsPath);
     if (ibmiJson) {
       if (ibmiJson.build && ibmiJson.build.objlib && ibmiJson.build.objlib === library) {
         window.showErrorMessage(l10n.t('Target library for compiles already set to {0} in {1}', library, ibmiJsonUri.fsPath));
@@ -333,11 +341,29 @@ export class IProject {
       };
     }
 
-    await this.updateIBMiJson(ibmiJson!, ibmiJsonUri);
+    await this.updateIBMiJson(ibmiJson, ibmiJsonUri);
   }
 
-  public async setTargetCCSIDForCompiles(tgtCcsid: string, directory: Uri) {
+  public async setTargetCCSIDForCompiles(tgtCcsid: string, ibmiJsonUri: Uri) {
+    let ibmiJson = await this.getUnresolvedIBMiJson(ibmiJsonUri);
 
+    if (ibmiJson) {
+      if (ibmiJson.build) {
+        ibmiJson.build.tgtCcsid = tgtCcsid;
+      } else {
+        ibmiJson.build = {
+          tgtCcsid: tgtCcsid
+        };
+      }
+    } else {
+      ibmiJson = {
+        build: {
+          tgtCcsid: tgtCcsid
+        }
+      };
+    }
+
+    await this.updateIBMiJson(ibmiJson, ibmiJsonUri);
   }
 
   public async getLibraryList(): Promise<LibraryList | undefined> {
@@ -717,6 +743,14 @@ export class IProject {
     // Validate iproj here
 
     return iproj;
+  }
+
+  public static validateIBMiJson(content: string): IBMiJsonT {
+    const ibmiJson = JSON.parse(content);
+
+    // Validate ibmi here
+
+    return ibmiJson;
   }
 
   public static validateJobLog(content: string): JobLogInfo {
