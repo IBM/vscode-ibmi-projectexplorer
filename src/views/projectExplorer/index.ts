@@ -635,10 +635,29 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const metadataExists = await iProject.projectFileExists('iproj.json');
             if (metadataExists) {
               const state = await iProject.getState();
+
               if (state) {
                 items.push(new Project(folder, state.description));
               } else {
-                items.push(new Project(folder));
+                const validatorResult = iProject.getValidatorResult();
+                if (validatorResult) {
+                  const errors = l10n.t(`This project contains the following errors:\n{0}`, validatorResult.errors.map(error => `• ${error.stack.replace('instance', 'iproj')}`).join('\n'));
+                  items.push(new ErrorItem(
+                    folder,
+                    folder.name,
+                    {
+                      description: l10n.t('Please resolve project metadata'),
+                      tooltip: errors,
+                      command: {
+                        command: 'vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut',
+                        arguments: [{ workspaceFolder: iProject.workspaceFolder }],
+                        title: l10n.t('Open iproj.json')
+                      }
+                    }
+                  ));
+                } else {
+                  items.push(new Project(folder));
+                }
               }
             } else {
               items.push(new ErrorItem(
@@ -651,7 +670,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                     arguments: [folder],
                     title: l10n.t('Create project iproj.json')
                   }
-                }));
+                }
+              ));
             }
           }
 
@@ -675,7 +695,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               command: 'workbench.action.addRootFolder',
               title: l10n.t('Add folder to workspace')
             }
-          }));
+          }
+        ));
       }
 
       return items;

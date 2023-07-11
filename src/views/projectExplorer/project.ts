@@ -47,14 +47,18 @@ export default class Project extends ProjectExplorerTreeItem {
         const homeDirectory = (ibmi?.getConfig().homeDirectory.endsWith('/') ? ibmi?.getConfig().homeDirectory.slice(0, -1) : ibmi?.getConfig().homeDirectory);
         const defaultDeployLocation = homeDirectory ? path.posix.join(homeDirectory, this.workspaceFolder.name) : '';
 
-        items.push(new ErrorItem(this.workspaceFolder, l10n.t('Source'), {
-          description: l10n.t('Please configure deploy location'),
-          command: {
-            command: `code-for-ibmi.setDeployLocation`,
-            title: l10n.t('Set deploy location'),
-            arguments: [undefined, this.workspaceFolder, defaultDeployLocation]
+        items.push(new ErrorItem(
+          this.workspaceFolder,
+          l10n.t('Source'),
+          {
+            description: l10n.t('Please configure deploy location'),
+            command: {
+              command: `code-for-ibmi.setDeployLocation`,
+              title: l10n.t('Set deploy location'),
+              arguments: [undefined, this.workspaceFolder, defaultDeployLocation]
+            }
           }
-        }));
+        ));
       }
       const hasEnv = await iProject?.projectFileExists('.env');
       if (hasEnv) {
@@ -69,14 +73,18 @@ export default class Project extends ProjectExplorerTreeItem {
         items.push(new Variables(this.workspaceFolder, unresolvedVariableCount));
 
       } else {
-        items.push(new ErrorItem(this.workspaceFolder, l10n.t('Variables'), {
-          description: l10n.t('Please configure environment file'),
-          command: {
-            command: `vscode-ibmi-projectexplorer.createEnv`,
-            arguments: [this.workspaceFolder],
-            title: l10n.t('Create project .env')
+        items.push(new ErrorItem(
+          this.workspaceFolder,
+          l10n.t('Variables'),
+          {
+            description: l10n.t('Please configure environment file'),
+            command: {
+              command: `vscode-ibmi-projectexplorer.createEnv`,
+              arguments: [this.workspaceFolder],
+              title: l10n.t('Create project .env')
+            }
           }
-        }));
+        ));
       }
 
       items.push(new LibraryList(this.workspaceFolder));
@@ -93,12 +101,16 @@ export default class Project extends ProjectExplorerTreeItem {
       }
       items.push(...this.extensibleChildren);
     } else {
-      items.push(new ErrorItem(undefined, l10n.t('Please connect to an IBM i'), {
-        command: {
-          command: `connectionBrowser.focus`,
-          title: l10n.t('Focus on connection browser')
+      items.push(new ErrorItem(
+        undefined,
+        l10n.t('Please connect to an IBM i'),
+        {
+          command: {
+            command: `connectionBrowser.focus`,
+            title: l10n.t('Focus on connection browser')
+          }
         }
-      }));
+      ));
     }
 
     return items;
