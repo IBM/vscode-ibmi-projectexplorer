@@ -522,13 +522,13 @@
       "explorer/context": [
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setTargetLibraryForCompiles",
-					"group": "8_projectExplorer@0",
-					"when": "explorerResourceIsFolder"
+          "group": "8_projectExplorer@0",
+          "when": "explorerResourceIsFolder"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles",
-					"group": "8_projectExplorer@1",
-					"when": "explorerResourceIsFolder"
+          "group": "8_projectExplorer@1",
+          "when": "explorerResourceIsFolder"
         }
       ],
       "projectExplorer.goTo": [
