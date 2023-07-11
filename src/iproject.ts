@@ -88,11 +88,25 @@ export class IProject {
 
       const values = await this.getEnv();
 
-      unresolvedState.preUsrlibl = unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl.map(preUsrlib => this.resolveVariable(preUsrlib, values)) : undefined;
-      unresolvedState.postUsrlibl = unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl.map(postUsrlib => this.resolveVariable(postUsrlib, values)) : undefined;
-      unresolvedState.curlib = unresolvedState.curlib ? this.resolveVariable(unresolvedState.curlib, values) : undefined;
-      unresolvedState.objlib = unresolvedState.objlib ? this.resolveVariable(unresolvedState.objlib, values) : undefined;
-      unresolvedState.includePath = unresolvedState.includePath ? unresolvedState.includePath.map(includePath => this.resolveVariable(includePath, values)) : undefined;
+      if (unresolvedState.preUsrlibl) {
+        unresolvedState.preUsrlibl = unresolvedState.preUsrlibl.map(preUsrlib => this.resolveVariable(preUsrlib, values));
+      }
+
+      if (unresolvedState.postUsrlibl) {
+        unresolvedState.postUsrlibl = unresolvedState.postUsrlibl.map(postUsrlib => this.resolveVariable(postUsrlib, values));
+      }
+
+      if (unresolvedState.curlib) {
+        unresolvedState.curlib = this.resolveVariable(unresolvedState.curlib, values);
+      }
+
+      if (unresolvedState.objlib) {
+        unresolvedState.objlib = this.resolveVariable(unresolvedState.objlib, values);
+      }
+
+      if (unresolvedState.includePath) {
+        unresolvedState.includePath = unresolvedState.includePath.map(includePath => this.resolveVariable(includePath, values));
+      }
     }
 
     this.state = unresolvedState;
@@ -213,7 +227,13 @@ export class IProject {
 
   public async addToIncludePaths(directoryToAdd: string) {
     const deployDir = this.getDeployDir();
-    directoryToAdd = (deployDir && directoryToAdd.startsWith(deployDir)) ? path.posix.relative(deployDir, directoryToAdd) : directoryToAdd;
+    if (deployDir) {
+      const relative = path.posix.relative(deployDir, directoryToAdd);
+
+      if (!relative.startsWith("..") && relative !== '') {
+        directoryToAdd = relative;
+      }
+    }
 
     const unresolvedState = await this.getUnresolvedState();
     if (unresolvedState) {
@@ -245,10 +265,8 @@ export class IProject {
         window.showErrorMessage(l10n.t('{0} does not exist in {1}', value, attribute));
       }
 
-      const isIProjUpdated = await this.updateIProj(unresolvedState);
-      if (isIProjUpdated) {
-        await this.updateEnv(variable, value);
-      }
+      await this.updateEnv(variable, value);
+      await this.updateIProj(unresolvedState);
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
