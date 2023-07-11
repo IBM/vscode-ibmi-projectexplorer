@@ -91,6 +91,7 @@
   "Cancel": "Cancel",
   "Cleared {0} *{1}.": "Cleared {0} *{1}.",
   "Error clearing library! {0}": "Error clearing library! {0}",
+  "This project contains the following errors:\n{0}": "This project contains the following errors:\n{0}",
   "Please resolve project metadata": "Please resolve project metadata",
   "Open iproj.json": "Open iproj.json",
   "Please configure project metadata": "Please configure project metadata",

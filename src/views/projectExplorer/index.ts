@@ -641,13 +641,16 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               } else {
                 const validatorResult = iProject.getValidatorResult();
                 if (validatorResult) {
-                  const errors = l10n.t(`This project contains the following errors:\n{0}`, validatorResult.errors.map(error => `• ${error.stack.replace('instance', 'iproj')}`).join('\n'));
+                  const errors = validatorResult.errors
+                    .map(error => `• ${error.stack.replace('instance.', '').replace('instance', 'iproj')}`)
+                    .join('\n');
+                  const tooltip = l10n.t('This project contains the following errors:\n{0}', errors);
                   items.push(new ErrorItem(
                     folder,
                     folder.name,
                     {
                       description: l10n.t('Please resolve project metadata'),
-                      tooltip: errors,
+                      tooltip: tooltip,
                       command: {
                         command: 'vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut',
                         arguments: [{ workspaceFolder: iProject.workspaceFolder }],
