@@ -82,6 +82,7 @@
   "Enter variable name": "Enter variable name",
   "Variable Name": "Variable Name",
   "Select a variable": "Select a variable",
+  "No variables found": "No variables found",
   "Enter include path": "Enter include path",
   "Include path": "Include path",
   "Failed to retrieve path to directory": "Failed to retrieve path to directory",
