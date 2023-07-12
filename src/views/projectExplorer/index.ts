@@ -234,11 +234,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.getProjectFromUri(element);
 
           if (iProject) {
-            const ibmiJson = await iProject.getIBMiJson(element);
+            const ibmiJson = await iProject.getUnresolvedIBMiJson(element);
             const values = await iProject.getEnv();
 
             let library: string | undefined;
             let variable: string | undefined;
+            let isLibrarySet = false;
             if (ibmiJson && ibmiJson.build?.objlib && ibmiJson.build?.objlib.startsWith('&')) {
               variable = ibmiJson.build?.objlib.substring(1);
               library = values[variable];
@@ -258,7 +259,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 if (variableSelection) {
                   if (variableSelection.label !== l10n.t('{0} Create new variable', '$(add)')) {
                     variable = variableSelection.label.substring(1);
-                    library = values[variable];
+                    if(values[variable]) {
+                      library = values[variable];
+                      isLibrarySet = true;
+                    }
                   }
                 } else {
                   return;
@@ -279,11 +283,20 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               }
             }
 
-            library = await window.showInputBox({
-              prompt: l10n.t('Enter library name'),
-              placeHolder: l10n.t('Library name'),
-              value: library
-            });
+            if(!isLibrarySet) {
+              library = await window.showInputBox({
+                prompt: l10n.t('Enter library name'),
+                placeHolder: l10n.t('Library name'),
+                value: library,
+                validateInput: (library) => {
+                  if (library.length > 10) {
+                    return l10n.t('Library must be 10 characters or less');
+                  } else {
+                    return null;
+                  }
+                }
+              });
+            }
 
             if (library && variable) {
               await iProject.setTargetLibraryForCompiles(library, element, variable);
@@ -298,7 +311,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.getProjectFromUri(element);
 
           if (iProject) {
-            const ibmiJson = await iProject.getIBMiJson(element);
+            const ibmiJson = await iProject.getResolvedIBMiJson(element);
 
             const tgtCcsid = await window.showInputBox({
               prompt: l10n.t('Enter target CCSID'),
