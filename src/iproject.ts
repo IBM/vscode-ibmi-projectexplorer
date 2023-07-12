@@ -125,15 +125,6 @@ export class IProject {
     }
   }
 
-  public async getUnresolvedIBMiJson(ibmiJsonUri: Uri): Promise<IBMiJsonT | undefined> {
-    try {
-      const content = await workspace.fs.readFile(this.getProjectFileUri('.ibmi.json', ibmiJsonUri));
-      return IProject.validateIBMiJson(content.toString());
-    } catch (e) {
-      return undefined;
-    }
-  }
-
   public async getBuildMap(): Promise<Map<string, IBMiJsonT> | undefined> {
     if (!this.buildMap) {
       await this.updateBuildMap();
@@ -174,7 +165,20 @@ export class IProject {
     );
   }
 
-  public async getIBMiJson(ibmiJsonUri: Uri, buildMap?: Map<string, IBMiJsonT>, resolvedIBMiJson?: IBMiJsonT): Promise<IBMiJsonT | undefined> {
+  public setBuildMap(buildMap: Map<string, IBMiJsonT> | undefined) {
+    this.buildMap = buildMap;
+  }
+
+  public async getUnresolvedIBMiJson(ibmiJsonUri: Uri): Promise<IBMiJsonT | undefined> {
+    try {
+      const content = await workspace.fs.readFile(this.getProjectFileUri('.ibmi.json', ibmiJsonUri));
+      return IProject.validateIBMiJson(content.toString());
+    } catch (e) {
+      return undefined;
+    }
+  }
+
+  public async getResolvedIBMiJson(ibmiJsonUri: Uri, buildMap?: Map<string, IBMiJsonT>, resolvedIBMiJson?: IBMiJsonT): Promise<IBMiJsonT | undefined> {
     buildMap = buildMap || await this.getBuildMap();
     if (!buildMap) {
       return;
@@ -219,7 +223,7 @@ export class IProject {
     const parentDirectoryUri = Uri.file(path.parse(ibmiJsonUri.fsPath).dir);
     const parentDirectoryWorkspaceFolder = workspace.getWorkspaceFolder(parentDirectoryUri);
     if (parentDirectoryWorkspaceFolder === this.workspaceFolder) {
-      return await this.getIBMiJson(parentDirectoryUri, buildMap, ibmiJson);
+      return await this.getResolvedIBMiJson(parentDirectoryUri, buildMap, ibmiJson);
     } else {
       return ibmiJson;
     }
