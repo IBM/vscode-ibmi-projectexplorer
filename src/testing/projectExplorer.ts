@@ -318,6 +318,10 @@ export const projectExplorerSuite: TestSuite = {
                 const children = await projectExplorer?.getChildren(objectLibrariesTreeItem)!;
 
                 assertTreeItem(children[0], {
+                    label: '&objlib',
+                    description: 'Not specified'
+                });
+                assertTreeItem(children[1], {
                     label: 'QGPL',
                     description: '&curlib - General Purpose Library (PROD)',
                     libraryInfo: {
@@ -328,7 +332,7 @@ export const projectExplorerSuite: TestSuite = {
                         text: 'General Purpose Library'
                     }
                 });
-                assertTreeItem(children[1], {
+                assertTreeItem(children[2], {
                     label: 'SYSTOOLS',
                     description: '&lib1 - System Library for DB2 (PROD)',
                     libraryInfo: {
@@ -339,11 +343,11 @@ export const projectExplorerSuite: TestSuite = {
                         text: 'System Library for DB2'
                     }
                 });
-                assertTreeItem(children[2], {
+                assertTreeItem(children[3], {
                     label: '&lib2',
                     description: 'Not specified'
                 });
-                assertTreeItem(children[3], {
+                assertTreeItem(children[4], {
                     label: 'QSYSINC',
                     description: '&lib3 - (PROD)',
                     libraryInfo: {
@@ -354,12 +358,8 @@ export const projectExplorerSuite: TestSuite = {
                         text: ''
                     }
                 });
-                assertTreeItem(children[4], {
-                    label: '&lib4',
-                    description: 'Not specified'
-                });
                 assertTreeItem(children[5], {
-                    label: '&objlib',
+                    label: '&lib4',
                     description: 'Not specified'
                 });
             }

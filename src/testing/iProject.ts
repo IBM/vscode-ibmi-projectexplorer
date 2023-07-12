@@ -213,25 +213,33 @@ export const iProjectSuite: TestSuite = {
                 const iProject = ProjectManager.getProjects()[0];
                 await iProject.updateIProj({
                     "version": "0.0.2",
+                    "objlib": "QGPL",
+                    "curlib": "QGPL",
                     "includePath": ["path1"],
                     "preUsrlibl": ["SYSTOOLS"],
                     "postUsrlibl": ["QSYSINC"]
                 });
-                await iProject.configureAsVariable('includePath', 'path', '/some/path');
-                await iProject.configureAsVariable('includePath', 'path1', 'path1',);
-                await iProject.configureAsVariable('preUsrlibl', 'lib1', 'SYSTOOLS');
-                await iProject.configureAsVariable('postUsrlibl', 'lib2', 'QSYSINC');
+                await iProject.configureAsVariable(['includePath'], 'path', '/some/path');
+                await iProject.configureAsVariable(['objlib'], 'objlib', 'QGPL');
+                await iProject.configureAsVariable(['curlib'], 'curlib', 'QGPL');
+                await iProject.configureAsVariable(['includePath'], 'path1', 'path1');
+                await iProject.configureAsVariable(['preUsrlibl'], 'lib1', 'SYSTOOLS');
+                await iProject.configureAsVariable(['postUsrlibl'], 'lib2', 'QSYSINC');
                 const state = await iProject.getState();
                 const unresolvedState = await iProject.getUnresolvedState();
 
                 assert.deepStrictEqual(state, {
                     "version": "0.0.2",
+                    "objlib": "QGPL",
+                    "curlib": "QGPL",
                     "includePath": ["path1"],
                     "preUsrlibl": ["SYSTOOLS"],
                     "postUsrlibl": ["QSYSINC"]
                 });
                 assert.deepStrictEqual(unresolvedState, {
                     "version": "0.0.2",
+                    "objlib": "&objlib",
+                    "curlib": "&curlib",
                     "includePath": ["&path1"],
                     "preUsrlibl": ["&lib1"],
                     "postUsrlibl": ["&lib2"]
@@ -549,8 +557,20 @@ export const iProjectSuite: TestSuite = {
             name: `Test getObjectLibraries`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 const objLibs = await iProject.getObjectLibraries();
+                const objLib1 = objLibs?.get('&objlib');
+                const objLib2 = objLibs?.get('&curlib');
+                const objLib3 = objLibs?.get('&lib1');
+                const objLib4 = objLibs?.get('&lib2');
+                const objLib5 = objLibs?.get('&lib3');
+                const objLib6 = objLibs?.get('&lib4');
 
-                assert.deepStrictEqual(objLibs, new Set(['&objlib', '&curlib', '&lib1', '&lib2', '&lib3', '&lib4']));
+                assert.strictEqual(objLibs?.size, 6);
+                assert.deepStrictEqual(objLib1, [LibraryType.objectLibrary]);
+                assert.deepStrictEqual(objLib2, [LibraryType.currentLibrary]);
+                assert.deepStrictEqual(objLib3, [LibraryType.preUserLibrary]);
+                assert.deepStrictEqual(objLib4, [LibraryType.preUserLibrary]);
+                assert.deepStrictEqual(objLib5, [LibraryType.postUserLibrary]);
+                assert.deepStrictEqual(objLib6, [LibraryType.postUserLibrary]);
             }
         },
         {
