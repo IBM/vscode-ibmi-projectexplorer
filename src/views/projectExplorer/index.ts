@@ -311,7 +311,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                   }
                 }
               } else {
-                attributes = ['includePath'];
+                attributes.push('includePath');
               }
 
               await iProject.configureAsVariable(attributes, variable, element.label!.toString());
