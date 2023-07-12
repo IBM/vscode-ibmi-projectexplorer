@@ -36,7 +36,7 @@ export default class Project extends ProjectExplorerTreeItem {
       (state?.description ? l10n.t('Description: {0}\n', state.description) : ``) +
       (state?.version ? l10n.t('Version: {0}\n', state.version) : ``) +
       (state?.repository ? l10n.t('Repository: {0}\n', state.repository) : ``) +
-      (state?.license ? l10n.t('License: {0}\n', state.license) : ``);
+      (state?.license ? l10n.t('License: {0}', state.license) : ``);
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
