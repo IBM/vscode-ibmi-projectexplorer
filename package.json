@@ -217,6 +217,11 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.createSourceFile",
+        "title": "%commands.projectExplorer.createSourceFile%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.runAction",
         "title": "%commands.projectExplorer.runAction%"
       },
@@ -426,6 +431,10 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.createSourceFile",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.runAction",
           "when": "never"
         },
@@ -548,7 +557,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "2_migrate@0"
+          "group": "3_migrate@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
@@ -593,7 +602,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "1_variable@1"
+          "group": "2_variable@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",
@@ -638,7 +647,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.configureAsVariable",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/ && viewItem =~ /^.*_configurable.*/",
-          "group": "1_variable@0"
+          "group": "2_variable@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.configureAsVariable",
@@ -679,6 +688,11 @@
           "command": "vscode-ibmi-projectexplorer.deleteLibrary",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
           "group": "0_libraryActions@4"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createSourceFile",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
+          "group": "1_objectActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.runAction",

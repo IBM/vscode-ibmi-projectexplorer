@@ -34,6 +34,7 @@
   "commands.projectExplorer.renameLibrary": "Rename Library",
   "commands.projectExplorer.clearLibrary": "Clear Library",
   "commands.projectExplorer.deleteLibrary": "Delete Library",
+  "commands.projectExplorer.createSourceFile": "Create Source File",
   "commands.projectExplorer.runAction": "Run Action",
   "commands.projectExplorer.changeObjectDescription": "Change Object Description",
   "commands.projectExplorer.copyObject": "Copy Object",
