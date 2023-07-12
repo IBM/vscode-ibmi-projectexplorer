@@ -257,6 +257,11 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.browse",
+        "title": "%commands.projectExplorer.browse%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.selectForCompare",
         "title": "%commands.projectExplorer.selectForCompare%"
       },
@@ -450,6 +455,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.searchSourceFile",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.browse",
           "when": "never"
         },
         {
@@ -717,44 +726,49 @@
           "group": "0_actions@0"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.browse",
+          "when": "view == projectExplorer && viewItem =~ /^member*/",
+          "group": "1_browse@0"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.selectForCompare",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "1_compare@0"
+          "group": "2_compare@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.compareWithSelected",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "1_compare@1"
+          "group": "2_compare@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.updateMemberText",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "2_memberActions@0"
+          "group": "3_memberActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.copyMember",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "2_memberActions@1"
+          "group": "3_memberActions@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.renameMember",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "2_memberActions@2"
+          "group": "3_memberActions@2"
         },
         {
           "command": "vscode-ibmi-projectexplorer.deleteMember",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "2_memberActions@3"
+          "group": "3_memberActions@3"
         },
         {
           "command": "vscode-ibmi-projectexplorer.download",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "3_transfer@0"
+          "group": "4_transfer@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.uploadAndReplace",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "3_transfer@1"
+          "group": "4_transfer@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",

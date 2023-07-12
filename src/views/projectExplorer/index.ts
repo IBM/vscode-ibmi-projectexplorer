@@ -538,6 +538,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           });
         }
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.browse`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.browse`, {
+            member: element.memberFileInfo
+          });
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.selectForCompare`, async (element: MemberFile) => {
         if (element) {
           await commands.executeCommand(`code-for-ibmi.selectForCompare`, {
