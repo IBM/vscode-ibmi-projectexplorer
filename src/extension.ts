@@ -49,15 +49,21 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 	projectWatcher.onDidChange(async (uri) => {
 		const iProject = ProjectManager.getProjectFromUri(uri);
 		if (iProject) {
-			await iProject.updateState();
-			await iProject.updateBuildMap();
-			await iProject.updateLibraryList();
+			iProject.setState(undefined);
+			iProject.setBuildMap(undefined);
+			iProject.setLibraryList(undefined);
 		}
 		projectExplorer.refresh();
 
 		ProjectManager.fire({ type: 'projects' });
 	});
 	projectWatcher.onDidCreate(async (uri) => {
+		const iProject = ProjectManager.getProjectFromUri(uri);
+		if (iProject) {
+			iProject.setState(undefined);
+			iProject.setBuildMap(undefined);
+			iProject.setLibraryList(undefined);
+		}
 		projectExplorer.refresh();
 
 		ProjectManager.fire({ type: 'projects' });
@@ -66,6 +72,7 @@ export function activate(context: ExtensionContext): ProjectExplorerApi {
 		const iProject = ProjectManager.getProjectFromUri(uri);
 		if (iProject) {
 			iProject.setState(undefined);
+			iProject.setBuildMap(undefined);
 			iProject.setLibraryList(undefined);
 		}
 		projectExplorer.refresh();

@@ -7,9 +7,13 @@ import { Uri, l10n, window, workspace } from "vscode";
 import { EnvironmentVariables } from "./iproject";
 
 export default async function envUpdater(envUri: Uri, variables: EnvironmentVariables) {
+  let text = '';
   try {
     const content = await workspace.fs.readFile(envUri);
-    const text = content.toString();
+    text = content.toString();
+  } catch (e) { }
+
+  try {
     const eol = /\r\n/.test(text) ? `\r\n` : `\n`;
     let lines = text !== '' ? text.split(eol) : [];
 
