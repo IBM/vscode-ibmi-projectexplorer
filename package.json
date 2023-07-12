@@ -104,11 +104,6 @@
         "icon": "$(edit)"
       },
       {
-        "command": "vscode-ibmi-projectexplorer.projectExplorer.filterSourceFiles",
-        "title": "%commands.projectExplorer.filterSourceFiles%",
-        "icon": "$(filter)"
-      },
-      {
         "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
         "title": "%commands.projectExplorer.deployProject%",
         "icon": "$(cloud-upload)"
@@ -351,10 +346,6 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.filterSourceFiles",
-          "when": "never"
-        },
-        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
           "when": "never"
         },
@@ -570,14 +561,9 @@
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.filterSourceFiles",
-          "when": "view == projectExplorer && viewItem =~ /^source.*/",
-          "group": "inline@1"
-        },
-        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
           "when": "view == projectExplorer && viewItem =~ /^source.*/",
-          "group": "inline@2"
+          "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",

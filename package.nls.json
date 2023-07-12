@@ -14,7 +14,6 @@
   "commands.projectExplorer.setActiveProject": "Set Active Project",
   "commands.projectExplorer.migrateSource": "Migrate Source",
   "commands.projectExplorer.editDeployLocation": "Edit Deploy Location",
-  "commands.projectExplorer.filterSourceFiles": "Filter Source Files",
   "commands.projectExplorer.deployProject": "Deploy Project",
   "commands.projectExplorer.iprojShortcut": "Open iproj.json",
   "commands.projectExplorer.addLibraryListEntry": "Add Library List Entry",
