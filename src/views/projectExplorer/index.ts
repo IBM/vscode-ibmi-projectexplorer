@@ -457,18 +457,22 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const activeProject = ProjectManager.getActiveProject();
             if (activeProject) {
               const variables = await activeProject?.getVariables();
-              const values = await activeProject.getEnv();
+              if (variables.length > 0) {
+                const values = await activeProject.getEnv();
 
-              for (const variable of variables) {
-                variableItems.push({ label: `&${variable}`, description: values[variable] });
-              }
+                for (const variable of variables) {
+                  variableItems.push({ label: `&${variable}`, description: values[variable] });
+                }
 
-              const variable = await window.showQuickPick(variableItems, {
-                placeHolder: l10n.t('Select a variable')
-              });
+                const variable = await window.showQuickPick(variableItems, {
+                  placeHolder: l10n.t('Select a variable')
+                });
 
-              if (variable) {
-                await activeProject.updateEnv(variable.label.substring(1), value);
+                if (variable) {
+                  await activeProject.updateEnv(variable.label.substring(1), value);
+                }
+              } else {
+                window.showErrorMessage(l10n.t('No variables found'));
               }
             }
           }
