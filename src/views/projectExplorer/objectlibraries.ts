@@ -45,7 +45,8 @@ export default class ObjectLibraries extends ProjectExplorerTreeItem {
             {
               description: l10n.t('Not specified'),
               contextValue: Library.contextValue
-            }));
+            }
+          ));
           continue;
         }
 
@@ -63,7 +64,8 @@ export default class ObjectLibraries extends ProjectExplorerTreeItem {
               description: variable,
               contextValue: Library.contextValue,
               tooltip: error
-            }));
+            }
+          ));
           continue;
         }
       }

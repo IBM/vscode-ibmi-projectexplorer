@@ -21,6 +21,7 @@ export default class Variables extends ProjectExplorerTreeItem {
     this.resourceUri = Uri.parse(`variables:${unresolvedVariableCount}`, true);
     this.contextValue = Variables.contextValue;
     this.iconPath = new ThemeIcon(`symbol-variable`, new ThemeColor(`icon.foreground`));
+    this.tooltip = l10n.t('Variables');
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
@@ -34,7 +35,10 @@ export default class Variables extends ProjectExplorerTreeItem {
 
     const actualValues = await iProject?.getEnv();
     if (!actualValues) {
-      return [new ErrorItem(this.workspaceFolder, l10n.t('Unable to retrieve environment variables'))];
+      return [new ErrorItem(
+        this.workspaceFolder,
+        l10n.t('Unable to retrieve environment variables')
+      )];
     }
 
     items.push(...possibleVariables.map(

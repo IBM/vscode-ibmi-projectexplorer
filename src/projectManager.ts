@@ -6,6 +6,7 @@ import { EventEmitter, ExtensionContext, l10n, StatusBarAlignment, StatusBarItem
 import { IProject } from "./iproject";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 import Project from "./views/projectExplorer/project";
+import { Validator } from "jsonschema";
 
 /**
  * * `projects` event is fired when there is a change to some project (create, update, or delete)
@@ -34,10 +35,17 @@ export class ProjectManager {
     private static loaded: { [index: number]: IProject } = {};
     private static activeProject: IProject | undefined;
     private static activeProjectStatusBarItem: StatusBarItem;
+    private static validator: Validator;
     private static emitter: EventEmitter<ProjectExplorerEvent> = new EventEmitter();
     private static events: { event: ProjectExplorerEventT, func: Function }[] = [];
 
-    public static initialize(context: ExtensionContext) {
+    public static async initialize(context: ExtensionContext) {
+        this.validator = new Validator();
+        const iprojJsonContent = (await workspace.fs.readFile(Uri.file(context.asAbsolutePath('schema/iproj.schema.json')))).toString();
+        const iprojJsonSchema = JSON.parse(iprojJsonContent);
+        iprojJsonSchema.id = '/iproj';
+        this.validator.addSchema(iprojJsonSchema);
+
         this.emitter.event(e => {
             this.events.filter(event => event.event === e.type)
                 .forEach(event => event.func(e.iProject));
@@ -54,6 +62,10 @@ export class ProjectManager {
                 this.load(folder);
             });
         }
+    }
+
+    public static getValidator() {
+        return this.validator;
     }
 
     public static onEvent(event: ProjectExplorerEventT, func: Function) {
