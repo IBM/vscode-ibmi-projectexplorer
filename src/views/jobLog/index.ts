@@ -8,6 +8,7 @@ import { ProjectManager } from "../../projectManager";
 import Project from "./project";
 import Command from "./command";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
+import { IProjectT } from "../../iProjectT";
 
 export default class JobLog implements TreeDataProvider<any> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -71,20 +72,29 @@ export default class JobLog implements TreeDataProvider<any> {
     return element;
   }
 
-  async getChildren(element?: ProjectExplorerTreeItem): Promise<any[]> {
+  async getChildren(element?: ProjectExplorerTreeItem): Promise<ProjectExplorerTreeItem[]> {
     if (element) {
       return element.getChildren();
     } else {
+      const items: ProjectExplorerTreeItem[] = [];
+
       const workspaceFolders = workspace.workspaceFolders;
 
       if (workspaceFolders && workspaceFolders.length > 0) {
-        return workspaceFolders.map(folder => {
+        for await (const folder of workspaceFolders) {
           ProjectManager.load(folder);
 
-          return new Project(folder);
-        });
+          let state: IProjectT | undefined;
+
+          const iProject = ProjectManager.get(folder);
+          if (iProject) {
+            state = await iProject.getState();
+          }
+
+          items.push(new Project(folder, state));
+        }
       } else {
-        return [new ErrorItem(
+        items.push(new ErrorItem(
           undefined,
           l10n.t('Please open a local workspace folder'),
           {
@@ -92,8 +102,11 @@ export default class JobLog implements TreeDataProvider<any> {
               command: 'workbench.action.addRootFolder',
               title: l10n.t('Add folder to workspace')
             }
-          })];
+          }
+        ));
       }
+
+      return items;
     }
   }
 }
