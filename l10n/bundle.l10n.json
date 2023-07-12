@@ -89,6 +89,7 @@
   "Variable value": "Variable value",
   "Enter project description": "Enter project description",
   "Description": "Description",
+  "No variables found": "No variables found",
   "Enter include path": "Enter include path",
   "Include path": "Include path",
   "Failed to retrieve path to directory": "Failed to retrieve path to directory",
