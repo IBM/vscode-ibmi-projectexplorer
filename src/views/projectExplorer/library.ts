@@ -12,6 +12,7 @@ import { Position } from '../../iproject';
 
 export enum LibraryType {
   library,
+  objectLibrary,
   systemLibrary,
   currentLibrary,
   preUserLibrary,
@@ -26,15 +27,17 @@ export default class Library extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.library;
   libraryInfo: IBMiObject;
   libraryType: LibraryType;
+  libraryTypes?: LibraryType[];
   variable?: string;
   path: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType, position?: Position, variable?: string) {
+  constructor(public workspaceFolder: WorkspaceFolder, libraryInfo: IBMiObject, libraryType: LibraryType, position?: Position, variable?: string, libraryTypes?: LibraryType[]) {
     super(libraryInfo.name, TreeItemCollapsibleState.Collapsed);
 
     this.libraryInfo = libraryInfo;
     this.libraryType = libraryType;
     this.variable = variable;
+    this.libraryTypes = libraryTypes;
     const type = libraryInfo.type.startsWith(`*`) ? libraryInfo.type.substring(1) : libraryInfo.type;
     this.path = `/${libraryInfo.library}.LIB/${libraryInfo.name}.${type}`;
     this.iconPath = new ThemeIcon(`library`);
