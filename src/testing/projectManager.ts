@@ -168,7 +168,7 @@ export const projectManagerSuite: TestSuite = {
 
                     return [projectExplorerTreeItem];
                 });
-                const projectTreeItem = new Project(workspaceFolder, 'SAMPLE PROJECT');
+                const projectTreeItem = new Project(workspaceFolder, { description: 'SAMPLE PROJECT' });
                 const children = await projectTreeItem.getChildren();
                 Project.callBack = [];
 
