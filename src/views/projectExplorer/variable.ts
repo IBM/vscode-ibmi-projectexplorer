@@ -19,6 +19,8 @@ export default class Variable extends ProjectExplorerTreeItem {
     this.contextValue = Variable.contextValue;
     this.description = value || l10n.t('No value');
     this.iconPath = new ThemeIcon(`pencil`);
+    this.tooltip = l10n.t('Name: {0}\n', name) +
+      (value ? l10n.t('Value: {0}\n', value) : ``);
     this.command = {
       command: `vscode-ibmi-projectexplorer.updateVariable`,
       arguments: [this.workspaceFolder, name, value],

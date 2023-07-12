@@ -21,6 +21,7 @@ export default class Variables extends ProjectExplorerTreeItem {
     this.resourceUri = Uri.parse(`variables:${unresolvedVariableCount}`, true);
     this.contextValue = Variables.contextValue;
     this.iconPath = new ThemeIcon(`symbol-variable`, new ThemeColor(`icon.foreground`));
+    this.tooltip = l10n.t('Variables');
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
