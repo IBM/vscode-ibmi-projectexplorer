@@ -32,7 +32,7 @@
   "staged": "staged",
   "all": "all",
   "Deploy Location: {0}\n": "Deploy Location: {0}\n",
-  "Deploy Method: {0}\n": "Deploy Method: {0}\n",
+  "Deployment Method: {0}\n": "Deployment Method: {0}\n",
   "Please configure deploy location": "Please configure deploy location",
   "Set deploy location": "Set deploy location",
   "Please configure environment file": "Please configure environment file",

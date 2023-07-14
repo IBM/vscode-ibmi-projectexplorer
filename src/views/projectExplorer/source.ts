@@ -53,7 +53,7 @@ export default class Source extends ProjectExplorerTreeItem {
     }
     this.description = `${deployLocation} (${deploymentMethodDescription})`;
     this.tooltip = l10n.t('Deploy Location: {0}\n', deployLocation) +
-      l10n.t('Deploy Method: {0}\n', deploymentMethodDescription);
+      l10n.t('Deployment Method: {0}\n', deploymentMethodDescription);
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
