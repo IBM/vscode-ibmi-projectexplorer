@@ -3,18 +3,19 @@
  */
 
 import * as path from "path";
-import { l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { l10n, RelativePattern, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import * as dotenv from 'dotenv';
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
 import { TextEncoder } from "util";
 import { IProjectT } from "./iProjectT";
-import { getInstance } from "./ibmi";
+import { getDeployment, getInstance } from "./ibmi";
 import { LibraryType } from "./views/projectExplorer/library";
 import envUpdater from "./envUpdater";
 import { IBMiJsonT } from "./ibmiJsonT";
-import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { DeploymentMethod, IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import { ProjectManager } from "./projectManager";
+import ignore, { Ignore } from "ignore";
 
 const DEFAULT_CURLIB = '&CURLIB';
 const DEFAULT_OBJLIB = '&OBJLIB';
@@ -32,6 +33,7 @@ export class IProject {
   private libraryList: LibraryList | undefined;
   private jobLogs: RingBuffer<JobLogInfo>;
   private environmentValues: EnvironmentVariables;
+  private deploymentMethod: DeploymentMethod;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
     this.name = workspaceFolder.name;
@@ -40,6 +42,7 @@ export class IProject {
     this.libraryList = undefined;
     this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
+    this.deploymentMethod = 'compare';
   }
 
   public getName(): string {
@@ -170,9 +173,9 @@ export class IProject {
   }
 
   public async addToIncludePaths(directoryToAdd: string) {
-    const deployDir = this.getDeployDir();
-    if (deployDir) {
-      const relative = path.posix.relative(deployDir, directoryToAdd);
+    const deployLocation = this.getDeployLocation();
+    if (deployLocation) {
+      const relative = path.posix.relative(deployLocation, directoryToAdd);
 
       if (!relative.startsWith("..") && relative !== '') {
         directoryToAdd = relative;
@@ -608,10 +611,28 @@ export class IProject {
     }
   }
 
-  public getDeployDir(): string | undefined {
+  public getDeployLocation(): string | undefined {
     const ibmi = getInstance();
     const deploymentDirs = ibmi?.getStorage().getDeployment()!;
     return deploymentDirs[this.workspaceFolder.uri.fsPath];
+  }
+
+  public getDeploymentMethod(): DeploymentMethod {
+    return this.deploymentMethod;
+  }
+
+  public setDeploymentMethod(deploymentMethod: DeploymentMethod) {
+    this.deploymentMethod = deploymentMethod;
+  }
+
+  public async deployProject(deployLocation: string, deploymentMethod: DeploymentMethod) {
+    const deployment = getDeployment();
+    await deployment?.deploy({
+      method: deploymentMethod,
+      workspaceFolder: this.workspaceFolder,
+      remotePath: deployLocation,
+      ignoreRules: await getDefaultIgnoreRules(this.workspaceFolder)
+    });
   }
 
   public getJobLogs(): JobLogInfo[] {
@@ -664,4 +685,20 @@ export class IProject {
 
     return new JobLogInfo(jobLog);
   }
+}
+
+export async function getDefaultIgnoreRules(workspaceFolder: WorkspaceFolder): Promise<Ignore> {
+  const ignoreRules = ignore({ ignorecase: true }).add(`.git`);
+
+  // Get the .gitignore file from workspace
+  const gitignores = await workspace.findFiles(new RelativePattern(workspaceFolder, `.gitignore`), ``, 1);
+
+  if (gitignores.length > 0) {
+    // Get the content from the file
+    const gitignoreContent = (await workspace.fs.readFile(gitignores[0])).toString().replace(new RegExp(`\\\r`, `g`), ``);
+    ignoreRules.add(gitignoreContent.split(`\n`));
+    ignoreRules.add('**/.gitignore');
+  }
+
+  return ignoreRules;
 }
