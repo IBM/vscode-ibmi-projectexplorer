@@ -554,11 +554,11 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
-            name: `Test getDeployDir`, test: async () => {
+            name: `Test getDeployLocation`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
-                const deployDir = iProject.getDeployDir();
+                const deployLocation = iProject.getDeployLocation();
 
-                assert.strictEqual(deployDir, deployLocation);
+                assert.strictEqual(deployLocation, deployLocation);
             }
         }
     ]
