@@ -98,6 +98,13 @@ export default class Source extends ProjectExplorerTreeItem {
       } catch (e) { }
     }
 
+    items.sort((a, b) => {
+      const fileTypeA = a instanceof SourceDirectory ? 0 : 1;
+      const fileTypeB = b instanceof SourceDirectory ? 0 : 1;
+
+      return fileTypeA - fileTypeB || a.label!.toString().localeCompare(b.label!.toString());
+    });
+
     return items;
   }
 
