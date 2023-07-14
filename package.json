@@ -1,6 +1,6 @@
 {
   "name": "vscode-ibmi-projectexplorer",
-  "displayName": "Project Explorer for IBM i",
+  "displayName": "IBM i Project Explorer",
   "description": "%description%",
   "publisher": "IBM",
   "version": "0.0.1",
@@ -104,8 +104,8 @@
         "icon": "$(edit)"
       },
       {
-        "command": "vscode-ibmi-projectexplorer.projectExplorer.filterSourceFiles",
-        "title": "%commands.projectExplorer.filterSourceFiles%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod",
+        "title": "%commands.projectExplorer.setDeploymentMethod%",
         "icon": "$(filter)"
       },
       {
@@ -351,7 +351,7 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.filterSourceFiles",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod",
           "when": "never"
         },
         {
@@ -566,17 +566,17 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
-          "when": "view == projectExplorer && viewItem =~ /^source.*/",
+          "when": "view == projectExplorer && viewItem =~ /^source(?!(File|Directory)).*/",
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.filterSourceFiles",
-          "when": "view == projectExplorer && viewItem =~ /^source.*/",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod",
+          "when": "view == projectExplorer && viewItem =~ /^source(?!(File|Directory)).*/",
           "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
-          "when": "view == projectExplorer && viewItem =~ /^source.*/",
+          "when": "view == projectExplorer && viewItem =~ /^source(?!(File|Directory)).*/",
           "group": "inline@2"
         },
         {
@@ -1020,6 +1020,7 @@
     "@vscode/l10n-dev": "^0.0.25"
   },
   "dependencies": {
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+		"ignore": "^5.2.4"
   }
 }
