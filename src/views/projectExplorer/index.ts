@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, TreeItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, window, workspace, WorkspaceFolder } from "vscode";
 import ErrorItem from "./errorItem";
 import { IProject } from "../../iproject";
 import Project from "./project";
@@ -20,7 +20,8 @@ import Source from "./source";
 import * as vscode from 'vscode';
 import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
-import { getInstance } from "../../ibmi";
+import { getInstance, getTools } from "../../ibmi";
+import { DeploymentMethod } from "@halcyontech/vscode-ibmi-types";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -87,14 +88,47 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${element.description}`);
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.filterSourceFiles`, async (element: Source) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod`, async (element: Source) => {
         if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
 
+          if (iProject) {
+            const ibmi = getInstance();
+            const connection = ibmi!.getConnection();
+
+            const methods: {method: DeploymentMethod, label: string}[] = [];
+            if (connection.remoteFeatures.md5sum) {
+              methods.push({ method: 'compare', label: l10n.t('Compare') });
+            }
+
+            methods.push({ method: 'changed', label: l10n.t('Changes') });
+
+            const tools = getTools();
+            if (tools!.getGitAPI()) {
+              methods.push(
+                { method: 'unstaged', label: l10n.t('Working Changes') },
+                { method: 'staged', label: l10n.t('Staged Changes') }
+              );
+            }
+
+            methods.push({ method: 'all', label: l10n.t('All') });
+
+            const deploymentMethod = await vscode.window.showQuickPick(methods, { placeHolder: `Select deployment method to ${element.deployLocation}` });
+            if (deploymentMethod) {
+              iProject.setDeploymentMethod(deploymentMethod.method);
+
+              this.refresh();
+            }
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.deployProject`, async (element: Source) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.launchDeploy`, element.workspaceFolder.index);
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            await iProject.deployProject(element.deployLocation, element.deploymentMethod);
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut`, async (element: Project) => {
