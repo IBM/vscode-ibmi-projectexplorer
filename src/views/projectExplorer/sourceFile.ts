@@ -14,15 +14,15 @@ export default class SourceFile extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.ifsFile;
   sourceInfo: SourceInfo;
 
-  constructor(public workspaceFolder: WorkspaceFolder, sourceInfo: SourceInfo) {
-    super(sourceInfo.name, TreeItemCollapsibleState.None);
+  constructor(public workspaceFolder: WorkspaceFolder, sourceFileInfo: SourceInfo) {
+    super(sourceFileInfo.name, TreeItemCollapsibleState.None);
 
-    this.sourceInfo = sourceInfo;
+    this.sourceInfo = sourceFileInfo;
     this.contextValue = SourceFile.contextValue;
     this.iconPath = new ThemeIcon(`file`);
-    this.tooltip = l10n.t('Name: {0}\n', sourceInfo.name) +
-      l10n.t('Path: {0}\n', sourceInfo.uri.fsPath);
-    this.resourceUri = sourceInfo.uri;
+    this.tooltip = l10n.t('Name: {0}\n', sourceFileInfo.name) +
+      l10n.t('Path: {0}\n', sourceFileInfo.uri.fsPath);
+    this.resourceUri = sourceFileInfo.uri;
     this.command = {
       command: `vscode.open`,
       title: l10n.t('Open File'),

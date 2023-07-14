@@ -15,14 +15,15 @@ export default class SourceDirectory extends ProjectExplorerTreeItem {
     static contextValue = ContextValue.sourceDirectory;
     sourceInfo: SourceInfo;
 
-    constructor(public workspaceFolder: WorkspaceFolder, sourceInfo: SourceInfo) {
-        super(sourceInfo.name, TreeItemCollapsibleState.Collapsed);
+    constructor(public workspaceFolder: WorkspaceFolder, sourceDirectoryInfo: SourceInfo) {
+        super(sourceDirectoryInfo.name, TreeItemCollapsibleState.Collapsed);
 
-        this.sourceInfo = sourceInfo;
+        this.sourceInfo = sourceDirectoryInfo;
         this.contextValue = SourceDirectory.contextValue;
         this.iconPath = new ThemeIcon(`symbol-folder`);
-        this.tooltip = l10n.t('Name: {0}\n', sourceInfo.name) +
-            l10n.t('Path: {0}\n', sourceInfo.uri.fsPath);
+        this.tooltip = l10n.t('Name: {0}\n', sourceDirectoryInfo.name) +
+            l10n.t('Path: {0}\n', sourceDirectoryInfo.uri.fsPath);
+        this.resourceUri = sourceDirectoryInfo.uri;
     }
 
     async getChildren(): Promise<ProjectExplorerTreeItem[]> {
