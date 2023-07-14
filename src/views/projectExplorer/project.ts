@@ -39,9 +39,10 @@ export default class Project extends ProjectExplorerTreeItem {
     if (ibmi && ibmi.getConnection()) {
       const iProject = ProjectManager.get(this.workspaceFolder);
 
-      const deployDir = iProject!.getDeployDir();
-      if (deployDir) {
-        items.push(new Source(this.workspaceFolder, deployDir));
+      const deployLocation = iProject!.getDeployLocation();
+      const deploymentMethod = iProject!.getDeploymentMethod();
+      if (deployLocation) {
+        items.push(new Source(this.workspaceFolder, deployLocation, deploymentMethod));
       } else {
         const ibmi = getInstance();
         const homeDirectory = (ibmi?.getConfig().homeDirectory.endsWith('/') ? ibmi?.getConfig().homeDirectory.slice(0, -1) : ibmi?.getConfig().homeDirectory);
