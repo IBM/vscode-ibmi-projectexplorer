@@ -33,14 +33,27 @@ export default class Source extends ProjectExplorerTreeItem {
     this.deploymentMethod = deploymentMethod ? deploymentMethod : 'compare';
     this.contextValue = Source.contextValue;
     this.iconPath = new ThemeIcon(`server-environment`);
+    let deploymentMethodDescription: string;
+    switch (deploymentMethod) {
+      case 'compare':
+        deploymentMethodDescription = l10n.t('compare');
+        break;
+      case 'changed':
+        deploymentMethodDescription = l10n.t('changed');
+        break;
+      case 'unstaged':
+        deploymentMethodDescription = l10n.t('unstaged');
+        break;
+      case 'staged':
+        deploymentMethodDescription = l10n.t('staged');
+        break;
+      case 'all':
+        deploymentMethodDescription = l10n.t('all');
+        break;
+    }
+    this.description = `${deployLocation} (${deploymentMethodDescription})`;
     this.tooltip = l10n.t('Deploy Location: {0}\n', deployLocation) +
-      l10n.t('Deploy Method: {0}\n', this.deploymentMethod);
-    this.description = `${deployLocation}` +
-      (this.deploymentMethod === 'compare' ? l10n.t(' (compare)') : ``) +
-      (this.deploymentMethod === 'changed' ? l10n.t(' (changed)') : ``) +
-      (this.deploymentMethod === 'unstaged' ? l10n.t(' (unstaged)') : ``) +
-      (this.deploymentMethod === 'staged' ? l10n.t(' (staged)') : ``) +
-      (this.deploymentMethod === 'all' ? l10n.t(' (all)') : ``);
+      l10n.t('Deploy Method: {0}\n', deploymentMethodDescription);
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
@@ -59,19 +72,15 @@ export default class Source extends ProjectExplorerTreeItem {
       case 'compare':
         deployFiles.push(...await deployment.getDeployCompareFiles(deployParameters));
         break;
-
       case 'changed':
         deployFiles.push(...await deployment.getDeployChangedFiles(deployParameters));
         break;
-
       case 'unstaged':
         deployFiles.push(...await deployment.getDeployGitFiles(deployParameters, 'working'));
         break;
-
       case 'staged':
         deployFiles.push(...await deployment.getDeployGitFiles(deployParameters, 'staged'));
         break;
-
       case 'all':
         deployFiles.push(...await deployment.getDeployAllFiles(deployParameters));
         break;
