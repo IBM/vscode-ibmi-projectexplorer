@@ -6,7 +6,7 @@ import * as assert from "assert";
 import { TestSuite } from ".";
 import * as path from "path";
 import { ProjectManager } from "../projectManager";
-import { ProjectFileType } from "../iproject";
+import { ProjectFileType, getDefaultIgnoreRules } from "../iproject";
 import { LibraryType } from "../views/projectExplorer/library";
 import { workspace } from "vscode";
 import { getInstance } from "../ibmi";
@@ -555,6 +555,37 @@ export const iProjectSuite: TestSuite = {
         },
         {
             name: `Test getDeployLocation`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                const deployLocation = iProject.getDeployLocation();
+
+                assert.strictEqual(deployLocation, deployLocation);
+            }
+        },
+        {
+            name: `Test getDeploymentParameters`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                iProject.setDeploymentMethod('compare');
+                const deploymentParameters = await iProject.getDeploymentParameters();
+
+                assert.deepStrictEqual(deploymentParameters, {
+                    method: 'compare',
+                    workspaceFolder: iProject.workspaceFolder,
+                    remotePath: deployLocation,
+                    ignoreRules: await getDefaultIgnoreRules(iProject.workspaceFolder)
+                });
+            }
+        },
+        {
+            name: `Test setDeploymentMethod`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                iProject.setDeploymentMethod('all');
+                const deploymentParameters = await iProject.getDeploymentParameters();
+
+                assert.strictEqual(deploymentParameters?.method, 'all');
+            }
+        },
+        {
+            name: `Test deployProject`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 const deployLocation = iProject.getDeployLocation();
 
