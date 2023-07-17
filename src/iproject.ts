@@ -13,7 +13,7 @@ import { getDeployment, getInstance } from "./ibmi";
 import { LibraryType } from "./views/projectExplorer/library";
 import envUpdater from "./envUpdater";
 import { IBMiJsonT } from "./ibmiJsonT";
-import { DeploymentMethod, IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import { ProjectManager } from "./projectManager";
 import ignore, { Ignore } from "ignore";
 
@@ -617,22 +617,27 @@ export class IProject {
     return deploymentDirs[this.workspaceFolder.uri.fsPath];
   }
 
-  public getDeploymentMethod(): DeploymentMethod {
-    return this.deploymentMethod;
+  public async getDeploymentParameters(): Promise<DeploymentParameters | undefined> {
+    const deployLocation = this.getDeployLocation();
+
+    if (deployLocation) {
+      return {
+        method: this.deploymentMethod,
+        workspaceFolder: this.workspaceFolder,
+        remotePath: deployLocation,
+        ignoreRules: await getDefaultIgnoreRules(this.workspaceFolder)
+      };
+    }
   }
 
   public setDeploymentMethod(deploymentMethod: DeploymentMethod) {
     this.deploymentMethod = deploymentMethod;
   }
 
-  public async deployProject(deployLocation: string, deploymentMethod: DeploymentMethod) {
+  public async deployProject() {
     const deployment = getDeployment();
-    await deployment?.deploy({
-      method: deploymentMethod,
-      workspaceFolder: this.workspaceFolder,
-      remotePath: deployLocation,
-      ignoreRules: await getDefaultIgnoreRules(this.workspaceFolder)
-    });
+    const deploymentParameters = await this.getDeploymentParameters();
+    await deployment?.deploy(deploymentParameters!);
   }
 
   public getJobLogs(): JobLogInfo[] {

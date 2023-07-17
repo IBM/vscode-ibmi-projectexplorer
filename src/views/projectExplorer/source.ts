@@ -5,12 +5,11 @@
 import * as path from "path";
 import { FileType, ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
 import { ContextValue } from "../../projectExplorerApi";
-import { DeploymentMethod } from "@halcyontech/vscode-ibmi-types";
+import { DeploymentParameters } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { getDeployment } from "../../ibmi";
 import SourceDirectory from "./sourceDirectory";
 import SourceFile from "./sourceFile";
-import { getDefaultIgnoreRules } from "../../iproject";
 
 export interface SourceInfo {
   name: string,
@@ -23,18 +22,16 @@ export interface SourceInfo {
  */
 export default class Source extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.source;
-  deployLocation: string;
-  deploymentMethod: DeploymentMethod;
+  deploymentParameters: DeploymentParameters;
 
-  constructor(public workspaceFolder: WorkspaceFolder, deployLocation: string, deploymentMethod: DeploymentMethod) {
+  constructor(public workspaceFolder: WorkspaceFolder, deploymentParameters: DeploymentParameters) {
     super(l10n.t('Source'), TreeItemCollapsibleState.Collapsed);
 
-    this.deployLocation = deployLocation;
-    this.deploymentMethod = deploymentMethod ? deploymentMethod : 'compare';
+    this.deploymentParameters = deploymentParameters;
     this.contextValue = Source.contextValue;
     this.iconPath = new ThemeIcon(`server-environment`);
     let deploymentMethodDescription: string;
-    switch (deploymentMethod) {
+    switch (deploymentParameters.method) {
       case 'compare':
         deploymentMethodDescription = l10n.t('compare');
         break;
@@ -51,8 +48,8 @@ export default class Source extends ProjectExplorerTreeItem {
         deploymentMethodDescription = l10n.t('all');
         break;
     }
-    this.description = `${deployLocation} (${deploymentMethodDescription})`;
-    this.tooltip = l10n.t('Deploy Location: {0}\n', deployLocation) +
+    this.description = `${deploymentParameters.remotePath} (${deploymentMethodDescription})`;
+    this.tooltip = l10n.t('Deploy Location: {0}\n', deploymentParameters.remotePath) +
       l10n.t('Deployment Method: {0}\n', deploymentMethodDescription);
   }
 
@@ -60,29 +57,23 @@ export default class Source extends ProjectExplorerTreeItem {
     let items: ProjectExplorerTreeItem[] = [];
 
     const deployment = getDeployment()!;
-    const deployParameters = {
-      method: this.deploymentMethod,
-      workspaceFolder: this.workspaceFolder,
-      remotePath: this.deployLocation,
-      ignore: await getDefaultIgnoreRules(this.workspaceFolder)
-    };
 
     const deployFiles: Uri[] = [];
-    switch (this.deploymentMethod) {
+    switch (this.deploymentParameters.method) {
       case 'compare':
-        deployFiles.push(...await deployment.getDeployCompareFiles(deployParameters));
+        deployFiles.push(...await deployment.getDeployCompareFiles(this.deploymentParameters));
         break;
       case 'changed':
-        deployFiles.push(...await deployment.getDeployChangedFiles(deployParameters));
+        deployFiles.push(...await deployment.getDeployChangedFiles(this.deploymentParameters));
         break;
       case 'unstaged':
-        deployFiles.push(...await deployment.getDeployGitFiles(deployParameters, 'working'));
+        deployFiles.push(...await deployment.getDeployGitFiles(this.deploymentParameters, 'working'));
         break;
       case 'staged':
-        deployFiles.push(...await deployment.getDeployGitFiles(deployParameters, 'staged'));
+        deployFiles.push(...await deployment.getDeployGitFiles(this.deploymentParameters, 'staged'));
         break;
       case 'all':
-        deployFiles.push(...await deployment.getDeployAllFiles(deployParameters));
+        deployFiles.push(...await deployment.getDeployAllFiles(this.deploymentParameters));
         break;
     }
 
@@ -108,10 +99,6 @@ export default class Source extends ProjectExplorerTreeItem {
     return items;
   }
 
-  public setDeploymentMethod(deploymentMethod: DeploymentMethod) {
-    this.deploymentMethod = deploymentMethod;
-  }
-
   private getTreeFromFileList(files: Uri[]): SourceInfo {
     const workspaceFolderUri = this.workspaceFolder.uri;
     const deployTree: SourceInfo = {
@@ -126,8 +113,8 @@ export default class Source extends ProjectExplorerTreeItem {
       const relativePath = path.relative(workspaceFolderUri.fsPath, file.fsPath);
       const parts = relativePath.split(path.sep);
       for (const part of parts) {
-        const subResults = subTree.children.map(child => child.name);
-        const index = subResults.indexOf(part);
+        const subTreeNames = subTree.children.map(child => child.name);
+        const index = subTreeNames.indexOf(part);
 
         if (index > -1) {
           subTree = subTree.children[index];

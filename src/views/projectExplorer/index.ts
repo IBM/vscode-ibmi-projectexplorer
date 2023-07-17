@@ -20,7 +20,7 @@ import Source from "./source";
 import * as vscode from 'vscode';
 import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
-import { getInstance, getTools } from "../../ibmi";
+import { getDeployment, getInstance, getTools } from "../../ibmi";
 import { DeploymentMethod } from "@halcyontech/vscode-ibmi-types";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
@@ -96,24 +96,28 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const ibmi = getInstance();
             const connection = ibmi!.getConnection();
 
-            const methods: {method: DeploymentMethod, label: string}[] = [];
+            const methods: { method: DeploymentMethod, label: string, description?: string }[] = [];
             if (connection.remoteFeatures.md5sum) {
-              methods.push({ method: 'compare', label: l10n.t('Compare') });
+              methods.push({ method: 'compare', label: l10n.t('Compare'), description: l10n.t('Synchronizes using MD5 hash comparison') });
             }
 
-            methods.push({ method: 'changed', label: l10n.t('Changes') });
+            const deployment = getDeployment();
+            const deploymentParameters = await iProject.getDeploymentParameters();
+            const files = await deployment?.getDeployChangedFiles(deploymentParameters!);
+            const changes = files?.length || 0;
+            methods.push({ method: 'changed', label: l10n.t('Changes'), description: changes > 1 || changes === 0 ? l10n.t('{0} changes detected since last upload', changes) : l10n.t('1 change detected since last upload') });
 
             const tools = getTools();
             if (tools!.getGitAPI()) {
               methods.push(
-                { method: 'unstaged', label: l10n.t('Working Changes') },
+                { method: 'unstaged', label: l10n.t('Working Changes'), description: l10n.t('Unstaged changes in git') },
                 { method: 'staged', label: l10n.t('Staged Changes') }
               );
             }
 
-            methods.push({ method: 'all', label: l10n.t('All') });
+            methods.push({ method: 'all', label: l10n.t('All'), description: l10n.t('Every file in the local workspace') });
 
-            const deploymentMethod = await vscode.window.showQuickPick(methods, { placeHolder: `Select deployment method to ${element.deployLocation}` });
+            const deploymentMethod = await vscode.window.showQuickPick(methods, { placeHolder: l10n.t('Select deployment method to {0}', element.deploymentParameters.remotePath) });
             if (deploymentMethod) {
               iProject.setDeploymentMethod(deploymentMethod.method);
 
@@ -127,7 +131,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
-            await iProject.deployProject(element.deployLocation, element.deploymentMethod);
+            await iProject.deployProject();
           }
         }
       }),
