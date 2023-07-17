@@ -13,6 +13,7 @@ import SourceFile from "./sourceFile";
 
 export interface SourceInfo {
   name: string,
+  type: FileType,
   uri: Uri,
   children: SourceInfo[]
 }
@@ -77,16 +78,13 @@ export default class Source extends ProjectExplorerTreeItem {
         break;
     }
 
-    const deployFileTree = this.getTreeFromFileList(deployFiles);
+    const deployFileTree = await this.getTreeFromFileList(deployFiles);
     for (const child of deployFileTree.children) {
-      try {
-        const statResult = await workspace.fs.stat(child.uri);
-        if (statResult.type === FileType.Directory) {
-          items.push(new SourceDirectory(this.workspaceFolder, child));
-        } else {
-          items.push(new SourceFile(this.workspaceFolder, child));
-        }
-      } catch (e) { }
+      if (child.type === FileType.Directory) {
+        items.push(new SourceDirectory(this.workspaceFolder, child));
+      } else {
+        items.push(new SourceFile(this.workspaceFolder, child));
+      }
     }
 
     items.sort((a, b) => {
@@ -99,15 +97,16 @@ export default class Source extends ProjectExplorerTreeItem {
     return items;
   }
 
-  private getTreeFromFileList(files: Uri[]): SourceInfo {
+  private async getTreeFromFileList(files: Uri[]): Promise<SourceInfo> {
     const workspaceFolderUri = this.workspaceFolder.uri;
     const deployTree: SourceInfo = {
       name: path.basename(workspaceFolderUri.fsPath),
+      type: FileType.Directory,
       uri: workspaceFolderUri,
       children: []
     };
 
-    for (const file of files) {
+    for await (const file of files) {
       let subTree = deployTree;
 
       const relativePath = path.relative(workspaceFolderUri.fsPath, file.fsPath);
@@ -119,7 +118,9 @@ export default class Source extends ProjectExplorerTreeItem {
         if (index > -1) {
           subTree = subTree.children[index];
         } else {
-          subTree.children.push({ name: part, uri: Uri.joinPath(subTree.uri, part), children: [] });
+          const uri = Uri.joinPath(subTree.uri, part);
+          const statResult = await workspace.fs.stat(uri);
+          subTree.children.push({ name: part, type: statResult.type, uri: uri, children: [] });
           subTree = subTree.children[subTree.children.length - 1];
         }
       }
