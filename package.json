@@ -992,6 +992,7 @@
     "@vscode/l10n-dev": "^0.0.25"
   },
   "dependencies": {
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "jsonschema": "^1.4.1"
   }
 }

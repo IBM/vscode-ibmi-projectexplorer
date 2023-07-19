@@ -9,6 +9,7 @@ import { commands, window, workspace } from "vscode";
 import { ProjectExplorerTreeItem } from "../views/projectExplorer/projectExplorerTreeItem";
 import { IProject } from "../iproject";
 import Project from "../views/projectExplorer/project";
+import { TextEncoder } from "util";
 
 export const projectManagerSuite: TestSuite = {
     name: `Project Manager Tests`,
@@ -21,6 +22,32 @@ export const projectManagerSuite: TestSuite = {
         }
     },
     tests: [
+        {
+            name: `Test getValidator`, test: async () => {
+                const workspaceFolder = workspace.workspaceFolders![0];
+                const iProject = ProjectManager.get(workspaceFolder)!;
+                const validator = ProjectManager.getValidator();
+                const schema = validator.schemas['/iproj'];
+                const fileUri = iProject.getProjectFileUri('iproj.json');
+                await workspace.fs.writeFile(fileUri, new TextEncoder().encode(
+                    JSON.stringify({
+                        "version": "0.0.2",
+                        "description": ["SAMPLE PROJECT"],
+                        "objlib": ["&objlib"],
+                        "curlib": ["&curlib"],
+                        "includePath": "includes",
+                        "preUsrlibl": "&lib1",
+                        "postUsrlibl": "&lib3",
+                        "setIBMiEnvCmd": ""
+                    }, null, 2)
+                ));
+                const content = (await workspace.fs.readFile(fileUri)).toString();
+                const validatorResult = validator.validate(JSON.parse(content), schema);
+
+                assert.ok('/iproj' in validator.schemas);
+                assert.strictEqual(validatorResult.errors.length, 7);
+            }
+        },
         {
             name: `Test load`, test: async () => {
                 const workspaceFolder = workspace.workspaceFolders![0];
@@ -141,7 +168,7 @@ export const projectManagerSuite: TestSuite = {
 
                     return [projectExplorerTreeItem];
                 });
-                const projectTreeItem = new Project(workspaceFolder, 'SAMPLE PROJECT');
+                const projectTreeItem = new Project(workspaceFolder, { description: 'SAMPLE PROJECT' });
                 const children = await projectTreeItem.getChildren();
                 Project.callBack = [];
 
