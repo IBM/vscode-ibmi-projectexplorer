@@ -43,7 +43,7 @@ export default class Project extends ProjectExplorerTreeItem {
       if (deployDir) {
         items.push(new Source(this.workspaceFolder, deployDir));
       } else {
-        const defaultDeployLocation = iProject?.getDefaultDeployDir();
+        const defaultDeployLocation = iProject?.getDefaultDeployLocation();
 
         items.push(new ErrorItem(this.workspaceFolder, l10n.t('Source'), {
           description: l10n.t('Please configure deploy location'),

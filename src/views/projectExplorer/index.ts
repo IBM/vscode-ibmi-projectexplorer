@@ -637,7 +637,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.get(element.workspaceFolder!);
 
           if (iProject) {
-            const defaultDeployLocation = iProject?.getDefaultDeployDir();
+            const defaultDeployLocation = iProject?.getDefaultDeployLocation();
             await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, defaultDeployLocation);
           }
         }
