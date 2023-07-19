@@ -38,6 +38,11 @@ export enum ContextValue {
   local = '_local',
   remote = '_remote',
   error = 'error',
+  createIProj = '_createIProj',
+  createEnv = '_createEnv',
+  addFolderToWorkspace = '_addFolderToWorkspace',
+  openConnectionBrowser = '_openConnectionBrowser',
+  setDeployLocation = '_setDeployLocation',
   log = 'log',
   command = 'command',
   message = 'message'

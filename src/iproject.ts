@@ -614,6 +614,12 @@ export class IProject {
     return deploymentDirs[this.workspaceFolder.uri.fsPath];
   }
 
+  public getDefaultDeployDir() {
+    const ibmi = getInstance();
+    const homeDirectory = (ibmi?.getConfig().homeDirectory.endsWith('/') ? ibmi?.getConfig().homeDirectory.slice(0, -1) : ibmi?.getConfig().homeDirectory);
+    return homeDirectory ? path.posix.join(homeDirectory, this.workspaceFolder.name) : '';
+  }
+
   public getJobLogs(): JobLogInfo[] {
     return this.jobLogs.toArray();
   }

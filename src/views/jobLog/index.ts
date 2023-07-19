@@ -8,6 +8,7 @@ import { ProjectManager } from "../../projectManager";
 import Project from "./project";
 import Command from "./command";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
+import { ContextValue } from "../../projectExplorerApi";
 
 export default class JobLog implements TreeDataProvider<any> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -88,9 +89,10 @@ export default class JobLog implements TreeDataProvider<any> {
           undefined,
           l10n.t('Please open a local workspace folder'),
           {
+            contextValue: ErrorItem.contextValue + ContextValue.addFolderToWorkspace,
             command: {
               command: 'workbench.action.addRootFolder',
-              title: l10n.t('Add folder to workspace')
+              title: l10n.t('Add Folder to Workspace')
             }
           })];
       }
