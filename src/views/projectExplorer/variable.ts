@@ -11,18 +11,20 @@ import { ContextValue } from "../../projectExplorerApi";
  */
 export default class Variable extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.variable;
+  value?: string;
 
   constructor(public workspaceFolder: WorkspaceFolder, name: string, value?: string) {
     super(name, TreeItemCollapsibleState.None);
 
+    this.value = value;
     this.resourceUri = Uri.parse(`variable:${value ? 'resolved' : 'unresolved'}`, true);
     this.contextValue = Variable.contextValue;
     this.description = value || l10n.t('No value');
     this.iconPath = new ThemeIcon(`pencil`);
     this.command = {
-      command: `vscode-ibmi-projectexplorer.updateVariable`,
-      arguments: [this.workspaceFolder, name, value],
-      title: l10n.t('Update value')
+      command: `vscode-ibmi-projectexplorer.projectExplorer.editVariable`,
+      arguments: [this],
+      title: l10n.t('Edit Variable')
     };
   }
 

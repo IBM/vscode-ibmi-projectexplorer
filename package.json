@@ -109,6 +109,11 @@
         "icon": "$(go-to-file)"
       },
       {
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.editVariable",
+        "title": "%commands.projectExplorer.editVariable%",
+        "icon": "$(edit)"
+      },
+      {
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
         "title": "%commands.projectExplorer.addLibraryListEntry%",
@@ -375,6 +380,10 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.editVariable",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
           "when": "never"
         },
@@ -605,6 +614,11 @@
           "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
           "when": "view == projectExplorer && viewItem =~ /^project.*/",
           "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.editVariable",
+          "when": "view == projectExplorer && viewItem =~ /^variable(?!s).*/",
+          "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",

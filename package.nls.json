@@ -15,6 +15,7 @@
   "commands.projectExplorer.migrateSource": "Migrate Source",
   "commands.projectExplorer.editDeployLocation": "Edit Deploy Location",
   "commands.projectExplorer.iprojShortcut": "Open iproj.json",
+  "commands.projectExplorer.editVariable": "Edit Variable",
   "commands.projectExplorer.addLibraryListEntry": "Add Library List Entry",
   "commands.projectExplorer.setCurrentLibrary": "Set Current Library",
   "commands.projectExplorer.addToLibraryList": "Add to Library list",

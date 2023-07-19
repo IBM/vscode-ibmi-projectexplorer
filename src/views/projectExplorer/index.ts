@@ -22,6 +22,7 @@ import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
 import { getInstance } from "../../ibmi";
 import { ContextValue } from "../../projectExplorerApi";
+import Variable from "./variable";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -96,6 +97,26 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const fileUri = iProject.getProjectFileUri('iproj.json');
             const document = await vscode.workspace.openTextDocument(fileUri);
             await vscode.window.showTextDocument(document);
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.editVariable`, async (element: Variable) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const variable = element.label!.toString();
+            const value = element.value;
+
+            const newValue = await window.showInputBox({
+              prompt: l10n.t('Enter new value for {0}', variable),
+              placeHolder: l10n.t('Variable value'),
+              value: value || ``,
+            });
+
+            if (newValue) {
+              await iProject.updateEnv(variable, newValue);
+            }
           }
         }
       }),
@@ -239,22 +260,6 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const library = element.variable ? element.variable : element.label!.toString();
             await iProject.moveLibrary(library, element.libraryType, 'down');
-          }
-        }
-      }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
-        if (workspaceFolder && varName) {
-          const iProject = ProjectManager.get(workspaceFolder);
-          if (iProject) {
-            const newValue = await window.showInputBox({
-              prompt: l10n.t('Enter new value for {0}', varName),
-              placeHolder: l10n.t('Variable value'),
-              value: currentValue || ``,
-            });
-
-            if (newValue) {
-              await iProject.updateEnv(varName, newValue);
-            }
           }
         }
       }),
