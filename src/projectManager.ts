@@ -121,7 +121,7 @@ export class ProjectManager {
             };
         } else {
             this.activeProject = undefined;
-            this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project:') + ' $(circle-slash)';
+            this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', '$(circle-slash)');
             this.activeProjectStatusBarItem.tooltip = l10n.t('Please open a local workspace folder');
             this.activeProjectStatusBarItem.command = {
                 command: 'workbench.action.addRootFolder',
@@ -130,7 +130,7 @@ export class ProjectManager {
         }
 
         await commands.executeCommand('setContext', 'code-for-ibmi:libraryListDisabled', this.activeProject ? true : false);
-        await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer.hasActiveProject', this.activeProject ? true : false);
+        await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:hasActiveProject', this.activeProject ? true : false);
         this.fire({ type: 'activeProject', iProject: this.activeProject });
     }
 
