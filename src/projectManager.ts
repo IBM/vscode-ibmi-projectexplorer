@@ -53,7 +53,7 @@ export class ProjectManager {
 
         this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
         context.subscriptions.push(this.activeProjectStatusBarItem);
-        this.setActiveProject(undefined);
+        await this.setActiveProject(undefined);
         this.activeProjectStatusBarItem.show();
 
         const workspaceFolders = workspace.workspaceFolders;
@@ -83,7 +83,7 @@ export class ProjectManager {
         }
 
         if (!this.activeProject && await iProject.projectFileExists('iproj.json')) {
-            this.setActiveProject(workspaceFolder);
+            await this.setActiveProject(workspaceFolder);
         }
 
         ProjectManager.fire({ type: 'projects' });
@@ -93,12 +93,12 @@ export class ProjectManager {
         return this.loaded[workspaceFolder.index];
     }
 
-    public static remove(workspaceFolder: WorkspaceFolder) {
+    public static async remove(workspaceFolder: WorkspaceFolder) {
         delete this.loaded[workspaceFolder.index];
         ProjectManager.fire({ type: 'projects' });
 
         if (workspaceFolder === this.activeProject?.workspaceFolder) {
-            this.setActiveProject(undefined);
+            await this.setActiveProject(undefined);
         }
     }
 
@@ -110,7 +110,7 @@ export class ProjectManager {
         return this.activeProject;
     }
 
-    public static setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
+    public static async setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
         if (workspaceFolder) {
             this.activeProject = this.loaded[workspaceFolder.index];
             this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', this.activeProject.workspaceFolder.name);
@@ -129,8 +129,8 @@ export class ProjectManager {
             };
         }
 
-        commands.executeCommand('setContext', 'code-for-ibmi:libraryListDisabled', this.activeProject ? true : false);
-        commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer.hasActiveProject', this.activeProject ? true : false);
+        await commands.executeCommand('setContext', 'code-for-ibmi:libraryListDisabled', this.activeProject ? true : false);
+        await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer.hasActiveProject', this.activeProject ? true : false);
         this.fire({ type: 'activeProject', iProject: this.activeProject });
     }
 

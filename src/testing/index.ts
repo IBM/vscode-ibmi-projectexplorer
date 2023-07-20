@@ -40,9 +40,9 @@ export interface TestCase {
 }
 
 let testSuitesTreeProvider: TestSuitesTreeProvider;
-export function initialise(context: ExtensionContext) {
+export async function initialise(context: ExtensionContext) {
   if (env.testing === `true`) {
-    commands.executeCommand(`setContext`, `projectExplorer:testing`, true);
+    await commands.executeCommand(`setContext`, `projectExplorer:testing`, true);
     const ibmi = getInstance()!;
     ibmi.onEvent(`connected`, runTests);
     ibmi.onEvent(`disconnected`, resetTests);

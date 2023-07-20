@@ -86,9 +86,9 @@ export const projectManagerSuite: TestSuite = {
         {
             name: `Test setActiveProject`, test: async () => {
                 const workspaceFolder = workspace.workspaceFolders![0];
-                ProjectManager.setActiveProject(undefined);
+                await ProjectManager.setActiveProject(undefined);
                 const iProject1 = ProjectManager.getActiveProject();
-                ProjectManager.setActiveProject(workspaceFolder);
+                await ProjectManager.setActiveProject(workspaceFolder);
                 const iProject2 = ProjectManager.getActiveProject();
 
                 assert.strictEqual(iProject1, undefined);

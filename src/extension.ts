@@ -72,7 +72,7 @@ export async function activate(context: ExtensionContext): Promise<ProjectExplor
 		const workspaceFolder = workspace.getWorkspaceFolder(uri);
 
 		if (workspaceFolder) {
-			ProjectManager.remove(workspaceFolder);
+			await ProjectManager.remove(workspaceFolder);
 			projectExplorer.refresh();
 		}
 	});
@@ -88,13 +88,13 @@ export async function activate(context: ExtensionContext): Promise<ProjectExplor
 	context.subscriptions.push(
 		projectExplorerTreeView,
 		jobLogTreeView,
-		workspace.onDidChangeWorkspaceFolders((event) => {
+		workspace.onDidChangeWorkspaceFolders(async (event) => {
 			ProjectManager.clear();
 
 			const removedWorkspaceFolders = event.removed;
 			const activeProject = ProjectManager.getActiveProject();
 			if (activeProject && removedWorkspaceFolders.includes(activeProject.workspaceFolder)) {
-				ProjectManager.setActiveProject(undefined);
+				await ProjectManager.setActiveProject(undefined);
 			}
 
 			projectExplorer.refresh();
@@ -107,7 +107,7 @@ export async function activate(context: ExtensionContext): Promise<ProjectExplor
 				if (workspaceFolder) {
 					const iProject = ProjectManager.get(workspaceFolder);
 					if (iProject && await iProject.projectFileExists('iproj.json')) {
-						ProjectManager.setActiveProject(workspaceFolder);
+						await ProjectManager.setActiveProject(workspaceFolder);
 						projectExplorer.refresh();
 					}
 				}
@@ -118,7 +118,7 @@ export async function activate(context: ExtensionContext): Promise<ProjectExplor
 	console.log(`Developer environment: ${process.env.DEV}`);
 	if (process.env.DEV) {
 		// Run tests if not in production build
-		initialise(context);
+		await initialise(context);
 	}
 
 	return { projectManager: ProjectManager, projectExplorer: projectExplorer };
