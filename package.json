@@ -140,6 +140,16 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setTargetLibraryForCompiles",
+        "title": "%commands.projectExplorer.setTargetLibraryForCompiles%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles",
+        "title": "%commands.projectExplorer.setTargetCCSIDForCompiles%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
         "title": "%commands.projectExplorer.removeFromLibraryList%",
         "icon": "$(close)"
@@ -375,6 +385,14 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setTargetLibraryForCompiles",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
           "when": "never"
         },
@@ -519,6 +537,18 @@
           "when": "never"
         }
       ],
+      "explorer/context": [
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setTargetLibraryForCompiles",
+          "group": "8_projectExplorer@0",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles",
+          "group": "8_projectExplorer@1",
+          "when": "explorerResourceIsFolder"
+        }
+      ],
       "projectExplorer.goTo": [
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.goToObjectBrowser",
@@ -562,7 +592,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
           "when": "view == objectBrowser && viewItem =~ /^object.lib.*/ && vscode-ibmi-projectexplorer.hasActiveProject == true",
-          "group": "0_projectexplorer@1"
+          "group": "0_projectExplorer@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
@@ -607,7 +637,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",
           "when": "view == objectBrowser && viewItem =~ /^object.lib.*/ && vscode-ibmi-projectexplorer.hasActiveProject == true",
-          "group": "0_projectexplorer@0"
+          "group": "0_projectExplorer@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.addToLibraryList",
@@ -627,12 +657,12 @@
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",
           "when": "view == ifsBrowser && viewItem =~ /^directory.*/ && vscode-ibmi-projectexplorer.hasActiveProject == true",
-          "group": "0_projectexplorer@0"
+          "group": "0_projectExplorer@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",
           "when": "view == ifsBrowser && viewItem =~ /^directory.*/ && vscode-ibmi-projectexplorer.hasActiveProject == true",
-          "group": "0_projectexplorer@1"
+          "group": "0_projectExplorer@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.addToIncludePaths",

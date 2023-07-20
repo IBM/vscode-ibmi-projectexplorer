@@ -20,7 +20,7 @@ import { ValidatorResult } from "jsonschema";
 const DEFAULT_CURLIB = '&CURLIB';
 const DEFAULT_OBJLIB = '&OBJLIB';
 
-export type ProjectFileType = 'iproj.json' | 'joblog.json' | 'output.log' | '.env';
+export type ProjectFileType = 'iproj.json' | '.ibmi.json' | 'joblog.json' | 'output.log' | '.env';
 export type LibraryList = { libraryInfo: IBMiObject; libraryType: string; }[];
 export type EnvironmentVariables = { [name: string]: string };
 export type Direction = 'up' | 'down';
@@ -29,7 +29,7 @@ export type Position = 'first' | 'last' | 'middle';
 export class IProject {
   private name: string;
   private state: IProjectT | undefined;
-  private buildMap: Map<string, IBMiJsonT>;
+  private buildMap: Map<string, IBMiJsonT> | undefined;
   private libraryList: LibraryList | undefined;
   private jobLogs: RingBuffer<JobLogInfo>;
   private environmentValues: EnvironmentVariables;
@@ -38,7 +38,7 @@ export class IProject {
   constructor(public workspaceFolder: WorkspaceFolder) {
     this.name = workspaceFolder.name;
     this.state = undefined;
-    this.buildMap = new Map();
+    this.buildMap = undefined;
     this.libraryList = undefined;
     this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
@@ -48,14 +48,14 @@ export class IProject {
     return this.name;
   }
 
-  public getProjectFileUri(type: ProjectFileType): Uri {
+  public getProjectFileUri(type: ProjectFileType, directory?: Uri): Uri {
     const logDirectory = (type === 'joblog.json' || type === 'output.log') ? `.logs` : ``;
 
-    return Uri.file(path.join(this.workspaceFolder.uri.fsPath, logDirectory, type));
+    return Uri.file(path.join(directory ? directory.fsPath : this.workspaceFolder.uri.fsPath, logDirectory, type));
   }
 
-  public async projectFileExists(type: ProjectFileType): Promise<boolean> {
-    const fileUri = this.getProjectFileUri(type);
+  public async projectFileExists(type: ProjectFileType, directory?: Uri): Promise<boolean> {
+    const fileUri = this.getProjectFileUri(type, directory);
 
     try {
       const statResult = await workspace.fs.stat(fileUri);
@@ -63,6 +63,14 @@ export class IProject {
     } catch (e) {
       return false;
     }
+  }
+
+  public resolveVariable(lib: string, values: EnvironmentVariables): string {
+    if (lib && lib.startsWith('&') && values[lib.substring(1)] && values[lib.substring(1)] !== '') {
+      return values[lib.substring(1)];
+    }
+
+    return lib;
   }
 
   public async getState(): Promise<IProjectT | undefined> {
@@ -110,14 +118,6 @@ export class IProject {
     this.state = state;
   }
 
-  public resolveVariable(lib: string, values: EnvironmentVariables): string {
-    if (lib && lib.startsWith('&') && values[lib.substring(1)] && values[lib.substring(1)] !== '') {
-      return values[lib.substring(1)];
-    }
-
-    return lib;
-  }
-
   public async getUnresolvedState(): Promise<IProjectT | undefined> {
     const content = (await workspace.fs.readFile(this.getProjectFileUri('iproj.json'))).toString();
     let unresolvedState: IProjectT | undefined;
@@ -138,7 +138,7 @@ export class IProject {
     }
   }
 
-  public async getBuildMap(): Promise<Map<string, IBMiJsonT>> {
+  public async getBuildMap(): Promise<Map<string, IBMiJsonT> | undefined> {
     if (!this.buildMap) {
       await this.updateBuildMap();
     }
@@ -148,37 +148,90 @@ export class IProject {
   public async updateBuildMap() {
     this.buildMap = new Map();
 
-    const ibmiJsonPaths = await workspace.findFiles('**/.ibmi.json');
-    for await (const ibmiJsonPath of ibmiJsonPaths) {
+    const ibmiJsonUris = await workspace.findFiles('**/.ibmi.json');
+    for await (const ibmiJsonUri of ibmiJsonUris) {
       try {
-        const ibmiJsonContent: IBMiJsonT = JSON.parse((await workspace.fs.readFile(ibmiJsonPath)).toString());
+        const ibmiJsonContent: IBMiJsonT = JSON.parse((await workspace.fs.readFile(ibmiJsonUri)).toString());
         if (ibmiJsonContent && ibmiJsonContent.build) {
-          this.buildMap.set(path.dirname(ibmiJsonPath.fsPath), ibmiJsonContent);
+          this.buildMap.set(path.dirname(ibmiJsonUri.fsPath), ibmiJsonContent);
         }
       } catch { }
     };
 
-    if (!this.buildMap.has(this.workspaceFolder.uri.fsPath)) {
-      const unresolvedState = await this.getUnresolvedState();
-      if (unresolvedState && (unresolvedState.objlib || unresolvedState.curlib)) {
-        this.buildMap.set(this.workspaceFolder.uri.fsPath, { build: { objlib: unresolvedState.objlib || unresolvedState.curlib } });
+    const rootIBMiJson = this.buildMap.get(this.workspaceFolder.uri.fsPath);
+    const unresolvedState = await this.getUnresolvedState();
+    this.buildMap.set(this.workspaceFolder.uri.fsPath,
+      {
+        version: rootIBMiJson?.version || unresolvedState?.version,
+        build: {
+          objlib: rootIBMiJson?.build?.objlib || unresolvedState?.objlib || unresolvedState?.curlib,
+          tgtCcsid: rootIBMiJson?.build?.tgtCcsid
+        }
       }
+    );
+  }
+
+  public setBuildMap(buildMap: Map<string, IBMiJsonT> | undefined) {
+    this.buildMap = buildMap;
+  }
+
+  public async getUnresolvedIBMiJson(directory: Uri): Promise<IBMiJsonT | undefined> {
+    try {
+      const content = await workspace.fs.readFile(this.getProjectFileUri('.ibmi.json', directory));
+      return JSON.parse(content.toString());
+    } catch (e) {
+      return undefined;
     }
   }
 
-  public async getIbmiJson(ibmiJsonUri: Uri, buildMap?: Map<string, IBMiJsonT>): Promise<IBMiJsonT | undefined> {
+  public async getIBMiJson(ibmiJsonUri: Uri, buildMap?: Map<string, IBMiJsonT>, resolvedIBMiJson?: IBMiJsonT): Promise<IBMiJsonT | undefined> {
     buildMap = buildMap || await this.getBuildMap();
-    const ibmiJson = buildMap.get(ibmiJsonUri.fsPath);
+    if (!buildMap) {
+      return;
+    }
 
-    if (ibmiJson) {
-      return ibmiJson;
-    } else {
-      // Recursively search in parent .ibmi.json as long as parent directory is in workspace folder
-      const parentDirectoryUri = Uri.file(path.parse(ibmiJsonUri.fsPath).dir);
-      const parentDirectoryWorkspaceFolder = workspace.getWorkspaceFolder(parentDirectoryUri);
-      if (parentDirectoryWorkspaceFolder === this.workspaceFolder) {
-        return await this.getIbmiJson(parentDirectoryUri, buildMap);
+    const ibmiJson = buildMap.get(ibmiJsonUri.fsPath);
+    if (ibmiJson && ibmiJson.build) {
+      if (!resolvedIBMiJson) {
+        resolvedIBMiJson = {
+          version: undefined,
+          build: {
+            objlib: undefined,
+            tgtCcsid: undefined
+          }
+        };
       }
+
+      if (!resolvedIBMiJson.version && ibmiJson.version) {
+        resolvedIBMiJson.version = ibmiJson.version;
+      }
+
+      if (!resolvedIBMiJson.build!.objlib && ibmiJson.build.objlib) {
+        resolvedIBMiJson.build!.objlib = ibmiJson.build.objlib;
+      }
+
+      if (!resolvedIBMiJson.build!.tgtCcsid && ibmiJson.build.tgtCcsid) {
+        resolvedIBMiJson.build!.tgtCcsid = ibmiJson.build.tgtCcsid;
+      }
+
+      if (resolvedIBMiJson.build!.objlib && resolvedIBMiJson.build!.tgtCcsid && resolvedIBMiJson.version) {
+        return resolvedIBMiJson;
+      } else {
+        return await this.searchParentIBMiJson(ibmiJsonUri, buildMap, resolvedIBMiJson);
+      }
+    } else {
+      return await this.searchParentIBMiJson(ibmiJsonUri, buildMap, resolvedIBMiJson);
+    }
+  }
+
+  private async searchParentIBMiJson(ibmiJsonUri: Uri, buildMap?: Map<string, IBMiJsonT>, ibmiJson?: IBMiJsonT): Promise<IBMiJsonT | undefined> {
+    // Recursively search in parent .ibmi.json as long as parent directory is in workspace folder
+    const parentDirectoryUri = Uri.file(path.parse(ibmiJsonUri.fsPath).dir);
+    const parentDirectoryWorkspaceFolder = workspace.getWorkspaceFolder(parentDirectoryUri);
+    if (parentDirectoryWorkspaceFolder === this.workspaceFolder) {
+      return await this.getIBMiJson(parentDirectoryUri, buildMap, ibmiJson);
+    } else {
+      return ibmiJson;
     }
   }
 
@@ -275,7 +328,7 @@ export class IProject {
     }
   }
 
-  public async setTargetLibraryForCompiles(library: string) {
+  public async setAsTargetLibraryForCompiles(library: string) {
     const unresolvedState = await this.getUnresolvedState();
     const state = await this.getState();
 
@@ -295,6 +348,60 @@ export class IProject {
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
+  }
+
+  public async setTargetLibraryForCompiles(library: string, directory: Uri, variable: string) {
+    let unresolvedIBMiJson = await this.getUnresolvedIBMiJson(directory);
+    let ibmiJson = await this.getIBMiJson(directory);
+
+    if (ibmiJson?.build?.objlib === library) {
+      window.showErrorMessage(l10n.t('Target library for compiles already set to {0} in {1}', library, directory.fsPath));
+      return;
+    } else if (unresolvedIBMiJson) {
+      await this.updateEnv(variable, library);
+      if (unresolvedIBMiJson.build) {
+        unresolvedIBMiJson.build.objlib = `&${variable}`;
+      } else {
+        unresolvedIBMiJson.build = {
+          objlib: `&${variable}`
+        };
+      }
+    } else {
+      await this.updateEnv(variable, library);
+      unresolvedIBMiJson = {
+        build: {
+          objlib: `&${variable}`
+        }
+      };
+    }
+
+    await this.updateIBMiJson(unresolvedIBMiJson, directory);
+  }
+
+  public async setTargetCCSIDForCompiles(tgtCcsid: string, directory: Uri) {
+    let unresolvedIBMiJson = await this.getUnresolvedIBMiJson(directory);
+    let ibmiJson = await this.getIBMiJson(directory);
+
+    if (ibmiJson?.build?.tgtCcsid === tgtCcsid) {
+      window.showErrorMessage(l10n.t('Target CCSID for compiles already set to {0} in {1}', tgtCcsid, directory.fsPath));
+      return;
+    } else if (unresolvedIBMiJson) {
+      if (unresolvedIBMiJson.build) {
+        unresolvedIBMiJson.build.tgtCcsid = tgtCcsid;
+      } else {
+        unresolvedIBMiJson.build = {
+          tgtCcsid: tgtCcsid
+        };
+      }
+    } else {
+      unresolvedIBMiJson = {
+        build: {
+          tgtCcsid: tgtCcsid
+        }
+      };
+    }
+
+    await this.updateIBMiJson(unresolvedIBMiJson, directory);
   }
 
   public async getLibraryList(): Promise<LibraryList | undefined> {
@@ -426,7 +533,6 @@ export class IProject {
         return;
       } else {
         await this.updateEnv(DEFAULT_CURLIB.substring(1), library);
-
         unresolvedState.curlib = DEFAULT_CURLIB;
       }
 
@@ -518,10 +624,19 @@ export class IProject {
     }
   }
 
+  public async createIProj(description: string): Promise<boolean> {
+    const iProject: IProjectT = {
+      description: description
+    };
+
+    return await this.updateIProj(iProject);
+  }
+
   public async updateIProj(iProject: IProjectT): Promise<boolean> {
     try {
       await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
       this.state = undefined;
+      this.buildMap = undefined;
       this.libraryList = undefined;
       return true;
     } catch {
@@ -530,15 +645,13 @@ export class IProject {
     }
   }
 
-  public async createProject(description: string): Promise<boolean> {
+  public async updateIBMiJson(ibmiJson: IBMiJsonT, directory: Uri): Promise<boolean> {
     try {
-      const content = {
-        description: description
-      };
-
-      await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(JSON.stringify(content, null, 2)));
+      await workspace.fs.writeFile(this.getProjectFileUri('.ibmi.json', directory), new TextEncoder().encode(JSON.stringify(ibmiJson, null, 2)));
+      this.buildMap = new Map();
       return true;
-    } catch (e) {
+    } catch {
+      window.showErrorMessage(l10n.t('Failed to update .ibmi.json'));
       return false;
     }
   }
@@ -593,7 +706,7 @@ export class IProject {
       ...(unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl : []),
       ...(unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl : []),
       ...(unresolvedState.includePath ? unresolvedState.includePath : []),
-      ...(Array.from(buildMap.values()).filter(ibmiJson => ibmiJson.build).map(ibmiJson => ibmiJson.build!.objlib))
+      ...(buildMap ? Array.from(buildMap.values()).filter(ibmiJson => ibmiJson.build).map(ibmiJson => ibmiJson.build!.objlib) : [])
     ].filter(x => x) as string[];
 
     // Get everything that starts with an &
