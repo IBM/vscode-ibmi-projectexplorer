@@ -2,17 +2,21 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import * as vscode from "vscode";
+import { ExtensionContext, commands, window } from "vscode";
 import { env } from "process";
 import { TestSuitesTreeProvider } from "./testCasesTree";
 import { getInstance } from "../ibmi";
 import { iProjectSuite } from "./iProject";
 import { projectManagerSuite } from "./projectManager";
 import { jobLogSuite } from "./jobLog";
+import { projectExplorerSuite } from "./projectExplorer";
+import { decorationProviderSuite } from "./decorationProvider";
 
 const suites: TestSuite[] = [
+  decorationProviderSuite,
   iProjectSuite,
   jobLogSuite,
+  projectExplorerSuite,
   projectManagerSuite
 ];
 
@@ -20,7 +24,11 @@ export type TestSuite = {
   name: string,
   beforeAll?: () => Promise<void>,
   beforeEach?: () => Promise<void>,
-  tests: TestCase[]
+  afterAll?: () => Promise<void>,
+  afterEach?: () => Promise<void>,
+  tests: TestCase[],
+  failure?: string,
+  status?: "running" | "done"
 };
 
 export interface TestCase {
@@ -28,20 +36,22 @@ export interface TestCase {
   status?: "running" | "failed" | "pass"
   failure?: string
   test: () => Promise<void>
+  duration?: number
 }
 
 let testSuitesTreeProvider: TestSuitesTreeProvider;
-export function initialise(context: vscode.ExtensionContext) {
+export function initialise(context: ExtensionContext) {
   if (env.testing === `true`) {
-    vscode.commands.executeCommand(`setContext`, `projectExplorer:testing`, true);
+    commands.executeCommand(`setContext`, `projectExplorer:testing`, true);
     const ibmi = getInstance()!;
     ibmi.onEvent(`connected`, runTests);
     ibmi.onEvent(`disconnected`, resetTests);
     testSuitesTreeProvider = new TestSuitesTreeProvider(suites);
+    const testSuitesTreeView = window.createTreeView(`testing`, { treeDataProvider: testSuitesTreeProvider, showCollapseAll: true });
 
     context.subscriptions.push(
-      vscode.window.registerTreeDataProvider("testing", testSuitesTreeProvider),
-      vscode.commands.registerCommand(`projectExplorer.testing.specific`, async (suiteName: string, testName: string) => {
+      testSuitesTreeView,
+      commands.registerCommand(`projectExplorer.testing.specific`, async (suiteName: string, testName: string) => {
         if (suiteName && testName) {
           const suite = suites.find(suite => suite.name === suiteName);
 
@@ -58,6 +68,14 @@ export function initialise(context: vscode.ExtensionContext) {
               }
 
               await runTest(testCase);
+
+              if (suite.afterEach) {
+                await suite.afterEach();
+              }
+
+              if (suite.afterAll) {
+                await suite.afterAll();
+              }
             }
           }
         }
@@ -68,19 +86,48 @@ export function initialise(context: vscode.ExtensionContext) {
 
 async function runTests() {
   for (const suite of suites) {
-    console.log(`Running suite ${suite.name} (${suite.tests.length})`);
-    console.log();
+    try {
+      suite.status = "running";
+      testSuitesTreeProvider.refresh(suite);
 
-    if (suite.beforeAll) {
-      await suite.beforeAll();
-    }
-
-    for await (const test of suite.tests) {
-      if (suite.beforeEach) {
-        await suite.beforeEach();
+      if (suite.beforeAll) {
+        console.log(`Pre-processing suite ${suite.name}`);
+        await suite.beforeAll();
       }
 
-      await runTest(test);
+      console.log(`Running suite ${suite.name} (${suite.tests.length})`);
+      console.log();
+      for await (const test of suite.tests) {
+        if (suite.beforeEach) {
+          await suite.beforeEach();
+        }
+
+        await runTest(test);
+
+        if (suite.afterEach) {
+          await suite.afterEach();
+        }
+      }
+    } catch (error: any) {
+      console.log(error);
+      suite.failure = `${error.message ? error.message : error}`;
+    } finally {
+      suite.status = "done";
+      testSuitesTreeProvider.refresh(suite);
+
+      if (suite.afterAll) {
+        console.log();
+        console.log(`Post-processing suite ${suite.name}`);
+
+        try {
+          await suite.afterAll();
+        } catch (error: any) {
+          console.log(error);
+          suite.failure = `${error.message ? error.message : error}`;
+        }
+      }
+
+      testSuitesTreeProvider.refresh(suite);
     }
   }
 }
@@ -88,21 +135,19 @@ async function runTests() {
 async function runTest(test: TestCase) {
   console.log(`\tRunning ${test.name}`);
   test.status = "running";
-  testSuitesTreeProvider.refresh();
+  testSuitesTreeProvider.refresh(test);
+  const start = +(new Date());
 
   try {
     await test.test();
     test.status = "pass";
-  }
-
-  catch (error: any) {
+  } catch (error: any) {
     console.log(error);
     test.status = "failed";
-    test.failure = error.message;
-  }
-
-  finally {
-    testSuitesTreeProvider.refresh();
+    test.failure = `${error.message ? error.message : error}`;
+  } finally {
+    test.duration = +(new Date()) - start;
+    testSuitesTreeProvider.refresh(test);
   }
 }
 
