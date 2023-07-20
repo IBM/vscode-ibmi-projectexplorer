@@ -15,6 +15,7 @@ import envUpdater from "./envUpdater";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import { ProjectManager } from "./projectManager";
+import { ValidatorResult } from "jsonschema";
 
 const DEFAULT_CURLIB = '&CURLIB';
 const DEFAULT_OBJLIB = '&OBJLIB';
@@ -32,6 +33,7 @@ export class IProject {
   private libraryList: LibraryList | undefined;
   private jobLogs: RingBuffer<JobLogInfo>;
   private environmentValues: EnvironmentVariables;
+  private validatorResult: ValidatorResult | undefined;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
     this.name = workspaceFolder.name;
@@ -117,11 +119,22 @@ export class IProject {
   }
 
   public async getUnresolvedState(): Promise<IProjectT | undefined> {
+    const content = (await workspace.fs.readFile(this.getProjectFileUri('iproj.json'))).toString();
+    let unresolvedState: IProjectT | undefined;
     try {
-      const content = await workspace.fs.readFile(this.getProjectFileUri('iproj.json'));
-      return IProject.validateIProject(content.toString());
-    } catch (e) {
+      unresolvedState = JSON.parse(content);
+    } catch (e) { }
+
+    const validator = ProjectManager.getValidator();
+    const schema = validator.schemas['/iproj'];
+    const validatorResult = validator.validate(unresolvedState || content, schema);
+
+    if (validatorResult && validatorResult.errors.length > 0 && content.trim() !== '') {
+      this.validatorResult = validatorResult;
       return undefined;
+    } else {
+      this.validatorResult = undefined;
+      return unresolvedState;
     }
   }
 
@@ -165,7 +178,7 @@ export class IProject {
   public async getUnresolvedIBMiJson(directory: Uri): Promise<IBMiJsonT | undefined> {
     try {
       const content = await workspace.fs.readFile(this.getProjectFileUri('.ibmi.json', directory));
-      return IProject.validateIBMiJson(content.toString());
+      return JSON.parse(content.toString());
     } catch (e) {
       return undefined;
     }
@@ -404,72 +417,75 @@ export class IProject {
 
   public async updateLibraryList() {
     const ibmi = getInstance();
-    const defaultUserLibraries = ibmi?.getConnection().defaultUserLibraries;
 
-    // Get user libraries
-    const state = await this.getState();
+    if (ibmi && ibmi.getConnection()) {
+      const defaultUserLibraries = ibmi.getConnection().defaultUserLibraries;
 
-    if (state) {
-      let userLibrariesToAdd: string[] = [
-        ...(state.preUsrlibl ? state.preUsrlibl : []),
-        ...(defaultUserLibraries ? defaultUserLibraries : []),
-        ...(state.postUsrlibl ? state.postUsrlibl : [])
-      ];
-      userLibrariesToAdd = [... new Set(userLibrariesToAdd.filter(lib => !lib.startsWith('&')))].reverse();
+      // Get user libraries
+      const state = await this.getState();
 
-      // Get current library
-      let curlib = state.curlib && !state.curlib.startsWith('&') ? state.curlib : undefined;
+      if (state) {
+        let userLibrariesToAdd: string[] = [
+          ...(state.preUsrlibl ? state.preUsrlibl : []),
+          ...(defaultUserLibraries ? defaultUserLibraries : []),
+          ...(state.postUsrlibl ? state.postUsrlibl : [])
+        ];
+        userLibrariesToAdd = [... new Set(userLibrariesToAdd.filter(lib => !lib.startsWith('&')))].reverse();
 
-      // Validate libraries
-      let librariesToValidate = curlib && !userLibrariesToAdd.includes(curlib) ? userLibrariesToAdd.concat(curlib) : userLibrariesToAdd;
-      const badLibs = await ibmi?.getContent().validateLibraryList(librariesToValidate);
-      if (curlib && badLibs?.includes(curlib)) {
-        curlib = undefined;
-      }
-      if (badLibs) {
-        userLibrariesToAdd = userLibrariesToAdd.filter(lib => !badLibs.includes(lib));
-      }
+        // Get current library
+        let curlib = state.curlib && !state.curlib.startsWith('&') ? state.curlib : undefined;
 
-      // Retrieve library list
-      let buildLibraryListCommand = [
-        defaultUserLibraries ? `liblist -d ${defaultUserLibraries.join(` `)}` : ``,
-        state.curlib && state.curlib !== '' ? `liblist -c ${state.curlib}` : ``,
-        userLibrariesToAdd && userLibrariesToAdd.length > 0 ? `liblist -a ${userLibrariesToAdd.join(` `)}` : ``,
-        `liblist`
-      ].filter(cmd => cmd !== ``).join(` ; `);
+        // Validate libraries
+        let librariesToValidate = curlib && !userLibrariesToAdd.includes(curlib) ? userLibrariesToAdd.concat(curlib) : userLibrariesToAdd;
+        const badLibs = await ibmi.getContent().validateLibraryList(librariesToValidate);
+        if (curlib && badLibs?.includes(curlib)) {
+          curlib = undefined;
+        }
+        if (badLibs) {
+          userLibrariesToAdd = userLibrariesToAdd.filter(lib => !badLibs.includes(lib));
+        }
 
-      const liblResult = await ibmi?.getConnection().sendQsh({
-        command: buildLibraryListCommand
-      });
+        // Retrieve library list
+        let buildLibraryListCommand = [
+          defaultUserLibraries ? `liblist -d ${defaultUserLibraries.join(` `)}` : ``,
+          state.curlib && state.curlib !== '' ? `liblist -c ${state.curlib}` : ``,
+          userLibrariesToAdd && userLibrariesToAdd.length > 0 ? `liblist -a ${userLibrariesToAdd.join(` `)}` : ``,
+          `liblist`
+        ].filter(cmd => cmd !== ``).join(` ; `);
 
-      if (liblResult && liblResult.code === 0) {
-        const libraryListString = liblResult.stdout;
+        const liblResult = await ibmi.getConnection().sendQsh({
+          command: buildLibraryListCommand
+        });
 
-        if (libraryListString !== ``) {
-          const libraries = libraryListString.split(`\n`);
+        if (liblResult && liblResult.code === 0) {
+          const libraryListString = liblResult.stdout;
 
-          let libraryList: { name: string, libraryType: string }[] = [];
-          for (const library of libraries) {
-            libraryList.push({
-              name: library.substring(0, 10).trim(),
-              libraryType: library.substring(12)
-            });
-          }
+          if (libraryListString !== ``) {
+            const libraries = libraryListString.split(`\n`);
 
-          const libraryListInfo = await ibmi?.getContent().getLibraryList(libraryList.map(lib => lib.name));
-          if (libraryListInfo) {
-            let libl = [];
-            for (const [index, library] of libraryList.entries()) {
-              libl.push({
-                libraryInfo: libraryListInfo[index],
-                libraryType: library.libraryType
+            let libraryList: { name: string, libraryType: string }[] = [];
+            for (const library of libraries) {
+              libraryList.push({
+                name: library.substring(0, 10).trim(),
+                libraryType: library.substring(12)
               });
             }
 
-            this.libraryList = libl;
+            const libraryListInfo = await ibmi.getContent().getLibraryList(libraryList.map(lib => lib.name));
+            if (libraryListInfo) {
+              let libl = [];
+              for (const [index, library] of libraryList.entries()) {
+                libl.push({
+                  libraryInfo: libraryListInfo[index],
+                  libraryType: library.libraryType
+                });
+              }
 
-            if (libl.toString() !== this.libraryList.toString()) {
-              ProjectManager.fire({ type: 'libraryList', iProject: this });
+              this.libraryList = libl;
+
+              if (libl.toString() !== this.libraryList.toString()) {
+                ProjectManager.fire({ type: 'libraryList', iProject: this });
+              }
             }
           }
         }
@@ -672,6 +688,10 @@ export class IProject {
     }
   }
 
+  public getValidatorResult() {
+    return this.validatorResult;
+  }
+
   public async getVariables(): Promise<string[]> {
     const unresolvedState = await this.getUnresolvedState();
     if (!unresolvedState) {
@@ -760,22 +780,6 @@ export class IProject {
     } else {
       this.jobLogs.fromArray([]);
     }
-  }
-
-  public static validateIProject(content: string): IProjectT {
-    const iproj = JSON.parse(content);
-
-    // Validate iproj here
-
-    return iproj;
-  }
-
-  public static validateIBMiJson(content: string): IBMiJsonT {
-    const ibmiJson = JSON.parse(content);
-
-    // Validate ibmi here
-
-    return ibmiJson;
   }
 
   public static validateJobLog(content: string): JobLogInfo {

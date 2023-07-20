@@ -11,11 +11,11 @@ import { ProjectExplorerApi } from './projectExplorerApi';
 import { initialise } from './testing';
 import { DeploymentPath } from '@halcyontech/vscode-ibmi-types/api/Storage';
 
-export function activate(context: ExtensionContext): ProjectExplorerApi {
+export async function activate(context: ExtensionContext): Promise<ProjectExplorerApi> {
 	console.log(l10n.t('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!'));
 
 	loadBase();
-	ProjectManager.initialize(context);
+	await ProjectManager.initialize(context);
 
 	const ibmi = getInstance();
 	const projectExplorer = new ProjectExplorer(context);

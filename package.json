@@ -227,6 +227,11 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.createSourceFile",
+        "title": "%commands.projectExplorer.createSourceFile%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.runAction",
         "title": "%commands.projectExplorer.runAction%"
       },
@@ -264,6 +269,11 @@
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.searchSourceFile",
         "title": "%commands.projectExplorer.searchSourceFile%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.browse",
+        "title": "%commands.projectExplorer.browse%"
       },
       {
         "category": "%commands.projectExplorer%",
@@ -439,6 +449,10 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.createSourceFile",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.runAction",
           "when": "never"
         },
@@ -468,6 +482,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.searchSourceFile",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.browse",
           "when": "never"
         },
         {
@@ -569,7 +587,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "2_migrate@0"
+          "group": "3_migrate@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
@@ -598,23 +616,23 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.removeFromLibraryList",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(current|preUser|postUser).*/",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/ && viewItem =~ /^.*_(current|preUser|postUser).*/",
           "group": "inline@2"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryUp",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(preUser|postUser).*/ && viewItem =~ /^.*_(middle|last).*/",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/ && viewItem =~ /^.*_(preUser|postUser).*/ && viewItem =~ /^.*_(middle|last).*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.moveLibraryDown",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_(preUser|postUser).*/ && viewItem =~ /^.*_(middle|first).*/",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/ && viewItem =~ /^.*_(preUser|postUser).*/ && viewItem =~ /^.*_(middle|first).*/",
           "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/",
-          "group": "1_variable@1"
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
+          "group": "2_variable@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",
@@ -658,8 +676,8 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.configureAsVariable",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/ && viewItem =~ /^.*_configurable.*/",
-          "group": "1_variable@0"
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/ && viewItem =~ /^.*_configurable.*/",
+          "group": "2_variable@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.configureAsVariable",
@@ -678,28 +696,33 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.changeLibraryDescription",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
           "group": "0_libraryActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.copyLibrary",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
           "group": "0_libraryActions@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.renameLibrary",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
           "group": "0_libraryActions@2"
         },
         {
           "command": "vscode-ibmi-projectexplorer.clearLibrary",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
           "group": "0_libraryActions@3"
         },
         {
           "command": "vscode-ibmi-projectexplorer.deleteLibrary",
-          "when": "view == projectExplorer && viewItem =~ /^library.*/",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
           "group": "0_libraryActions@4"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createSourceFile",
+          "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
+          "group": "1_objectActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.runAction",
@@ -747,44 +770,49 @@
           "group": "0_actions@0"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.browse",
+          "when": "view == projectExplorer && viewItem =~ /^member*/",
+          "group": "1_browse@0"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.selectForCompare",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "1_compare@0"
+          "group": "2_compare@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.compareWithSelected",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "1_compare@1"
+          "group": "2_compare@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.updateMemberText",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "2_memberActions@0"
+          "group": "3_memberActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.copyMember",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "2_memberActions@1"
+          "group": "3_memberActions@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.renameMember",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "2_memberActions@2"
+          "group": "3_memberActions@2"
         },
         {
           "command": "vscode-ibmi-projectexplorer.deleteMember",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "2_memberActions@3"
+          "group": "3_memberActions@3"
         },
         {
           "command": "vscode-ibmi-projectexplorer.download",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "3_transfer@0"
+          "group": "4_transfer@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.uploadAndReplace",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "3_transfer@1"
+          "group": "4_transfer@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
@@ -1009,7 +1037,7 @@
     "types": "npx -p typescript tsc ./src/extension.ts --excludeDirectories ./src/testing --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node"
   },
   "devDependencies": {
-    "@halcyontech/vscode-ibmi-types": "^1.9.0",
+    "@halcyontech/vscode-ibmi-types": "^2.0.0",
     "@types/node": "16.x",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
@@ -1022,6 +1050,7 @@
     "@vscode/l10n-dev": "^0.0.25"
   },
   "dependencies": {
-    "dotenv": "^16.0.3"
+    "dotenv": "^16.0.3",
+    "jsonschema": "^1.4.1"
   }
 }
