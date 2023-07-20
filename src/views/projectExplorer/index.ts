@@ -481,8 +481,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               const path = `${library}/${sourceFileName.toUpperCase()}`;
 
               vscode.window.showInformationMessage(l10n.t('Creating source file {0}.', path));
-
               await connection.runCommand({ command: `CRTSRCPF FILE(${path}) RCDLEN(112)` });
+
               this.refresh();
             } catch (e: any) {
               vscode.window.showErrorMessage(l10n.t('Error creating source file! {0}', e));
