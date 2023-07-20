@@ -87,6 +87,7 @@
   "All": "All",
   "Every file in the local workspace": "Every file in the local workspace",
   "Select deployment method to {0}": "Select deployment method to {0}",
+  "{0} does not exist remotely": "{0} does not exist remotely",
   "Enter library name": "Enter library name",
   "Library name": "Library name",
   "Library must be 10 characters or less": "Library must be 10 characters or less",
