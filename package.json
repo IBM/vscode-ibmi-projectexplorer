@@ -718,7 +718,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.debugProgram",
-          "when": "view == projectExplorer && !inDebugMode && viewItem =~ /^objectFile.PGM.*/",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.PGM.*/ && !inDebugMode ",
           "group": "4_debug@0"
         },
         {
