@@ -439,9 +439,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const connection = ibmi!.getConnection();
 
             try {
-              await connection.remoteCommand(
-                `CLRLIB LIB(${library})`,
-              );
+              await connection.runCommand({ command: `CLRLIB LIB(${library})` });
 
               vscode.window.showInformationMessage(l10n.t('Cleared {0} *{1}.', path, type));
               this.refresh();
@@ -459,6 +457,37 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           });
 
           this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createSourceFile`, async (element: Library) => {
+        if (element) {
+          const sourceFileName = await vscode.window.showInputBox({
+            prompt: l10n.t('Enter source file name'),
+            placeHolder: l10n.t('Source file name'),
+            validateInput: (library) => {
+              if (library.length > 10) {
+                return l10n.t('Source file name must be 10 characters or less');
+              } else {
+                return null;
+              }
+            }
+          });
+
+          if (sourceFileName) {
+            const ibmi = getInstance();
+            const connection = ibmi!.getConnection();
+            try {
+              const library = element.libraryInfo.name;
+              const path = `${library}/${sourceFileName.toUpperCase()}`;
+
+              vscode.window.showInformationMessage(l10n.t('Creating source file {0}.', path));
+              await connection.runCommand({ command: `CRTSRCPF FILE(${path}) RCDLEN(112)` });
+
+              this.refresh();
+            } catch (e: any) {
+              vscode.window.showErrorMessage(l10n.t('Error creating source file! {0}', e));
+            }
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: ObjectFile | MemberFile) => {
@@ -535,6 +564,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           await commands.executeCommand(`code-for-ibmi.searchSourceFile`, {
             path: `${element.objectFileInfo.library}/${element.objectFileInfo.name}`,
             memberFilter: ``
+          });
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.browse`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.browse`, {
+            member: element.memberFileInfo
           });
         }
       }),
