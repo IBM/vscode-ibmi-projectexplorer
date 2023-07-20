@@ -15,6 +15,7 @@ import IncludePaths from "./includePaths";
 import Source from "./source";
 import LibraryList from "./libraryList";
 import * as path from "path";
+import { IProjectT } from "../../iProjectT";
 
 /**
  * Tree item for a project
@@ -24,12 +25,18 @@ export default class Project extends ProjectExplorerTreeItem {
   static callBack: ((iProject: IProject) => Promise<ProjectExplorerTreeItem[]>)[] = [];
   private extensibleChildren: ProjectExplorerTreeItem[] = [];
 
-  constructor(public workspaceFolder: WorkspaceFolder, description?: string) {
+  constructor(public workspaceFolder: WorkspaceFolder, state?: IProjectT) {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
 
     this.iconPath = new ThemeIcon(`symbol-folder`);
     this.contextValue = Project.contextValue + ContextValue.inactive;
-    this.description = description;
+    this.description = state?.description;
+    this.tooltip = l10n.t('Name: {0}\n', workspaceFolder.name) +
+      l10n.t('Path: {0}\n', workspaceFolder.uri.fsPath) +
+      (state?.description ? l10n.t('Description: {0}\n', state.description) : ``) +
+      (state?.version ? l10n.t('Version: {0}\n', state.version) : ``) +
+      (state?.repository ? l10n.t('Repository: {0}\n', state.repository) : ``) +
+      (state?.license ? l10n.t('License: {0}', state.license) : ``);
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
@@ -45,15 +52,19 @@ export default class Project extends ProjectExplorerTreeItem {
       } else {
         const defaultDeployLocation = iProject?.getDefaultDeployLocation();
 
-        items.push(new ErrorItem(this.workspaceFolder, l10n.t('Source'), {
-          description: l10n.t('Please configure deploy location'),
-          contextValue: ErrorItem.contextValue + ContextValue.setDeployLocation,
-          command: {
-            command: `code-for-ibmi.setDeployLocation`,
-            title: l10n.t('Set Deploy Location'),
-            arguments: [undefined, this.workspaceFolder, defaultDeployLocation]
+        items.push(new ErrorItem(
+          this.workspaceFolder,
+          l10n.t('Source'),
+          {
+            description: l10n.t('Please configure deploy location'),
+            contextValue: ErrorItem.contextValue + ContextValue.setDeployLocation,
+            command: {
+              command: `code-for-ibmi.setDeployLocation`,
+              title: l10n.t('Set Deploy Location'),
+              arguments: [undefined, this.workspaceFolder, defaultDeployLocation]
+            }
           }
-        }));
+        ));
       }
       const hasEnv = await iProject?.projectFileExists('.env');
       if (hasEnv) {
@@ -68,15 +79,19 @@ export default class Project extends ProjectExplorerTreeItem {
         items.push(new Variables(this.workspaceFolder, unresolvedVariableCount));
 
       } else {
-        items.push(new ErrorItem(this.workspaceFolder, l10n.t('Variables'), {
-          description: l10n.t('Please configure environment file'),
-          contextValue: ErrorItem.contextValue + ContextValue.createEnv,
-          command: {
-            command: `vscode-ibmi-projectexplorer.createEnv`,
-            arguments: [this.workspaceFolder],
-            title: l10n.t('Create .env')
+        items.push(new ErrorItem(
+          this.workspaceFolder,
+          l10n.t('Variables'),
+          {
+            description: l10n.t('Please configure environment file'),
+            contextValue: ErrorItem.contextValue + ContextValue.createEnv,
+            command: {
+              command: `vscode-ibmi-projectexplorer.createEnv`,
+              arguments: [this.workspaceFolder],
+              title: l10n.t('Create .env')
+            }
           }
-        }));
+        ));
       }
 
       items.push(new LibraryList(this.workspaceFolder));
@@ -93,13 +108,17 @@ export default class Project extends ProjectExplorerTreeItem {
       }
       items.push(...this.extensibleChildren);
     } else {
-      items.push(new ErrorItem(undefined, l10n.t('Please connect to an IBM i'), {
-        contextValue: ErrorItem.contextValue + ContextValue.openConnectionBrowser,
-        command: {
-          command: `connectionBrowser.focus`,
-          title: l10n.t('Open Connection Browser')
+      items.push(new ErrorItem(
+        undefined,
+        l10n.t('Please connect to an IBM i'),
+        {
+          contextValue: ErrorItem.contextValue + ContextValue.openConnectionBrowser,
+          command: {
+            command: `connectionBrowser.focus`,
+            title: l10n.t('Open Connection Browser')
+          }
         }
-      }));
+      ));
     }
 
     return items;
