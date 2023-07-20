@@ -234,14 +234,14 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.getProjectFromUri(element);
 
           if (iProject) {
-            const ibmiJson = await iProject.getUnresolvedIBMiJson(element);
+            const unresolvedIBMiJson = await iProject.getUnresolvedIBMiJson(element);
             const values = await iProject.getEnv();
 
             let library: string | undefined;
             let variable: string | undefined;
             let isLibrarySet = false;
-            if (ibmiJson && ibmiJson.build?.objlib && ibmiJson.build?.objlib.startsWith('&')) {
-              variable = ibmiJson.build?.objlib.substring(1);
+            if (unresolvedIBMiJson && unresolvedIBMiJson.build?.objlib && unresolvedIBMiJson.build?.objlib.startsWith('&')) {
+              variable = unresolvedIBMiJson.build?.objlib.substring(1);
               library = values[variable];
             } else {
               const variables = await iProject?.getVariables();
@@ -311,7 +311,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.getProjectFromUri(element);
 
           if (iProject) {
-            const ibmiJson = await iProject.getResolvedIBMiJson(element);
+            const ibmiJson = await iProject.getIBMiJson(element);
 
             const tgtCcsid = await window.showInputBox({
               prompt: l10n.t('Enter target CCSID'),
@@ -388,7 +388,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.createProject`, async (workspaceFolder: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createIProj`, async (workspaceFolder: WorkspaceFolder) => {
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -398,7 +398,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             });
 
             if (description) {
-              await iProject.createProject(description);
+              await iProject.createIProj(description);
             }
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve project'));
@@ -796,7 +796,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 {
                   description: l10n.t('Please configure project metadata'),
                   command: {
-                    command: 'vscode-ibmi-projectexplorer.createProject',
+                    command: 'vscode-ibmi-projectexplorer.createIProj',
                     arguments: [folder],
                     title: l10n.t('Create project iproj.json')
                   }

@@ -472,9 +472,9 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
-            name: `Test createProject`, test: async () => {
+            name: `Test createIProj`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
-                await iProject.createProject('NEW SAMPLE PROJECT');
+                await iProject.createIProj('NEW SAMPLE PROJECT');
                 const state = await iProject.getState();
 
                 assert.deepStrictEqual(state, {

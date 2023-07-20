@@ -14,6 +14,7 @@
   "{0} does not exist in includePath": "{0} does not exist in includePath",
   "Target library for compiles already set to {0}": "Target library for compiles already set to {0}",
   "Target library for compiles already set to {0} in {1}": "Target library for compiles already set to {0} in {1}",
+  "Target CCSID for compiles already set to {0} in {1}": "Target CCSID for compiles already set to {0} in {1}",
   "{0} already exists in {1}": "{0} already exists in {1}",
   "Current library already set to {0}": "Current library already set to {0}",
   "Failed to update iproj.json": "Failed to update iproj.json",
