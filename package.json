@@ -99,21 +99,30 @@
         "title": "%commands.projectExplorer.migrateSource%"
       },
       {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
         "title": "%commands.projectExplorer.editDeployLocation%",
         "icon": "$(edit)"
       },
       {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod",
         "title": "%commands.projectExplorer.setDeploymentMethod%",
         "icon": "$(filter)"
       },
       {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
         "title": "%commands.projectExplorer.deployProject%",
         "icon": "$(cloud-upload)"
       },
       {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.compareWithRemote",
+        "title": "%commands.projectExplorer.compareWithRemote%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
         "title": "%commands.projectExplorer.iprojShortcut%",
         "icon": "$(go-to-file)"
@@ -306,31 +315,31 @@
         "title": "%commands.projectExplorer.uploadAndReplace%"
       },
       {
-        "category": "Job Log",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
         "title": "%commands.jobLog.refreshJobLog%",
         "icon": "$(refresh)"
       },
       {
-        "category": "Job Log",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
         "title": "%commands.jobLog.showJobLog%",
         "icon": "$(book)"
       },
       {
-        "category": "Job Log",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
         "title": "%commands.jobLog.showBuildOutput%",
         "icon": "$(note)"
       },
       {
-        "category": "Job Log",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
         "title": "%commands.jobLog.clearJobLogs%",
         "icon": "$(clear-all)"
       },
       {
-        "category": "Job Log",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.copy",
         "title": "%commands.jobLog.copy%",
         "icon": "$(copy)"
@@ -356,6 +365,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.compareWithRemote",
           "when": "never"
         },
         {
@@ -578,6 +591,11 @@
           "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
           "when": "view == projectExplorer && viewItem =~ /^source(?!(File|Directory)).*/",
           "group": "inline@2"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.compareWithRemote",
+          "when": "view == projectExplorer && viewItem =~ /^sourceFile.*/",
+          "group": "0_compare@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",

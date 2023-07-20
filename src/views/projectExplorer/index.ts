@@ -2,6 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
+import * as path from "path";
 import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, window, workspace, WorkspaceFolder } from "vscode";
 import ErrorItem from "./errorItem";
 import { IProject } from "../../iproject";
@@ -17,11 +18,11 @@ import RemoteIncludePath from "./remoteIncludePath";
 import { migrateSource } from "./migrateSource";
 import { IProjectT } from "../../iProjectT";
 import Source from "./source";
-import * as vscode from 'vscode';
 import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
 import { getDeployment, getInstance, getTools } from "../../ibmi";
 import { DeploymentMethod } from "@halcyontech/vscode-ibmi-types";
+import SourceFile from "./sourceFile";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -117,7 +118,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
             methods.push({ method: 'all', label: l10n.t('All'), description: l10n.t('Every file in the local workspace') });
 
-            const deploymentMethod = await vscode.window.showQuickPick(methods, { placeHolder: l10n.t('Select deployment method to {0}', element.deploymentParameters.remotePath) });
+            const deploymentMethod = await window.showQuickPick(methods, { placeHolder: l10n.t('Select deployment method to {0}', element.deploymentParameters.remotePath) });
             if (deploymentMethod) {
               iProject.setDeploymentMethod(deploymentMethod.method);
 
@@ -135,14 +136,27 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.compareWithRemote`, async (element: SourceFile) => {
+        if (element) {
+          const remoteFile = path.parse(element.sourceInfo.remoteUri.path);
+          const ibmi = getInstance();
+          const remoteFileExists = await ibmi?.getContent().streamfileResolve([remoteFile.base], [remoteFile.dir]);
+
+          if (remoteFileExists) {
+            await commands.executeCommand(`vscode.diff`, element.sourceInfo.remoteUri, element.sourceInfo.localUri);
+          } else {
+            window.showErrorMessage(l10n.t('{0} does not exist remotely', remoteFile.base));
+          }
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut`, async (element: Project) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);
 
           if (iProject) {
             const fileUri = iProject.getProjectFileUri('iproj.json');
-            const document = await vscode.workspace.openTextDocument(fileUri);
-            await vscode.window.showTextDocument(document);
+            const document = await workspace.openTextDocument(fileUri);
+            await window.showTextDocument(document);
           }
         }
       }),
@@ -480,7 +494,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const path = `${element.libraryInfo.library}/${element.libraryInfo.name}`;
           const type = element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type;
 
-          const result = await vscode.window.showWarningMessage(l10n.t('Are you sure you want to clear {0} *{1}?', path, type), l10n.t('Yes'), l10n.t('Cancel'));
+          const result = await window.showWarningMessage(l10n.t('Are you sure you want to clear {0} *{1}?', path, type), l10n.t('Yes'), l10n.t('Cancel'));
 
           if (result === l10n.t('Yes')) {
             const ibmi = getInstance();
@@ -491,10 +505,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 `CLRLIB LIB(${library})`,
               );
 
-              vscode.window.showInformationMessage(l10n.t('Cleared {0} *{1}.', path, type));
+              window.showInformationMessage(l10n.t('Cleared {0} *{1}.', path, type));
               this.refresh();
             } catch (e: any) {
-              vscode.window.showErrorMessage(l10n.t('Error clearing library! {0}', e));
+              window.showErrorMessage(l10n.t('Error clearing library! {0}', e));
             }
           }
         }

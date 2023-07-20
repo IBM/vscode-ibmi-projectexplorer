@@ -14,7 +14,8 @@ import SourceFile from "./sourceFile";
 export interface SourceInfo {
   name: string,
   type: FileType,
-  uri: Uri,
+  localUri: Uri,
+  remoteUri: Uri,
   children: SourceInfo[]
 }
 
@@ -102,7 +103,8 @@ export default class Source extends ProjectExplorerTreeItem {
     const deployTree: SourceInfo = {
       name: path.basename(workspaceFolderUri.fsPath),
       type: FileType.Directory,
-      uri: workspaceFolderUri,
+      localUri: workspaceFolderUri,
+      remoteUri: Uri.parse(this.deploymentParameters.remotePath).with({ scheme: `streamfile`, query: `readonly=true` }),
       children: []
     };
 
@@ -118,9 +120,17 @@ export default class Source extends ProjectExplorerTreeItem {
         if (index > -1) {
           subTree = subTree.children[index];
         } else {
-          const uri = Uri.joinPath(subTree.uri, part);
-          const statResult = await workspace.fs.stat(uri);
-          subTree.children.push({ name: part, type: statResult.type, uri: uri, children: [] });
+          const localUri = Uri.joinPath(subTree.localUri, part);
+          const statResult = await workspace.fs.stat(localUri);
+          const remoteUri = Uri.joinPath(subTree.remoteUri, part);
+
+          subTree.children.push({
+            name: part,
+            type: statResult.type,
+            localUri: localUri,
+            remoteUri: remoteUri,
+            children: []
+          });
           subTree = subTree.children[subTree.children.length - 1];
         }
       }

@@ -11,7 +11,7 @@ import { SourceInfo } from "./source";
  * Tree item for a source file
  */
 export default class SourceFile extends ProjectExplorerTreeItem {
-  static contextValue = ContextValue.ifsFile;
+  static contextValue = ContextValue.sourceFile;
   sourceInfo: SourceInfo;
 
   constructor(public workspaceFolder: WorkspaceFolder, sourceFileInfo: SourceInfo) {
@@ -21,8 +21,8 @@ export default class SourceFile extends ProjectExplorerTreeItem {
     this.contextValue = SourceFile.contextValue;
     this.iconPath = new ThemeIcon(`file`);
     this.tooltip = l10n.t('Name: {0}\n', sourceFileInfo.name) +
-      l10n.t('Path: {0}\n', sourceFileInfo.uri.fsPath);
-    this.resourceUri = sourceFileInfo.uri;
+      l10n.t('Path: {0}\n', sourceFileInfo.localUri.fsPath);
+    this.resourceUri = sourceFileInfo.localUri;
     this.command = {
       command: `vscode.open`,
       title: l10n.t('Open File'),

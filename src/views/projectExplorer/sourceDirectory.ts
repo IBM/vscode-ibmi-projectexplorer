@@ -22,8 +22,8 @@ export default class SourceDirectory extends ProjectExplorerTreeItem {
         this.contextValue = SourceDirectory.contextValue;
         this.iconPath = new ThemeIcon(`symbol-folder`);
         this.tooltip = l10n.t('Name: {0}\n', sourceDirectoryInfo.name) +
-            l10n.t('Path: {0}\n', sourceDirectoryInfo.uri.fsPath);
-        this.resourceUri = sourceDirectoryInfo.uri;
+            l10n.t('Path: {0}\n', sourceDirectoryInfo.localUri.fsPath);
+        this.resourceUri = sourceDirectoryInfo.localUri;
     }
 
     async getChildren(): Promise<ProjectExplorerTreeItem[]> {
@@ -31,7 +31,7 @@ export default class SourceDirectory extends ProjectExplorerTreeItem {
 
         for (const child of this.sourceInfo.children) {
             try {
-                const statResult = await workspace.fs.stat(child.uri);
+                const statResult = await workspace.fs.stat(child.localUri);
                 if (statResult.type === FileType.Directory) {
                     items.push(new SourceDirectory(this.workspaceFolder, child));
                 } else {
