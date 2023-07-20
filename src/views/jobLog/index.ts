@@ -82,7 +82,7 @@ export default class JobLog implements TreeDataProvider<any> {
 
       if (workspaceFolders && workspaceFolders.length > 0) {
         for await (const folder of workspaceFolders) {
-          ProjectManager.load(folder);
+          await ProjectManager.load(folder);
 
           let state: IProjectT | undefined;
 

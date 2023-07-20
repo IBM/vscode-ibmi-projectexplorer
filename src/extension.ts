@@ -69,15 +69,12 @@ export async function activate(context: ExtensionContext): Promise<ProjectExplor
 		ProjectManager.fire({ type: 'projects' });
 	});
 	projectWatcher.onDidDelete(async (uri) => {
-		const iProject = ProjectManager.getProjectFromUri(uri);
-		if (iProject) {
-			iProject.setState(undefined);
-			iProject.setBuildMap(undefined);
-			iProject.setLibraryList(undefined);
-		}
-		projectExplorer.refresh();
+		const workspaceFolder = workspace.getWorkspaceFolder(uri);
 
-		ProjectManager.fire({ type: 'projects' });
+		if (workspaceFolder) {
+			await ProjectManager.remove(workspaceFolder);
+			projectExplorer.refresh();
+		}
 	});
 
 	const jobLog = new JobLog(context);
@@ -91,22 +88,29 @@ export async function activate(context: ExtensionContext): Promise<ProjectExplor
 	context.subscriptions.push(
 		projectExplorerTreeView,
 		jobLogTreeView,
-		workspace.onDidChangeWorkspaceFolders((event) => {
+		workspace.onDidChangeWorkspaceFolders(async (event) => {
 			ProjectManager.clear();
 
 			const removedWorkspaceFolders = event.removed;
 			const activeProject = ProjectManager.getActiveProject();
 			if (activeProject && removedWorkspaceFolders.includes(activeProject.workspaceFolder)) {
-				ProjectManager.setActiveProject(undefined);
+				await ProjectManager.setActiveProject(undefined);
 			}
 
 			projectExplorer.refresh();
 			jobLog.refresh();
 		}),
-		window.onDidChangeActiveTextEditor((event) => {
+		window.onDidChangeActiveTextEditor(async (event) => {
 			if (event && event.document.uri) {
 				const workspaceFolder = workspace.getWorkspaceFolder(event?.document.uri);
-				ProjectManager.setActiveProject(workspaceFolder);
+
+				if (workspaceFolder) {
+					const iProject = ProjectManager.get(workspaceFolder);
+					if (iProject && await iProject.projectFileExists('iproj.json')) {
+						await ProjectManager.setActiveProject(workspaceFolder);
+						projectExplorer.refresh();
+					}
+				}
 			}
 		})
 	);
@@ -114,7 +118,7 @@ export async function activate(context: ExtensionContext): Promise<ProjectExplor
 	console.log(`Developer environment: ${process.env.DEV}`);
 	if (process.env.DEV) {
 		// Run tests if not in production build
-		initialise(context);
+		await initialise(context);
 	}
 
 	return { projectManager: ProjectManager, projectExplorer: projectExplorer };

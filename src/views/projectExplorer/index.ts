@@ -42,7 +42,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, async (element?: Project) => {
         if (element) {
-          ProjectManager.setActiveProject(element.workspaceFolder!);
+          await ProjectManager.setActiveProject(element.workspaceFolder!);
           this.refresh();
         } else {
           const projectItems: QuickPickItem[] = [];
@@ -62,7 +62,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (newActiveProject) {
             const iProject = ProjectManager.getProjectFromName(newActiveProject.label.split(' ')[1]);
             if (iProject) {
-              ProjectManager.setActiveProject(iProject.workspaceFolder);
+              await ProjectManager.setActiveProject(iProject.workspaceFolder);
               this.refresh();
             } else {
               window.showErrorMessage(l10n.t('Failed to retrieve project'));
@@ -813,7 +813,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
       if (workspaceFolders && workspaceFolders.length > 0) {
         for await (const folder of workspaceFolders) {
-          ProjectManager.load(folder);
+          await ProjectManager.load(folder);
 
           const iProject = ProjectManager.get(folder);
           if (iProject) {
