@@ -121,19 +121,16 @@ export const iProjectSuite: TestSuite = {
         {
             name: `Test updateState`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
-                iProject.setState(undefined);
+                await iProject.updateIProj({
+                    "version": "0.0.2",
+                    "description": "NEW SAMPLE PROJECT"
+                });
                 await iProject.updateState();
                 const state = await iProject.getState();
 
                 assert.deepStrictEqual(state, {
-                    "version": "0.0.1",
-                    "description": "SAMPLE PROJECT",
-                    "objlib": "&OBJLIB",
-                    "curlib": "QGPL",
-                    "includePath": ["includes", "QPROTOSRC", "PATH1", "&path2"],
-                    "preUsrlibl": ["SYSTOOLS", "&lib2"],
-                    "postUsrlibl": ["QSYSINC", "&lib4"],
-                    "setIBMiEnvCmd": []
+                    "version": "0.0.2",
+                    "description": "NEW SAMPLE PROJECT"
                 });
             }
         },
