@@ -20,7 +20,7 @@ export const ringBufferSuite: TestSuite = {
                 ringBuffer.fromArray(['A', 'B', 'C']);
                 const isFull2 = ringBuffer.isFull();
 
-                assert.strictEqual(isFull1, false);
+                assert.ok(isFull1);
                 assert.ok(isFull2);
             }
         },
@@ -31,7 +31,7 @@ export const ringBufferSuite: TestSuite = {
                 const isEmpty2 = ringBuffer.isEmpty();
 
                 assert.ok(isEmpty1);
-                assert.strictEqual(isEmpty2, false);
+                assert.ok(!isEmpty2);
             }
         },
         {
