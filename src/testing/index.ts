@@ -14,8 +14,10 @@ import { decorationProviderSuite } from "./suites/decorationProvider";
 import { jobLogCommandSuite } from "./suites/jobLogCommand";
 import { jobLogTreeItemSuite } from "./suites/jobLogTreeItem";
 import { ringBufferSuite } from "./suites/ringBuffer";
+import { buildMapSuite } from "./suites/buildMap";
 
 const suites: TestSuite[] = [
+  buildMapSuite,
   decorationProviderSuite,
   iProjectSuite,
   jobLogCommandSuite,
