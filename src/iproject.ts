@@ -411,10 +411,6 @@ export class IProject {
     return this.libraryList;
   }
 
-  public setLibraryList(libraryList: LibraryList | undefined) {
-    this.libraryList = libraryList;
-  }
-
   public async updateLibraryList() {
     const ibmi = getInstance();
 
@@ -491,6 +487,10 @@ export class IProject {
         }
       }
     }
+  }
+
+  public setLibraryList(libraryList: LibraryList | undefined) {
+    this.libraryList = libraryList;
   }
 
   public async addToLibraryList(library: string, position: 'preUsrlibl' | 'postUsrlibl') {
