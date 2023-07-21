@@ -10,7 +10,8 @@ import { ProjectFileType } from "../../iproject";
 import { LibraryType } from "../../views/projectExplorer/library";
 import { workspace } from "vscode";
 import { getInstance } from "../../ibmi";
-import { iProjectMock } from "../constants";
+import { iProjectMock, ibmiJsonMock } from "../constants";
+import { TextEncoder } from "util";
 
 let deployLocation: string;
 
@@ -42,6 +43,7 @@ export const iProjectSuite: TestSuite = {
         await iProject.updateEnv('path1', 'PATH1');
 
         await iProject.updateIProj(iProjectMock);
+        await iProject.updateIBMiJson(ibmiJsonMock, iProject.workspaceFolder.uri);
     },
     tests: [
         {
@@ -71,8 +73,8 @@ export const iProjectSuite: TestSuite = {
 
                 assert.ok(iProjExists);
                 assert.ok(ibmiJsonExists);
-                assert.strictEqual(joblogExists, false);
-                assert.strictEqual(outputExists, false);
+                assert.ok(!joblogExists);
+                assert.ok(!outputExists);
                 assert.ok(envExists);
             }
         },
@@ -263,12 +265,24 @@ export const iProjectSuite: TestSuite = {
         },
         {
             name: `Test setTargetLibraryForCompiles`, test: async () => {
-                throw new Error('Not implemented');
+                const iProject = ProjectManager.getProjects()[0];
+                await iProject.setTargetLibraryForCompiles('MYLIB', 'OBJLIB2', iProject.workspaceFolder.uri);
+                const unresolvedIBMiJson = await iProject.getUnresolvedIBMiJson(iProject.workspaceFolder.uri);
+                const env = await iProject.getEnv();
+                const env1 = iProject.resolveVariable('&OBJLIB2', env);
+
+                assert.strictEqual(unresolvedIBMiJson?.build?.objlib, '&OBJLIB2');
+                assert.strictEqual(env1, 'MYLIB');
             }
         },
         {
             name: `Test setTargetCCSIDForCompiles`, test: async () => {
-                throw new Error('Not implemented');
+                const iProject = ProjectManager.getProjects()[0];
+                await iProject.setTargetCCSIDForCompiles('37', iProject.workspaceFolder.uri);
+                await iProject.setTargetCCSIDForCompiles('256', iProject.workspaceFolder.uri);
+                const unresolvedIBMiJson = await iProject.getUnresolvedIBMiJson(iProject.workspaceFolder.uri);
+
+                assert.strictEqual(unresolvedIBMiJson?.build?.tgtCcsid, '256');
             }
         },
         {
@@ -341,7 +355,22 @@ export const iProjectSuite: TestSuite = {
         },
         {
             name: `Test setLibraryList`, test: async () => {
-                throw new Error('Not implemented');
+                const iProject = ProjectManager.getProjects()[0];
+                iProject.setLibraryList([
+                    {
+                        libraryInfo: {
+                            library: 'QSYS',
+                            type: '*LIB',
+                            name: 'MYLIB',
+                            attribute: 'TEST',
+                            text: 'Test Library'
+                        },
+                        libraryType: 'USR'
+                    }
+                ]);
+                const libraryList = await iProject.getLibraryList();
+
+                assert.strictEqual(libraryList?.length, 1);
             }
         },
         {
@@ -526,7 +555,20 @@ export const iProjectSuite: TestSuite = {
         },
         {
             name: `Test getValidatorResult`, test: async () => {
-                throw new Error('Not implemented');
+                const iProject = ProjectManager.getProjects()[0];
+                const validatorResult1 = iProject.getValidatorResult();
+                const fileUri = iProject.getProjectFileUri('iproj.json');
+                await workspace.fs.writeFile(fileUri, new TextEncoder().encode(
+                    JSON.stringify({
+                        "version": "0.0.2",
+                        "description": ["SAMPLE PROJECT"]
+                    }, null, 2)
+                ));
+                await iProject.updateState();
+                const validatorResult2 = iProject.getValidatorResult();
+
+                assert.strictEqual(validatorResult1, undefined);
+                assert.ok(!validatorResult2?.valid);
             }
         },
         {
