@@ -3,13 +3,14 @@
  */
 
 import * as assert from "assert";
-import { TestSuite } from ".";
+import { TestSuite } from "..";
 import * as path from "path";
-import { ProjectManager } from "../projectManager";
-import { ProjectFileType } from "../iproject";
-import { LibraryType } from "../views/projectExplorer/library";
+import { ProjectManager } from "../../projectManager";
+import { ProjectFileType } from "../../iproject";
+import { LibraryType } from "../../views/projectExplorer/library";
 import { workspace } from "vscode";
-import { getInstance } from "../ibmi";
+import { getInstance } from "../../ibmi";
+import { iProjectMock, ibmiJsonMock } from "../constants";
 
 let deployLocation: string;
 
@@ -35,32 +36,26 @@ export const iProjectSuite: TestSuite = {
         const iProject = ProjectManager.getProjects()[0];
 
         await iProject.createEnv();
-        await iProject.updateEnv('curlib', 'QGPL');
+        await iProject.updateEnv('CURLIB', 'QGPL');
         await iProject.updateEnv('lib1', 'SYSTOOLS');
         await iProject.updateEnv('lib3', 'QSYSINC');
         await iProject.updateEnv('path1', 'PATH1');
 
-        await iProject.updateIProj({
-            "version": "0.0.1",
-            "description": "SAMPLE PROJECT",
-            "objlib": "&objlib",
-            "curlib": "&curlib",
-            "includePath": ["includes", "QPROTOSRC", "&path1", "&path2"],
-            "preUsrlibl": ["&lib1", "&lib2"],
-            "postUsrlibl": ["&lib3", "&lib4"],
-            "setIBMiEnvCmd": []
-        });
+        await iProject.updateIProj(iProjectMock);
+        await iProject.updateIBMiJson(ibmiJsonMock, iProject.workspaceFolder.uri);
     },
     tests: [
         {
             name: `Test getProjectFileUri`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 const iProjFileUri = iProject.getProjectFileUri('iproj.json');
+                const ibmiJsonFilePath = iProject.getProjectFileUri('.ibmi.json', iProject.workspaceFolder.uri);
                 const joblogFileUri = iProject.getProjectFileUri('joblog.json');
                 const outputFileUri = iProject.getProjectFileUri('output.log');
                 const envFilePath = iProject.getProjectFileUri('.env');
 
                 assert.ok(iProjFileUri.fsPath.endsWith(path.join(iProject.workspaceFolder.name, 'iproj.json')));
+                assert.ok(ibmiJsonFilePath.fsPath.endsWith(path.join(iProject.workspaceFolder.name, '.ibmi.json')));
                 assert.ok(joblogFileUri.fsPath.endsWith(path.join(iProject.workspaceFolder.name, '.logs', 'joblog.json')));
                 assert.ok(outputFileUri.fsPath.endsWith(path.join(iProject.workspaceFolder.name, '.logs', 'output.log')));
                 assert.ok(envFilePath.fsPath.endsWith(path.join(iProject.workspaceFolder.name, '.env')));
@@ -70,14 +65,39 @@ export const iProjectSuite: TestSuite = {
             name: `Test projectFileExists`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 const iProjExists = await iProject.projectFileExists('iproj.json');
+                const ibmiJsonExists = await iProject.projectFileExists('.ibmi.json', iProject.workspaceFolder.uri);
                 const joblogExists = await iProject.projectFileExists('joblog.json');
                 const outputExists = await iProject.projectFileExists('output.log');
                 const envExists = await iProject.projectFileExists('.env');
 
                 assert.ok(iProjExists);
+                assert.ok(ibmiJsonExists);
                 assert.strictEqual(joblogExists, false);
                 assert.strictEqual(outputExists, false);
                 assert.ok(envExists);
+            }
+        },
+        {
+            name: `Test resolveVariable`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                const env = await iProject.getEnv();
+                const env1 = iProject.resolveVariable('&OBJLIB', env);
+                const env2 = iProject.resolveVariable('&CURLIB', env);
+                const env3 = iProject.resolveVariable('&path1', env);
+                const env4 = iProject.resolveVariable('&path2', env);
+                const env5 = iProject.resolveVariable('&lib1', env);
+                const env6 = iProject.resolveVariable('&lib2', env);
+                const env7 = iProject.resolveVariable('&lib3', env);
+                const env8 = iProject.resolveVariable('&lib4', env);
+
+                assert.strictEqual(env1, '&OBJLIB');
+                assert.strictEqual(env2, 'QGPL');
+                assert.strictEqual(env3, 'PATH1');
+                assert.strictEqual(env4, '&path2');
+                assert.strictEqual(env5, 'SYSTOOLS');
+                assert.strictEqual(env6, '&lib2');
+                assert.strictEqual(env7, 'QSYSINC');
+                assert.strictEqual(env8, '&lib4');
             }
         },
         {
@@ -88,7 +108,7 @@ export const iProjectSuite: TestSuite = {
                 assert.deepStrictEqual(state, {
                     "version": "0.0.1",
                     "description": "SAMPLE PROJECT",
-                    "objlib": "&objlib",
+                    "objlib": "&OBJLIB",
                     "curlib": "QGPL",
                     "includePath": ["includes", "QPROTOSRC", "PATH1", "&path2"],
                     "preUsrlibl": ["SYSTOOLS", "&lib2"],
@@ -107,7 +127,7 @@ export const iProjectSuite: TestSuite = {
                 assert.deepStrictEqual(state, {
                     "version": "0.0.1",
                     "description": "SAMPLE PROJECT",
-                    "objlib": "&objlib",
+                    "objlib": "&OBJLIB",
                     "curlib": "QGPL",
                     "includePath": ["includes", "QPROTOSRC", "PATH1", "&path2"],
                     "preUsrlibl": ["SYSTOOLS", "&lib2"],
@@ -132,58 +152,36 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
-            name: `Test resolveVariable`, test: async () => {
-                const iProject = ProjectManager.getProjects()[0];
-                const env = await iProject.getEnv();
-                const env1 = iProject.resolveVariable('&objlib', env);
-                const env2 = iProject.resolveVariable('&curlib', env);
-                const env3 = iProject.resolveVariable('&path1', env);
-                const env4 = iProject.resolveVariable('&path2', env);
-                const env5 = iProject.resolveVariable('&lib1', env);
-                const env6 = iProject.resolveVariable('&lib2', env);
-                const env7 = iProject.resolveVariable('&lib3', env);
-                const env8 = iProject.resolveVariable('&lib4', env);
-
-                assert.strictEqual(env1, '&objlib');
-                assert.strictEqual(env2, 'QGPL');
-                assert.strictEqual(env3, 'PATH1');
-                assert.strictEqual(env4, '&path2');
-                assert.strictEqual(env5, 'SYSTOOLS');
-                assert.strictEqual(env6, '&lib2');
-                assert.strictEqual(env7, 'QSYSINC');
-                assert.strictEqual(env8, '&lib4');
-            }
-        },
-        {
             name: `Test getUnresolvedState`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 const unresolvedState = await iProject.getUnresolvedState();
 
-                assert.deepStrictEqual(unresolvedState, {
-                    "version": "0.0.1",
-                    "description": "SAMPLE PROJECT",
-                    "objlib": "&objlib",
-                    "curlib": "&curlib",
-                    "includePath": ["includes", "QPROTOSRC", "&path1", "&path2"],
-                    "preUsrlibl": ["&lib1", "&lib2"],
-                    "postUsrlibl": ["&lib3", "&lib4"],
-                    "setIBMiEnvCmd": []
-                });
+                assert.deepStrictEqual(unresolvedState, iProjectMock);
             }
         },
         {
             name: `Test getBuildMap`, test: async () => {
-                // TO DO
+                throw new Error('Not implemented');
             }
         },
         {
             name: `Test updateBuildMap`, test: async () => {
-                // TO DO
+                throw new Error('Not implemented');
+            }
+        },
+        {
+            name: `Test setBuildMap`, test: async () => {
+                throw new Error('Not implemented');
+            }
+        },
+        {
+            name: `Test getUnresolvedIBMiJson`, test: async () => {
+                throw new Error('Not implemented');
             }
         },
         {
             name: `Test getIbmiJson`, test: async () => {
-                // TO DO
+                throw new Error('Not implemented');
             }
         },
         {
@@ -284,9 +282,19 @@ export const iProjectSuite: TestSuite = {
                 const unresolvedState2 = await iProject.getUnresolvedState();
 
                 assert.strictEqual(state1?.objlib, 'MYLIB1');
-                assert.strictEqual(unresolvedState1?.objlib, '&objlib');
+                assert.strictEqual(unresolvedState1?.objlib, '&OBJLIB');
                 assert.strictEqual(state2?.objlib, 'MYLIB2');
                 assert.strictEqual(unresolvedState2?.objlib, '&OBJLIB');
+            }
+        },
+        {
+            name: `Test setTargetLibraryForCompiles`, test: async () => {
+                throw new Error('Not implemented');
+            }
+        },
+        {
+            name: `Test setTargetCCSIDForCompiles`, test: async () => {
+                throw new Error('Not implemented');
             }
         },
         {
@@ -335,7 +343,7 @@ export const iProjectSuite: TestSuite = {
                 let libraryList = (await iProject.getLibraryList())!;
                 await iProject.updateIProj({
                     "version": "0.0.2",
-                    "curlib": "&curlib",
+                    "curlib": "&CURLIB",
                 });
                 await iProject.updateLibraryList();
                 libraryList = (await iProject.getLibraryList())!;
@@ -353,8 +361,13 @@ export const iProjectSuite: TestSuite = {
                     },
                     libraryType: 'CUR'
                 });
-                assert.deepStrictEqual(lib2, undefined);
-                assert.deepStrictEqual(lib3, undefined);
+                assert.strictEqual(lib2, undefined);
+                assert.strictEqual(lib3, undefined);
+            }
+        },
+        {
+            name: `Test setLibraryList`, test: async () => {
+                throw new Error('Not implemented');
             }
         },
         {
@@ -393,7 +406,7 @@ export const iProjectSuite: TestSuite = {
                 const unresolvedState2 = await iProject.getUnresolvedState();
 
                 assert.strictEqual(state1?.curlib, 'MYLIB1');
-                assert.strictEqual(unresolvedState1?.curlib, '&curlib');
+                assert.strictEqual(unresolvedState1?.curlib, '&CURLIB');
                 assert.strictEqual(state2?.curlib, 'MYLIB2');
                 assert.strictEqual(unresolvedState2?.curlib, '&CURLIB');
             }
@@ -409,8 +422,8 @@ export const iProjectSuite: TestSuite = {
                 const state = await iProject.getState();
                 const unresolvedState = await iProject.getUnresolvedState();
 
-                assert.strictEqual(state?.curlib, '&curlib');
-                assert.strictEqual(unresolvedState?.curlib, '&curlib');
+                assert.strictEqual(state?.curlib, '&CURLIB');
+                assert.strictEqual(unresolvedState?.curlib, '&CURLIB');
                 assert.deepStrictEqual(state?.preUsrlibl, ['&lib1', '&lib2']);
                 assert.deepStrictEqual(unresolvedState?.preUsrlibl, ['&lib1', '&lib2']);
                 assert.deepStrictEqual(state.postUsrlibl, ['&lib3', '&lib4']);
@@ -457,6 +470,17 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
+            name: `Test createIProj`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                await iProject.createIProj('NEW SAMPLE PROJECT');
+                const state = await iProject.getState();
+
+                assert.deepStrictEqual(state, {
+                    "description": "NEW SAMPLE PROJECT"
+                });
+            }
+        },
+        {
             name: `Test updateIProj`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 await iProject.updateIProj({
@@ -472,14 +496,8 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
-            name: `Test createIProj`, test: async () => {
-                const iProject = ProjectManager.getProjects()[0];
-                await iProject.createIProj('NEW SAMPLE PROJECT');
-                const state = await iProject.getState();
-
-                assert.deepStrictEqual(state, {
-                    "description": "NEW SAMPLE PROJECT"
-                });
+            name: `Test updateIBMiJson`, test: async () => {
+                throw new Error('Not implemented');
             }
         },
         {
@@ -489,8 +507,8 @@ export const iProjectSuite: TestSuite = {
                 const env = await iProject.getEnv();
 
                 assert.deepStrictEqual(env, {
-                    "objlib": '',
-                    "curlib": '',
+                    "OBJLIB": '',
+                    "CURLIB": '',
                     "lib1": '',
                     "lib2": '',
                     "lib3": '',
@@ -506,8 +524,8 @@ export const iProjectSuite: TestSuite = {
                 const env = await iProject.getEnv();
 
                 assert.deepStrictEqual(env, {
-                    "objlib": '',
-                    "curlib": 'QGPL',
+                    "OBJLIB": '',
+                    "CURLIB": 'QGPL',
                     "lib1": 'SYSTOOLS',
                     "lib2": '',
                     "lib3": 'QSYSINC',
@@ -525,8 +543,8 @@ export const iProjectSuite: TestSuite = {
                 const env = await iProject.getEnv();
 
                 assert.deepStrictEqual(env, {
-                    "objlib": '',
-                    "curlib": 'QGPL',
+                    "OBJLIB": '',
+                    "CURLIB": 'QGPL',
                     "lib1": 'SYSTOOLS',
                     "lib2": 'MYLIB',
                     "lib3": 'QSYSINC',
@@ -538,11 +556,16 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
+            name: `Test getValidatorResult`, test: async () => {
+                throw new Error('Not implemented');
+            }
+        },
+        {
             name: `Test getVariables`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 const variables = await iProject.getVariables();
 
-                assert.deepStrictEqual(variables, ['curlib', 'objlib', 'lib3', 'lib4', 'lib1', 'lib2', 'path1', 'path2']);
+                assert.deepStrictEqual(variables, ['CURLIB', 'OBJLIB', 'lib3', 'lib4', 'lib1', 'lib2', 'path1', 'path2']);
             }
         },
         {
@@ -550,7 +573,7 @@ export const iProjectSuite: TestSuite = {
                 const iProject = ProjectManager.getProjects()[0];
                 const objLibs = await iProject.getObjectLibraries();
 
-                assert.deepStrictEqual(objLibs, new Set(['&objlib', '&curlib', '&lib1', '&lib2', '&lib3', '&lib4']));
+                assert.deepStrictEqual(objLibs, new Set(['&OBJLIB', '&CURLIB', '&lib1', '&lib2', '&lib3', '&lib4']));
             }
         },
         {
