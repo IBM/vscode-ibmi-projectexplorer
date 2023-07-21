@@ -67,15 +67,6 @@ export const projectManagerSuite: TestSuite = {
             }
         },
         {
-            name: `Test remove`, test: async () => {
-                const workspaceFolder = workspace.workspaceFolders![0];
-                ProjectManager.remove(workspaceFolder);
-                const iProjects = ProjectManager.getProjects();
-
-                assert.strictEqual(iProjects.length, 0);
-            }
-        },
-        {
             name: `Test clear`, test: async () => {
                 ProjectManager.clear();
                 const iProjects = ProjectManager.getProjects();

@@ -69,12 +69,17 @@ export async function activate(context: ExtensionContext): Promise<ProjectExplor
 		ProjectManager.fire({ type: 'projects' });
 	});
 	projectWatcher.onDidDelete(async (uri) => {
-		const workspaceFolder = workspace.getWorkspaceFolder(uri);
+		const iProject = ProjectManager.getProjectFromUri(uri);
 
-		if (workspaceFolder) {
-			await ProjectManager.remove(workspaceFolder);
-			projectExplorer.refresh();
+		if (iProject && uri.path === iProject.getProjectFileUri('iproj.json').path) {
+			const activeProject = ProjectManager.getActiveProject();
+
+			if (activeProject && iProject.workspaceFolder === activeProject.workspaceFolder) {
+				await ProjectManager.setActiveProject(undefined);
+			}
 		}
+
+		projectExplorer.refresh();
 	});
 
 	const jobLog = new JobLog(context);
