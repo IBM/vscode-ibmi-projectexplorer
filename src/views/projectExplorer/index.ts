@@ -299,7 +299,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             }
 
             if (library && variable) {
-              await iProject.setTargetLibraryForCompiles(library, element, variable);
+              await iProject.setTargetLibraryForCompiles(library, variable, element);
             }
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve project'));

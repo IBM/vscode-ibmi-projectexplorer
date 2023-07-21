@@ -146,21 +146,21 @@ export class IProject {
   }
 
   public async updateBuildMap() {
-    this.buildMap = new Map();
+    const buildMap = new Map();
 
     const ibmiJsonUris = await workspace.findFiles('**/.ibmi.json');
     for await (const ibmiJsonUri of ibmiJsonUris) {
       try {
         const ibmiJsonContent: IBMiJsonT = JSON.parse((await workspace.fs.readFile(ibmiJsonUri)).toString());
         if (ibmiJsonContent && ibmiJsonContent.build) {
-          this.buildMap.set(path.dirname(ibmiJsonUri.fsPath), ibmiJsonContent);
+          buildMap.set(path.dirname(ibmiJsonUri.fsPath), ibmiJsonContent);
         }
       } catch { }
     };
 
-    const rootIBMiJson = this.buildMap.get(this.workspaceFolder.uri.fsPath);
+    const rootIBMiJson = buildMap.get(this.workspaceFolder.uri.fsPath);
     const unresolvedState = await this.getUnresolvedState();
-    this.buildMap.set(this.workspaceFolder.uri.fsPath,
+    buildMap.set(this.workspaceFolder.uri.fsPath,
       {
         version: rootIBMiJson?.version || unresolvedState?.version,
         build: {
@@ -169,6 +169,8 @@ export class IProject {
         }
       }
     );
+
+    this.buildMap = buildMap;
   }
 
   public setBuildMap(buildMap: Map<string, IBMiJsonT> | undefined) {
@@ -350,7 +352,7 @@ export class IProject {
     }
   }
 
-  public async setTargetLibraryForCompiles(library: string, directory: Uri, variable: string) {
+  public async setTargetLibraryForCompiles(library: string, variable: string, directory: Uri) {
     let unresolvedIBMiJson = await this.getUnresolvedIBMiJson(directory);
     let ibmiJson = await this.getIBMiJson(directory);
 
@@ -635,9 +637,9 @@ export class IProject {
   public async updateIProj(iProject: IProjectT): Promise<boolean> {
     try {
       await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
-      this.state = undefined;
-      this.buildMap = undefined;
-      this.libraryList = undefined;
+      this.setState(undefined);
+      this.setBuildMap(undefined);
+      this.setLibraryList(undefined);
       return true;
     } catch {
       window.showErrorMessage(l10n.t('Failed to update iproj.json'));
@@ -648,7 +650,7 @@ export class IProject {
   public async updateIBMiJson(ibmiJson: IBMiJsonT, directory: Uri): Promise<boolean> {
     try {
       await workspace.fs.writeFile(this.getProjectFileUri('.ibmi.json', directory), new TextEncoder().encode(JSON.stringify(ibmiJson, null, 2)));
-      this.buildMap = new Map();
+      this.setBuildMap(undefined);
       return true;
     } catch {
       window.showErrorMessage(l10n.t('Failed to update .ibmi.json'));
