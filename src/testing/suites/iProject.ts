@@ -10,7 +10,7 @@ import { ProjectFileType } from "../../iproject";
 import { LibraryType } from "../../views/projectExplorer/library";
 import { workspace } from "vscode";
 import { getInstance } from "../../ibmi";
-import { iProjectMock, ibmiJsonMock } from "../constants";
+import { iProjectMock } from "../constants";
 
 let deployLocation: string;
 
@@ -42,7 +42,6 @@ export const iProjectSuite: TestSuite = {
         await iProject.updateEnv('path1', 'PATH1');
 
         await iProject.updateIProj(iProjectMock);
-        await iProject.updateIBMiJson(ibmiJsonMock, iProject.workspaceFolder.uri);
     },
     tests: [
         {
@@ -157,31 +156,6 @@ export const iProjectSuite: TestSuite = {
                 const unresolvedState = await iProject.getUnresolvedState();
 
                 assert.deepStrictEqual(unresolvedState, iProjectMock);
-            }
-        },
-        {
-            name: `Test getBuildMap`, test: async () => {
-                throw new Error('Not implemented');
-            }
-        },
-        {
-            name: `Test updateBuildMap`, test: async () => {
-                throw new Error('Not implemented');
-            }
-        },
-        {
-            name: `Test setBuildMap`, test: async () => {
-                throw new Error('Not implemented');
-            }
-        },
-        {
-            name: `Test getUnresolvedIBMiJson`, test: async () => {
-                throw new Error('Not implemented');
-            }
-        },
-        {
-            name: `Test getIbmiJson`, test: async () => {
-                throw new Error('Not implemented');
             }
         },
         {
@@ -493,11 +467,6 @@ export const iProjectSuite: TestSuite = {
                     "version": "0.0.2",
                     "description": "NEW SAMPLE PROJECT"
                 });
-            }
-        },
-        {
-            name: `Test updateIBMiJson`, test: async () => {
-                throw new Error('Not implemented');
             }
         },
         {
