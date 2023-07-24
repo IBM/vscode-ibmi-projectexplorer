@@ -17,11 +17,11 @@ npm i docsify-cli -g
 
 ## Preview website
 
-To preview the website in your browser, run the local server with `docsify serve`. The website can be accessed on http://localhost:3000.
+To preview the website in your browser, run the local server using the command below. The website can be accessed on http://localhost:3000.
 
 
 ```bash
-docsify serve docs
+npm run docs
 ```
 
-?> To learn more about `docsify`, check out their [documentation](https://docsify.js.org).
+To learn more about `docsify`, check out their [documentation](https://docsify.js.org).
