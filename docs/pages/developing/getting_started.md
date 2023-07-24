@@ -11,7 +11,9 @@ The IBM i Project Explorer has the following notable directories for development
 - `types` contains the type definitions for the exported API
 - `docs`: contains the documentation
 
-To learn more about VS Code's extension anatomy, check out their [documentation](https://code.visualstudio.com/api/get-started/extension-anatomy).
+To learn more about the general structure of a VS Code extension, check out the documentation on [extension anatomy](https://code.visualstudio.com/api/get-started/extension-anatomy).
+
+---
 
 ## Developing and Debugging
 
@@ -19,6 +21,8 @@ To learn more about VS Code's extension anatomy, check out their [documentation]
 2. Clone this repository
 3. `npm install`
 4. `Run Extension` from VS Code
+
+---
 
 ## Packaging
 
@@ -31,6 +35,8 @@ vsce package
 Install the `.vsix` from the **Extensions** view in VS Code.
 
 ![Install from .vsix](../../assets/Developing_01.png)
+
+---
 
 ## Testing
 

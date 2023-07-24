@@ -112,7 +112,7 @@ Refer to the example below on how to contribute the command registered above to 
 }
 ```
 
-To learn more about using the when clause, check out the documentation on [when clause contexts](https://code.visualstudio.com/api/references/when-clause-contexts)
+To learn more about using the when clause, check out the documentation on [when clause contexts](https://code.visualstudio.com/api/references/when-clause-contexts).
 
 ---
 
