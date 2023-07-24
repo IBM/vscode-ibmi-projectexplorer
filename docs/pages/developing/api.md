@@ -112,10 +112,12 @@ Refer to the example below on how to contribute the command registered above to 
 }
 ```
 
-To learn more about using the when clause, check out the documentation on [when clause contexts](https://code.visualstudio.com/api/references/when-clause-contexts).
+?> To learn more about using the when clause, check out the documentation on [when clause contexts](https://code.visualstudio.com/api/references/when-clause-contexts).
 
 ---
 
 ## Code for IBM i API
 
-Extending the IBM i Project Explorer may require having to access the Code for IBM i API. For more information on how to install and use these set of APIs, check out their [API documentation](https://halcyon-tech.github.io/docs/#/pages/dev/api).
+Extending the IBM i Project Explorer may require having to use the Code for IBM i API. These set of APIs can be used to access the connection, run commands on the IBM i, retrieve members and stream files, and much more.
+
+?> To learn more about how to install and use the Code for IBM i APIs, check out their [API documentation](https://halcyon-tech.github.io/docs/#/pages/dev/api).

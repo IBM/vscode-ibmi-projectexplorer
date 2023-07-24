@@ -11,7 +11,7 @@ The IBM i Project Explorer has the following notable directories for development
 - `types` contains the type definitions for the exported API
 - `docs`: contains the documentation
 
-To learn more about the general structure of a VS Code extension, check out the documentation on [extension anatomy](https://code.visualstudio.com/api/get-started/extension-anatomy).
+?> To learn more about the general structure of a VS Code extension, check out the documentation on [extension anatomy](https://code.visualstudio.com/api/get-started/extension-anatomy).
 
 ---
 
