@@ -2,7 +2,6 @@
 
 Code for IBM i is a Visual Studio Code extension that allows you to maintain your RPGLE, CL, COBOL, C/CPP on IBM i. It gives you the ability to edit and compile all ILE languages, view errors inline, leverge content assist for RPGLE and CL, source date support, and much more.
 
-<!-- TO DO -->
-**TO DO: Insert image of Code for IBM i**
+![Install from .vsix](../../assets/Code4i_01.png)
 
 ?> To learn more about Code for IBM i, check out their [documentation](https://halcyon-tech.github.io/docs).
