@@ -2,11 +2,11 @@
 
 ## Project Structure
 
-The IBM i Project Explorer has the following notable directories for development:
+The IBM i Project Explorer has the following notable directories for development, testing, and documentation:
 
-- `src` contains the Typescript code
+- `src` contains the TypeScript code
   - `testing` contains the test framework and suites
-- `l10n` contains the set of strings found in all Typescript files for translation purposes
+- `l10n` contains the set of strings found in all TypeScript files for translation purposes
 - `schema` contains the schemas contributed by the extension
 - `types` contains the type definitions for the exported API
 - `docs`: contains the documentation
