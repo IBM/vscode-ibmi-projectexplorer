@@ -28,10 +28,12 @@ jobs:
         run: |
           npm install
           npm install -g vsce
+
       - name: Build and Package
         run: |
           npx webpack
           vsce package
+
       - name: Upload VSIX
         uses: actions/upload-artifact@v3
         with:
