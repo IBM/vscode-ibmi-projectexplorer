@@ -93,15 +93,6 @@ export class ProjectManager {
         return this.loaded[workspaceFolder.index];
     }
 
-    public static async remove(workspaceFolder: WorkspaceFolder) {
-        delete this.loaded[workspaceFolder.index];
-        ProjectManager.fire({ type: 'projects' });
-
-        if (workspaceFolder === this.activeProject?.workspaceFolder) {
-            await this.setActiveProject(undefined);
-        }
-    }
-
     public static clear() {
         this.loaded = {};
     }

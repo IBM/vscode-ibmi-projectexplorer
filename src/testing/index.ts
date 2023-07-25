@@ -6,18 +6,26 @@ import { ExtensionContext, commands, window } from "vscode";
 import { env } from "process";
 import { TestSuitesTreeProvider } from "./testCasesTree";
 import { getInstance } from "../ibmi";
-import { iProjectSuite } from "./iProject";
-import { projectManagerSuite } from "./projectManager";
-import { jobLogSuite } from "./jobLog";
-import { projectExplorerSuite } from "./projectExplorer";
-import { decorationProviderSuite } from "./decorationProvider";
+import { iProjectSuite } from "./suites/iProject";
+import { projectManagerSuite } from "./suites/projectManager";
+import { jobLogSuite } from "./suites/jobLog";
+import { projectExplorerTreeItemSuite } from "./suites/projectExplorerTreeItem";
+import { decorationProviderSuite } from "./suites/decorationProvider";
+import { jobLogCommandSuite } from "./suites/jobLogCommand";
+import { jobLogTreeItemSuite } from "./suites/jobLogTreeItem";
+import { ringBufferSuite } from "./suites/ringBuffer";
+import { buildMapSuite } from "./suites/buildMap";
 
 const suites: TestSuite[] = [
+  buildMapSuite,
   decorationProviderSuite,
   iProjectSuite,
+  jobLogCommandSuite,
   jobLogSuite,
-  projectExplorerSuite,
-  projectManagerSuite
+  jobLogTreeItemSuite,
+  projectExplorerTreeItemSuite,
+  projectManagerSuite,
+  ringBufferSuite
 ];
 
 export type TestSuite = {
