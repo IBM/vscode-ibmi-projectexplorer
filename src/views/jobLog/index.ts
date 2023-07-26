@@ -11,7 +11,7 @@ import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeI
 import { ContextValue } from "../../projectExplorerApi";
 import { IProjectT } from "../../iProjectT";
 
-export default class JobLog implements TreeDataProvider<any> {
+export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
@@ -83,7 +83,7 @@ export default class JobLog implements TreeDataProvider<any> {
 
       if (workspaceFolders && workspaceFolders.length > 0) {
         for await (const folder of workspaceFolders) {
-          ProjectManager.load(folder);
+          await ProjectManager.load(folder);
 
           let state: IProjectT | undefined;
 

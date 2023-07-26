@@ -21,6 +21,8 @@
   "commands.projectExplorer.addToLibraryList": "Add to Library list",
   "commands.projectExplorer.setAsCurrentLibrary": "Set as Current Library",
   "commands.projectExplorer.setAsTargetLibraryForCompiles": "Set as Target Library for Compiles",
+  "commands.projectExplorer.setTargetLibraryForCompiles": "Set Target Library for Compiles",
+  "commands.projectExplorer.setTargetCCSIDForCompiles": "Set Target CCSID for Compiles",
   "commands.projectExplorer.removeFromLibraryList": "Remove from Library List",
   "commands.projectExplorer.moveLibraryUp": "Move Up",
   "commands.projectExplorer.moveLibraryDown": "Move Down",

@@ -3,12 +3,12 @@
  */
 
 import * as assert from "assert";
-import { TestSuite } from ".";
-import { ProjectManager } from "../projectManager";
+import { TestSuite } from "..";
+import { ProjectManager } from "../../projectManager";
 import { commands, window, workspace } from "vscode";
-import { ProjectExplorerTreeItem } from "../views/projectExplorer/projectExplorerTreeItem";
-import { IProject } from "../iproject";
-import Project from "../views/projectExplorer/project";
+import { ProjectExplorerTreeItem } from "../../views/projectExplorer/projectExplorerTreeItem";
+import { IProject } from "../../iproject";
+import Project from "../../views/projectExplorer/project";
 import { TextEncoder } from "util";
 
 export const projectManagerSuite: TestSuite = {
@@ -16,9 +16,9 @@ export const projectManagerSuite: TestSuite = {
     beforeEach: async () => {
         const workspaceFolders = workspace.workspaceFolders;
         if (workspaceFolders && workspaceFolders.length > 0) {
-            workspaceFolders.map(folder => {
-                ProjectManager.load(folder);
-            });
+            for await (const folder of workspaceFolders) {
+                await ProjectManager.load(folder);
+            }
         }
     },
     tests: [
@@ -33,8 +33,8 @@ export const projectManagerSuite: TestSuite = {
                     JSON.stringify({
                         "version": "0.0.2",
                         "description": ["SAMPLE PROJECT"],
-                        "objlib": ["&objlib"],
-                        "curlib": ["&curlib"],
+                        "objlib": ["&OBJLIB"],
+                        "curlib": ["&CURLIB"],
                         "includePath": "includes",
                         "preUsrlibl": "&lib1",
                         "postUsrlibl": "&lib3",
@@ -52,7 +52,7 @@ export const projectManagerSuite: TestSuite = {
             name: `Test load`, test: async () => {
                 const workspaceFolder = workspace.workspaceFolders![0];
                 ProjectManager.clear();
-                ProjectManager.load(workspaceFolder);
+                await ProjectManager.load(workspaceFolder);
                 const iProject = ProjectManager.getProjects()[0];
 
                 assert.strictEqual(iProject.getName(), workspaceFolder.name);
@@ -68,7 +68,6 @@ export const projectManagerSuite: TestSuite = {
         },
         {
             name: `Test clear`, test: async () => {
-                const workspaceFolder = workspace.workspaceFolders![0];
                 ProjectManager.clear();
                 const iProjects = ProjectManager.getProjects();
 
@@ -86,9 +85,9 @@ export const projectManagerSuite: TestSuite = {
         {
             name: `Test setActiveProject`, test: async () => {
                 const workspaceFolder = workspace.workspaceFolders![0];
-                ProjectManager.setActiveProject(undefined);
+                await ProjectManager.setActiveProject(undefined);
                 const iProject1 = ProjectManager.getActiveProject();
-                ProjectManager.setActiveProject(workspaceFolder);
+                await ProjectManager.setActiveProject(workspaceFolder);
                 const iProject2 = ProjectManager.getActiveProject();
 
                 assert.strictEqual(iProject1, undefined);

@@ -3,11 +3,13 @@
  */
 
 import { ProjectManager } from "./projectManager";
+import JobLog from "./views/jobLog";
 import ProjectExplorer from "./views/projectExplorer";
 
 export interface ProjectExplorerApi {
   projectManager: typeof ProjectManager,
-  projectExplorer: ProjectExplorer
+  projectExplorer: ProjectExplorer,
+  jobLog: JobLog
 }
 
 export enum ContextValue {
