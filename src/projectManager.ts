@@ -6,6 +6,7 @@ import { EventEmitter, ExtensionContext, l10n, StatusBarAlignment, StatusBarItem
 import { IProject } from "./iproject";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 import Project from "./views/projectExplorer/project";
+import { Validator } from "jsonschema";
 
 /**
  * * `projects` event is fired when there is a change to some project (create, update, or delete)
@@ -34,10 +35,17 @@ export class ProjectManager {
     private static loaded: { [index: number]: IProject } = {};
     private static activeProject: IProject | undefined;
     private static activeProjectStatusBarItem: StatusBarItem;
+    private static validator: Validator;
     private static emitter: EventEmitter<ProjectExplorerEvent> = new EventEmitter();
     private static events: { event: ProjectExplorerEventT, func: Function }[] = [];
 
-    public static initialize(context: ExtensionContext) {
+    public static async initialize(context: ExtensionContext) {
+        this.validator = new Validator();
+        const iprojJsonContent = (await workspace.fs.readFile(Uri.file(context.asAbsolutePath('schema/iproj.schema.json')))).toString();
+        const iprojJsonSchema = JSON.parse(iprojJsonContent);
+        iprojJsonSchema.id = '/iproj';
+        this.validator.addSchema(iprojJsonSchema);
+
         this.emitter.event(e => {
             this.events.filter(event => event.event === e.type)
                 .forEach(event => event.func(e.iProject));
@@ -45,15 +53,19 @@ export class ProjectManager {
 
         this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
         context.subscriptions.push(this.activeProjectStatusBarItem);
-        this.setActiveProject(undefined);
+        await this.setActiveProject(undefined);
         this.activeProjectStatusBarItem.show();
 
         const workspaceFolders = workspace.workspaceFolders;
         if (workspaceFolders && workspaceFolders.length > 0) {
-            workspaceFolders.map(folder => {
-                this.load(folder);
-            });
+            for await (const folder of workspaceFolders) {
+                await this.load(folder);
+            }
         }
+    }
+
+    public static getValidator() {
+        return this.validator;
     }
 
     public static onEvent(event: ProjectExplorerEventT, func: Function) {
@@ -64,14 +76,14 @@ export class ProjectManager {
         this.emitter?.fire(event);
     }
 
-    public static load(workspaceFolder: WorkspaceFolder) {
+    public static async load(workspaceFolder: WorkspaceFolder) {
+        const iProject = new IProject(workspaceFolder);
         if (!this.loaded[workspaceFolder.index]) {
-            const iProject = new IProject(workspaceFolder);
             this.loaded[workspaceFolder.index] = iProject;
+        }
 
-            if (!this.activeProject) {
-                this.setActiveProject(workspaceFolder);
-            }
+        if (!this.activeProject && await iProject.projectFileExists('iproj.json')) {
+            await this.setActiveProject(workspaceFolder);
         }
 
         ProjectManager.fire({ type: 'projects' });
@@ -89,7 +101,7 @@ export class ProjectManager {
         return this.activeProject;
     }
 
-    public static setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
+    public static async setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
         if (workspaceFolder) {
             this.activeProject = this.loaded[workspaceFolder.index];
             this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', this.activeProject.workspaceFolder.name);
@@ -100,7 +112,7 @@ export class ProjectManager {
             };
         } else {
             this.activeProject = undefined;
-            this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project:') + ' $(circle-slash)';
+            this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', '$(circle-slash)');
             this.activeProjectStatusBarItem.tooltip = l10n.t('Please open a local workspace folder');
             this.activeProjectStatusBarItem.command = {
                 command: 'workbench.action.addRootFolder',
@@ -108,7 +120,8 @@ export class ProjectManager {
             };
         }
 
-        commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer.hasActiveProject', this.activeProject ? true : false);
+        await commands.executeCommand('setContext', 'code-for-ibmi:libraryListDisabled', this.activeProject ? true : false);
+        await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:hasActiveProject', this.activeProject ? true : false);
         this.fire({ type: 'activeProject', iProject: this.activeProject });
     }
 

@@ -73,10 +73,4 @@ export class RingBuffer<T> {
     public getSize() {
         return this.size;
     }
-
-    public sort(fn: (a: T, b: T) => number) {
-        this.buf.sort(fn);
-        this.start = 0;
-        this.end = this.buf.length % this.size;
-    }
 }

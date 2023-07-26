@@ -11,8 +11,8 @@
             "properties": {
                 "objlib": {
                     "type": "string",
-                    "description": "Objects created by building source in this directory will be put into the `objlib` library.\n - If not specified, `*CURLIB` is used as the `objlib`.",
-                    "markdownDescription": "Objects created by building source in this directory will be put into the `objlib` library.\n - If not specified, `*CURLIB` is used as the `objlib`."
+                    "description": "Objects created by building source in this directory will be put into the `objlib` library (can contain references to named libraries).\n - If not specified, `*CURLIB` is used as the `objlib`.",
+                    "markdownDescription": "Objects created by building source in this directory will be put into the `objlib` library. (can contain references to named libraries)\n - If not specified, `*CURLIB` is used as the `objlib`."
                 },
                 "tgtCcsid": {
                     "type": "string",
