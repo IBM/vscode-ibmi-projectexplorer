@@ -1,16 +1,16 @@
-# Project Explorer for IBM i
+# IBM i Project Explorer
 
-Extension that implements the Project Explorer and Job Log viewer using the Code for IBM i API.
+[GitHub star this repo 🌟](https://github.com/IBM/vscode-ibmi-projectexplorer)
 
----
+<!-- TO DO: INSERT ICON -->
 
-### Project Explorer
+The IBM i Project Explorer provides IBM i project support in Visual Studio Code. Leverage the Project Explorer viewer to manage a project's library list, variables, object libraries, include paths, and much more. Utilize the Job Log viewer as well to easily visualize the contents of your job logs after having run a build or compile.
 
-The Project Explorer is what will be used to browse and manage a project's deploy location, library list, variables, object libraries, and include paths.
+<!-- TO DO: UPDATE LINKS BELOW -->
 
-### Job Log Viewer
-
-The Job log listens for changes in a project's `.logs/joblog.json` and displays the JSON information in a tree view.
+- 💻 [Install from Marketplace]()
+- 📖 [View documentation]() 
+- 🔎 [See releases](https://github.com/IBM/vscode-ibmi-projectexplorer/releases)
 
 ---
 
