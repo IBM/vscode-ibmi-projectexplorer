@@ -394,7 +394,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.createIProj`, async (workspaceFolder: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createIProj`, async (element: ErrorItem | WorkspaceFolder) => {
+        const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
+
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -411,7 +413,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.createEnv`, async (workspaceFolder: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createEnv`, async (element: WorkspaceFolder) => {
+        const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
+
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -797,33 +801,25 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           this.refresh();
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.createIProjError`, async (element: ErrorItem) => {
-        if (element) {
-          await commands.executeCommand(`vscode-ibmi-projectexplorer.createIProj`, element.workspaceFolder);
-        }
-      }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.createEnvError`, async (element: ErrorItem) => {
-        if (element) {
-          await commands.executeCommand(`vscode-ibmi-projectexplorer.createEnv`, element.workspaceFolder);
-        }
-      }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.addFolderToWorkspaceError`, async (element: ErrorItem) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.addFolderToWorkspace`, async (element: ErrorItem) => {
         if (element) {
           await commands.executeCommand(`workbench.action.addRootFolder`);
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.openConnectionBrowserError`, async (element: ErrorItem) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openConnectionBrowser`, async (element: ErrorItem) => {
         if (element) {
           await commands.executeCommand(`connectionBrowser.focus`);
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.setDeployLocationError`, async (element: ErrorItem) => {
-        if (element) {
-          const iProject = ProjectManager.get(element.workspaceFolder!);
+      commands.registerCommand(`vscode-ibmi-projectexplorer.setDeployLocation`, async (element: ErrorItem | WorkspaceFolder) => {
+        const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
+
+        if (workspaceFolder) {
+          const iProject = ProjectManager.get(workspaceFolder);
 
           if (iProject) {
             const defaultDeployLocation = iProject?.getDefaultDeployLocation();
-            await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, defaultDeployLocation);
+            await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, workspaceFolder, defaultDeployLocation);
           }
         }
       })

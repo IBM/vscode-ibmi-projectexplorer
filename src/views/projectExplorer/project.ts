@@ -50,8 +50,6 @@ export default class Project extends ProjectExplorerTreeItem {
       if (deployDir) {
         items.push(new Source(this.workspaceFolder, deployDir));
       } else {
-        const defaultDeployLocation = iProject?.getDefaultDeployLocation();
-
         items.push(new ErrorItem(
           this.workspaceFolder,
           l10n.t('Source'),
@@ -59,9 +57,9 @@ export default class Project extends ProjectExplorerTreeItem {
             description: l10n.t('Please configure deploy location'),
             contextValue: ErrorItem.contextValue + ContextValue.setDeployLocation,
             command: {
-              command: `code-for-ibmi.setDeployLocation`,
+              command: `vscode-ibmi-projectexplorer.setDeployLocation`,
               title: l10n.t('Set Deploy Location'),
-              arguments: [undefined, this.workspaceFolder, defaultDeployLocation]
+              arguments: [this.workspaceFolder]
             }
           }
         ));

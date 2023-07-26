@@ -95,6 +95,18 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.createIProj",
+        "title": "%commands.projectExplorer.createIProj%",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.createEnv",
+        "title": "%commands.projectExplorer.createEnv%",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
         "title": "%commands.projectExplorer.migrateSource%"
       },
@@ -322,32 +334,20 @@
       },
       {
         "category": "%commands.projectExplorer%",
-        "command": "vscode-ibmi-projectexplorer.createIProjError",
-        "title": "%commands.projectExplorer.createIProjError%",
+        "command": "vscode-ibmi-projectexplorer.addFolderToWorkspace",
+        "title": "%commands.projectExplorer.addFolderToWorkspace%",
         "icon": "$(arrow-right)"
       },
       {
         "category": "%commands.projectExplorer%",
-        "command": "vscode-ibmi-projectexplorer.createEnvError",
-        "title": "%commands.projectExplorer.createEnvError%",
+        "command": "vscode-ibmi-projectexplorer.openConnectionBrowser",
+        "title": "%commands.projectExplorer.openConnectionBrowser%",
         "icon": "$(arrow-right)"
       },
       {
         "category": "%commands.projectExplorer%",
-        "command": "vscode-ibmi-projectexplorer.addFolderToWorkspaceError",
-        "title": "%commands.projectExplorer.addFolderToWorkspaceError%",
-        "icon": "$(arrow-right)"
-      },
-      {
-        "category": "%commands.projectExplorer%",
-        "command": "vscode-ibmi-projectexplorer.openConnectionBrowserError",
-        "title": "%commands.projectExplorer.openConnectionBrowserError%",
-        "icon": "$(arrow-right)"
-      },
-      {
-        "category": "%commands.projectExplorer%",
-        "command": "vscode-ibmi-projectexplorer.setDeployLocationError",
-        "title": "%commands.projectExplorer.setDeployLocationError%",
+        "command": "vscode-ibmi-projectexplorer.setDeployLocation",
+        "title": "%commands.projectExplorer.setDeployLocation%",
         "icon": "$(arrow-right)"
       },
       {
@@ -385,6 +385,14 @@
       "commandPalette": [
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createIProj",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createEnv",
           "when": "never"
         },
         {
@@ -560,23 +568,15 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.createIProjError",
+          "command": "vscode-ibmi-projectexplorer.addFolderToWorkspace",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.createEnvError",
+          "command": "vscode-ibmi-projectexplorer.openConnectionBrowser",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.addFolderToWorkspaceError",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.openConnectionBrowserError",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.setDeployLocationError",
+          "command": "vscode-ibmi-projectexplorer.setDeployLocation",
           "when": "never"
         },
         {
@@ -641,6 +641,16 @@
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
           "when": "view == projectExplorer && viewItem =~ /^project_inactive.*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createIProj",
+          "when": "view == projectExplorer && viewItem =~ /^error_createIProj*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createEnv",
+          "when": "view == projectExplorer && viewItem =~ /^error_createEnv*/",
           "group": "inline@0"
         },
         {
@@ -879,27 +889,17 @@
           "group": "4_transfer@1"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.createIProjError",
-          "when": "view == projectExplorer && viewItem =~ /^error_createIProj*/",
-          "group": "inline@0"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.createEnvError",
-          "when": "view == projectExplorer && viewItem =~ /^error_createEnv*/",
-          "group": "inline@0"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.addFolderToWorkspaceError",
+          "command": "vscode-ibmi-projectexplorer.addFolderToWorkspace",
           "when": "view == projectExplorer && viewItem =~ /^error_addFolderToWorkspace*/",
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.openConnectionBrowserError",
+          "command": "vscode-ibmi-projectexplorer.openConnectionBrowser",
           "when": "view == projectExplorer && viewItem =~ /^error_openConnectionBrowser*/",
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.setDeployLocationError",
+          "command": "vscode-ibmi-projectexplorer.setDeployLocation",
           "when": "view == projectExplorer && viewItem =~ /^error_setDeployLocation*/",
           "group": "inline@0"
         },
