@@ -21,6 +21,8 @@ import * as vscode from 'vscode';
 import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
 import { getInstance } from "../../ibmi";
+import { ContextValue } from "../../projectExplorerApi";
+import Variable from "./variable";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -99,6 +101,28 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const fileUri = iProject.getProjectFileUri('iproj.json');
             const document = await vscode.workspace.openTextDocument(fileUri);
             await vscode.window.showTextDocument(document);
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.editVariable`, async (element: Variable) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const variable = element.label!.toString();
+            const value = element.value;
+
+            const newValue = await window.showInputBox({
+              prompt: l10n.t('Enter new value for {0}', variable),
+              placeHolder: l10n.t('Variable value'),
+              value: value || ``,
+            });
+
+            if (newValue) {
+              await iProject.updateEnv(variable, newValue);
+            }
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
@@ -259,7 +283,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 if (variableSelection) {
                   if (variableSelection.label !== l10n.t('{0} Create new variable', '$(add)')) {
                     variable = variableSelection.label.substring(1);
-                    if(values[variable]) {
+                    if (values[variable]) {
                       library = values[variable];
                       isLibrarySet = true;
                     }
@@ -283,7 +307,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               }
             }
 
-            if(!isLibrarySet) {
+            if (!isLibrarySet) {
               library = await window.showInputBox({
                 prompt: l10n.t('Enter library name'),
                 placeHolder: l10n.t('Library name'),
@@ -370,25 +394,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
-        if (workspaceFolder && varName) {
-          const iProject = ProjectManager.get(workspaceFolder);
-          if (iProject) {
-            const newValue = await window.showInputBox({
-              prompt: l10n.t('Enter new value for {0}', varName),
-              placeHolder: l10n.t('Variable value'),
-              value: currentValue || ``,
-            });
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createIProj`, async (element: ErrorItem | WorkspaceFolder) => {
+        const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
 
-            if (newValue) {
-              await iProject.updateEnv(varName, newValue);
-            }
-          } else {
-            window.showErrorMessage(l10n.t('Failed to retrieve project'));
-          }
-        }
-      }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.createIProj`, async (workspaceFolder: WorkspaceFolder) => {
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -405,7 +413,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.createEnv`, async (workspaceFolder: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createEnv`, async (element: WorkspaceFolder) => {
+        const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
+
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -790,8 +800,29 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           this.refresh();
         }
-      })
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.addFolderToWorkspace`, async (element: ErrorItem) => {
+        if (element) {
+          await commands.executeCommand(`workbench.action.addRootFolder`);
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openConnectionBrowser`, async (element: ErrorItem) => {
+        if (element) {
+          await commands.executeCommand(`connectionBrowser.focus`);
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.setDeployLocation`, async (element: ErrorItem | WorkspaceFolder) => {
+        const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
 
+        if (workspaceFolder) {
+          const iProject = ProjectManager.get(workspaceFolder);
+
+          if (iProject) {
+            const defaultDeployLocation = iProject?.getDefaultDeployLocation();
+            await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, workspaceFolder, defaultDeployLocation);
+          }
+        }
+      })
     );
   }
 
@@ -853,10 +884,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 folder.name,
                 {
                   description: l10n.t('Please configure project metadata'),
+                  contextValue: ErrorItem.contextValue + ContextValue.createIProj,
                   command: {
                     command: 'vscode-ibmi-projectexplorer.createIProj',
                     arguments: [folder],
-                    title: l10n.t('Create project iproj.json')
+                    title: l10n.t('Create iproj.json')
                   }
                 }
               ));
@@ -879,9 +911,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           undefined,
           l10n.t('Please open a local workspace folder'),
           {
+            contextValue: ErrorItem.contextValue + ContextValue.addFolderToWorkspace,
             command: {
               command: 'workbench.action.addRootFolder',
-              title: l10n.t('Add folder to workspace')
+              title: l10n.t('Add Folder to Workspace')
             }
           }
         ));

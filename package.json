@@ -95,6 +95,18 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.createIProj",
+        "title": "%commands.projectExplorer.createIProj%",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.createEnv",
+        "title": "%commands.projectExplorer.createEnv%",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
         "title": "%commands.projectExplorer.migrateSource%"
       },
@@ -107,6 +119,11 @@
         "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
         "title": "%commands.projectExplorer.iprojShortcut%",
         "icon": "$(go-to-file)"
+      },
+      {
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.editVariable",
+        "title": "%commands.projectExplorer.editVariable%",
+        "icon": "$(edit)"
       },
       {
         "category": "%commands.projectExplorer%",
@@ -316,6 +333,24 @@
         "title": "%commands.projectExplorer.uploadAndReplace%"
       },
       {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.addFolderToWorkspace",
+        "title": "%commands.projectExplorer.addFolderToWorkspace%",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.openConnectionBrowser",
+        "title": "%commands.projectExplorer.openConnectionBrowser%",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.setDeployLocation",
+        "title": "%commands.projectExplorer.setDeployLocation%",
+        "icon": "$(arrow-right)"
+      },
+      {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
         "title": "%commands.jobLog.refreshJobLog%",
@@ -353,6 +388,14 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.createIProj",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createEnv",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
           "when": "never"
         },
@@ -362,6 +405,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.editVariable",
           "when": "never"
         },
         {
@@ -521,6 +568,18 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.addFolderToWorkspace",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.openConnectionBrowser",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.setDeployLocation",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
           "when": "never"
         },
@@ -585,6 +644,16 @@
           "group": "inline@0"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.createIProj",
+          "when": "view == projectExplorer && viewItem =~ /^error_createIProj*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createEnv",
+          "when": "view == projectExplorer && viewItem =~ /^error_createEnv*/",
+          "group": "inline@0"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
           "group": "3_migrate@0"
@@ -603,6 +672,11 @@
           "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
           "when": "view == projectExplorer && viewItem =~ /^project.*/",
           "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.editVariable",
+          "when": "view == projectExplorer && viewItem =~ /^variable(?!s).*/",
+          "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.addLibraryListEntry",
@@ -813,6 +887,21 @@
           "command": "vscode-ibmi-projectexplorer.uploadAndReplace",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
           "group": "4_transfer@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.addFolderToWorkspace",
+          "when": "view == projectExplorer && viewItem =~ /^error_addFolderToWorkspace*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.openConnectionBrowser",
+          "when": "view == projectExplorer && viewItem =~ /^error_openConnectionBrowser*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.setDeployLocation",
+          "when": "view == projectExplorer && viewItem =~ /^error_setDeployLocation*/",
+          "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",

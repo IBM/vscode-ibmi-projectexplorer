@@ -50,19 +50,16 @@ export default class Project extends ProjectExplorerTreeItem {
       if (deployDir) {
         items.push(new Source(this.workspaceFolder, deployDir));
       } else {
-        const ibmi = getInstance();
-        const homeDirectory = (ibmi?.getConfig().homeDirectory.endsWith('/') ? ibmi?.getConfig().homeDirectory.slice(0, -1) : ibmi?.getConfig().homeDirectory);
-        const defaultDeployLocation = homeDirectory ? path.posix.join(homeDirectory, this.workspaceFolder.name) : '';
-
         items.push(new ErrorItem(
           this.workspaceFolder,
           l10n.t('Source'),
           {
             description: l10n.t('Please configure deploy location'),
+            contextValue: ErrorItem.contextValue + ContextValue.setDeployLocation,
             command: {
-              command: `code-for-ibmi.setDeployLocation`,
-              title: l10n.t('Set deploy location'),
-              arguments: [undefined, this.workspaceFolder, defaultDeployLocation]
+              command: `vscode-ibmi-projectexplorer.setDeployLocation`,
+              title: l10n.t('Set Deploy Location'),
+              arguments: [this.workspaceFolder]
             }
           }
         ));
@@ -85,10 +82,11 @@ export default class Project extends ProjectExplorerTreeItem {
           l10n.t('Variables'),
           {
             description: l10n.t('Please configure environment file'),
+            contextValue: ErrorItem.contextValue + ContextValue.createEnv,
             command: {
               command: `vscode-ibmi-projectexplorer.createEnv`,
               arguments: [this.workspaceFolder],
-              title: l10n.t('Create project .env')
+              title: l10n.t('Create .env')
             }
           }
         ));
@@ -112,9 +110,10 @@ export default class Project extends ProjectExplorerTreeItem {
         undefined,
         l10n.t('Please connect to an IBM i'),
         {
+          contextValue: ErrorItem.contextValue + ContextValue.openConnectionBrowser,
           command: {
             command: `connectionBrowser.focus`,
-            title: l10n.t('Focus on connection browser')
+            title: l10n.t('Open Connection Browser')
           }
         }
       ));
