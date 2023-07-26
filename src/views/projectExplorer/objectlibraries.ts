@@ -31,39 +31,41 @@ export default class ObjectLibraries extends ProjectExplorerTreeItem {
     const objLibs = await iProject?.getObjectLibraries();
     const values = await iProject!.getEnv();
     if (objLibs) {
-      for (let objLib of objLibs) {
+      for (let [library, libraryTypes] of objLibs) {
         let variable = undefined;
-        if (objLib.startsWith('&')) {
-          variable = objLib;
-          objLib = iProject!.resolveVariable(objLib, values);
+        if (library.startsWith('&')) {
+          variable = library;
+          library = iProject!.resolveVariable(library, values);
         }
 
-        if (objLib.startsWith('&')) {
+        if (library.startsWith('&')) {
           items.push(new ErrorItem(
             this.workspaceFolder,
-            objLib,
+            library,
             {
               description: l10n.t('Not specified'),
               contextValue: Library.contextValue
-            }));
+            }
+          ));
           continue;
         }
 
         try {
-          const libraryInfo = await ibmi?.getContent().getObjectList({ library: 'QSYS', object: objLib, types: ['*LIB'] }, 'name');
+          const libraryInfo = await ibmi?.getContent().getObjectList({ library: 'QSYS', object: library, types: ['*LIB'] }, 'name');
           if (libraryInfo) {
-            const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0], LibraryType.library, undefined, variable);
+            const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0], LibraryType.library, undefined, variable, libraryTypes);
             items.push(libTreeItem);
           }
         } catch (error: any) {
           items.push(new ErrorItem(
             this.workspaceFolder,
-            objLib,
+            library,
             {
               description: variable,
               contextValue: Library.contextValue,
               tooltip: error
-            }));
+            }
+          ));
           continue;
         }
       }

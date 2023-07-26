@@ -3,10 +3,10 @@
  */
 
 import * as assert from "assert";
-import { TestSuite } from ".";
+import { TestSuite } from "..";
 import { CancellationTokenSource, ThemeColor, Uri, window, workspace } from "vscode";
-import { DecorationProvider } from "../views/projectExplorer/decorationProvider";
-import { ProjectManager } from "../projectManager";
+import { DecorationProvider } from "../../views/projectExplorer/decorationProvider";
+import { ProjectManager } from "../../projectManager";
 
 let decorationProvider: DecorationProvider;
 let cancellationTokenSource: CancellationTokenSource;
@@ -25,7 +25,7 @@ export const decorationProviderSuite: TestSuite = {
                 const decoration1 = decorationProvider.provideFileDecoration(uri1, cancellationTokenSource.token);
                 const decoration2 = decorationProvider.provideFileDecoration(uri2, cancellationTokenSource.token);
 
-                assert.deepStrictEqual(decoration1, undefined);
+                assert.strictEqual(decoration1, undefined);
                 assert.deepStrictEqual(decoration2, {
                     badge: uri2.path,
                     color: new ThemeColor('errorForeground')
@@ -39,7 +39,7 @@ export const decorationProviderSuite: TestSuite = {
                 const decoration1 = decorationProvider.provideFileDecoration(uri1, cancellationTokenSource.token);
                 const decoration2 = decorationProvider.provideFileDecoration(uri2, cancellationTokenSource.token);
 
-                assert.deepStrictEqual(decoration1, undefined);
+                assert.strictEqual(decoration1, undefined);
                 assert.deepStrictEqual(decoration2, {
                     badge: '?',
                     color: new ThemeColor('errorForeground')
@@ -54,7 +54,7 @@ export const decorationProviderSuite: TestSuite = {
                 const uri = window.activeTextEditor?.document.uri;
                 const decoration = decorationProvider.provideFileDecoration(uri!, cancellationTokenSource.token);
 
-                assert.deepStrictEqual(decoration, undefined);
+                assert.strictEqual(decoration, undefined);
             }
         }
     ]

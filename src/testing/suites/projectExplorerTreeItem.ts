@@ -3,16 +3,17 @@
  */
 
 import * as assert from "assert";
-import { TestSuite } from ".";
-import { ProjectManager } from "../projectManager";
+import { TestSuite } from "..";
+import { ProjectManager } from "../../projectManager";
 import * as path from "path";
-import { Extension, TreeItem, Uri, extensions, workspace } from "vscode";
-import { ProjectExplorerApi } from "../projectExplorerApi";
-import ProjectExplorer from "../views/projectExplorer";
-import { getInstance } from "../ibmi";
-import { ProjectExplorerTreeItem } from "../views/projectExplorer/projectExplorerTreeItem";
-import MemberFile from "../views/projectExplorer/memberFile";
-import SourceDirectory from "../views/projectExplorer/sourceDirectory";
+import { TreeItem, Uri, extensions, workspace } from "vscode";
+import { ProjectExplorerApi } from "../../projectExplorerApi";
+import ProjectExplorer from "../../views/projectExplorer";
+import { getInstance } from "../../ibmi";
+import { ProjectExplorerTreeItem } from "../../views/projectExplorer/projectExplorerTreeItem";
+import MemberFile from "../../views/projectExplorer/memberFile";
+import SourceDirectory from "../../views/projectExplorer/sourceDirectory";
+import { iProjectMock } from "../constants";
 
 class File {
     readonly name: string;
@@ -47,34 +48,24 @@ const testFolder: Folder = {
     ],
 };
 
-let baseExtension: Extension<ProjectExplorerApi> | undefined;
 let projectExplorer: ProjectExplorer | undefined;
 let deployLocation: string;
 
-export const projectExplorerSuite: TestSuite = {
-    name: `Project Explorer Tests`,
+export const projectExplorerTreeItemSuite: TestSuite = {
+    name: `Project Explorer Tree Item Tests`,
     beforeAll: async () => {
-        baseExtension = (extensions ? extensions.getExtension<ProjectExplorerApi>(`IBM.vscode-ibmi-projectexplorer`) : undefined);
+        const baseExtension = (extensions ? extensions.getExtension<ProjectExplorerApi>(`IBM.vscode-ibmi-projectexplorer`) : undefined);
         projectExplorer = baseExtension && baseExtension.isActive && baseExtension.exports ? baseExtension.exports.projectExplorer : undefined;
 
         const iProject = ProjectManager.getProjects()[0];
 
         await iProject.createEnv();
-        await iProject.updateEnv('curlib', 'QGPL');
+        await iProject.updateEnv('CURLIB', 'QGPL');
         await iProject.updateEnv('lib1', 'SYSTOOLS');
         await iProject.updateEnv('lib3', 'QSYSINC');
         await iProject.updateEnv('path1', testFolder.name);
 
-        await iProject.updateIProj({
-            "version": "0.0.1",
-            "description": "SAMPLE PROJECT",
-            "objlib": "&objlib",
-            "curlib": "&curlib",
-            "includePath": ["includes", "QPROTOSRC", "&path1", "&path2"],
-            "preUsrlibl": ["&lib1", "&lib2"],
-            "postUsrlibl": ["&lib3", "&lib4"],
-            "setIBMiEnvCmd": []
-        });
+        await iProject.updateIProj(iProjectMock);
 
         await createFolder(iProject.workspaceFolder.uri, testFolder);
 
@@ -165,11 +156,11 @@ export const projectExplorerSuite: TestSuite = {
                 const children = await projectExplorer?.getChildren(variablesTreeItem)!;
 
                 assertTreeItem(children[0], {
-                    label: 'curlib',
+                    label: 'CURLIB',
                     description: 'QGPL'
                 });
                 assertTreeItem(children[1], {
-                    label: 'objlib',
+                    label: 'OBJLIB',
                     description: 'No value'
                 });
                 assertTreeItem(children[2], {
@@ -209,7 +200,7 @@ export const projectExplorerSuite: TestSuite = {
 
                 assertTreeItem(currentLibraryTreeItem, {
                     label: 'QGPL',
-                    description: '&curlib - General Purpose Library (PROD)',
+                    description: '&CURLIB - General Purpose Library (PROD)',
                     libraryInfo: {
                         library: 'QSYS',
                         type: '*LIB',
@@ -298,8 +289,12 @@ export const projectExplorerSuite: TestSuite = {
                 const children = await projectExplorer?.getChildren(objectLibrariesTreeItem)!;
 
                 assertTreeItem(children[0], {
+                    label: '&OBJLIB',
+                    description: 'Not specified'
+                });
+                assertTreeItem(children[1], {
                     label: 'QGPL',
-                    description: '&curlib - General Purpose Library (PROD)',
+                    description: '&CURLIB - General Purpose Library (PROD)',
                     libraryInfo: {
                         library: 'QSYS',
                         type: '*LIB',
@@ -308,7 +303,7 @@ export const projectExplorerSuite: TestSuite = {
                         text: 'General Purpose Library'
                     }
                 });
-                assertTreeItem(children[1], {
+                assertTreeItem(children[2], {
                     label: 'SYSTOOLS',
                     description: '&lib1 - System Library for DB2 (PROD)',
                     libraryInfo: {
@@ -319,11 +314,11 @@ export const projectExplorerSuite: TestSuite = {
                         text: 'System Library for DB2'
                     }
                 });
-                assertTreeItem(children[2], {
+                assertTreeItem(children[3], {
                     label: '&lib2',
                     description: 'Not specified'
                 });
-                assertTreeItem(children[3], {
+                assertTreeItem(children[4], {
                     label: 'QSYSINC',
                     description: '&lib3 - (PROD)',
                     libraryInfo: {
@@ -334,12 +329,8 @@ export const projectExplorerSuite: TestSuite = {
                         text: ''
                     }
                 });
-                assertTreeItem(children[4], {
-                    label: '&lib4',
-                    description: 'Not specified'
-                });
                 assertTreeItem(children[5], {
-                    label: '&objlib',
+                    label: '&lib4',
                     description: 'Not specified'
                 });
             }

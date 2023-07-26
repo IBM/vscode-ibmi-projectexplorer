@@ -3,7 +3,7 @@
  */
 
 import * as path from "path";
-import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import ErrorItem from "./errorItem";
 import { IProject } from "../../iproject";
 import Project from "./project";
@@ -23,6 +23,8 @@ import MemberFile from "./memberFile";
 import { getDeployment, getInstance, getTools } from "../../ibmi";
 import { DeploymentMethod } from "@halcyontech/vscode-ibmi-types";
 import SourceFile from "./sourceFile";
+import { ContextValue } from "../../projectExplorerApi";
+import Variable from "./variable";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -44,7 +46,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, async (element?: Project) => {
         if (element) {
-          ProjectManager.setActiveProject(element.workspaceFolder!);
+          await ProjectManager.setActiveProject(element.workspaceFolder!);
           this.refresh();
         } else {
           const projectItems: QuickPickItem[] = [];
@@ -64,8 +66,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (newActiveProject) {
             const iProject = ProjectManager.getProjectFromName(newActiveProject.label.split(' ')[1]);
             if (iProject) {
-              ProjectManager.setActiveProject(iProject.workspaceFolder);
+              await ProjectManager.setActiveProject(iProject.workspaceFolder);
               this.refresh();
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve project'));
             }
           }
         }
@@ -81,6 +85,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             if (result) {
               this.refresh();
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -157,6 +163,30 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const fileUri = iProject.getProjectFileUri('iproj.json');
             const document = await workspace.openTextDocument(fileUri);
             await window.showTextDocument(document);
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.editVariable`, async (element: Variable) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const variable = element.label!.toString();
+            const value = element.value;
+
+            const newValue = await window.showInputBox({
+              prompt: l10n.t('Enter new value for {0}', variable),
+              placeHolder: l10n.t('Variable value'),
+              value: value || ``,
+            });
+
+            if (newValue) {
+              await iProject.updateEnv(variable, newValue);
+            }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -189,6 +219,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 await iProject.addToLibraryList(library, position);
               }
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -216,6 +248,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             if (library) {
               await iProject.setCurrentLibrary(library);
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -240,6 +274,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             } else {
               window.showErrorMessage(l10n.t('Failed to retrieve library'));
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -249,8 +285,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (library) {
             const iProject = ProjectManager.getActiveProject();
+
             if (iProject) {
               await iProject.setCurrentLibrary(library);
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve project'));
             }
 
           } else {
@@ -264,12 +303,120 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (library) {
             const iProject = ProjectManager.getActiveProject();
+
             if (iProject) {
-              await iProject.setTargetLibraryForCompiles(library);
+              await iProject.setAsTargetLibraryForCompiles(library);
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve project'));
             }
 
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve library'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetLibraryForCompiles`, async (element: Uri) => {
+        if (element) {
+          const iProject = ProjectManager.getProjectFromUri(element);
+
+          if (iProject) {
+            const unresolvedIBMiJson = await iProject.getUnresolvedIBMiJson(element);
+            const values = await iProject.getEnv();
+
+            let library: string | undefined;
+            let variable: string | undefined;
+            let isLibrarySet = false;
+            if (unresolvedIBMiJson && unresolvedIBMiJson.build?.objlib && unresolvedIBMiJson.build?.objlib.startsWith('&')) {
+              variable = unresolvedIBMiJson.build?.objlib.substring(1);
+              library = values[variable];
+            } else {
+              const variables = await iProject?.getVariables();
+              if (variables.length > 0) {
+                const variableItems: QuickPickItem[] = [{ label: l10n.t('{0} Create new variable', '$(add)') }];
+
+                for (const variable of variables) {
+                  variableItems.push({ label: `&${variable}`, description: values[variable] });
+                }
+
+                let variableSelection = await window.showQuickPick(variableItems, {
+                  placeHolder: l10n.t('Select a variable')
+                });
+
+                if (variableSelection) {
+                  if (variableSelection.label !== l10n.t('{0} Create new variable', '$(add)')) {
+                    variable = variableSelection.label.substring(1);
+                    if (values[variable]) {
+                      library = values[variable];
+                      isLibrarySet = true;
+                    }
+                  }
+                } else {
+                  return;
+                }
+              }
+            }
+
+            if (!variable) {
+              variable = await window.showInputBox({
+                prompt: l10n.t('Enter variable name'),
+                placeHolder: l10n.t('Variable name')
+              });
+
+              if (variable) {
+                while (variable.startsWith('&')) {
+                  variable = variable.substring(1);
+                }
+              }
+            }
+
+            if (!isLibrarySet) {
+              library = await window.showInputBox({
+                prompt: l10n.t('Enter library name'),
+                placeHolder: l10n.t('Library name'),
+                value: library,
+                validateInput: (library) => {
+                  if (library.length > 10) {
+                    return l10n.t('Library must be 10 characters or less');
+                  } else {
+                    return null;
+                  }
+                }
+              });
+            }
+
+            if (library && variable) {
+              await iProject.setTargetLibraryForCompiles(library, variable, element);
+            }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles`, async (element: Uri) => {
+        if (element) {
+          const iProject = ProjectManager.getProjectFromUri(element);
+
+          if (iProject) {
+            const ibmiJson = await iProject.getIBMiJson(element);
+
+            const tgtCcsid = await window.showInputBox({
+              prompt: l10n.t('Enter target CCSID'),
+              placeHolder: l10n.t('Target CCSID'),
+              value: ibmiJson?.build?.tgtCcsid,
+              validateInput: (tgtCcsid) => {
+                if (!/^\d+$/.test(tgtCcsid)) {
+                  return l10n.t('Target CCSID must be a number');
+                } else {
+                  return null;
+                }
+              }
+            });
+
+            if (tgtCcsid) {
+              await iProject.setTargetCCSIDForCompiles(tgtCcsid, element);
+            }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -280,6 +427,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const library = element.label!.toString();
             await iProject.removeFromLibraryList(library, element.libraryType);
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -290,6 +439,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const library = element.variable ? element.variable : element.label!.toString();
             await iProject.moveLibrary(library, element.libraryType, 'up');
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -300,26 +451,14 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const library = element.variable ? element.variable : element.label!.toString();
             await iProject.moveLibrary(library, element.libraryType, 'down');
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.updateVariable`, async (workspaceFolder: WorkspaceFolder, varName: string, currentValue?: string) => {
-        if (workspaceFolder && varName) {
-          const iProject = ProjectManager.get(workspaceFolder);
-          if (iProject) {
-            const newValue = await window.showInputBox({
-              prompt: l10n.t('Enter new value for {0}', varName),
-              placeHolder: l10n.t('Variable value'),
-              value: currentValue || ``,
-            });
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createIProj`, async (element: ErrorItem | WorkspaceFolder) => {
+        const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
 
-            if (newValue) {
-              await iProject.updateEnv(varName, newValue);
-            }
-          }
-        }
-      }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.createProject`, async (workspaceFolder: WorkspaceFolder) => {
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
@@ -329,16 +468,22 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             });
 
             if (description) {
-              await iProject.createProject(description);
+              await iProject.createIProj(description);
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.createEnv`, async (workspaceFolder: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createEnv`, async (element: WorkspaceFolder) => {
+        const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
+
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
           if (iProject) {
             await iProject.createEnv();
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -349,7 +494,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             let variable = await window.showInputBox({
               prompt: l10n.t('Enter variable name'),
-              placeHolder: l10n.t('Variable Name')
+              placeHolder: l10n.t('Variable name')
             });
 
             if (variable) {
@@ -357,25 +502,36 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 variable = variable.substring(1);
               }
 
-              let attribute: keyof IProjectT;
+              let attributes: (keyof IProjectT)[] = [];
               if (element instanceof Library) {
-                if (element.libraryType === LibraryType.preUserLibrary) {
-                  attribute = 'preUsrlibl';
-                } else if (element.libraryType === LibraryType.postUserLibrary) {
-                  attribute = 'postUsrlibl';
+                const libraryTypes = element.libraryTypes ? element.libraryTypes : [element.libraryType];
+
+                for (const libraryType of libraryTypes) {
+                  if (libraryType === LibraryType.preUserLibrary) {
+                    attributes.push('preUsrlibl');
+                  } else if (libraryType === LibraryType.postUserLibrary) {
+                    attributes.push('postUsrlibl');
+                  } else if (libraryType === LibraryType.currentLibrary) {
+                    attributes.push('curlib');
+                  } else if (libraryType === LibraryType.objectLibrary) {
+                    attributes.push('objlib');
+                  }
                 }
               } else {
-                attribute = 'includePath';
+                attributes.push('includePath');
               }
 
-              await iProject.configureAsVariable(attribute!, variable, element.label!.toString());
+              await iProject.configureAsVariable(attributes, variable, element.label!.toString());
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.assignToVariable`, async (element: any) => {
         if (element) {
           const value = element.name ? element.name : element.path;
+
           if (value) {
             const variableItems: QuickPickItem[] = [];
             const activeProject = ProjectManager.getActiveProject();
@@ -415,13 +571,18 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             if (includePath) {
               await iProject.addToIncludePaths(includePath);
             }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         } else {
           const includePath = element.path;
+
           if (includePath) {
             const iProject = ProjectManager.getActiveProject();
             if (iProject) {
               await iProject.addToIncludePaths(includePath);
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve project'));
             }
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve path to directory'));
@@ -434,6 +595,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (iProject) {
             await iProject.removeFromIncludePaths(element.label!.toString());
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -444,6 +607,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const pathToMove = element.variable ? element.variable : element.label!.toString();
             await iProject.moveIncludePath(pathToMove, 'up');
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -454,6 +619,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           if (iProject) {
             const pathToMove = element.variable ? element.variable : element.label!.toString();
             await iProject.moveIncludePath(pathToMove, 'down');
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
         }
       }),
@@ -501,9 +668,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const connection = ibmi!.getConnection();
 
             try {
-              await connection.remoteCommand(
-                `CLRLIB LIB(${library})`,
-              );
+              await connection.runCommand({ command: `CLRLIB LIB(${library})` });
 
               window.showInformationMessage(l10n.t('Cleared {0} *{1}.', path, type));
               this.refresh();
@@ -521,6 +686,37 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           });
 
           this.refresh();
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createSourceFile`, async (element: Library) => {
+        if (element) {
+          const sourceFileName = await window.showInputBox({
+            prompt: l10n.t('Enter source file name'),
+            placeHolder: l10n.t('Source file name'),
+            validateInput: (library) => {
+              if (library.length > 10) {
+                return l10n.t('Source file name must be 10 characters or less');
+              } else {
+                return null;
+              }
+            }
+          });
+
+          if (sourceFileName) {
+            const ibmi = getInstance();
+            const connection = ibmi!.getConnection();
+            try {
+              const library = element.libraryInfo.name;
+              const path = `${library}/${sourceFileName.toUpperCase()}`;
+
+              window.showInformationMessage(l10n.t('Creating source file {0}.', path));
+              await connection.runCommand({ command: `CRTSRCPF FILE(${path}) RCDLEN(112)` });
+
+              this.refresh();
+            } catch (e: any) {
+              window.showErrorMessage(l10n.t('Error creating source file! {0}', e));
+            }
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: ObjectFile | MemberFile) => {
@@ -600,6 +796,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           });
         }
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.browse`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.browse`, {
+            member: element.memberFileInfo
+          });
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.selectForCompare`, async (element: MemberFile) => {
         if (element) {
           await commands.executeCommand(`code-for-ibmi.selectForCompare`, {
@@ -667,8 +870,29 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           this.refresh();
         }
-      })
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.addFolderToWorkspace`, async (element: ErrorItem) => {
+        if (element) {
+          await commands.executeCommand(`workbench.action.addRootFolder`);
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openConnectionBrowser`, async (element: ErrorItem) => {
+        if (element) {
+          await commands.executeCommand(`connectionBrowser.focus`);
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.setDeployLocation`, async (element: ErrorItem | WorkspaceFolder) => {
+        const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
 
+        if (workspaceFolder) {
+          const iProject = ProjectManager.get(workspaceFolder);
+
+          if (iProject) {
+            const defaultDeployLocation = iProject?.getDefaultDeployLocation();
+            await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, workspaceFolder, defaultDeployLocation);
+          }
+        }
+      })
     );
   }
 
@@ -690,17 +914,39 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
       if (workspaceFolders && workspaceFolders.length > 0) {
         for await (const folder of workspaceFolders) {
-          ProjectManager.load(folder);
+          await ProjectManager.load(folder);
 
           const iProject = ProjectManager.get(folder);
           if (iProject) {
             const metadataExists = await iProject.projectFileExists('iproj.json');
             if (metadataExists) {
               const state = await iProject.getState();
+
               if (state) {
-                items.push(new Project(folder, state.description));
+                items.push(new Project(folder, state));
               } else {
-                items.push(new Project(folder));
+                const validatorResult = iProject.getValidatorResult();
+                if (validatorResult) {
+                  const errors = validatorResult.errors
+                    .map(error => `• ${error.stack.replace('instance.', '').replace('instance', 'iproj')}`)
+                    .join('\n');
+                  const tooltip = l10n.t('This project contains the following errors:\n{0}', errors);
+                  items.push(new ErrorItem(
+                    folder,
+                    folder.name,
+                    {
+                      description: l10n.t('Please resolve project metadata'),
+                      tooltip: tooltip,
+                      command: {
+                        command: 'vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut',
+                        arguments: [{ workspaceFolder: iProject.workspaceFolder }],
+                        title: l10n.t('Open iproj.json')
+                      }
+                    }
+                  ));
+                } else {
+                  items.push(new Project(folder));
+                }
               }
             } else {
               items.push(new ErrorItem(
@@ -708,12 +954,14 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 folder.name,
                 {
                   description: l10n.t('Please configure project metadata'),
+                  contextValue: ErrorItem.contextValue + ContextValue.createIProj,
                   command: {
-                    command: 'vscode-ibmi-projectexplorer.createProject',
+                    command: 'vscode-ibmi-projectexplorer.createIProj',
                     arguments: [folder],
-                    title: l10n.t('Create project iproj.json')
+                    title: l10n.t('Create iproj.json')
                   }
-                }));
+                }
+              ));
             }
           }
 
@@ -733,11 +981,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           undefined,
           l10n.t('Please open a local workspace folder'),
           {
+            contextValue: ErrorItem.contextValue + ContextValue.addFolderToWorkspace,
             command: {
               command: 'workbench.action.addRootFolder',
-              title: l10n.t('Add folder to workspace')
+              title: l10n.t('Add Folder to Workspace')
             }
-          }));
+          }
+        ));
       }
 
       return items;

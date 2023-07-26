@@ -55,7 +55,8 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
                 (position === 'first' ? ContextValue.first : '') +
                 (position === 'last' ? ContextValue.last : '') +
                 (position === 'middle' ? ContextValue.middle : '')
-            }));
+            }
+          ));
           continue;
         }
 

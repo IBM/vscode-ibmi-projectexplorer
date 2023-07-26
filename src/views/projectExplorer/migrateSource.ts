@@ -168,9 +168,9 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
             });
             settingsTab
                 .addInput(`srcLib`, l10n.t('Source Library'), l10n.t('The name of the library containing the source files to migrate.'), { default: library, readonly: true })
-                .addInput(`defaultCCSID`, l10n.t('Default CCSID'), l10n.t('The CCSID to be used when the source file is 65535.'), { default: `*JOB` })
+                .addInput(`defaultCCSID`, l10n.t('Default CCSID'), l10n.t('The CCSID to be used when the source file is 65535.'), { default: `*JOB`, minlength: 1 })
                 .addSelect(`workspaceFolder`, l10n.t('Workspace folder'), projectSelectItems, l10n.t('The workspace folder to which the files are to be downloaded to once they are migrated to the project\'s deploy location.'))
-                .addInput(`deployLocation`, l10n.t('Deploy Location'), l10n.t('The location in IFS to which the files are to be deployed to.'), { default: deployLocation ? deployLocation : `` });
+                .addInput(`deployLocation`, l10n.t('Deploy Location'), l10n.t('The location in IFS to which the files are to be deployed to.'), { default: deployLocation ? deployLocation : ``, minlength: 1 });
 
 
             sourceFiles.forEach(srcPf => {
@@ -189,7 +189,7 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                 .addParagraph(l10n.t('Convert all members in source physical files of a library to IFS files in the project\'s deploy location and then download all files to a workspace folder. To learn more about {0}, click {1}here{2}.', '<code>cvtsrcpf</code>', '<a href="https://ibm.github.io/ibmi-bob/#/cli/makei?id=cvtsrcpf">', '</a>'))
                 .addComplexTabs(tabs)
                 .addHorizontalRule()
-                .addButtons({ id: `migrate`, label: l10n.t('Migrate source') });
+                .addButtons({ id: `migrate`, label: l10n.t('Migrate source'), requiresValidation: true });
 
             const page = await basePage.loadPage<any>(l10n.t('Migrate Source'));
             if (page && page.data) {

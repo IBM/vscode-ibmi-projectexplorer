@@ -1,0 +1,18 @@
+- Welcome
+   - [IBM i Project Explorer](./README.md)
+   - [Code for IBM i](pages/welcome/code-for-ibm-i.md)
+   - [Installation](./pages/welcome/installation.md)
+- Views
+   - [Project Explorer](pages/views/project-explorer.md)
+   - [Job Log](pages/views/job-log.md)
+- IBM i Projects
+  - [Overview](pages/ibm-i-projects/overview.md)
+  - [iproj.json](pages/ibm-i-projects/iproj-json.md)
+  - [.ibmi.json](pages/ibm-i-projects/ibmi-json.md)
+- Support
+   - [Issues](pages/support/issues.md)
+- Developing
+   - [Getting started](pages/developing/getting_started.md)
+   - [API](pages/developing/api.md)
+   - [Localization](pages/developing/localization.md)
+   - [Documentation](pages/developing/documentation.md)
