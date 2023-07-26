@@ -266,15 +266,21 @@ export class IProject {
     }
   }
 
-  public async configureAsVariable(attribute: keyof IProjectT, variable: string, value: string) {
+  public async configureAsVariable(attributes: (keyof IProjectT)[], variable: string, value: string) {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
-      const index = (unresolvedState[attribute] as string[]).indexOf(value);
-      if (index > -1) {
-        (unresolvedState[attribute] as string[])[index] = `&${variable}`;
-      } else {
-        window.showErrorMessage(l10n.t('{0} does not exist in {1}', value, attribute));
+      for (const attribute of attributes) {
+        if (attribute === 'curlib' || attribute === 'objlib') {
+          unresolvedState[attribute] = `&${variable}`;
+        } else {
+          const index = (unresolvedState[attribute] as string[]).indexOf(value);
+          if (index > -1) {
+            (unresolvedState[attribute] as string[])[index] = `&${variable}`;
+          } else {
+            window.showErrorMessage(l10n.t('{0} does not exist in {1}', value, attribute));
+          }
+        }
       }
 
       await this.updateEnv(variable, value);
@@ -719,25 +725,46 @@ export class IProject {
       index) => variableNameList.indexOf(name) === index);
   }
 
-  public async getObjectLibraries(): Promise<Set<string> | undefined> {
+  public async getObjectLibraries(): Promise<Map<string, LibraryType[]> | undefined> {
     const unresolvedState = await this.getUnresolvedState();
     if (unresolvedState) {
-      const objLibs = new Set<string>();
-      if (unresolvedState.curlib) {
-        objLibs.add(unresolvedState.curlib);
+      const objLibs = new Map<string, LibraryType[]>();
+
+      if (unresolvedState.objlib) {
+        const libraryType = objLibs.get(unresolvedState.objlib);
+        objLibs.set(unresolvedState.objlib, [
+          LibraryType.objectLibrary,
+          ...(libraryType ? libraryType : [])
+        ]);
       }
+
+      if (unresolvedState.curlib) {
+        const libraryType = objLibs.get(unresolvedState.curlib);
+        objLibs.set(unresolvedState.curlib, [
+          LibraryType.currentLibrary,
+          ...(libraryType ? libraryType : [])
+        ]);
+      }
+
       if (unresolvedState.preUsrlibl) {
         for (const lib of unresolvedState.preUsrlibl) {
-          objLibs.add(lib);
-        }
-      }
-      if (unresolvedState.postUsrlibl) {
-        for (const lib of unresolvedState.postUsrlibl) {
-          objLibs.add(lib);
+          const libraryType = objLibs.get(lib);
+          objLibs.set(lib, [
+            LibraryType.preUserLibrary,
+            ...(libraryType ? libraryType : [])
+          ]);
         }
       }
 
-      unresolvedState.objlib ? objLibs.add(unresolvedState.objlib) : null;
+      if (unresolvedState.postUsrlibl) {
+        for (const lib of unresolvedState.postUsrlibl) {
+          const libraryType = objLibs.get(lib);
+          objLibs.set(lib, [
+            LibraryType.postUserLibrary,
+            ...(libraryType ? libraryType : [])
+          ]);
+        }
+      }
 
       return objLibs;
     }

@@ -440,18 +440,26 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 variable = variable.substring(1);
               }
 
-              let attribute: keyof IProjectT;
+              let attributes: (keyof IProjectT)[] = [];
               if (element instanceof Library) {
-                if (element.libraryType === LibraryType.preUserLibrary) {
-                  attribute = 'preUsrlibl';
-                } else if (element.libraryType === LibraryType.postUserLibrary) {
-                  attribute = 'postUsrlibl';
+                const libraryTypes = element.libraryTypes ? element.libraryTypes : [element.libraryType];
+
+                for (const libraryType of libraryTypes) {
+                  if (libraryType === LibraryType.preUserLibrary) {
+                    attributes.push('preUsrlibl');
+                  } else if (libraryType === LibraryType.postUserLibrary) {
+                    attributes.push('postUsrlibl');
+                  } else if (libraryType === LibraryType.currentLibrary) {
+                    attributes.push('curlib');
+                  } else if (libraryType === LibraryType.objectLibrary) {
+                    attributes.push('objlib');
+                  }
                 }
               } else {
-                attribute = 'includePath';
+                attributes.push('includePath');
               }
 
-              await iProject.configureAsVariable(attribute!, variable, element.label!.toString());
+              await iProject.configureAsVariable(attributes, variable, element.label!.toString());
             }
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve project'));

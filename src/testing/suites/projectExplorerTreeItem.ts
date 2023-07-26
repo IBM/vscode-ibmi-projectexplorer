@@ -309,6 +309,10 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                 const children = await projectExplorer?.getChildren(objectLibrariesTreeItem)!;
 
                 assertTreeItem(children[0], {
+                    label: '&OBJLIB',
+                    description: 'Not specified'
+                });
+                assertTreeItem(children[1], {
                     label: 'QGPL',
                     description: '&CURLIB - General Purpose Library (PROD)',
                     libraryInfo: {
@@ -319,7 +323,7 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         text: 'General Purpose Library'
                     }
                 });
-                assertTreeItem(children[1], {
+                assertTreeItem(children[2], {
                     label: 'SYSTOOLS',
                     description: '&lib1 - System Library for DB2 (PROD)',
                     libraryInfo: {
@@ -330,11 +334,11 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         text: 'System Library for DB2'
                     }
                 });
-                assertTreeItem(children[2], {
+                assertTreeItem(children[3], {
                     label: '&lib2',
                     description: 'Not specified'
                 });
-                assertTreeItem(children[3], {
+                assertTreeItem(children[4], {
                     label: 'QSYSINC',
                     description: '&lib3 - (PROD)',
                     libraryInfo: {
@@ -345,12 +349,8 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         text: ''
                     }
                 });
-                assertTreeItem(children[4], {
-                    label: '&lib4',
-                    description: 'Not specified'
-                });
                 assertTreeItem(children[5], {
-                    label: '&OBJLIB',
+                    label: '&lib4',
                     description: 'Not specified'
                 });
             }
