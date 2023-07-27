@@ -20,6 +20,9 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.refreshJobLog`, () => {
         this.refresh();
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.refresh`, (element: ProjectExplorerTreeItem) => {
+        this.refresh(element);
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showJobLog`, async (element: Project) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
         if (iProject) {
@@ -65,8 +68,8 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
     );
   }
 
-  refresh() {
-    this._onDidChangeTreeData.fire(null);
+  refresh(element?: ProjectExplorerTreeItem) {
+    this._onDidChangeTreeData.fire(element);
   }
 
   getTreeItem(element: ProjectExplorerTreeItem): ProjectExplorerTreeItem | Thenable<ProjectExplorerTreeItem> {

@@ -14,7 +14,6 @@ import { IProject } from "../../iproject";
 import IncludePaths from "./includePaths";
 import Source from "./source";
 import LibraryList from "./libraryList";
-import * as path from "path";
 import { IProjectT } from "../../iProjectT";
 
 /**
@@ -24,6 +23,7 @@ export default class Project extends ProjectExplorerTreeItem {
   static contextValue = ContextValue.project;
   static callBack: ((iProject: IProject) => Promise<ProjectExplorerTreeItem[]>)[] = [];
   private extensibleChildren: ProjectExplorerTreeItem[] = [];
+  public children: ProjectExplorerTreeItem[] = [];
 
   constructor(public workspaceFolder: WorkspaceFolder, state?: IProjectT) {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
@@ -119,6 +119,7 @@ export default class Project extends ProjectExplorerTreeItem {
       ));
     }
 
+    this.children = items;
     return items;
   }
 

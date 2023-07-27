@@ -25,6 +25,7 @@ import { DeploymentMethod } from "@halcyontech/vscode-ibmi-types";
 import SourceFile from "./sourceFile";
 import { ContextValue } from "../../projectExplorerApi";
 import Variable from "./variable";
+import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
 
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
@@ -32,6 +33,33 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
   private projectTreeItems: Project[] = [];
 
   constructor(context: ExtensionContext) {
+    const ibmi = getInstance();
+    let currentDeploymentStorage: DeploymentPath;
+    ibmi?.onEvent(`connected`, () => {
+      this.refresh();
+
+      currentDeploymentStorage = ibmi?.getStorage().getDeployment();
+    });
+    ibmi?.onEvent(`deploy`, () => {
+      this.refresh();
+    });
+    ibmi?.onEvent(`deployLocation`, () => {
+      this.refresh();
+
+      const newDeploymentStorage = ibmi?.getStorage().getDeployment();
+      for (const [workspaceFolderPath, deployLocation] of Object.entries(newDeploymentStorage)) {
+        if (!currentDeploymentStorage || currentDeploymentStorage[workspaceFolderPath] !== deployLocation) {
+          const iProject = ProjectManager.getProjectFromUri(Uri.file(workspaceFolderPath));
+          ProjectManager.fire({ type: 'deployLocation', iProject: iProject });
+        }
+      }
+
+      currentDeploymentStorage = newDeploymentStorage;
+    });
+    ibmi?.onEvent(`disconnected`, () => {
+      this.refresh();
+    });
+
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
@@ -43,6 +71,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
         this.refresh();
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refresh`, (element: ProjectExplorerTreeItem) => {
+        this.refresh(element);
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, async (element?: Project) => {
         if (element) {
