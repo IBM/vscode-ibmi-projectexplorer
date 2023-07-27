@@ -14,7 +14,7 @@ vscode.extensions.getExtension<ProjectExplorerApi>(`IBM.vscode-ibmi-projectexplo
 
 ## Types
 
-Type definitions for the exported API are avaliable and can be installed from the [vscode-ibmi-projectexplorer-types
+Type definitions for the exported API are available and can be installed from the [vscode-ibmi-projectexplorer-types
 ](https://github.com/IBM/vscode-ibmi-projectexplorer-types) repository by specifying the following in the extension's `package.json`:
 
 ```json
@@ -27,7 +27,7 @@ Type definitions for the exported API are avaliable and can be installed from th
 
 ## Usage
 
-Use the below example for reference on how to access the project manager, project explorer, or job log APIs.
+Use the example below for reference on how to access the project manager, project explorer, or job log APIs.
 
 ```typescript
 import { Extension, extensions } from "vscode";
@@ -75,7 +75,7 @@ export function getJobLog(): JobLog | undefined {
 
 ## VS Code Integration
 
-Other extensions can contribute commands to any tree item in the **Project Explorer** or **Job Log** views. You will need to first register the command as per usual, but expect a parameter for the chosen tree item from the tree view. Refer to the example below on how to register a command for retriving the information of a library.
+Other extensions can contribute commands to any tree item in the **Project Explorer** or **Job Log** views. You will need to first register the command as per usual, but expect a parameter for the chosen tree item from the tree view. Refer to the example below on how to register a command for retrieving the information of a library.
 
 ```typescript
 context.subscriptions.push(

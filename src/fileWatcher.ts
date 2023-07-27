@@ -28,7 +28,7 @@ export namespace ProjectFileWatcher {
         const iProject = ProjectManager.getProjectFromUri(uri);
 
         if (iProject) {
-            if (uri.path.endsWith('iproj.json') && (type === 'create' || type === 'change')) {
+            if (uri.fsPath.endsWith('iproj.json') && (type === 'create' || type === 'change')) {
                 iProject.setState(undefined);
                 iProject.setBuildMap(undefined);
                 iProject.setLibraryList(undefined);
@@ -40,6 +40,11 @@ export namespace ProjectFileWatcher {
                 if (activeProject && iProject.workspaceFolder === activeProject.workspaceFolder) {
                     await ProjectManager.setActiveProject(undefined);
                 }
+            } else if (uri.fsPath.endsWith('.ibmi.json')) {
+                iProject.setBuildMap(undefined);
+            } else if (uri.fsPath.endsWith('.env')) {
+                iProject.setState(undefined);
+                iProject.setLibraryList(undefined);
             } else {
                 const projectTreeItem = projectExplorer.getProjectTreeItem(iProject);
 
