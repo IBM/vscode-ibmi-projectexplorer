@@ -7,7 +7,7 @@ import { FileType, ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l1
 import { ContextValue } from "../../projectExplorerApi";
 import { DeploymentParameters } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
-import { getDeployment } from "../../ibmi";
+import { getDeployTools } from "../../ibmi";
 import SourceDirectory from "./sourceDirectory";
 import SourceFile from "./sourceFile";
 
@@ -58,24 +58,24 @@ export default class Source extends ProjectExplorerTreeItem {
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
     let items: ProjectExplorerTreeItem[] = [];
 
-    const deployment = getDeployment()!;
+    const deployTools = getDeployTools()!;
 
     const deployFiles: Uri[] = [];
     switch (this.deploymentParameters.method) {
       case 'compare':
-        deployFiles.push(...await deployment.getDeployCompareFiles(this.deploymentParameters));
+        deployFiles.push(...await deployTools.getDeployCompareFiles(this.deploymentParameters));
         break;
       case 'changed':
-        deployFiles.push(...await deployment.getDeployChangedFiles(this.deploymentParameters));
+        deployFiles.push(...await deployTools.getDeployChangedFiles(this.deploymentParameters));
         break;
       case 'unstaged':
-        deployFiles.push(...await deployment.getDeployGitFiles(this.deploymentParameters, 'working'));
+        deployFiles.push(...await deployTools.getDeployGitFiles(this.deploymentParameters, 'working'));
         break;
       case 'staged':
-        deployFiles.push(...await deployment.getDeployGitFiles(this.deploymentParameters, 'staged'));
+        deployFiles.push(...await deployTools.getDeployGitFiles(this.deploymentParameters, 'staged'));
         break;
       case 'all':
-        deployFiles.push(...await deployment.getDeployAllFiles(this.deploymentParameters));
+        deployFiles.push(...await deployTools.getDeployAllFiles(this.deploymentParameters));
         break;
     }
 

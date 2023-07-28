@@ -20,7 +20,7 @@ import { IProjectT } from "../../iProjectT";
 import Source from "./source";
 import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
-import { getDeployment, getInstance, getTools } from "../../ibmi";
+import { getDeployTools, getInstance, getTools } from "../../ibmi";
 import { DeploymentMethod } from "@halcyontech/vscode-ibmi-types";
 import SourceFile from "./sourceFile";
 import { ContextValue } from "../../projectExplorerApi";
@@ -139,9 +139,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               methods.push({ method: 'compare', label: l10n.t('Compare'), description: l10n.t('Synchronizes using MD5 hash comparison') });
             }
 
-            const deployment = getDeployment();
+            const deployTools = getDeployTools();
             const deploymentParameters = await iProject.getDeploymentParameters();
-            const files = await deployment?.getDeployChangedFiles(deploymentParameters!);
+            const files = await deployTools?.getDeployChangedFiles(deploymentParameters!);
             const changes = files?.length || 0;
             methods.push({ method: 'changed', label: l10n.t('Changes'), description: changes > 1 || changes === 0 ? l10n.t('{0} changes detected since last upload', changes) : l10n.t('1 change detected since last upload') });
 

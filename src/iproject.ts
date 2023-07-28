@@ -9,7 +9,7 @@ import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { JobLogInfo } from "./jobLog";
 import { TextEncoder } from "util";
 import { IProjectT } from "./iProjectT";
-import { getDeployment, getInstance } from "./ibmi";
+import { getDeployTools, getInstance } from "./ibmi";
 import { LibraryType } from "./views/projectExplorer/library";
 import envUpdater from "./envUpdater";
 import { IBMiJsonT } from "./ibmiJsonT";
@@ -803,9 +803,12 @@ export class IProject {
   }
 
   public async deployProject() {
-    const deployment = getDeployment();
+    const deployTools = getDeployTools();
     const deploymentParameters = await this.getDeploymentParameters();
-    await deployment?.deploy(deploymentParameters!);
+
+    if (deploymentParameters) {
+      await deployTools?.deploy(deploymentParameters);
+    }
   }
 
   public getJobLogs(): JobLogInfo[] {
