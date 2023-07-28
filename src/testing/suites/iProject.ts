@@ -6,10 +6,10 @@ import * as assert from "assert";
 import { TestSuite } from "..";
 import * as path from "path";
 import { ProjectManager } from "../../projectManager";
-import { ProjectFileType, getDefaultIgnoreRules } from "../../iproject";
+import { ProjectFileType } from "../../iproject";
 import { LibraryType } from "../../views/projectExplorer/library";
 import { workspace } from "vscode";
-import { getInstance } from "../../ibmi";
+import { getDeployTools, getInstance } from "../../ibmi";
 import { iProjectMock, ibmiJsonMock } from "../constants";
 import { TextEncoder } from "util";
 
@@ -617,12 +617,13 @@ export const iProjectSuite: TestSuite = {
                 const iProject = ProjectManager.getProjects()[0];
                 iProject.setDeploymentMethod('compare');
                 const deploymentParameters = await iProject.getDeploymentParameters();
+                const deployTools = getDeployTools();
 
                 assert.deepStrictEqual(deploymentParameters, {
                     method: 'compare',
                     workspaceFolder: iProject.workspaceFolder,
                     remotePath: deployLocation,
-                    ignoreRules: await getDefaultIgnoreRules(iProject.workspaceFolder)
+                    ignoreRules: await deployTools!.getDefaultIgnoreRules(iProject.workspaceFolder)
                 });
             }
         },

@@ -789,11 +789,13 @@ export class IProject {
     const deployLocation = this.getDeployLocation();
 
     if (deployLocation) {
+      const deployTools = getDeployTools();
+
       return {
         method: this.deploymentMethod,
         workspaceFolder: this.workspaceFolder,
         remotePath: deployLocation,
-        ignoreRules: await getDefaultIgnoreRules(this.workspaceFolder)
+        ignoreRules: await deployTools!.getDefaultIgnoreRules(this.workspaceFolder)
       };
     }
   }
@@ -853,20 +855,4 @@ export class IProject {
 
     return new JobLogInfo(jobLog);
   }
-}
-
-export async function getDefaultIgnoreRules(workspaceFolder: WorkspaceFolder): Promise<Ignore> {
-  const ignoreRules = ignore({ ignorecase: true }).add(`.git`);
-
-  // Get the .gitignore file from workspace
-  const gitignores = await workspace.findFiles(new RelativePattern(workspaceFolder, `.gitignore`), ``, 1);
-
-  if (gitignores.length > 0) {
-    // Get the content from the file
-    const gitignoreContent = (await workspace.fs.readFile(gitignores[0])).toString().replace(new RegExp(`\\\r`, `g`), ``);
-    ignoreRules.add(gitignoreContent.split(`\n`));
-    ignoreRules.add('**/.gitignore');
-  }
-
-  return ignoreRules;
 }
