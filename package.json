@@ -1,6 +1,6 @@
 {
   "name": "vscode-ibmi-projectexplorer",
-  "displayName": "Project Explorer for IBM i",
+  "displayName": "IBM i Project Explorer",
   "description": "%description%",
   "publisher": "IBM",
   "version": "1.0.0",
