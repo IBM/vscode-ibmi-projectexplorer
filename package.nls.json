@@ -1,5 +1,5 @@
 {
-  "description": "IBM i Project Explorer",
+  "description": "Develop IBM i applications using buildable local projects in VS Code",
   "explorer.projectExplorer": "Project Explorer",
   "explorer.jobLog": "Job Log",
   "viewsWelcome.projectExplorer.noWorkspace": "No workspace folder opened",
