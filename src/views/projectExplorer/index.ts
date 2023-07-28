@@ -170,6 +170,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (iProject) {
             await iProject.deployProject();
+
+            this.refresh();
           }
         }
       }),
