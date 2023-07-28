@@ -44,6 +44,6 @@ To run the tests, start debugging the **Extension Tests** configuration.
 
 ![Run Extension Tests](../../assets/Developing_02.png)
 
-After the Extension Development Host is launched, connect to a system where the tests will run. After connecting, the tests will start running automatically. The tests being executed along with the results can be seen in the **Test Cases** view. This information is also outputed to the **Debug Console**.
+After the Extension Development Host is launched, connect to a system where the tests will run. After connecting, the tests will start running automatically. The tests being executed along with the results can be seen in the **Test Cases** view. This information is also outputted to the **Debug Console**.
 
 ![Tests Cases view](../../assets/Developing_03.png)

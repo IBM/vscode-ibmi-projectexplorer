@@ -72,7 +72,7 @@ export const jobLogCommandSuite: TestSuite = {
                 const logTreeItem = (await jobLog?.getChildren(projectTreeItem)!)[0];
                 const commandTreeItem = (await jobLog?.getChildren(logTreeItem)!)[0];
                 await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.copy', commandTreeItem);
-                const copiedCommand = env.clipboard.readText();
+                const copiedCommand = await env.clipboard.readText();
 
                 assert.strict(copiedCommand, jobLogMock[0].cmd);
             }

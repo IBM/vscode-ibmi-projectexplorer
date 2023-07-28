@@ -772,8 +772,11 @@ export class IProject {
 
   public getDeployDir(): string | undefined {
     const ibmi = getInstance();
-    const deploymentDirs = ibmi?.getStorage().getDeployment()!;
-    return deploymentDirs[this.workspaceFolder.uri.fsPath];
+    const storage = ibmi?.getStorage();
+    if (storage) {
+      const deploymentDirs = storage.getDeployment()!;
+      return deploymentDirs[this.workspaceFolder.uri.fsPath];
+    }
   }
 
   public getDefaultDeployLocation() {
