@@ -83,7 +83,7 @@ export function getJobLog(): JobLog | undefined {
 
 All tree items in the **Project Explorer** view must implement the `ProjectExplorerTreeItem` interface. This interface includes a `workspaceFolder` property to associate each tree item with a workspace folder along with a `getChildren` function to retrieve subsequent children.
 
-Refer to the example below of a tree item that will render the metadata for a project.
+Refer to the example below of a custom tree item that will render the metadata for a project.
 
 ```typescript
 /**
