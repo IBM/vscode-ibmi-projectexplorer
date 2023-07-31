@@ -27,7 +27,9 @@ Type definitions for the exported API are available and can be installed from th
 
 ## Usage
 
-Use the example below for reference on how to access the project manager, project explorer, or job log APIs.
+### Importing APIs
+
+Use the example below for reference on how to access the `ProjectManager`, `ProjectExplorer`, or `JobLog` APIs.
 
 ```typescript
 import { Extension, extensions } from "vscode";
@@ -71,6 +73,82 @@ export function getJobLog(): JobLog | undefined {
 }
 ```
 
+### Accessing iProjects
+
+> [!NOTE]
+>
+> Work In Progress
+
+### Adding Custom Tree Items
+
+All tree items in the **Project Explorer** view must implement the `ProjectExplorerTreeItem` interface. This interface includes a `workspaceFolder` property to associate each tree item with a workspace folder along with a `getChildren` function to retrieve subsequent children.
+
+Refer to the example below of a tree item that will render the metadata for a project.
+
+```typescript
+/**
+ * Tree item for the Project Metadata heading
+ */
+export class ProjectMetadata extends TreeItem implements ProjectExplorerTreeItem {
+	constructor(public workspaceFolder: WorkspaceFolder) {
+		super('Project Metadata', vscode.TreeItemCollapsibleState.Collapsed);
+	}
+
+	async getChildren(): Promise<ProjectExplorerTreeItem[]> {
+		const items: ProjectExplorerTreeItem[] = [];
+
+		const projectManager = getProjectManager();
+		if (projectManager) {
+			const iProject = projectManager.get(this.workspaceFolder);
+
+			if (iProject) {
+				const state = await iProject.getState();
+
+				if (state) {
+					for (const [key, value] of Object.entries(state)) {
+						items.push(new Info(this.workspaceFolder, key, value));
+					}
+				}
+			}
+		}
+
+		return items;
+	}
+}
+
+/**
+ * Tree item for metadata information
+ */
+export class Info extends TreeItem implements ProjectExplorerTreeItem {
+	constructor(public workspaceFolder: WorkspaceFolder, label: string, description: string) {
+		super(label, vscode.TreeItemCollapsibleState.None);
+		this.description = description;
+	}
+
+	getChildren(): ProjectExplorerTreeItem[] {
+		return [];
+	}
+}
+```
+
+Once you have your tree item class implemented, you can push tree items to view using the `pushExtensibleChildren` API in `ProjectManager` as shown below. Your tree items will be rendered under each project tree item when a connection is made.
+
+```typescript
+const projectManager = getProjectManager();
+
+if (projectManager) {
+	projectManager.pushExtensibleChildren(async (iProject: IProject) => {
+		return [new ProjectMetadata(iProject.workspaceFolder)];
+	});
+}
+```
+
+
+### Event listener
+
+> [!NOTE]
+>
+> Work In Progress
 ---
 
 ## VS Code Integration
