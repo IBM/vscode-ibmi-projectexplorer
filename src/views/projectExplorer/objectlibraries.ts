@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n, window } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n, window } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import Library, { LibraryType } from "./library";
@@ -13,7 +13,7 @@ import ErrorItem from "./errorItem";
 /**
  * Tree item for the Object Libraries heading
  */
-export default class ObjectLibraries extends ProjectExplorerTreeItem {
+export default class ObjectLibraries extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.objectLibraries;
 
   constructor(public workspaceFolder: WorkspaceFolder) {

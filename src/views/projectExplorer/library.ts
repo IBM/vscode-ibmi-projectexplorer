@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { getInstance } from "../../ibmi";
 import ObjectFile from "./objectFile";
@@ -23,7 +23,7 @@ export enum LibraryType {
 /**
  * Tree item for a library
  */
-export default class Library extends ProjectExplorerTreeItem {
+export default class Library extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.library;
   libraryInfo: IBMiObject;
   libraryType: LibraryType;

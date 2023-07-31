@@ -99,8 +99,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (iProject) {
             const fileUri = iProject.getProjectFileUri('iproj.json');
-            const document = await vscode.workspace.openTextDocument(fileUri);
-            await vscode.window.showTextDocument(document);
+            const document = await workspace.openTextDocument(fileUri);
+            await window.showTextDocument(document);
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
@@ -599,7 +599,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const path = `${element.libraryInfo.library}/${element.libraryInfo.name}`;
           const type = element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type;
 
-          const result = await vscode.window.showWarningMessage(l10n.t('Are you sure you want to clear {0} *{1}?', path, type), l10n.t('Yes'), l10n.t('Cancel'));
+          const result = await window.showWarningMessage(l10n.t('Are you sure you want to clear {0} *{1}?', path, type), l10n.t('Yes'), l10n.t('Cancel'));
 
           if (result === l10n.t('Yes')) {
             const ibmi = getInstance();
@@ -608,10 +608,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             try {
               await connection.runCommand({ command: `CLRLIB LIB(${library})` });
 
-              vscode.window.showInformationMessage(l10n.t('Cleared {0} *{1}.', path, type));
+              window.showInformationMessage(l10n.t('Cleared {0} *{1}.', path, type));
               this.refresh();
             } catch (e: any) {
-              vscode.window.showErrorMessage(l10n.t('Error clearing library! {0}', e));
+              window.showErrorMessage(l10n.t('Error clearing library! {0}', e));
             }
           }
         }
@@ -628,7 +628,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.createSourceFile`, async (element: Library) => {
         if (element) {
-          const sourceFileName = await vscode.window.showInputBox({
+          const sourceFileName = await window.showInputBox({
             prompt: l10n.t('Enter source file name'),
             placeHolder: l10n.t('Source file name'),
             validateInput: (library) => {
@@ -647,12 +647,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               const library = element.libraryInfo.name;
               const path = `${library}/${sourceFileName.toUpperCase()}`;
 
-              vscode.window.showInformationMessage(l10n.t('Creating source file {0}.', path));
+              window.showInformationMessage(l10n.t('Creating source file {0}.', path));
               await connection.runCommand({ command: `CRTSRCPF FILE(${path}) RCDLEN(112)` });
 
               this.refresh();
             } catch (e: any) {
-              vscode.window.showErrorMessage(l10n.t('Error creating source file! {0}', e));
+              window.showErrorMessage(l10n.t('Error creating source file! {0}', e));
             }
           }
         }

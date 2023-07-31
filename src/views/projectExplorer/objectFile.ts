@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import MemberFile from "./memberFile";
 import { getInstance } from "../../ibmi";
@@ -12,7 +12,7 @@ import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 /**
  * Tree item for an object file
  */
-export default class ObjectFile extends ProjectExplorerTreeItem {
+export default class ObjectFile extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.objectFile;
   objectFileInfo: IBMiObject;
   path: string;

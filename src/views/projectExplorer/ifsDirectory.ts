@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import IFSFile from "./ifsFile";
 import { getInstance } from "../../ibmi";
@@ -12,7 +12,7 @@ import * as vscodeIbmiTypes from "@halcyontech/vscode-ibmi-types";
 /**
  * Tree item for an IFS directory
  */
-export default class IFSDirectory extends ProjectExplorerTreeItem {
+export default class IFSDirectory extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.ifsDirectory;
   ifsDirectoryInfo: vscodeIbmiTypes.IFSFile;
 

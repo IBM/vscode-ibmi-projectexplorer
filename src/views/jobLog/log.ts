@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { JobLogInfo } from "../../jobLog";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
 import Command from "./command";
@@ -11,7 +11,7 @@ import { ContextValue } from "../../projectExplorerApi";
 /**
  * Tree item for a log
  */
-export default class Log extends ProjectExplorerTreeItem {
+export default class Log extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.log;
   jobLogInfo: JobLogInfo;
 
