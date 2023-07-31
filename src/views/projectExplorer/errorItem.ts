@@ -2,14 +2,14 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { Command, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
+import { Command, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 
 /**
  * Tree item for error information
  */
-export default class ErrorItem extends ProjectExplorerTreeItem {
+export default class ErrorItem extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.error;
 
   constructor(public workspaceFolder: WorkspaceFolder | undefined, label: string, options: { description?: string, contextValue?: string, command?: Command, tooltip?: string } = {}) {

@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
 import { ContextValue } from "../../projectExplorerApi";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
@@ -15,7 +15,7 @@ import { Position } from "../../iproject";
 /**
  * Tree item for Include Paths heading
  */
-export default class IncludePaths extends ProjectExplorerTreeItem {
+export default class IncludePaths extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.includePaths;
 
   constructor(public workspaceFolder: WorkspaceFolder) {

@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
 import { ContextValue } from "../../projectExplorerApi";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { Position } from "../../iproject";
@@ -10,7 +10,7 @@ import { Position } from "../../iproject";
 /**
  * Tree item for a local include path
  */
-export default class LocalIncludePath extends ProjectExplorerTreeItem {
+export default class LocalIncludePath extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.includePath;
   variable?: string;
 

@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import { getInstance } from "../../ibmi";
@@ -14,13 +14,12 @@ import { IProject } from "../../iproject";
 import IncludePaths from "./includePaths";
 import Source from "./source";
 import LibraryList from "./libraryList";
-import * as path from "path";
 import { IProjectT } from "../../iProjectT";
 
 /**
  * Tree item for a project
  */
-export default class Project extends ProjectExplorerTreeItem {
+export default class Project extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.project;
   static callBack: ((iProject: IProject) => Promise<ProjectExplorerTreeItem[]>)[] = [];
   private extensibleChildren: ProjectExplorerTreeItem[] = [];

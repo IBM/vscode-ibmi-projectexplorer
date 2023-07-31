@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 import { ProjectManager } from "../../projectManager";
@@ -12,7 +12,7 @@ import { Position } from "../../iproject";
 /**
  * Tree item for the Library List heading
  */
-export default class LibraryList extends ProjectExplorerTreeItem {
+export default class LibraryList extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.libraryList;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
