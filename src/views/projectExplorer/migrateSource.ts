@@ -258,6 +258,14 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
     }
 }
 
+/**
+ * Verify a migration configuration by checking whether the deploy location
+ * is set, the workspace folder is set, and there are source files selected
+ * to be migrated.
+ * 
+ * @param migrationConfig The migration configuration.
+ * @returns True if the migration configuration is valid and false otherwise.
+ */
 export function verifyMigrationConfig(migrationConfig: MigrationConfig) {
     if (!migrationConfig.deployLocation) {
         window.showErrorMessage(l10n.t('Deploy location not specified'));
