@@ -11,6 +11,9 @@ import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeI
 import { ContextValue } from "../../projectExplorerApi";
 import { IProjectT } from "../../iProjectT";
 
+/**
+ * Represents the Job Log tree data provider.
+ */
 export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
@@ -65,8 +68,13 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
     );
   }
 
-  refresh() {
-    this._onDidChangeTreeData.fire(null);
+  /**
+   * Refresh the entire tree view or a specific tree item.
+   * 
+   * @param element The tree item to refresh.
+   */
+  refresh(element?: ProjectExplorerTreeItem) {
+    this._onDidChangeTreeData.fire(element);
   }
 
   getTreeItem(element: ProjectExplorerTreeItem): ProjectExplorerTreeItem | Thenable<ProjectExplorerTreeItem> {

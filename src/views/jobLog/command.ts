@@ -9,7 +9,7 @@ import Message from "./message";
 import { ContextValue } from "../../projectExplorerApi";
 
 /**
- * Tree item for a command
+ * Tree item for a command.
  */
 export default class Command extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.command;

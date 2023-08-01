@@ -7,7 +7,7 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../projectExplorerApi";
 
 /**
- * Tree item for a variable
+ * Tree item for a variable.
  */
 export default class Variable extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.variable;

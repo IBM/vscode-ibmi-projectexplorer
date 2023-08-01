@@ -7,11 +7,11 @@ import { ProjectManager } from './projectManager';
 import JobLog from './views/jobLog';
 import ProjectExplorer from './views/projectExplorer';
 import { ExtensionContext, Uri, l10n, window, workspace } from 'vscode';
-import { ProjectExplorerApi } from './projectExplorerApi';
+import { IBMiProjectExplorerApi } from './projectExplorerApi';
 import { initialise } from './testing';
 import { DeploymentPath } from '@halcyontech/vscode-ibmi-types/api/Storage';
 
-export async function activate(context: ExtensionContext): Promise<ProjectExplorerApi> {
+export async function activate(context: ExtensionContext): Promise<IBMiProjectExplorerApi> {
 	console.log(l10n.t('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!'));
 
 	loadBase();
@@ -129,5 +129,4 @@ export async function activate(context: ExtensionContext): Promise<ProjectExplor
 	return { projectManager: ProjectManager, projectExplorer: projectExplorer, jobLog: jobLog };
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() { }

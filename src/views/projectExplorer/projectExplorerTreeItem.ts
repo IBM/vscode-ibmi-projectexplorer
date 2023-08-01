@@ -5,10 +5,13 @@
 import { TreeItem, WorkspaceFolder } from "vscode";
 
 /**
- * Represents a tree item in the Project Explorer
+ * Represents a tree item in the Project Explorer view.
  */
 export interface ProjectExplorerTreeItem extends TreeItem {
 
+    /**
+     * The workspace folder associated with the tree item.
+     */
     workspaceFolder: WorkspaceFolder | undefined;
 
     /**

@@ -13,7 +13,7 @@ import ErrorItem from "./errorItem";
 import { Position } from "../../iproject";
 
 /**
- * Tree item for Include Paths heading
+ * Tree item for Include Paths heading.
  */
 export default class IncludePaths extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.includePaths;

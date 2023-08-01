@@ -10,6 +10,9 @@ import { ContextValue } from "../../projectExplorerApi";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import { Position } from '../../iproject';
 
+/**
+ * Represents the type of library.
+ */
 export enum LibraryType {
   library,
   objectLibrary,
@@ -21,7 +24,7 @@ export enum LibraryType {
 }
 
 /**
- * Tree item for a library
+ * Tree item for a library.
  */
 export default class Library extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.library;

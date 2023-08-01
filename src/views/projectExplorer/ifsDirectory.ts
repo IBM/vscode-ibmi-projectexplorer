@@ -10,7 +10,7 @@ import { ContextValue } from "../../projectExplorerApi";
 import * as vscodeIbmiTypes from "@halcyontech/vscode-ibmi-types";
 
 /**
- * Tree item for an IFS directory
+ * Tree item for an IFS directory.
  */
 export default class IFSDirectory extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.ifsDirectory;
