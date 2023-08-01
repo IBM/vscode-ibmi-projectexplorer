@@ -7,7 +7,7 @@ import { TestSuite } from "..";
 import { ProjectManager } from "../../projectManager";
 import * as path from "path";
 import { TreeItem, Uri, extensions, workspace } from "vscode";
-import { IBMiProjectExplorerApi } from "../../projectExplorerApi";
+import { ProjectExplorerApi } from "../../projectExplorerApi";
 import ProjectExplorer from "../../views/projectExplorer";
 import { getDeploy, getInstance } from "../../ibmi";
 import { ProjectExplorerTreeItem } from "../../views/projectExplorer/projectExplorerTreeItem";
@@ -54,7 +54,7 @@ let deployLocation: string;
 export const projectExplorerTreeItemSuite: TestSuite = {
     name: `Project Explorer Tree Item Tests`,
     beforeAll: async () => {
-        const baseExtension = (extensions ? extensions.getExtension<IBMiProjectExplorerApi>(`IBM.vscode-ibmi-projectexplorer`) : undefined);
+        const baseExtension = (extensions ? extensions.getExtension<ProjectExplorerApi>(`IBM.vscode-ibmi-projectexplorer`) : undefined);
         projectExplorer = baseExtension && baseExtension.isActive && baseExtension.exports ? baseExtension.exports.projectExplorer : undefined;
 
         const iProject = ProjectManager.getProjects()[0];

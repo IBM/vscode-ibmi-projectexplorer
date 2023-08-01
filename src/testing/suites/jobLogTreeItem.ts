@@ -8,7 +8,7 @@ import { ThemeColor, ThemeIcon, TreeItem, extensions, workspace } from "vscode";
 import { ProjectManager } from "../../projectManager";
 import { TextEncoder } from "util";
 import JobLog from "../../views/jobLog";
-import { IBMiProjectExplorerApi } from "../../projectExplorerApi";
+import { ProjectExplorerApi } from "../../projectExplorerApi";
 import { iProjectMock, jobLogMock, outputMock } from "../constants";
 import { ProjectExplorerTreeItem } from "../../views/projectExplorer/projectExplorerTreeItem";
 
@@ -17,7 +17,7 @@ let jobLog: JobLog | undefined;
 export const jobLogTreeItemSuite: TestSuite = {
     name: `Job Log Tree Item Tests`,
     beforeAll: async () => {
-        const baseExtension = (extensions ? extensions.getExtension<IBMiProjectExplorerApi>(`IBM.vscode-ibmi-projectexplorer`) : undefined);
+        const baseExtension = (extensions ? extensions.getExtension<ProjectExplorerApi>(`IBM.vscode-ibmi-projectexplorer`) : undefined);
         jobLog = baseExtension && baseExtension.isActive && baseExtension.exports ? baseExtension.exports.jobLog : undefined;
 
         const iProject = ProjectManager.getProjects()[0];
