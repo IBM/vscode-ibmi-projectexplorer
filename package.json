@@ -252,7 +252,8 @@
       {
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.runAction",
-        "title": "%commands.projectExplorer.runAction%"
+        "title": "%commands.projectExplorer.runAction%",
+        "icon": "$(file-binary)"
       },
       {
         "category": "%commands.projectExplorer%",
@@ -641,9 +642,14 @@
       ],
       "view/item/context": [
         {
+          "command": "vscode-ibmi-projectexplorer.runAction",
+          "when": "view == projectExplorer && viewItem =~ /^project.*/ && code-for-ibmi:connected",
+          "group": "inline@0"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
           "when": "view == projectExplorer && viewItem =~ /^project_inactive.*/",
-          "group": "inline@0"
+          "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.createIProj",

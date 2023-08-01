@@ -657,8 +657,20 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: ObjectFile | MemberFile) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: Project | ObjectFile | MemberFile) => {
         if (element) {
+          if (element instanceof Project) {
+            const activeProject = ProjectManager.getActiveProject();
+
+            if (activeProject && element.workspaceFolder !== activeProject.workspaceFolder) {
+              await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, element);
+            }
+
+            await commands.executeCommand(`code-for-ibmi.runAction`, {
+              resourceUri: element.workspaceFolder.uri
+            });
+          }
+
           await commands.executeCommand(`code-for-ibmi.runAction`, {
             resourceUri: element.resourceUri
           });
