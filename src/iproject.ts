@@ -641,7 +641,7 @@ export class IProject {
   /**
    * Update the project's library list by retrieving the resolved `curlib`,
    * `preUsrlibl`, and `postUsrlibl` of the project's `iproj.json` file.
-   * *Note* that the libray list will be validated using the connection.
+   * *Note* that the library list will be validated using the connection.
    */
   public async updateLibraryList() {
     const ibmi = getInstance();

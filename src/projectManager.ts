@@ -284,7 +284,7 @@ export class ProjectManager {
 
     /**
      * Push custom tree items to the Project Explorer view using a call back function that will be invoked
-     * when expanding project tree iems when connected.
+     * when expanding project tree items when connected.
      * 
      * @param callback A function that returns the tree items to be rendered given the project.
      */
