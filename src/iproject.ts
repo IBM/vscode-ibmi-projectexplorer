@@ -70,7 +70,8 @@ export class IProject {
   /**
    * A map of directory locations and the content of each `.ibmi.json` file in
    * a project. *Note* that for the root `.ibmi.json` file, the contents of the
-   * `iproj.json` file will take precedence.
+   * `iproj.json` file will take precedence. Variables at each location of the
+   * build map are also not resolved.
    */
   private buildMap: Map<string, IBMiJsonT> | undefined;
 
