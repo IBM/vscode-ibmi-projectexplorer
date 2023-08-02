@@ -11,7 +11,7 @@ import { getInstance } from "../../ibmi";
 import ErrorItem from "./errorItem";
 
 /**
- * Tree item for the Object Libraries heading
+ * Tree item for the Object Libraries heading.
  */
 export default class ObjectLibraries extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.objectLibraries;

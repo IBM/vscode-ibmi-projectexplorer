@@ -7,6 +7,9 @@ import { ContextValue } from "../../projectExplorerApi";
 import IFSDirectory from "./ifsDirectory";
 import * as path from "path";
 
+/**
+ * Tree item for the Source heading.
+ */
 export default class Source extends IFSDirectory {
   static contextValue = ContextValue.source;
 

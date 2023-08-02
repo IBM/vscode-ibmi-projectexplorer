@@ -17,7 +17,7 @@ import LibraryList from "./libraryList";
 import { IProjectT } from "../../iProjectT";
 
 /**
- * Tree item for a project
+ * Tree item for a project.
  */
 export default class Project extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.project;

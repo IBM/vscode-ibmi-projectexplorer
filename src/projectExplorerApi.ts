@@ -6,12 +6,34 @@ import { ProjectManager } from "./projectManager";
 import JobLog from "./views/jobLog";
 import ProjectExplorer from "./views/projectExplorer";
 
+/**
+ * The IBM i Project Explorer API to be used by other extensions.
+ */
 export interface ProjectExplorerApi {
+  /**
+   * The set of APIs associated with managing the projects.
+   */
   projectManager: typeof ProjectManager,
+
+  /**
+   * The set of APIs associated with managing the Project Explorer view.
+   */
   projectExplorer: ProjectExplorer,
+
+  /**
+   * The set of APIs associated with managing the Job Log view.
+   */
   jobLog: JobLog
 }
 
+/**
+ * An enum that represents context values used by each tree item in the
+ * Project Explorer view and Job Log view.
+ * 
+ * A tree item's context value is composed of base context value along with
+ * suffixes (`_<suffix>`) that contain additional information for when the 
+ * tree item can take on multiple states.
+ */
 export enum ContextValue {
   project = 'project',
   inactive = '_inactive',

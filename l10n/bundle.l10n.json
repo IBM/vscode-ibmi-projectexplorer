@@ -6,7 +6,7 @@
   "Add folder to workspace": "Add folder to workspace",
   "From: {0}/{1}:{2}": "From: {0}/{1}:{2}",
   "To: {0}/{1}/{2}/{3}:{4}": "To: {0}/{1}/{2}/{3}:{4}",
-  "Cannot parse \"{0}\" as a Date object": "Cannot parse \"{0}\" as a Date object",
+  "Cannot parse \"{0}\" as a date object": "Cannot parse \"{0}\" as a date object",
   "{0} already exists in includePaths": "{0} already exists in includePaths",
   "No iproj.json found": "No iproj.json found",
   "{0} does not exist in {1}": "{0} does not exist in {1}",

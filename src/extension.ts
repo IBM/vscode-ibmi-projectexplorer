@@ -129,5 +129,4 @@ export async function activate(context: ExtensionContext): Promise<ProjectExplor
 	return { projectManager: ProjectManager, projectExplorer: projectExplorer, jobLog: jobLog };
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() { }

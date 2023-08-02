@@ -10,6 +10,9 @@ import { ComplexTab, SelectItem } from "@halcyontech/vscode-ibmi-types/api/Custo
 import { IProject } from "../../iproject";
 import * as path from "path";
 
+/**
+ * Represents the configuration for a migration.
+ */
 interface MigrationConfig {
     defaultCCSID: any;
     deployLocation: any;
@@ -17,6 +20,9 @@ interface MigrationConfig {
     sourceFiles: string[];
 }
 
+/**
+ * Represents the result of a migration.
+ */
 interface MigrationResult {
     numFiles: number,
     numSuccess: number,
@@ -24,7 +30,17 @@ interface MigrationResult {
     result: boolean
 }
 
-export async function migrateSource(iProject: IProject, library: string) {
+/**
+ * Migrate all members in a set of source physical files of a library to IFS
+ * files in the project's deploy location and then download all files to the
+ * project's workspace folder.
+ * 
+ * @param iProject The IBM i project.
+ * @param library The library to migrate.
+ * @returns True if the operation was successful, false if the operation failed, 
+ * or `undefined` if the migration was aborted.
+ */
+export async function migrateSource(iProject: IProject, library: string): Promise<boolean | undefined> {
     const migrationConfig = await getMigrationConfig(iProject, library);
     if (migrationConfig) {
         // Verify migration settings and source files
@@ -128,6 +144,14 @@ export async function migrateSource(iProject: IProject, library: string) {
     }
 }
 
+/**
+ * Get the migration configuration by retrieving the source physical files
+ * in a library and prompting for the configuration parameters.
+ * 
+ * @param iProject The IBM i project.
+ * @param library The library to migrate.
+ * @returns The migration configuration.
+ */
 export async function getMigrationConfig(iProject: IProject, library: string): Promise<MigrationConfig | undefined> {
     let deployDir: string | undefined;
     let sourceFiles: IBMiFile[] | undefined;
@@ -234,6 +258,14 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
     }
 }
 
+/**
+ * Verify a migration configuration by checking whether the deploy location
+ * is set, the workspace folder is set, and there are source files selected
+ * to be migrated.
+ * 
+ * @param migrationConfig The migration configuration.
+ * @returns True if the migration configuration is valid and false otherwise.
+ */
 export function verifyMigrationConfig(migrationConfig: MigrationConfig) {
     if (!migrationConfig.deployLocation) {
         window.showErrorMessage(l10n.t('Deploy location not specified'));

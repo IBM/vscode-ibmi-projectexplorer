@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, TreeItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import ErrorItem from "./errorItem";
 import { IProject } from "../../iproject";
 import Project from "./project";
@@ -17,13 +17,15 @@ import RemoteIncludePath from "./remoteIncludePath";
 import { migrateSource } from "./migrateSource";
 import { IProjectT } from "../../iProjectT";
 import Source from "./source";
-import * as vscode from 'vscode';
 import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
 import { getInstance } from "../../ibmi";
 import { ContextValue } from "../../projectExplorerApi";
 import Variable from "./variable";
 
+/**
+ * Represents the Project Explorer tree data provider.
+ */
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
@@ -846,6 +848,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     );
   }
 
+  /**
+   * Refresh the entire tree view or a specific tree item.
+   * 
+   * @param element The tree item to refresh.
+   */
   refresh(element?: ProjectExplorerTreeItem) {
     this._onDidChangeTreeData.fire(element);
   }
@@ -944,6 +951,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     }
   }
 
+  /**
+   * Get the project tree item associated with an IBM i project.
+   * 
+   * @param iProject The IBM i project.
+   * @returns The project tree item or `undefined`.
+   */
   getProjectTreeItem(iProject: IProject): Project | undefined {
     for (const projectTreeItem of this.projectTreeItems) {
       if (projectTreeItem.workspaceFolder === iProject.workspaceFolder) {

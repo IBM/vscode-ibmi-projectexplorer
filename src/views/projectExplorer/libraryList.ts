@@ -10,7 +10,7 @@ import Library, { LibraryType } from "./library";
 import { Position } from "../../iproject";
 
 /**
- * Tree item for the Library List heading
+ * Tree item for the Library List heading.
  */
 export default class LibraryList extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.libraryList;

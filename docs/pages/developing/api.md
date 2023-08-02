@@ -52,21 +52,21 @@ export function loadProjectExplorerApi(): ProjectExplorerApi | undefined {
 }
 
 /**
- * Get the access to the Project Manager APIs
+ * Get the access to the Project Manager APIs.
  */
 export function getProjectManager(): typeof ProjectManager | undefined {
   return (baseExtension && baseExtension.isActive && baseExtension.exports ? baseExtension.exports.projectManager : undefined);
 }
 
 /**
- * Get the access to the Project Explorer APIs
+ * Get the access to the Project Explorer APIs.
  */
 export function getProjectExplorer(): ProjectExplorer | undefined {
   return (baseExtension && baseExtension.isActive && baseExtension.exports ? baseExtension.exports.projectExplorer : undefined);
 }
 
 /**
- * Get the access to the Job Log APIs
+ * Get the access to the Job Log APIs.
  */
 export function getJobLog(): JobLog | undefined {
   return (baseExtension && baseExtension.isActive && baseExtension.exports ? baseExtension.exports.jobLog : undefined);
@@ -87,7 +87,7 @@ Refer to the example below of a custom tree item that will render the metadata f
 
 ```typescript
 /**
- * Tree item for the Project Metadata heading
+ * Tree item for the Project Metadata heading.
  */
 export class ProjectMetadata extends TreeItem implements ProjectExplorerTreeItem {
 	constructor(public workspaceFolder: WorkspaceFolder) {
@@ -117,7 +117,7 @@ export class ProjectMetadata extends TreeItem implements ProjectExplorerTreeItem
 }
 
 /**
- * Tree item for metadata information
+ * Tree item for metadata information.
  */
 export class Info extends TreeItem implements ProjectExplorerTreeItem {
 	constructor(public workspaceFolder: WorkspaceFolder, label: string, description: string) {

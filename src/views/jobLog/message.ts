@@ -8,7 +8,7 @@ import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeI
 import { ContextValue } from "../../projectExplorerApi";
 
 /**
- * Tree item for a message
+ * Tree item for a message.
  */
 export default class Message extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.message;
