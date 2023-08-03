@@ -3,18 +3,31 @@
   "displayName": "IBM i Project Explorer",
   "description": "%description%",
   "icon": "icon.png",
+  "author": {
+    "name": "IBM",
+    "url": "https://github.com/IBM"
+  },
   "publisher": "IBM",
   "license": "Apache-2.0",
   "version": "1.0.0",
   "repository": {
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
   },
+  "keywords": [
+    "ibmi",
+		"iseries",
+		"as400"
+  ],
   "engines": {
     "vscode": "^1.75.0"
   },
   "categories": [
     "Other"
   ],
+	"galleryBanner": {
+		"color": "#333333",
+		"theme": "dark"
+	},
   "activationEvents": [
     "onStartupFinished"
   ],
