@@ -2,8 +2,6 @@
 
 ## VS Code Marketplace
 
-<!-- TO DO: UPDATE MARKETPLACE LINK BELOW -->
-
 The IBM i Project Explorer extension can be installed from the Visual Studio Code Marketplace: [IBM i Project Explorer](https://marketplace.visualstudio.com/items?itemName=IBM.vscode-ibmi-projectexplorer).
 
 <!-- TO DO -->
@@ -14,9 +12,7 @@ The IBM i Project Explorer extension can be installed from the Visual Studio Cod
 
 ## Open VSX Registry
 
-<!-- TO DO: UPDATE OPEN VSX LINK BELOW -->
-
-The extension can also be installed from the Open VSX Registry: [IBM i Project Explorer]().
+The extension can also be installed from the Open VSX Registry: [IBM i Project Explorer](https://open-vsx.org/extension/IBM/vscode-ibmi-projectexplorer).
 
 ---
 
