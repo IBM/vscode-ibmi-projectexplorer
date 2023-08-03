@@ -13,6 +13,10 @@
   "repository": {
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
   },
+  "homepage": "https://github.com/IBM/vscode-ibmi-projectexplorer/blob/main/README.md",
+  "bugs": {
+    "url": "https://github.com/IBM/vscode-ibmi-projectexplorer/issues"
+  },
   "keywords": [
     "ibmi",
     "iseries",
