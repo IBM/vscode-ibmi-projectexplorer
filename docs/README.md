@@ -2,7 +2,7 @@
 
 The IBM i Project Explorer supports developing IBM i applications using buildable local projects in Visual Studio Code. Leverage the Project Explorer viewer to manage a project's library list, variables, object libraries, include paths, and much more. Utilize the Job Log viewer as well to easily visualize the contents of your job logs after having run a build or compile.
 
-![IBM i Project Explorer](../../assets/IBMiProjectExplorer_01.png)
+![IBM i Project Explorer](./assets/IBMiProjectExplorer_01.png)
 
 ## Requirements
 
