@@ -36,4 +36,4 @@ jobs:
       - name: Publish to Open VSX
         run: npx ovsx publish -p $OPENVSX_TOKEN
         env:
-          PUBLISHER_TOKEN: ${{ secrets.OPENVSX_TOKEN }}
+          OPENVSX_TOKEN: ${{ secrets.OPENVSX_TOKEN }}
