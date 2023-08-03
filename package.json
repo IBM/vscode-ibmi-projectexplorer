@@ -15,8 +15,8 @@
   },
   "keywords": [
     "ibmi",
-		"iseries",
-		"as400"
+    "iseries",
+    "as400"
   ],
   "engines": {
     "vscode": "^1.75.0"
@@ -24,10 +24,10 @@
   "categories": [
     "Other"
   ],
-	"galleryBanner": {
-		"color": "#333333",
-		"theme": "dark"
-	},
+  "galleryBanner": {
+    "color": "#333333",
+    "theme": "dark"
+  },
   "activationEvents": [
     "onStartupFinished"
   ],
