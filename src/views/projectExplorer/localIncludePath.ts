@@ -3,7 +3,7 @@
  */
 
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { Position } from "../../iproject";
 

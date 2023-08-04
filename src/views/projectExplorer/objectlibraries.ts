@@ -6,7 +6,7 @@ import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFol
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import Library, { LibraryType } from "./library";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { getInstance } from "../../ibmi";
 import ErrorItem from "./errorItem";
 

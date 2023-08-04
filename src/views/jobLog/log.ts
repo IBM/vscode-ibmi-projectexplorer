@@ -6,7 +6,7 @@ import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFol
 import { JobLogInfo } from "../../jobLog";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
 import Command from "./command";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 
 /**
  * Tree item for a log.

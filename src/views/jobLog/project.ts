@@ -4,7 +4,7 @@
 
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { ProjectManager } from "../../projectManager";
 import Log from "./log";
 import ErrorItem from "../projectExplorer/errorItem";

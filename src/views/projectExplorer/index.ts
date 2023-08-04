@@ -20,7 +20,7 @@ import Source from "./source";
 import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
 import { getInstance } from "../../ibmi";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import Variable from "./variable";
 
 /**
