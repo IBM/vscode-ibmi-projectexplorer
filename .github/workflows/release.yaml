@@ -1,6 +1,8 @@
 name: Release and Publish to the Marketplace and Open VSX
 
 on:
+  workflow_dispatch:
+
   release:
     types: [created]
 
