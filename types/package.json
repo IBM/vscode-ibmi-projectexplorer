@@ -16,6 +16,10 @@
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer/issues"
   },
   "typings": "./projectExplorerApi.d.ts",
+  "scripts": {
+    "prepublish": "rm -rf testing",
+    "deploy": "npm publish --access public"
+  },
   "dependencies": {
     "@halcyontech/vscode-ibmi-types": "^2.0.0",
     "jsonschema": "^1.4.1"
