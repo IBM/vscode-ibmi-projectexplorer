@@ -10,3 +10,8 @@ All notable changes to the "vscode-ibmi-projectexplorer" extension will be docum
 
 - Update doc landing page
 - Remove types submodule, update git workflow, and rename API
+
+## `1.0.2`
+
+- Rename API to IBMiProjectExplorer
+- Update docs with API changes
