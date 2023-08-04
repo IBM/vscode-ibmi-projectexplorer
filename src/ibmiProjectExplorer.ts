@@ -13,7 +13,7 @@ export interface IBMiProjectExplorer {
   /**
    * The set of APIs associated with managing the projects.
    */
-  projectManager: ProjectManager,
+  projectManager: typeof ProjectManager,
 
   /**
    * The set of APIs associated with managing the Project Explorer view.
