@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer/issues"
   },
-  "typings": "./projectExplorerApi.d.ts",
+  "typings": "./ibmiProjectExplorer.d.ts",
   "scripts": {
     "prepublish": "rm -rf testing",
     "deploy": "npm publish --access public"
