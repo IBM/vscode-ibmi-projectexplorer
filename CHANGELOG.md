@@ -10,4 +10,3 @@ All notable changes to the "vscode-ibmi-projectexplorer" extension will be docum
 
 - Update doc landing page
 - Remove types submodule, update git workflow, and rename API
-- Bump to 1.0.1
