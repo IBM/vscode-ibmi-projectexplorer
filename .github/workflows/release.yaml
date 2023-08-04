@@ -29,11 +29,13 @@ jobs:
           npm install -g vsce ovsx
 
       - name: Publish to Marketplace
+        continue-on-error: true
         run: vsce publish -p $PUBLISHER_TOKEN
         env:
           PUBLISHER_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}
 
       - name: Publish to Open VSX
+        continue-on-error: true
         run: npx ovsx publish -p $OPENVSX_TOKEN
         env:
           OPENVSX_TOKEN: ${{ secrets.OPENVSX_TOKEN }}
