@@ -5,22 +5,20 @@
 The IBM i Project Explorer exports an API which can be used by other extensions to provide additional functionality. This API can be accessed using the `getExtension` API provided by VS Code.
 
 ```ts
-import { ProjectExplorerApi } from "@IBM/vscode-ibmi-projectexplorer-types";
+import { IBMiProjectExplorer } from "@IBM/vscode-ibmi-projectexplorer-types/ibmiProjectExplorer";
 
-vscode.extensions.getExtension<ProjectExplorerApi>(`IBM.vscode-ibmi-projectexplorer`)
+vscode.extensions.getExtension<IBMiProjectExplorer>(`IBM.vscode-ibmi-projectexplorer`)
 ```
 
 ---
 
 ## Types
 
-Type definitions for the exported API are available and can be installed from the [vscode-ibmi-projectexplorer-types
-](https://github.com/IBM/vscode-ibmi-projectexplorer-types) repository by specifying the following in the extension's `package.json`:
+Type definitions for the exported API are available and can be installed from NPM: [@ibm/vscode-ibmi-projectexplorer-types
+](https://www.npmjs.com/package/@ibm/vscode-ibmi-projectexplorer-types).
 
-```json
-"devDependencies": {
-	"@IBM/vscode-ibmi-projectexplorer-types" : "IBM/vscode-ibmi-projectexplorer-types"
-}
+```bash
+npm i @ibm/vscode-ibmi-projectexplorer-types -D
 ```
 
 ---
@@ -33,19 +31,15 @@ Use the example below for reference on how to access the `ProjectManager`, `Proj
 
 ```typescript
 import { Extension, extensions } from "vscode";
-import { ProjectExplorerApi } from "@IBM/vscode-ibmi-projectexplorer-types/projectExplorerApi";
+import { IBMiProjectExplorer } from "@IBM/vscode-ibmi-projectexplorer-types/ibmiProjectExplorer";
 import { ProjectManager } from "@IBM/vscode-ibmi-projectexplorer-types/projectManager";
 import ProjectExplorer from "@IBM/vscode-ibmi-projectexplorer-types/views/projectExplorer";
-import JobLog from "@IBM/vscode-ibmi-projectexplorer-types/views/JobLog";
 
-let baseExtension: Extension<ProjectExplorerApi> | undefined;
+let baseExtension: Extension<IBMiProjectExplorer> | undefined;
 
-/**
- * This should be called on your extension activation.
- */
-export function loadProjectExplorerApi(): ProjectExplorerApi | undefined {
+export function loadIBMiProjectExplorer(): IBMiProjectExplorer | undefined {
   if (!baseExtension) {
-    baseExtension = (extensions ? extensions.getExtension<ProjectExplorerApi>(`IBM.vscode-ibmi-projectexplorer`) : undefined);
+    baseExtension = (extensions ? extensions.getExtension<IBMiProjectExplorer>(`IBM.vscode-ibmi-projectexplorer`) : undefined);
   }
 
   return (baseExtension && baseExtension.isActive && baseExtension.exports ? baseExtension.exports : undefined);
@@ -73,11 +67,7 @@ export function getJobLog(): JobLog | undefined {
 }
 ```
 
-### Accessing iProjects
-
-> [!NOTE]
->
-> Work In Progress
+---
 
 ### Adding Custom Tree Items
 
@@ -131,7 +121,7 @@ export class Info extends TreeItem implements ProjectExplorerTreeItem {
 }
 ```
 
-Once you have your tree item class implemented, you can push tree items to view using the `pushExtensibleChildren` API in `ProjectManager` as shown below. Your tree items will be rendered under each project tree item when a connection is made.
+Once you have your tree item class implemented, you can push tree items to the view using the `pushExtensibleChildren` API in `ProjectManager` as shown below. Your tree items will be rendered under each project tree item when a connection is made.
 
 ```typescript
 const projectManager = getProjectManager();
@@ -143,12 +133,31 @@ if (projectManager) {
 }
 ```
 
+---
 
 ### Event listener
 
-> [!NOTE]
->
-> Work In Progress
+The IBM i Project Explorer provides an event listener for other extensions to be notified of specific events.
+
+```typescript
+const projectManager = getProjectManager();
+
+if(projectManager) {
+	projectManager.onEvent('projects', () => {
+        // Some code
+	});
+}
+```
+
+Refer to the different events below.
+
+| ID               | Event                                                                    |
+|------------------|--------------------------------------------------------------------------|
+| `projects`       | Fired when there is a change to some project (create, update, or delete) |
+| `activeProject`  | Fired when there is a change to the active project                       |
+| `libraryList`    | Fired when there is a change to a project's library list                 |
+| `deployLocation` | Fired when there is a change to a project's deploy location              |
+
 ---
 
 ## VS Code Integration
@@ -159,7 +168,7 @@ Other extensions can contribute commands to any tree item in the **Project Explo
 context.subscriptions.push(
     vscode.commands.registerCommand(`vscode-ibmi-projectexplorer.getLibraryInformation`,
         async (element: ProjectExplorerTreeItem) => {
-            // some code
+            // Some code
         }
     )
 );
@@ -167,7 +176,7 @@ context.subscriptions.push(
 
 To then contribute a command to a specific tree item, specific when clauses in the extension's `package.json` can be specified to match the view and context value of the desired tree item. To specify a command contribution based on the view, use `view == projectExplorer` or `view == jobLog`. To then narrow down which specific tree items a command should appear in, use `viewItem =~ <contextValue>` where `<contextValue>` is a regular expression that matches the context value for the tree item.
 
-For the set of all context values used by the **Project Explorer** or **Job Log** views, refer to the [ContextValue enum](https://github.com/IBM/vscode-ibmi-projectexplorer-types/blob/main/projectExplorerApi.d.ts). Each type of tree item has a specific context value along with suffixes (`_<suffix>`) that contain additional information for when the tree items can take on multiple states. 
+For the set of all context values used by the **Project Explorer** or **Job Log** views, refer to the [ContextValue enum](https://github.com/IBM/vscode-ibmi-projectexplorer-types/blob/main/ibmiProjectExplorer.d.ts). Each type of tree item has a specific context value along with suffixes (`_<suffix>`) that contain additional information for when the tree items can take on multiple states. 
 
 Refer to the example below on how to contribute the command registered above to all current library tree items in the **Project Explorer** view.
 
