@@ -13,7 +13,7 @@ export interface ProjectExplorerApi {
   /**
    * The set of APIs associated with managing the projects.
    */
-  projectManager: typeof ProjectManager,
+  projectManager: ProjectManager,
 
   /**
    * The set of APIs associated with managing the Project Explorer view.
