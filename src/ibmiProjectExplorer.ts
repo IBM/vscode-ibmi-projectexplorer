@@ -9,11 +9,11 @@ import ProjectExplorer from "./views/projectExplorer";
 /**
  * The IBM i Project Explorer API to be used by other extensions.
  */
-export interface ProjectExplorerApi {
+export interface IBMiProjectExplorer {
   /**
    * The set of APIs associated with managing the projects.
    */
-  projectManager: typeof ProjectManager,
+  projectManager: ProjectManager,
 
   /**
    * The set of APIs associated with managing the Project Explorer view.

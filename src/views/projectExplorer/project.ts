@@ -9,7 +9,7 @@ import { getInstance } from "../../ibmi";
 import ErrorItem from "./errorItem";
 import Variables from "./variables";
 import ObjectLibraries from "./objectlibraries";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import IncludePaths from "./includePaths";
 import Source from "./source";

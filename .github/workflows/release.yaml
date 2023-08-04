@@ -37,3 +37,14 @@ jobs:
         run: npx ovsx publish -p $OPENVSX_TOKEN
         env:
           OPENVSX_TOKEN: ${{ secrets.OPENVSX_TOKEN }}
+
+      - name: Generate Types
+        run: npm run types
+
+      - name: Cleanup Types
+        run: cd types && npm run prepublish
+
+      - name: Publish Types to NPM
+        run: cd types && npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

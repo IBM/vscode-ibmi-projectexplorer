@@ -8,7 +8,7 @@ import { ProjectManager } from "../../projectManager";
 import Project from "./project";
 import Command from "./command";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { IProjectT } from "../../iProjectT";
 
 /**

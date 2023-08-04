@@ -7,7 +7,7 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import ErrorItem from "./errorItem";
 import Variable from "./variable";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 
 /**
  * Tree item for the Variables heading.

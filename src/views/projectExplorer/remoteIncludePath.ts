@@ -3,7 +3,7 @@
  */
 
 import { ThemeIcon, WorkspaceFolder } from "vscode";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import IFSDirectory from "./ifsDirectory";
 import * as path from "path";
 import { Position } from "../../iproject";
