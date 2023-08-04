@@ -7,7 +7,7 @@ Type definitions for the [IBM i Project Explorer](https://github.com/IBM/vscode-
 The IBM i Project Explorer exports an API which can be used by other extensions to provide additional functionality. This API can be accessed using the `getExtension` API provided by VS Code.
 
 ```ts
-import { IBMiProjectExplorer } from "@IBM/vscode-ibmi-projectexplorer-types/ibmiProjectExplorer";
+import { IBMiProjectExplorer } from "@ibm/vscode-ibmi-projectexplorer-types/ibmiProjectExplorer";
 
 vscode.extensions.getExtension<IBMiProjectExplorer>(`IBM.vscode-ibmi-projectexplorer`)
 ```
@@ -33,9 +33,9 @@ Use the example below for reference on how to access the `ProjectManager`, `Proj
 
 ```typescript
 import { Extension, extensions } from "vscode";
-import { IBMiProjectExplorer } from "@IBM/vscode-ibmi-projectexplorer-types/ibmiProjectExplorer";
-import { ProjectManager } from "@IBM/vscode-ibmi-projectexplorer-types/projectManager";
-import ProjectExplorer from "@IBM/vscode-ibmi-projectexplorer-types/views/projectExplorer";
+import { IBMiProjectExplorer } from "@ibm/vscode-ibmi-projectexplorer-types/ibmiProjectExplorer";
+import { ProjectManager } from "@ibm/vscode-ibmi-projectexplorer-types/projectManager";
+import ProjectExplorer from "@ibm/vscode-ibmi-projectexplorer-types/views/projectExplorer";
 
 let baseExtension: Extension<IBMiProjectExplorer> | undefined;
 
