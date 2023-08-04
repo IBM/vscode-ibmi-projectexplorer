@@ -39,6 +39,7 @@ jobs:
           OPENVSX_TOKEN: ${{ secrets.OPENVSX_TOKEN }}
 
       - name: Generate Types
+        continue-on-error: true
         run: npm run types
 
       - name: Cleanup Types
