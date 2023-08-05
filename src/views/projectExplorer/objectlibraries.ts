@@ -39,14 +39,7 @@ export default class ObjectLibraries extends TreeItem implements ProjectExplorer
         }
 
         if (library.startsWith('&')) {
-          items.push(new ErrorItem(
-            this.workspaceFolder,
-            library,
-            {
-              description: l10n.t('Not specified'),
-              contextValue: Library.contextValue
-            }
-          ));
+          items.push(ErrorItem.createLibraryNotSpecifiedError(this.workspaceFolder, library));
           continue;
         }
 
@@ -57,15 +50,7 @@ export default class ObjectLibraries extends TreeItem implements ProjectExplorer
             items.push(libTreeItem);
           }
         } catch (error: any) {
-          items.push(new ErrorItem(
-            this.workspaceFolder,
-            library,
-            {
-              description: variable,
-              contextValue: Library.contextValue,
-              tooltip: error
-            }
-          ));
+          items.push(ErrorItem.createLibraryError(this.workspaceFolder, library, variable, error));
           continue;
         }
       }

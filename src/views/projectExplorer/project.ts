@@ -42,81 +42,67 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
     let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
-    if (ibmi && ibmi.getConnection()) {
-      const iProject = ProjectManager.get(this.workspaceFolder);
+    const iProject = ProjectManager.get(this.workspaceFolder);
 
+    if (ibmi && ibmi.getConnection()) {
       const deployDir = iProject!.getDeployDir();
       if (deployDir) {
         items.push(new Source(this.workspaceFolder, deployDir));
       } else {
-        items.push(new ErrorItem(
-          this.workspaceFolder,
-          l10n.t('Source'),
-          {
-            description: l10n.t('Please configure deploy location'),
-            contextValue: ErrorItem.contextValue + ContextValue.setDeployLocation,
-            command: {
-              command: `vscode-ibmi-projectexplorer.setDeployLocation`,
-              title: l10n.t('Set Deploy Location'),
-              arguments: [this.workspaceFolder]
-            }
-          }
-        ));
+        items.push(ErrorItem.createNoDeployLocationError(this.workspaceFolder));
       }
-      const hasEnv = await iProject?.projectFileExists('.env');
-      if (hasEnv) {
-        let unresolvedVariableCount = 0;
+    } else {
+      items.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Source')));
+    }
 
-        const possibleVariables = await iProject?.getVariables();
-        const actualValues = await iProject?.getEnv();
-        if (possibleVariables && actualValues) {
-          unresolvedVariableCount = possibleVariables.filter(varName => !actualValues[varName]).length;
-        }
+    const hasEnv = await iProject?.projectFileExists('.env');
+    if (hasEnv) {
+      let unresolvedVariableCount = 0;
 
-        items.push(new Variables(this.workspaceFolder, unresolvedVariableCount));
-
-      } else {
-        items.push(new ErrorItem(
-          this.workspaceFolder,
-          l10n.t('Variables'),
-          {
-            description: l10n.t('Please configure environment file'),
-            contextValue: ErrorItem.contextValue + ContextValue.createEnv,
-            command: {
-              command: `vscode-ibmi-projectexplorer.createEnv`,
-              arguments: [this.workspaceFolder],
-              title: l10n.t('Create .env')
-            }
-          }
-        ));
+      const possibleVariables = await iProject?.getVariables();
+      const actualValues = await iProject?.getEnv();
+      if (possibleVariables && actualValues) {
+        unresolvedVariableCount = possibleVariables.filter(varName => !actualValues[varName]).length;
       }
 
+      items.push(new Variables(this.workspaceFolder, unresolvedVariableCount));
+
+    } else {
+      items.push(ErrorItem.createNoEnvironmentVariablesError(this.workspaceFolder));
+    }
+
+    if (ibmi && ibmi.getConnection()) {
       items.push(new LibraryList(this.workspaceFolder));
       items.push(new ObjectLibraries(this.workspaceFolder));
-      items.push(new IncludePaths(this.workspaceFolder));
-
-      for await (const extensibleChildren of Project.callBack) {
-        let children: ProjectExplorerTreeItem[] = [];
-        try {
-          children = await extensibleChildren(iProject!);
-        } catch (error) { }
-
-        this.extensibleChildren.push(...children);
-      }
-      items.push(...this.extensibleChildren);
     } else {
-      items.push(new ErrorItem(
-        undefined,
-        l10n.t('Please connect to an IBM i'),
-        {
-          contextValue: ErrorItem.contextValue + ContextValue.openConnectionBrowser,
-          command: {
-            command: `connectionBrowser.focus`,
-            title: l10n.t('Open Connection Browser')
-          }
-        }
-      ));
+      items.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Library List')));
+      items.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Object Libraries')));
     }
+
+    items.push(new IncludePaths(this.workspaceFolder));
+
+    for await (const extensibleChildren of Project.callBack) {
+      let children: ProjectExplorerTreeItem[] = [];
+      try {
+        children = await extensibleChildren(iProject!);
+      } catch (error) { }
+
+      this.extensibleChildren.push(...children);
+    }
+    items.push(...this.extensibleChildren);
+    // } else {
+    //   items.push(new ErrorItem(
+    //     undefined,
+    //     l10n.t('Please connect to an IBM i'),
+    //     {
+    //       contextValue: ErrorItem.contextValue + ContextValue.openConnectionBrowser,
+    //       command: {
+    //         command: `connectionBrowser.focus`,
+    //         title: l10n.t('Open Connection Browser')
+    //       }
+    //     }
+    //   ));
+    // }
 
     return items;
   }

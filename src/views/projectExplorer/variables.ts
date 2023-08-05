@@ -35,10 +35,7 @@ export default class Variables extends TreeItem implements ProjectExplorerTreeIt
 
     const actualValues = await iProject?.getEnv();
     if (!actualValues) {
-      return [new ErrorItem(
-        this.workspaceFolder,
-        l10n.t('Unable to retrieve environment variables')
-      )];
+      return [ErrorItem.createRetrieveEnvironmentVariablesError(this.workspaceFolder)];
     }
 
     items.push(...possibleVariables.map(

@@ -148,7 +148,7 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
     );
   }
 
-  static createIncludePathNotSpecified(workspaceFolder: WorkspaceFolder, includePath: string, position: Position | undefined): ErrorItem {
+  static createIncludePathNotSpecifiedError(workspaceFolder: WorkspaceFolder, includePath: string, position: Position | undefined): ErrorItem {
     return new ErrorItem(
       workspaceFolder,
       includePath,
