@@ -2,6 +2,11 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+## `1.1.0`
+
+- Add offline project support
+- Improve error handling when no connection
+
 ## `1.0.2`
 
 - Rename API to IBMiProjectExplorer
