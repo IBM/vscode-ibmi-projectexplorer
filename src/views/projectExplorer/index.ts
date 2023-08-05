@@ -887,38 +887,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                   const errors = validatorResult.errors
                     .map(error => `• ${error.stack.replace('instance.', '').replace('instance', 'iproj')}`)
                     .join('\n');
-                  const tooltip = l10n.t('This project contains the following errors:\n{0}', errors);
-                  items.push(new ErrorItem(
-                    folder,
-                    folder.name,
-                    {
-                      description: l10n.t('Please resolve project metadata'),
-                      tooltip: tooltip,
-                      command: {
-                        command: 'vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut',
-                        arguments: [{ workspaceFolder: iProject.workspaceFolder }],
-                        title: l10n.t('Open iproj.json')
-                      }
-                    }
-                  ));
+                  items.push(ErrorItem.createResolveIProjError(folder, errors));
                 } else {
                   items.push(new Project(folder));
                 }
               }
             } else {
-              items.push(new ErrorItem(
-                folder,
-                folder.name,
-                {
-                  description: l10n.t('Please configure project metadata'),
-                  contextValue: ErrorItem.contextValue + ContextValue.createIProj,
-                  command: {
-                    command: 'vscode-ibmi-projectexplorer.createIProj',
-                    arguments: [folder],
-                    title: l10n.t('Create iproj.json')
-                  }
-                }
-              ));
+              items.push(ErrorItem.createNoIProjError(folder));
             }
           }
 
@@ -934,17 +909,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
 
       } else {
-        items.push(new ErrorItem(
-          undefined,
-          l10n.t('Please open a local workspace folder'),
-          {
-            contextValue: ErrorItem.contextValue + ContextValue.addFolderToWorkspace,
-            command: {
-              command: 'workbench.action.addRootFolder',
-              title: l10n.t('Add Folder to Workspace')
-            }
-          }
-        ));
+        items.push(ErrorItem.createNoWorkspaceFolderError());
       }
 
       return items;

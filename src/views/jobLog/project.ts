@@ -7,8 +7,8 @@ import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeI
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { ProjectManager } from "../../projectManager";
 import Log from "./log";
-import ErrorItem from "../projectExplorer/errorItem";
 import { IProjectT } from "../../iProjectT";
+import ErrorItem from "./errorItem";
 
 /**
  * Tree item for a project.
@@ -51,9 +51,7 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
       }
       ));
     } else {
-      items.push(new ErrorItem(
-        this.workspaceFolder, l10n.t('No job log found'))
-      );
+      items.push(ErrorItem.createNoJobLogError(this.workspaceFolder));
     }
 
     return items;

@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n, window } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import IFSFile from "./ifsFile";
 import { getInstance } from "../../ibmi";
@@ -34,15 +34,19 @@ export default class IFSDirectory extends TreeItem implements ProjectExplorerTre
     let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
-    const files = await ibmi?.getContent().getFileList(this.ifsDirectoryInfo.path, { order: 'name' });
-    if (files) {
-      for (const file of files) {
-        if (file.type === 'directory') {
-          items.push(new IFSDirectory(this.workspaceFolder, file));
-        } else {
-          items.push(new IFSFile(this.workspaceFolder, file));
+    if (ibmi && ibmi.getConnection()) {
+      const files = await ibmi?.getContent().getFileList(this.ifsDirectoryInfo.path, { order: 'name' });
+      if (files) {
+        for (const file of files) {
+          if (file.type === 'directory') {
+            items.push(new IFSDirectory(this.workspaceFolder, file));
+          } else {
+            items.push(new IFSFile(this.workspaceFolder, file));
+          }
         }
       }
+    } else {
+      window.showErrorMessage(l10n.t('Please connect to an IBM i'));
     }
 
     return items;

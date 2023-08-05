@@ -46,17 +46,7 @@ export default class IncludePaths extends TreeItem implements ProjectExplorerTre
         }
 
         if (includePath.startsWith('&')) {
-          items.push(new ErrorItem(
-            this.workspaceFolder,
-            includePath,
-            {
-              description: l10n.t('Not specified'),
-              contextValue: ContextValue.includePath +
-                (position === 'first' ? ContextValue.first : '') +
-                (position === 'last' ? ContextValue.last : '') +
-                (position === 'middle' ? ContextValue.middle : '')
-            }
-          ));
+          items.push(ErrorItem.createIncludePathNotSpecifiedError(this.workspaceFolder, includePath, position));
           continue;
         }
 

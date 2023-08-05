@@ -39,33 +39,22 @@ export default class ObjectLibraries extends TreeItem implements ProjectExplorer
         }
 
         if (library.startsWith('&')) {
-          items.push(new ErrorItem(
-            this.workspaceFolder,
-            library,
-            {
-              description: l10n.t('Not specified'),
-              contextValue: Library.contextValue
-            }
-          ));
+          items.push(ErrorItem.createLibraryNotSpecifiedError(this.workspaceFolder, library));
           continue;
         }
 
         try {
-          const libraryInfo = await ibmi?.getContent().getObjectList({ library: 'QSYS', object: library, types: ['*LIB'] }, 'name');
-          if (libraryInfo) {
-            const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0], LibraryType.library, undefined, variable, libraryTypes);
-            items.push(libTreeItem);
+          if (ibmi && ibmi.getConnection()) {
+            const libraryInfo = await ibmi?.getContent().getObjectList({ library: 'QSYS', object: library, types: ['*LIB'] }, 'name');
+            if (libraryInfo) {
+              const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0], LibraryType.library, undefined, variable, libraryTypes);
+              items.push(libTreeItem);
+            }
+          } else {
+            window.showErrorMessage(l10n.t('Please connect to an IBM i'));
           }
         } catch (error: any) {
-          items.push(new ErrorItem(
-            this.workspaceFolder,
-            library,
-            {
-              description: variable,
-              contextValue: Library.contextValue,
-              tooltip: error
-            }
-          ));
+          items.push(ErrorItem.createLibraryError(this.workspaceFolder, library, variable, error));
           continue;
         }
       }
