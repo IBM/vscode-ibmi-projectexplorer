@@ -90,19 +90,6 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
       this.extensibleChildren.push(...children);
     }
     items.push(...this.extensibleChildren);
-    // } else {
-    //   items.push(new ErrorItem(
-    //     undefined,
-    //     l10n.t('Please connect to an IBM i'),
-    //     {
-    //       contextValue: ErrorItem.contextValue + ContextValue.openConnectionBrowser,
-    //       command: {
-    //         command: `connectionBrowser.focus`,
-    //         title: l10n.t('Open Connection Browser')
-    //       }
-    //     }
-    //   ));
-    // }
 
     return items;
   }
