@@ -2,25 +2,25 @@
  * (c) Copyright IBM Corp. 2023
  */
 
+import { ConnectionData } from "@halcyontech/vscode-ibmi-types";
 import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, Uri, window, workspace, WorkspaceFolder } from "vscode";
-import ErrorItem from "./errorItem";
+import { getInstance } from "../../ibmi";
 import { IProject } from "../../iproject";
-import Project from "./project";
+import { IProjectT } from "../../iProjectT";
 import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
-import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
+import ErrorItem from "./errorItem";
 import IncludePaths from "./includePaths";
-import LibraryList from "./libraryList";
 import Library, { LibraryType } from "./library";
+import LibraryList from "./libraryList";
 import LocalIncludePath from "./localIncludePath";
-import RemoteIncludePath from "./remoteIncludePath";
-import { migrateSource } from "./migrateSource";
-import { IProjectT } from "../../iProjectT";
-import Source from "./source";
-import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
-import { getInstance } from "../../ibmi";
-import { ContextValue } from "../../ibmiProjectExplorer";
+import { migrateSource } from "./migrateSource";
+import ObjectFile from "./objectFile";
+import Project from "./project";
+import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
+import RemoteIncludePath from "./remoteIncludePath";
+import Source from "./source";
 import Variable from "./variable";
 
 /**
@@ -844,6 +844,16 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, workspaceFolder, defaultDeployLocation);
           }
         }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.connect`, async () => {
+        const connections = workspace.getConfiguration(`code-for-ibmi`).get<ConnectionData[]>('connections');
+				if (connections && connections.length) {
+					await commands.executeCommand(`code-for-ibmi.connectTo`, connections.length === 1 ? connections[0].name : undefined);
+				}
+				else {
+					//Connect to a new system
+					await commands.executeCommand(`code-for-ibmi.connect`);
+				}
       })
     );
   }

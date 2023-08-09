@@ -371,6 +371,13 @@
         "icon": "$(arrow-right)"
       },
       {
+        "category": "%commands.projectExplorer%",
+				"command": "vscode-ibmi-projectexplorer.connect",
+				"title": "%commands.projectExplorer.connect%",
+				"icon": "$(vm-connect)",
+				"enablement": "!code-for-ibmi:connected"
+			},
+      {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
         "title": "%commands.jobLog.refreshJobLog%",
@@ -614,6 +621,10 @@
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
           "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.connect",
+          "when": "never"
         }
       ],
       "explorer/context": [
@@ -655,7 +666,17 @@
           "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
           "when": "view == jobLog",
           "group": "navigation@0"
-        }
+        },
+        {
+					"command": "vscode-ibmi-projectexplorer.connect",
+					"when": "view === projectExplorer && workspaceFolderCount > 0 && !code-for-ibmi:connected",
+					"group": "navigation@0"
+				},
+        {
+					"command": "code-for-ibmi.connectToPrevious",
+					"when": "view === projectExplorer && workspaceFolderCount > 0 && !code-for-ibmi:connected",
+					"group": "navigation@0"
+				}				
       ],
       "view/item/context": [
         {
