@@ -847,13 +847,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.connect`, async () => {
         const connections = workspace.getConfiguration(`code-for-ibmi`).get<ConnectionData[]>('connections');
-				if (connections && connections.length) {
-					await commands.executeCommand(`code-for-ibmi.connectTo`, connections.length === 1 ? connections[0].name : undefined);
-				}
-				else {
-					//Connect to a new system
-					await commands.executeCommand(`code-for-ibmi.connect`);
-				}
+        if (connections && connections.length) {
+          await commands.executeCommand(`code-for-ibmi.connectTo`, connections.length === 1 ? connections[0].name : undefined);
+        } else {
+          //Connect to a new system
+          await commands.executeCommand(`code-for-ibmi.connect`);
+        }
       })
     );
   }
