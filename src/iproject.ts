@@ -1054,7 +1054,11 @@ export class IProject {
       ...(unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl : []),
       ...(unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl : []),
       ...(unresolvedState.includePath ? unresolvedState.includePath : []),
-      ...(buildMap ? Array.from(buildMap.values()).filter(ibmiJson => ibmiJson.build).map(ibmiJson => ibmiJson.build!.objlib) : [])
+      ...(unresolvedState.extensions ? Array.from(unresolvedState.extensions.values())
+        .flatMap(vendorAttributes => Object.values(vendorAttributes)) : []),
+      ...(buildMap ? Array.from(buildMap.values())
+        .filter(ibmiJson => ibmiJson.build)
+        .map(ibmiJson => ibmiJson.build!.objlib) : [])
     ].filter(x => x) as string[];
 
     // Get everything that starts with an &
