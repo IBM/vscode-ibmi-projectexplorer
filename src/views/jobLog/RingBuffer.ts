@@ -2,6 +2,9 @@
  * (c) Copyright IBM Corp. 2023
  */
 
+/**
+ * Represents a ring buffer.
+ */
 export class RingBuffer<T> {
     private size: number;
     private start: number;

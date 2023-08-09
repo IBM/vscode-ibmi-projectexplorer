@@ -2,16 +2,16 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { FileType, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n, workspace } from "vscode";
+import { FileType, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n, workspace } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { SourceInfo } from "./source";
 import SourceFile from "./sourceFile";
 
 /**
  * Tree item for a source directory
  */
-export default class SourceDirectory extends ProjectExplorerTreeItem {
+export default class SourceDirectory extends TreeItem implements ProjectExplorerTreeItem {
     static contextValue = ContextValue.sourceDirectory;
     sourceInfo: SourceInfo;
 
@@ -22,7 +22,7 @@ export default class SourceDirectory extends ProjectExplorerTreeItem {
         this.contextValue = SourceDirectory.contextValue;
         this.iconPath = new ThemeIcon(`symbol-folder`);
         this.tooltip = l10n.t('Name: {0}\n', sourceDirectoryInfo.name) +
-            l10n.t('Path: {0}\n', sourceDirectoryInfo.localUri.fsPath);
+            l10n.t('Path: {0}', sourceDirectoryInfo.localUri.fsPath);
         this.resourceUri = sourceDirectoryInfo.localUri;
     }
 

@@ -2,14 +2,14 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 
 /**
- * Tree item for a variable
+ * Tree item for a variable.
  */
-export default class Variable extends ProjectExplorerTreeItem {
+export default class Variable extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.variable;
   value?: string;
 

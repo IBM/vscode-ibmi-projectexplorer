@@ -2,14 +2,17 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n, window } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { getInstance } from "../../ibmi";
 import ObjectFile from "./objectFile";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import { Position } from '../../iproject';
 
+/**
+ * Represents the type of library.
+ */
 export enum LibraryType {
   library,
   objectLibrary,
@@ -21,9 +24,9 @@ export enum LibraryType {
 }
 
 /**
- * Tree item for a library
+ * Tree item for a library.
  */
-export default class Library extends ProjectExplorerTreeItem {
+export default class Library extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.library;
   libraryInfo: IBMiObject;
   libraryType: LibraryType;
@@ -87,17 +90,21 @@ export default class Library extends ProjectExplorerTreeItem {
     let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
-    const objectFiles = await ibmi?.getContent().getObjectList({ library: this.libraryInfo.name, }, 'name');
-    const sourcePhysicalFiles = await ibmi?.getContent().getObjectList({ library: this.libraryInfo.name, types: ['*SRCPF'] }, 'name');
-    if (objectFiles) {
-      for (const objectFile of objectFiles) {
-        if (objectFile.type === "*LIB") {
-          items.push(new Library(this.workspaceFolder, objectFile, LibraryType.library));
-        } else {
-          const sourcePhysicalFile = sourcePhysicalFiles?.find(sourceFile => sourceFile.library === objectFile.library && sourceFile.name === objectFile.name);
-          items.push(new ObjectFile(this.workspaceFolder, objectFile, this.path, sourcePhysicalFile));
+    if (ibmi && ibmi.getConnection()) {
+      const objectFiles = await ibmi?.getContent().getObjectList({ library: this.libraryInfo.name, }, 'name');
+      const sourcePhysicalFiles = await ibmi?.getContent().getObjectList({ library: this.libraryInfo.name, types: ['*SRCPF'] }, 'name');
+      if (objectFiles) {
+        for (const objectFile of objectFiles) {
+          if (objectFile.type === "*LIB") {
+            items.push(new Library(this.workspaceFolder, objectFile, LibraryType.library));
+          } else {
+            const sourcePhysicalFile = sourcePhysicalFiles?.find(sourceFile => sourceFile.library === objectFile.library && sourceFile.name === objectFile.name);
+            items.push(new ObjectFile(this.workspaceFolder, objectFile, this.path, sourcePhysicalFile));
+          }
         }
       }
+    } else {
+      window.showErrorMessage(l10n.t('Please connect to an IBM i'));
     }
 
     return items;

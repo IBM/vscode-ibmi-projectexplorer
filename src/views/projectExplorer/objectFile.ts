@@ -2,17 +2,17 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, window } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import MemberFile from "./memberFile";
 import { getInstance } from "../../ibmi";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 
 /**
- * Tree item for an object file
+ * Tree item for an object file.
  */
-export default class ObjectFile extends ProjectExplorerTreeItem {
+export default class ObjectFile extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.objectFile;
   objectFileInfo: IBMiObject;
   path: string;
@@ -44,11 +44,15 @@ export default class ObjectFile extends ProjectExplorerTreeItem {
     let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
-    const members = await ibmi?.getContent().getMemberList(this.objectFileInfo.library, this.objectFileInfo.name, undefined, undefined, { order: 'name' });
-    if (members) {
-      for (const member of members) {
-        items.push(new MemberFile(this.workspaceFolder, member, this.path));
+    if (ibmi && ibmi.getConnection()) {
+      const members = await ibmi?.getContent().getMemberList(this.objectFileInfo.library, this.objectFileInfo.name, undefined, undefined, { order: 'name' });
+      if (members) {
+        for (const member of members) {
+          items.push(new MemberFile(this.workspaceFolder, member, this.path));
+        }
       }
+    } else {
+      window.showErrorMessage(l10n.t('Please connect to an IBM i'));
     }
 
     return items;

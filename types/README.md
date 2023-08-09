@@ -1,4 +1,6 @@
-# API
+# IBM i Project Explorer Types
+
+Type definitions for the [IBM i Project Explorer](https://github.com/IBM/vscode-ibmi-projectexplorer) extension API.
 
 ## Export
 
@@ -144,7 +146,7 @@ const projectManager = getProjectManager();
 
 if(projectManager) {
 	projectManager.onEvent('projects', () => {
-        // Some code
+    	// Some code
 	});
 }
 ```
@@ -199,7 +201,7 @@ Refer to the example below on how to contribute the command registered above to 
 }
 ```
 
-?> To learn more about using the when clause, check out the documentation on [when clause contexts](https://code.visualstudio.com/api/references/when-clause-contexts).
+To learn more about using the when clause, check out the documentation on [when clause contexts](https://code.visualstudio.com/api/references/when-clause-contexts).
 
 ---
 
@@ -207,4 +209,4 @@ Refer to the example below on how to contribute the command registered above to 
 
 Extending the IBM i Project Explorer may require having to use the Code for IBM i API. These set of APIs can be used to access the connection, run commands on the IBM i, retrieve members and stream files, and much more.
 
-?> To learn more about how to install and use the Code for IBM i APIs, check out their [API documentation](https://halcyon-tech.github.io/docs/#/pages/dev/api).
+To learn more about how to install and use the Code for IBM i APIs, check out their [API documentation](https://halcyon-tech.github.io/docs/#/pages/dev/api).

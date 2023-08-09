@@ -23,10 +23,12 @@ import MemberFile from "./memberFile";
 import { getDeployTools, getInstance, getTools } from "../../ibmi";
 import { DeploymentMethod } from "@halcyontech/vscode-ibmi-types";
 import SourceFile from "./sourceFile";
-import { ContextValue } from "../../projectExplorerApi";
 import Variable from "./variable";
 import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
 
+/**
+ * Represents the Project Explorer tree data provider.
+ */
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
@@ -752,8 +754,20 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: ObjectFile | MemberFile) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: Project | ObjectFile | MemberFile) => {
         if (element) {
+          if (element instanceof Project) {
+            const activeProject = ProjectManager.getActiveProject();
+
+            if (activeProject && element.workspaceFolder !== activeProject.workspaceFolder) {
+              await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, element);
+            }
+
+            await commands.executeCommand(`code-for-ibmi.runAction`, {
+              resourceUri: element.workspaceFolder.uri
+            });
+          }
+
           await commands.executeCommand(`code-for-ibmi.runAction`, {
             resourceUri: element.resourceUri
           });
@@ -929,6 +943,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     );
   }
 
+  /**
+   * Refresh the entire tree view or a specific tree item.
+   * 
+   * @param element The tree item to refresh.
+   */
   refresh(element?: ProjectExplorerTreeItem) {
     this._onDidChangeTreeData.fire(element);
   }
@@ -963,38 +982,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                   const errors = validatorResult.errors
                     .map(error => `• ${error.stack.replace('instance.', '').replace('instance', 'iproj')}`)
                     .join('\n');
-                  const tooltip = l10n.t('This project contains the following errors:\n{0}', errors);
-                  items.push(new ErrorItem(
-                    folder,
-                    folder.name,
-                    {
-                      description: l10n.t('Please resolve project metadata'),
-                      tooltip: tooltip,
-                      command: {
-                        command: 'vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut',
-                        arguments: [{ workspaceFolder: iProject.workspaceFolder }],
-                        title: l10n.t('Open iproj.json')
-                      }
-                    }
-                  ));
+                  items.push(ErrorItem.createResolveIProjError(folder, errors));
                 } else {
                   items.push(new Project(folder));
                 }
               }
             } else {
-              items.push(new ErrorItem(
-                folder,
-                folder.name,
-                {
-                  description: l10n.t('Please configure project metadata'),
-                  contextValue: ErrorItem.contextValue + ContextValue.createIProj,
-                  command: {
-                    command: 'vscode-ibmi-projectexplorer.createIProj',
-                    arguments: [folder],
-                    title: l10n.t('Create iproj.json')
-                  }
-                }
-              ));
+              items.push(ErrorItem.createNoIProjError(folder));
             }
           }
 
@@ -1010,23 +1004,19 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
 
       } else {
-        items.push(new ErrorItem(
-          undefined,
-          l10n.t('Please open a local workspace folder'),
-          {
-            contextValue: ErrorItem.contextValue + ContextValue.addFolderToWorkspace,
-            command: {
-              command: 'workbench.action.addRootFolder',
-              title: l10n.t('Add Folder to Workspace')
-            }
-          }
-        ));
+        items.push(ErrorItem.createNoWorkspaceFolderError());
       }
 
       return items;
     }
   }
 
+  /**
+   * Get the project tree item associated with an IBM i project.
+   * 
+   * @param iProject The IBM i project.
+   * @returns The project tree item or `undefined`.
+   */
   getProjectTreeItem(iProject: IProject): Project | undefined {
     for (const projectTreeItem of this.projectTreeItems) {
       if (projectTreeItem.workspaceFolder === iProject.workspaceFolder) {

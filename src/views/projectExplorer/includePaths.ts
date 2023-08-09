@@ -2,8 +2,8 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
-import { ContextValue } from "../../projectExplorerApi";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import LocalIncludePath from "./localIncludePath";
@@ -13,9 +13,9 @@ import ErrorItem from "./errorItem";
 import { Position } from "../../iproject";
 
 /**
- * Tree item for Include Paths heading
+ * Tree item for Include Paths heading.
  */
-export default class IncludePaths extends ProjectExplorerTreeItem {
+export default class IncludePaths extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.includePaths;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
@@ -46,17 +46,7 @@ export default class IncludePaths extends ProjectExplorerTreeItem {
         }
 
         if (includePath.startsWith('&')) {
-          items.push(new ErrorItem(
-            this.workspaceFolder,
-            includePath,
-            {
-              description: l10n.t('Not specified'),
-              contextValue: ContextValue.includePath +
-                (position === 'first' ? ContextValue.first : '') +
-                (position === 'last' ? ContextValue.last : '') +
-                (position === 'middle' ? ContextValue.middle : '')
-            }
-          ));
+          items.push(ErrorItem.createIncludePathNotSpecifiedError(this.workspaceFolder, includePath, position));
           continue;
         }
 

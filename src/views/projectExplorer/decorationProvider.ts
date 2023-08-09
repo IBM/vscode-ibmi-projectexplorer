@@ -4,6 +4,9 @@
 
 import { CancellationToken, Event, FileDecoration, FileDecorationProvider, ProviderResult, ThemeColor, Uri } from "vscode";
 
+/**
+ * Decoration provider for the variable heading and variable tree items.
+ */
 export class DecorationProvider implements FileDecorationProvider {
     onDidChangeFileDecorations?: Event<Uri | Uri[] | undefined> | undefined;
     provideFileDecoration(uri: Uri, token: CancellationToken): ProviderResult<FileDecoration> {

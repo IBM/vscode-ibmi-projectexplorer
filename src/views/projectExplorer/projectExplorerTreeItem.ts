@@ -2,19 +2,22 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import * as vscode from "vscode";
+import { TreeItem, WorkspaceFolder } from "vscode";
 
 /**
- * Abstract class for a tree item in the Project Explorer
+ * Represents a tree item in the Project Explorer view.
  */
-export abstract class ProjectExplorerTreeItem extends vscode.TreeItem {
+export interface ProjectExplorerTreeItem extends TreeItem {
 
-    abstract workspaceFolder: vscode.WorkspaceFolder | undefined;
+    /**
+     * The workspace folder associated with the tree item.
+     */
+    workspaceFolder: WorkspaceFolder | undefined;
 
     /**
      * Get the children of this tree item.
      *
      * @return Children of this tree item.
      */
-    abstract getChildren(): ProjectExplorerTreeItem[] | Promise<ProjectExplorerTreeItem[]>;
+    getChildren(): ProjectExplorerTreeItem[] | Promise<ProjectExplorerTreeItem[]>;
 }

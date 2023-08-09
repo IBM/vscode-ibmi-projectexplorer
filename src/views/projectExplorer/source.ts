@@ -3,8 +3,8 @@
  */
 
 import * as path from "path";
-import { FileType, ThemeIcon, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
-import { ContextValue } from "../../projectExplorerApi";
+import { FileType, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { DeploymentParameters } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { getDeployTools } from "../../ibmi";
@@ -22,7 +22,7 @@ export interface SourceInfo {
 /**
  * Tree item for the Source heading
  */
-export default class Source extends ProjectExplorerTreeItem {
+export default class Source extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.source;
   deploymentParameters: DeploymentParameters;
 
@@ -52,7 +52,7 @@ export default class Source extends ProjectExplorerTreeItem {
     }
     this.description = `${deploymentParameters.remotePath} (${deploymentMethodDescription})`;
     this.tooltip = l10n.t('Deploy Location: {0}\n', deploymentParameters.remotePath) +
-      l10n.t('Deployment Method: {0}\n', deploymentMethodDescription);
+      l10n.t('Deployment Method: {0}', deploymentMethodDescription);
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {

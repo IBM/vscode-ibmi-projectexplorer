@@ -9,20 +9,41 @@ import { ProjectManager } from './projectManager';
 import { ProjectExplorerTreeItem } from './views/projectExplorer/projectExplorerTreeItem';
 import Source from './views/projectExplorer/source';
 
+/**
+ * Represents a project file watcher.
+ */
 export namespace ProjectFileWatcher {
+    /**
+     * Initialize the project file watcher to listen to changes to all files.
+     * 
+     * @param projectExplorer The Project Explorer view.
+     * @param jobLog The Job Log view.
+     */
     export function initialize(projectExplorer: ProjectExplorer, jobLog: JobLog) {
         const projectWatcher = workspace.createFileSystemWatcher(`**/**`);
+
         projectWatcher.onDidCreate(async (uri) => {
             await updateOnFileChange(uri, projectExplorer, jobLog, 'create');
         });
+
         projectWatcher.onDidChange(async (uri) => {
             await updateOnFileChange(uri, projectExplorer, jobLog, 'change');
         });
+
         projectWatcher.onDidDelete(async (uri) => {
             await updateOnFileChange(uri, projectExplorer, jobLog, 'delete');
         });
     }
 
+    /**
+     * Update a project's state, build map, library list, and job logs depending on
+     * if a project file changes.
+     * 
+     * @param uri The resource that was changed.
+     * @param projectExplorer The Project Explorer view.
+     * @param jobLog The Job Log view.
+     * @param type The type of file change event.
+     */
     async function updateOnFileChange(uri: Uri, projectExplorer: ProjectExplorer, jobLog: JobLog, type: 'create' | 'change' | 'delete') {
         let elementToRefresh: ProjectExplorerTreeItem | undefined;
         const iProject = ProjectManager.getProjectFromUri(uri);

@@ -1,6 +1,8 @@
 name: Release and Publish to the Marketplace and Open VSX
 
 on:
+  workflow_dispatch:
+
   release:
     types: [created]
 
@@ -22,6 +24,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install NPM Dependencies
         run: |
@@ -36,4 +39,16 @@ jobs:
       - name: Publish to Open VSX
         run: npx ovsx publish -p $OPENVSX_TOKEN
         env:
-          PUBLISHER_TOKEN: ${{ secrets.OPENVSX_TOKEN }}
+          OPENVSX_TOKEN: ${{ secrets.OPENVSX_TOKEN }}
+
+      - name: Generate Types
+        continue-on-error: true
+        run: npm run types
+
+      - name: Cleanup Types
+        run: cd types && npm run prepublish
+
+      - name: Publish Types to NPM
+        run: cd types && npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
