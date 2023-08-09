@@ -674,7 +674,7 @@
 				},
         {
 					"command": "code-for-ibmi.connectToPrevious",
-					"when": "view === projectExplorer && workspaceFolderCount > 0 && !code-for-ibmi:connected",
+					"when": "view === projectExplorer && workspaceFolderCount > 0 && code-for-ibmi:hasPreviousConnection && !code-for-ibmi:connected",
 					"group": "navigation@0"
 				}				
       ],
