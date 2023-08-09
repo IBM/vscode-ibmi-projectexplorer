@@ -2,20 +2,20 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import * as path from "path";
-import { l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
-import * as dotenv from 'dotenv';
-import { RingBuffer } from "./views/jobLog/RingBuffer";
-import { JobLogInfo } from "./jobLog";
-import { TextEncoder } from "util";
-import { IProjectT } from "./iProjectT";
-import { getInstance } from "./ibmi";
-import { LibraryType } from "./views/projectExplorer/library";
-import envUpdater from "./envUpdater";
-import { IBMiJsonT } from "./ibmiJsonT";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
-import { ProjectManager } from "./projectManager";
+import * as dotenv from 'dotenv';
 import { ValidatorResult } from "jsonschema";
+import * as path from "path";
+import { TextEncoder } from "util";
+import { l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import envUpdater from "./envUpdater";
+import { getInstance } from "./ibmi";
+import { IBMiJsonT } from "./ibmiJsonT";
+import { IProjectT } from "./iProjectT";
+import { JobLogInfo } from "./jobLog";
+import { ProjectManager } from "./projectManager";
+import { RingBuffer } from "./views/jobLog/RingBuffer";
+import { LibraryType } from "./views/projectExplorer/library";
 
 /**
  * Represents the default variable for a project's current library.
@@ -242,7 +242,12 @@ export class IProject {
     const content = (await workspace.fs.readFile(this.getProjectFileUri('iproj.json'))).toString();
     let unresolvedState: IProjectT | undefined;
     try {
-      unresolvedState = JSON.parse(content);
+      unresolvedState = JSON.parse(content, (key, value) => {
+        if(key === "extensions"){
+          return new Map(Object.entries(value));
+        }
+        return value;
+      });
     } catch (e) { }
 
     const validator = ProjectManager.getValidator();
