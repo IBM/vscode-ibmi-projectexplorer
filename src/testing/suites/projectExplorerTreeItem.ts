@@ -64,6 +64,7 @@ export const projectExplorerTreeItemSuite: TestSuite = {
         await iProject.updateEnv('lib1', 'SYSTOOLS');
         await iProject.updateEnv('lib3', 'QSYSINC');
         await iProject.updateEnv('path1', testFolder.name);
+        await iProject.updateEnv('valueA', 'VALUEA');
 
         await iProject.updateIProj(iProjectMock);
 

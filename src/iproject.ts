@@ -215,6 +215,20 @@ export class IProject {
       if (unresolvedState.includePath) {
         unresolvedState.includePath = unresolvedState.includePath.map(includePath => this.resolveVariable(includePath, values));
       }
+
+      if (unresolvedState.extensions) {
+        for (const [vendor, vendorAttributes] of unresolvedState.extensions) {
+          if (vendorAttributes) {
+            for (const [key, value] of Object.entries(vendorAttributes)) {
+              if (typeof value === 'string') {
+                (vendorAttributes as any)[key] = this.resolveVariable(value, values);
+              }
+            }
+
+            unresolvedState.extensions.set(vendor, vendorAttributes);
+          }
+        };
+      }
     }
 
     this.state = unresolvedState;
@@ -243,9 +257,10 @@ export class IProject {
     let unresolvedState: IProjectT | undefined;
     try {
       unresolvedState = JSON.parse(content, (key, value) => {
-        if(key === "extensions"){
+        if (key === 'extensions') {
           return new Map(Object.entries(value));
         }
+
         return value;
       });
     } catch (e) { }
@@ -924,7 +939,15 @@ export class IProject {
    */
   public async updateIProj(iProject: IProjectT): Promise<boolean> {
     try {
-      await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+      const content = JSON.stringify(iProject, (key, value) => {
+        if (key === 'extensions') {
+          return Object.fromEntries(value);
+        }
+
+        return value;
+      }, 2);
+
+      await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(content));
       this.setState(undefined);
       this.setBuildMap(undefined);
       this.setLibraryList(undefined);
@@ -1031,7 +1054,11 @@ export class IProject {
       ...(unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl : []),
       ...(unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl : []),
       ...(unresolvedState.includePath ? unresolvedState.includePath : []),
-      ...(buildMap ? Array.from(buildMap.values()).filter(ibmiJson => ibmiJson.build).map(ibmiJson => ibmiJson.build!.objlib) : [])
+      ...(unresolvedState.extensions ? Array.from(unresolvedState.extensions.values())
+        .flatMap(vendorAttributes => Object.values(vendorAttributes)) : []),
+      ...(buildMap ? Array.from(buildMap.values())
+        .filter(ibmiJson => ibmiJson.build)
+        .map(ibmiJson => ibmiJson.build!.objlib) : [])
     ].filter(x => x) as string[];
 
     // Get everything that starts with an &
