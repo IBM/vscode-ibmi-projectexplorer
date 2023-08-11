@@ -2,12 +2,12 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { Action, DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import * as dotenv from 'dotenv';
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
 import { TextEncoder } from "util";
-import { l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import envUpdater from "./envUpdater";
 import { getDeployTools, getInstance } from "./ibmi";
 import { IBMiJsonT } from "./ibmiJsonT";
@@ -433,7 +433,54 @@ export class IProject {
    * @param isBuild True for build command and false for compile command.
    */
   public async runBuildOrCompileCommand(isBuild: boolean) {
-    
+    const unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      const command = isBuild ? unresolvedState.buildCommand : unresolvedState.compileCommand;
+
+      if (command) {
+        for await (const folder of ['.logs', '.evfevent']) {
+          const folderUri = Uri.file(path.join(this.workspaceFolder.uri.fsPath, folder));
+          try {
+            await workspace.fs.stat(folderUri);
+            await workspace.fs.delete(folderUri, { recursive: true });
+          } finally {
+            await workspace.fs.createDirectory(folderUri);
+          }
+        }
+
+        const action: Action = {
+          name: command,
+          command: command,
+          environment: `pase`,
+          extensions: [`GLOBAL`],
+          deployFirst: true,
+          type: `file`,
+          postDownload: [
+            ".logs",
+            ".evfevent"
+          ]
+        };
+        await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: this.workspaceFolder.uri }, action, this.deploymentMethod);
+        ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
+      } else {
+        if (isBuild) {
+          window.showErrorMessage(l10n.t('Project\'s build command not set'), l10n.t('Set Build Command'))
+            .then(async (item) => {
+              if (item === l10n.t('Set Build Command')) {
+                await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, this);
+              }
+            });
+        } else {
+          window.showErrorMessage(l10n.t('Project\'s compile command not set'), l10n.t('Set Compile Command'))
+            .then(async (item) => {
+              if (item === l10n.t('Set Compile Command')) {
+                await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`, this);
+              }
+            });
+        }
+      }
+    }
   }
 
   /**
@@ -447,7 +494,7 @@ export class IProject {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
-      if(isBuild) {
+      if (isBuild) {
         unresolvedState.buildCommand = command;
       } else {
         unresolvedState.compileCommand = command;
@@ -1222,11 +1269,7 @@ export class IProject {
    */
   public async deployProject() {
     const deployTools = getDeployTools();
-    const deploymentParameters = await this.getDeploymentParameters();
-
-    if (deploymentParameters) {
-      await deployTools?.deploy(deploymentParameters);
-    }
+    await deployTools?.launchDeploy(this.workspaceFolder.index, this.deploymentMethod);
   }
 
   /**
