@@ -421,6 +421,18 @@ export class IProject {
     }
   }
 
+  public async setBuildOrCompileCommand(command: string, attribute: 'buildCommand' | 'compileCommand') {
+    const unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      unresolvedState[attribute] = command;
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+  }
+
   /**
    * Add a directory to the `includePath` attribute of the project's `iproj.json`
    * file. *Note* that directories will be resolved based on the project's
