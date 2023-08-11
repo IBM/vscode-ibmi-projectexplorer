@@ -2,21 +2,20 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import * as path from "path";
-import { l10n, RelativePattern, Uri, window, workspace, WorkspaceFolder } from "vscode";
-import * as dotenv from 'dotenv';
-import { RingBuffer } from "./views/jobLog/RingBuffer";
-import { JobLogInfo } from "./jobLog";
-import { TextEncoder } from "util";
-import { IProjectT } from "./iProjectT";
-import { getDeployTools, getInstance } from "./ibmi";
-import { LibraryType } from "./views/projectExplorer/library";
-import envUpdater from "./envUpdater";
-import { IBMiJsonT } from "./ibmiJsonT";
 import { DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
-import { ProjectManager } from "./projectManager";
-import ignore, { Ignore } from "ignore";
+import * as dotenv from 'dotenv';
 import { ValidatorResult } from "jsonschema";
+import * as path from "path";
+import { TextEncoder } from "util";
+import { l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import envUpdater from "./envUpdater";
+import { getDeployTools, getInstance } from "./ibmi";
+import { IBMiJsonT } from "./ibmiJsonT";
+import { IProjectT } from "./iProjectT";
+import { JobLogInfo } from "./jobLog";
+import { ProjectManager } from "./projectManager";
+import { RingBuffer } from "./views/jobLog/RingBuffer";
+import { LibraryType } from "./views/projectExplorer/library";
 
 /**
  * Represents the default variable for a project's current library.
@@ -222,6 +221,20 @@ export class IProject {
       if (unresolvedState.includePath) {
         unresolvedState.includePath = unresolvedState.includePath.map(includePath => this.resolveVariable(includePath, values));
       }
+
+      if (unresolvedState.extensions) {
+        for (const [vendor, vendorAttributes] of unresolvedState.extensions) {
+          if (vendorAttributes) {
+            for (const [key, value] of Object.entries(vendorAttributes)) {
+              if (typeof value === 'string') {
+                (vendorAttributes as any)[key] = this.resolveVariable(value, values);
+              }
+            }
+
+            unresolvedState.extensions.set(vendor, vendorAttributes);
+          }
+        };
+      }
     }
 
     this.state = unresolvedState;
@@ -249,7 +262,13 @@ export class IProject {
     const content = (await workspace.fs.readFile(this.getProjectFileUri('iproj.json'))).toString();
     let unresolvedState: IProjectT | undefined;
     try {
-      unresolvedState = JSON.parse(content);
+      unresolvedState = JSON.parse(content, (key, value) => {
+        if (key === 'extensions') {
+          return new Map(Object.entries(value));
+        }
+
+        return value;
+      });
     } catch (e) { }
 
     const validator = ProjectManager.getValidator();
@@ -926,7 +945,15 @@ export class IProject {
    */
   public async updateIProj(iProject: IProjectT): Promise<boolean> {
     try {
-      await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(JSON.stringify(iProject, null, 2)));
+      const content = JSON.stringify(iProject, (key, value) => {
+        if (key === 'extensions') {
+          return Object.fromEntries(value);
+        }
+
+        return value;
+      }, 2);
+
+      await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(content));
       this.setState(undefined);
       this.setBuildMap(undefined);
       this.setLibraryList(undefined);
@@ -1033,7 +1060,11 @@ export class IProject {
       ...(unresolvedState.postUsrlibl ? unresolvedState.postUsrlibl : []),
       ...(unresolvedState.preUsrlibl ? unresolvedState.preUsrlibl : []),
       ...(unresolvedState.includePath ? unresolvedState.includePath : []),
-      ...(buildMap ? Array.from(buildMap.values()).filter(ibmiJson => ibmiJson.build).map(ibmiJson => ibmiJson.build!.objlib) : [])
+      ...(unresolvedState.extensions ? Array.from(unresolvedState.extensions.values())
+        .flatMap(vendorAttributes => Object.values(vendorAttributes)) : []),
+      ...(buildMap ? Array.from(buildMap.values())
+        .filter(ibmiJson => ibmiJson.build)
+        .map(ibmiJson => ibmiJson.build!.objlib) : [])
     ].filter(x => x) as string[];
 
     // Get everything that starts with an &
