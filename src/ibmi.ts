@@ -5,6 +5,7 @@
 import { CodeForIBMi } from "@halcyontech/vscode-ibmi-types";
 import { CustomUI } from "@halcyontech/vscode-ibmi-types/api/CustomUI";
 import Instance from "@halcyontech/vscode-ibmi-types/api/Instance";
+import { Tools } from "@halcyontech/vscode-ibmi-types/api/Tools";
 import { DeployTools } from "@halcyontech/vscode-ibmi-types/api/local/deployTools";
 import { Extension, extensions } from "vscode";
 
@@ -28,4 +29,8 @@ export function getDeployTools(): typeof DeployTools | undefined {
 
 export function getCustomUI(): CustomUI | undefined {
   return (baseExtension && baseExtension.isActive && baseExtension.exports ? baseExtension.exports.customUI() : undefined);
+}
+
+export function getTools(): typeof Tools | undefined {
+  return (baseExtension && baseExtension.isActive && baseExtension.exports ? baseExtension.exports.tools : undefined);
 }
