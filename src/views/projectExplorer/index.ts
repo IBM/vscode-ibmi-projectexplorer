@@ -71,8 +71,32 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.goToIFSBrowser`, async () => {
         await commands.executeCommand(`ifsBrowser.focus`);
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runBuild`, async (element: Project) => {
-        // Get from project or check workspace folder
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runBuild`, async (element?: Project) => {
+        let iProject: IProject | undefined;
+        if (element && element instanceof Project) {
+          iProject = ProjectManager.get(element.workspaceFolder);
+        } else {
+          iProject = ProjectManager.getActiveProject();
+        }
+
+        if (iProject) {
+          const unresolvedState = await iProject.getUnresolvedState();
+
+          if (unresolvedState) {
+            if (unresolvedState.buildCommand) {
+              iProject.runBuildOrCompileCommand(true);
+            } else {
+              window.showErrorMessage(l10n.t('Project\'s build command not set'), l10n.t('Set Build Command'))
+                .then(async (item) => {
+                  if (item === l10n.t('Set Build Command')) {
+                    await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, iProject);
+                  }
+                });
+            }
+          }
+        } else {
+          window.showErrorMessage(l10n.t('Failed to retrieve project'));
+        }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, async (element: Project) => {
         if (element) {
@@ -89,7 +113,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               });
 
               if (command) {
-                await iProject.setBuildOrCompileCommand(command, 'buildCommand');
+                await iProject.setBuildOrCompileCommand(command, true);
               }
             }
           } else {
@@ -115,7 +139,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               });
 
               if (command) {
-                await iProject.setBuildOrCompileCommand(command, 'compileCommand');
+                await iProject.setBuildOrCompileCommand(command, false);
               }
             }
           } else {

@@ -428,17 +428,30 @@ export class IProject {
   }
 
   /**
+   * Run the project's build or compile command.
+   * 
+   * @param isBuild True for build command and false for compile command.
+   */
+  public async runBuildOrCompileCommand(isBuild: boolean) {
+    
+  }
+
+  /**
    * Set the `buildCommand` or `compileCommand` attribute of the project's
    * `iproj.json.
    * 
    * @param command The command to set.
-   * @param attribute The `buildCommand` or `compileCommand` attribute.
+   * @param isBuild True for build command and false for compile command.
    */
-  public async setBuildOrCompileCommand(command: string, attribute: 'buildCommand' | 'compileCommand') {
+  public async setBuildOrCompileCommand(command: string, isBuild: boolean) {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
-      unresolvedState[attribute] = command;
+      if(isBuild) {
+        unresolvedState.buildCommand = command;
+      } else {
+        unresolvedState.compileCommand = command;
+      }
 
       await this.updateIProj(unresolvedState);
     } else {
