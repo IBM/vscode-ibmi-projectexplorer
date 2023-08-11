@@ -80,20 +80,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
 
         if (iProject) {
-          const unresolvedState = await iProject.getUnresolvedState();
-
-          if (unresolvedState) {
-            if (unresolvedState.buildCommand) {
-              iProject.runBuildOrCompileCommand(true);
-            } else {
-              window.showErrorMessage(l10n.t('Project\'s build command not set'), l10n.t('Set Build Command'))
-                .then(async (item) => {
-                  if (item === l10n.t('Set Build Command')) {
-                    await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, iProject);
-                  }
-                });
-            }
-          }
+          iProject.runBuildOrCompileCommand(true);
         } else {
           window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
@@ -122,7 +109,18 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runCompile`, async (element: Project) => {
-        // Get from project or check workspace folder or editor
+        let iProject: IProject | undefined;
+        if (element && element instanceof Project) {
+          iProject = ProjectManager.get(element.workspaceFolder);
+        } else {
+          iProject = ProjectManager.getActiveProject();
+        }
+
+        if (iProject) {
+          iProject.runBuildOrCompileCommand(false);
+        } else {
+          window.showErrorMessage(l10n.t('Failed to retrieve project'));
+        }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`, async (element: Project) => {
         if (element) {

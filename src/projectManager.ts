@@ -14,8 +14,10 @@ import { Validator } from "jsonschema";
  * - `activeProject` event is fired when there is a change to the active project
  * - `libraryList` event is fired when there is a change to a project's library list
  * - `deployLocation` event is fired when there is a change to a project's deploy location
+ * - `build` event is fired when a build is finished
+ * - `compile` event is fired when a compile is finished
  */
-export type ProjectExplorerEventT = 'projects' | 'activeProject' | 'libraryList' | 'deployLocation';
+export type ProjectExplorerEventT = 'projects' | 'activeProject' | 'libraryList' | 'deployLocation' | 'build' | 'compile';
 
 /**
  * Project explorer event
