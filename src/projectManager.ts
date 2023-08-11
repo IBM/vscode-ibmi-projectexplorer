@@ -181,6 +181,11 @@ export class ProjectManager {
      * @param workspaceFolder A workspace folder or `undefined`.
      */
     public static async setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
+        // Check if active project is already set to given workspace folder
+        if (workspaceFolder === this.activeProject?.workspaceFolder) {
+            return;
+        }
+
         if (workspaceFolder) {
             this.activeProject = this.loaded[workspaceFolder.index];
             this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', this.activeProject.workspaceFolder.name);

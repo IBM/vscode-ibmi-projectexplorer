@@ -9,7 +9,7 @@ import * as path from "path";
 import { TreeItem, Uri, extensions, workspace } from "vscode";
 import { IBMiProjectExplorer } from "../../ibmiProjectExplorer";
 import ProjectExplorer from "../../views/projectExplorer";
-import { getDeploy, getInstance } from "../../ibmi";
+import { getDeployTools, getInstance } from "../../ibmi";
 import { ProjectExplorerTreeItem } from "../../views/projectExplorer/projectExplorerTreeItem";
 import MemberFile from "../../views/projectExplorer/memberFile";
 import IFSDirectory from "../../views/projectExplorer/ifsDirectory";
@@ -76,8 +76,8 @@ export const projectExplorerTreeItemSuite: TestSuite = {
         deployLocation = ibmi!.getConnection().getTempRemote(iProject.getName());
         existingPaths[iProject.workspaceFolder.uri.fsPath] = deployLocation;
         await storage.setDeployment(existingPaths);
-        const deploy = getDeploy()!;
-        await deploy({ method: 'all', workspaceFolder: iProject.workspaceFolder, remotePath: deployLocation });
+        const deployTools = getDeployTools()!;
+        await deployTools.deploy({ method: 'all', workspaceFolder: iProject.workspaceFolder, remotePath: deployLocation });
     },
     afterAll: async () => {
         const iProject = ProjectManager.getProjects()[0];

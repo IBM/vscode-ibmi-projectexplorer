@@ -4,7 +4,7 @@
 
 import { ConnectionData } from "@halcyontech/vscode-ibmi-types";
 import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, Uri, window, workspace, WorkspaceFolder } from "vscode";
-import { getInstance } from "../../ibmi";
+import { getDeployTools, getInstance } from "../../ibmi";
 import { IProject } from "../../iproject";
 import { IProjectT } from "../../iProjectT";
 import { ProjectManager } from "../../projectManager";
@@ -41,12 +41,72 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.goToIFSBrowser`, async () => {
         await commands.executeCommand(`ifsBrowser.focus`);
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runBuild`, async (element: Project) => {
+        // Get from project or check workspace folder
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, async (element: Project) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const unresolvedState = await iProject.getUnresolvedState();
+
+            if (unresolvedState) {
+              const command = await window.showInputBox({
+                prompt: l10n.t('Enter build command'),
+                placeHolder: l10n.t('Build command'),
+                value: unresolvedState.buildCommand,
+              });
+
+              if (command) {
+                await iProject.setBuildOrCompileCommand(command, 'buildCommand');
+              }
+            }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runCompile`, async (element: Project) => {
+        // Get from project or check workspace folder or editor
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`, async (element: Project) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const unresolvedState = await iProject.getUnresolvedState();
+
+            if (unresolvedState) {
+              const command = await window.showInputBox({
+                prompt: l10n.t('Enter compile command'),
+                placeHolder: l10n.t('Compile command'),
+                value: unresolvedState.compileCommand,
+              });
+
+              if (command) {
+                await iProject.setBuildOrCompileCommand(command, 'compileCommand');
+              }
+            }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup`, async (element: Project) => {
+        if (element) {
+          await ProjectManager.setActiveProject(element.workspaceFolder);
+
+          const deployTools = getDeployTools();
+          await deployTools?.launchActionsSetup(element.workspaceFolder);
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
         this.refresh();
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, async (element?: Project) => {
         if (element) {
-          await ProjectManager.setActiveProject(element.workspaceFolder!);
+          await ProjectManager.setActiveProject(element.workspaceFolder);
           this.refresh();
         } else {
           const projectItems: QuickPickItem[] = [];
@@ -659,14 +719,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: Project | ObjectFile | MemberFile) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: ObjectFile | MemberFile) => {
         if (element) {
           if (element instanceof Project) {
-            const activeProject = ProjectManager.getActiveProject();
-
-            if (activeProject && element.workspaceFolder !== activeProject.workspaceFolder) {
-              await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, element);
-            }
+            await ProjectManager.setActiveProject(element.workspaceFolder);
 
             await commands.executeCommand(`code-for-ibmi.runAction`, {
               resourceUri: element.workspaceFolder.uri
