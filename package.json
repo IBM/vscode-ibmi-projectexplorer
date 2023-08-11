@@ -87,6 +87,11 @@
         "id": "projectExplorer.goTo",
         "label": "%submenus.projectExplorer.gotTo%",
         "icon": "$(server-environment)"
+      },
+      {
+        "id": "projectExplorer.run",
+        "label": "%submenus.projectExplorer.run%",
+        "icon": "$(tools)"
       }
     ],
     "commands": [
@@ -99,6 +104,31 @@
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.goToIFSBrowser",
         "title": "%commands.projectExplorer.goToIFSBrowser%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.runBuild",
+        "title": "%commands.projectExplorer.runBuild%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand",
+        "title": "%commands.projectExplorer.setBuildCommand%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
+        "title": "%commands.projectExplorer.runCompile%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand",
+        "title": "%commands.projectExplorer.setCompileCommand%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup",
+        "title": "%commands.projectExplorer.launchActionsSetup%"
       },
       {
         "category": "%commands.projectExplorer%",
@@ -372,11 +402,11 @@
       },
       {
         "category": "%commands.projectExplorer%",
-				"command": "vscode-ibmi-projectexplorer.connect",
-				"title": "%commands.projectExplorer.connect%",
-				"icon": "$(vm-connect)",
-				"enablement": "!code-for-ibmi:connected"
-			},
+        "command": "vscode-ibmi-projectexplorer.connect",
+        "title": "%commands.projectExplorer.connect%",
+        "icon": "$(vm-connect)",
+        "enablement": "!code-for-ibmi:connected"
+      },
       {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
@@ -410,6 +440,18 @@
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.goToObjectBrowser",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.goToIFSBrowser",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup",
+          "when": "never"
+        },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
           "when": "never"
@@ -651,6 +693,18 @@
           "group": "0_goTo@1"
         }
       ],
+      "projectExplorer.run": [
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.runBuild",
+          "when": "view == projectExplorer",
+          "group": "0_run@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.runAction",
+          "when": "view == projectExplorer",
+          "group": "0_run@1"
+        }
+      ],
       "view/title": [
         {
           "submenu": "projectExplorer.goTo",
@@ -668,21 +722,36 @@
           "group": "navigation@0"
         },
         {
-					"command": "vscode-ibmi-projectexplorer.connect",
-					"when": "view === projectExplorer && workspaceFolderCount > 0 && !code-for-ibmi:connected",
-					"group": "navigation@0"
-				},
+          "command": "vscode-ibmi-projectexplorer.connect",
+          "when": "view === projectExplorer && workspaceFolderCount > 0 && !code-for-ibmi:connected",
+          "group": "navigation@0"
+        },
         {
-					"command": "code-for-ibmi.connectToPrevious",
-					"when": "view === projectExplorer && workspaceFolderCount > 0 && code-for-ibmi:hasPreviousConnection && !code-for-ibmi:connected",
-					"group": "navigation@0"
-				}				
+          "command": "code-for-ibmi.connectToPrevious",
+          "when": "view === projectExplorer && workspaceFolderCount > 0 && code-for-ibmi:hasPreviousConnection && !code-for-ibmi:connected",
+          "group": "navigation@0"
+        }
       ],
       "view/item/context": [
         {
-          "command": "vscode-ibmi-projectexplorer.runAction",
+          "submenu": "projectExplorer.run",
           "when": "view == projectExplorer && viewItem =~ /^project.*/ && code-for-ibmi:connected",
           "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand",
+          "when": "view == projectExplorer && viewItem =~ /^project.*/",
+          "group": "0_setup@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand",
+          "when": "view == projectExplorer && viewItem =~ /^project.*/",
+          "group": "0_setup@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup",
+          "when": "view == projectExplorer && viewItem =~ /^project.*/ && code-for-ibmi:connected",
+          "group": "0_setup@2"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
