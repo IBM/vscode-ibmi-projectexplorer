@@ -427,6 +427,13 @@ export class IProject {
     }
   }
 
+  /**
+   * Set the `buildCommand` or `compileCommand` attribute of the project's
+   * `iproj.json.
+   * 
+   * @param command The command to set.
+   * @param attribute The `buildCommand` or `compileCommand` attribute.
+   */
   public async setBuildOrCompileCommand(command: string, attribute: 'buildCommand' | 'compileCommand') {
     const unresolvedState = await this.getUnresolvedState();
 
@@ -480,9 +487,9 @@ export class IProject {
    * to a variable. *Note* that the variable and value will also be added to the 
    * project's `.env` file.
    * 
-   * @param attributes 
-   * @param variable 
-   * @param value 
+   * @param attributes The attributes to update.
+   * @param variable The variable to set.
+   * @param value The value of the variable.
    */
   public async configureAsVariable(attributes: (keyof IProjectT)[], variable: string, value: string) {
     const unresolvedState = await this.getUnresolvedState();
