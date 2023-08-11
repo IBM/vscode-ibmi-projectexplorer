@@ -108,10 +108,14 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runCompile`, async (element: Project) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runCompile`, async (element?: Project | Uri) => {
         let iProject: IProject | undefined;
-        if (element && element instanceof Project) {
-          iProject = ProjectManager.get(element.workspaceFolder);
+        if (element) {
+          if (element instanceof Project) {
+            iProject = ProjectManager.get(element.workspaceFolder);
+          } else {
+            iProject = ProjectManager.getProjectFromUri(element);
+          }
         } else {
           iProject = ProjectManager.getActiveProject();
         }

@@ -742,6 +742,11 @@
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles",
           "group": "8_projectExplorer@1",
           "when": "explorerResourceIsFolder && vscode-ibmi-projectexplorer:hasActiveProject"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
+          "group": "8_projectExplorer@2",
+          "when": "vscode-ibmi-projectexplorer:hasActiveProject && code-for-ibmi:connected"
         }
       ],
       "editor/title": [
