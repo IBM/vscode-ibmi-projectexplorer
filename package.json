@@ -82,6 +82,18 @@
         "when": "workspaceFolderCount > 0"
       }
     ],
+    "keybindings": [
+      {
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.runBuild",
+        "key": "ctrl+shift+b",
+        "mac": "cmd+shift+b"
+      },
+      {
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
+        "key": "ctrl+shift+c",
+        "mac": "cmd+shift+c"
+      }
+    ],
     "submenus": [
       {
         "id": "projectExplorer.goTo",
@@ -730,6 +742,13 @@
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles",
           "group": "8_projectExplorer@1",
           "when": "explorerResourceIsFolder && vscode-ibmi-projectexplorer:hasActiveProject"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
+          "when": "code-for-ibmi:connected",
+          "group": "navigation@0"
         }
       ],
       "projectExplorer.goTo": [
