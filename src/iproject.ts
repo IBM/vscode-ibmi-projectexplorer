@@ -461,7 +461,7 @@ export class IProject {
             ".evfevent"
           ]
         };
-        await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: this.workspaceFolder.uri }, action, this.deploymentMethod);
+        await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
         ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
       } else {
         if (isBuild) {
