@@ -497,6 +497,14 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.runBuild",
+          "when": "code-for-ibmi:connected"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
+          "when": "code-for-ibmi:connected"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup",
           "when": "never"
         },
