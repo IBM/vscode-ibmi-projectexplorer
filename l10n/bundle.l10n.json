@@ -11,6 +11,8 @@
   "Set Build Command": "Set Build Command",
   "Project's compile command not set": "Project's compile command not set",
   "Set Compile Command": "Set Compile Command",
+  "Build command already set to {0}": "Build command already set to {0}",
+  "Compile command already set to {0}": "Compile command already set to {0}",
   "No iproj.json found": "No iproj.json found",
   "{0} already exists in includePaths": "{0} already exists in includePaths",
   "{0} does not exist in {1}": "{0} does not exist in {1}",
