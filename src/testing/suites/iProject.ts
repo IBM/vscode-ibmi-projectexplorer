@@ -162,6 +162,17 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
+            name: `Test setBuildOrCompileCommand`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                await iProject.setBuildOrCompileCommand('makei build', true);
+                await iProject.setBuildOrCompileCommand('makei compile -f {filename}', false);
+                const state = await iProject.getState();
+
+                assert.deepStrictEqual(state?.buildCommand, 'makei build');
+                assert.deepStrictEqual(state?.compileCommand, 'makei compile -f {filename}');
+            }
+        },
+        {
             name: `Test addToIncludePaths`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 await iProject.addToIncludePaths('includes');
