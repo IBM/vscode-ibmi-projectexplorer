@@ -130,7 +130,8 @@
       {
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
-        "title": "%commands.projectExplorer.runCompile%"
+        "title": "%commands.projectExplorer.runCompile%",
+        "icon": "$(tools)"
       },
       {
         "category": "%commands.projectExplorer%",
