@@ -494,10 +494,13 @@ export class IProject {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
-      if (isBuild) {
-        unresolvedState.buildCommand = command;
+      const attribute = isBuild ? 'buildCommand' : 'compileCommand';
+
+      if (unresolvedState[attribute] === command) {
+        window.showErrorMessage(isBuild ? l10n.t('Build command already set to {0}', command) : l10n.t('Compile command already set to {0}', command));
+        return;
       } else {
-        unresolvedState.compileCommand = command;
+        unresolvedState[attribute] = command;
       }
 
       await this.updateIProj(unresolvedState);
