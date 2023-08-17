@@ -37,11 +37,6 @@ const extensionConfig = {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
     extensions: ['.ts', '.js']
   },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env.DEV': JSON.stringify(!isProduction),
-    })
-  ],
   module: {
     rules: [
       {
