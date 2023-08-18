@@ -106,6 +106,7 @@ export async function run(connect: boolean = true) {
     assert.ok(password, 'PASSWORD environment variable required to run tests');
 
     // Verify test fixtures are loaded
+    console.log(JSON.stringify(workspace.workspaceFolders));
     const workspaceFolders = workspace.workspaceFolders;
     assert.ok(workspaceFolders, 'Failed to load workspace folders');
     assert.strictEqual(workspaceFolders.length, 1, 'Incorrect number of workspace folders');
