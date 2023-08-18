@@ -4,9 +4,11 @@
 
 import * as assert from "assert";
 import { ExtensionContext, commands, window } from "vscode";
+import * as dotenv from 'dotenv';
 import { TestSuitesTreeProvider } from "./testCasesTree";
 import { getInstance } from "../ibmi";
 import { iProjectSuite } from "./suites/iProject.test";
+import * as path from "path";
 import { projectManagerSuite } from "./suites/projectManager.test";
 import { jobLogSuite } from "./suites/jobLog.test";
 import { projectExplorerTreeItemSuite } from "./suites/projectExplorerTreeItem.test";
@@ -95,10 +97,11 @@ export async function run(connect: boolean = true) {
 
   if (connect) {
     // Verify connection environment variables are set
+    dotenv.config({ path: path.resolve(__dirname, '../../.env') });
     const host = process.env.HOST;
     assert.ok(host, 'HOST environment variable required to run tests');
-    const username = process.env.USERNAME;
-    assert.ok(username, 'USERNAME environment variable required to run tests');
+    const user = process.env.USER;
+    assert.ok(user, 'USER environment variable required to run tests');
     const password = process.env.PASSWORD;
     assert.ok(password, 'PASSWORD environment variable required to run tests');
 
@@ -106,7 +109,7 @@ export async function run(connect: boolean = true) {
     const connection: ConnectionData = {
       name: 'Test Connection',
       host: host,
-      username: username,
+      username: user,
       password: password,
       port: 22,
       privateKey: null
