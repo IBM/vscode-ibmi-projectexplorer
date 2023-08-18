@@ -27,7 +27,8 @@ async function main() {
 		const testWorkspace = path.resolve(__dirname, '../../src/test/testFixtures/ibmi-company_system');
 
 		// Use cp.spawn / cp.exec for custom setup
-		cp.spawnSync(cliPath, [...args, '--install-extension', 'HalcyonTechLtd.code-for-ibmi'], {
+		console.log('ARGS: ' + JSON.stringify([testWorkspace, ...args, '--install-extension', 'HalcyonTechLtd.code-for-ibmi']));
+		cp.spawnSync(cliPath, [testWorkspace, ...args, '--install-extension', 'HalcyonTechLtd.code-for-ibmi'], {
 			encoding: 'utf-8',
 			stdio: 'inherit',
 		});
@@ -37,8 +38,7 @@ async function main() {
 		await runTests({ 
 			vscodeExecutablePath, 
 			extensionDevelopmentPath, 
-			extensionTestsPath,
-			launchArgs: [testWorkspace]
+			extensionTestsPath
 		});
 	} catch (err) {
 		console.error('Failed to run tests');
