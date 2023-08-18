@@ -11,7 +11,7 @@ on:
 
 
 env:
-  HOST: ${{ secrets.HOST }}
+  HOST: "p8adt05.rch.stglabs.ibm.com"
   USER: ${{ secrets.USER }}  
   PASSWORD: ${{ secrets.PASSWORD }}
 
