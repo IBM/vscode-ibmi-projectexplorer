@@ -1166,7 +1166,7 @@
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile-tests": "npm run clean && tsc -p . --outDir out",
     "watch-tests": "npm run clean && tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests || cp -rf src/test/testFixtures out/test/testFixtures || true",
+    "pretest": "npm run compile-tests || true",
     "test": "node ./out/test/runTest.js",
     "lint": "eslint src --ext ts",
     "docs": "docsify serve docs",

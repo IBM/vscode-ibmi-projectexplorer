@@ -24,7 +24,7 @@ async function main() {
 		const extensionTestsPath = path.resolve(__dirname, './index');
 
 		// The path to the test workspace	
-		const testWorkspace = path.resolve(__dirname, './testFixtures/ibmi-company_system');
+		const testWorkspace = path.resolve(__dirname, '../../src/test/testFixtures/ibmi-company_system');
 
 		// Use cp.spawn / cp.exec for custom setup
 		cp.spawnSync(cliPath, [...args, '--install-extension', 'HalcyonTechLtd.code-for-ibmi'], {
