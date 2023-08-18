@@ -105,6 +105,12 @@ export async function run(connect: boolean = true) {
     const password = process.env.PASSWORD;
     assert.ok(password, 'PASSWORD environment variable required to run tests');
 
+    // Verify test fixtures are loaded
+    const workspaceFolders = workspace.workspaceFolders;
+    assert.ok(workspaceFolders, 'Failed to load workspace folders');
+    assert.strictEqual(workspaceFolders.length, 1, 'Incorrect number of workspace folders');
+    assert.strictEqual(workspaceFolders[0].name, 'ibmi-company_system', 'Failed to load workspace folder');
+
     // Connect to IBM i
     const connection: ConnectionData = {
       name: 'Test Connection',
@@ -114,17 +120,7 @@ export async function run(connect: boolean = true) {
       port: 22,
       privateKey: null
     };
-    await commands.executeCommand('code-for-ibmi.connectDirect', connection);
-
-    console.log('ENV');
-    console.log(host);
-    console.log(user);
-    console.log('INFO');
-    console.log(JSON.stringify(getInstance()?.getConnection().currentHost));
-    console.log(JSON.stringify(getInstance()?.getConnection().currentUser));
-    console.log(JSON.stringify(getInstance()?.getConnection().currentPort));
-    const workspaceFolders = workspace.workspaceFolders;
-    console.log(JSON.stringify(workspaceFolders));
+    assert.ok(await commands.executeCommand('code-for-ibmi.connectDirect', connection), 'Failed to connect to IBM i');
 
     // Run tests
     await runTests();
