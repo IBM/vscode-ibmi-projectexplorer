@@ -3,7 +3,7 @@
  */
 
 import * as assert from "assert";
-import { ExtensionContext, commands, window } from "vscode";
+import { ExtensionContext, commands, window, workspace } from "vscode";
 import * as dotenv from 'dotenv';
 import { TestSuitesTreeProvider } from "./testCasesTree";
 import { getInstance } from "../ibmi";
@@ -115,6 +115,13 @@ export async function run(connect: boolean = true) {
       privateKey: null
     };
     await commands.executeCommand('code-for-ibmi.connectDirect', connection);
+
+    console.log('INFO');
+    console.log(JSON.stringify(getInstance()?.getConnection().currentHost));
+    console.log(JSON.stringify(getInstance()?.getConnection().currentUser));
+    console.log(JSON.stringify(getInstance()?.getConnection().currentPort));
+    const workspaceFolders = workspace.workspaceFolders;
+    console.log(JSON.stringify(workspaceFolders));
 
     // Run tests
     await runTests();
