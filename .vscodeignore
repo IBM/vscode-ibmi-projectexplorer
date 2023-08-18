@@ -6,6 +6,8 @@ src/**
 .gitignore
 .gitmodules
 .yarnrc
+.env
+.env.sample
 webpack.config.js
 vsc-extension-quickstart.md
 **/tsconfig.json

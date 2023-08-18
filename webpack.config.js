@@ -14,7 +14,7 @@ console.log(`Is production build: ${isProduction}`);
 let exclude = undefined;
 
 if (isProduction) {
-  exclude = path.resolve(__dirname, `src`, `testing`);
+  exclude = path.resolve(__dirname, `src`, `test`);
 }
 
 /**@type {webpack.Configuration}*/
@@ -24,8 +24,8 @@ const extensionConfig = {
 
   entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
   output: {
-    // the bundle is stored in the 'dist' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
-    path: path.resolve(__dirname, 'dist'),
+    // the bundle is stored in the 'out' folder (check package.json), 📖 -> https://webpack.js.org/configuration/output/
+    path: path.resolve(__dirname, 'out'),
     filename: 'extension.js',
     libraryTarget: 'commonjs2'
   },
@@ -37,11 +37,6 @@ const extensionConfig = {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
     extensions: ['.ts', '.js']
   },
-  plugins: [
-    new webpack.DefinePlugin({
-      'process.env.DEV': JSON.stringify(!isProduction),
-    })
-  ],
   module: {
     rules: [
       {

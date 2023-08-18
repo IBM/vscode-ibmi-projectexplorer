@@ -11,6 +11,8 @@ on:
 
 jobs:
   build:
+    name: Webpack
+  
     runs-on: ubuntu-latest
 
     strategy:

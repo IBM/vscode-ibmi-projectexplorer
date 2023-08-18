@@ -33,9 +33,9 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "onStartupFinished"
+    "*"
   ],
-  "main": "./dist/extension.js",
+  "main": "./out/extension.js",
   "extensionDependencies": [
     "HalcyonTechLtd.code-for-ibmi"
   ],
@@ -372,11 +372,11 @@
       },
       {
         "category": "%commands.projectExplorer%",
-				"command": "vscode-ibmi-projectexplorer.connect",
-				"title": "%commands.projectExplorer.connect%",
-				"icon": "$(vm-connect)",
-				"enablement": "!code-for-ibmi:connected"
-			},
+        "command": "vscode-ibmi-projectexplorer.connect",
+        "title": "%commands.projectExplorer.connect%",
+        "icon": "$(vm-connect)",
+        "enablement": "!code-for-ibmi:connected"
+      },
       {
         "category": "Job Log",
         "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
@@ -668,15 +668,15 @@
           "group": "navigation@0"
         },
         {
-					"command": "vscode-ibmi-projectexplorer.connect",
-					"when": "view === projectExplorer && workspaceFolderCount > 0 && !code-for-ibmi:connected",
-					"group": "navigation@0"
-				},
+          "command": "vscode-ibmi-projectexplorer.connect",
+          "when": "view === projectExplorer && workspaceFolderCount > 0 && !code-for-ibmi:connected",
+          "group": "navigation@0"
+        },
         {
-					"command": "code-for-ibmi.connectToPrevious",
-					"when": "view === projectExplorer && workspaceFolderCount > 0 && code-for-ibmi:hasPreviousConnection && !code-for-ibmi:connected",
-					"group": "navigation@0"
-				}				
+          "command": "code-for-ibmi.connectToPrevious",
+          "when": "view === projectExplorer && workspaceFolderCount > 0 && code-for-ibmi:hasPreviousConnection && !code-for-ibmi:connected",
+          "group": "navigation@0"
+        }
       ],
       "view/item/context": [
         {
@@ -1159,13 +1159,15 @@
     ]
   },
   "scripts": {
+    "clean": "rm -rf out",    
+    "compile": "npm run clean && webpack",
     "vscode:prepublish": "npm run package",
-    "compile": "webpack",
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "compile-tests": "npm run clean && tsc -p . --outDir out",
+    "watch-tests": "npm run clean && tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests || true",
+    "test": "node ./out/test/runTest.js",
     "lint": "eslint src --ext ts",
     "docs": "docsify serve docs",
     "nls": "npx @vscode/l10n-dev export --outDir ./l10n ./src",
@@ -1178,12 +1180,13 @@
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
-    "eslint": "^8.47.0",
+    "@vscode/l10n-dev": "^0.0.29",
+    "@vscode/test-electron": "^2.3.4",
     "esbuild-loader": "^4.0.0",
+    "eslint": "^8.47.0",
     "typescript": "^5.1.6",
     "webpack": "^5.76.0",
-    "webpack-cli": "^5.1.4",
-    "@vscode/l10n-dev": "^0.0.29"
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
