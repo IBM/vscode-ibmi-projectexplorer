@@ -68,6 +68,8 @@
   "commands.projectExplorer.setTargetCCSIDForCompiles": "Set Target CCSID for Compiles",
   "commands.projectExplorer.setTargetLibraryForCompiles": "Set Target Library for Compiles",
   "commands.projectExplorer.updateMemberText": "Update Member Text",
+  "configuration.title": "IBM i Project Explorer",
+  "configuration.IBM i Project Explorer.disableUserLibraryList": "When disabled, the User Library List view in Code for IBM i will not be visible when an i Project is present in the workspace.",
   "description": "Develop IBM i applications using buildable local projects in VS Code",
   "explorer.jobLog": "Job Log",
   "explorer.projectExplorer": "Project Explorer",
