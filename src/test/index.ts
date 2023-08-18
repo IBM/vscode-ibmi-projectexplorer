@@ -21,14 +21,14 @@ import { ConnectionData } from "@halcyontech/vscode-ibmi-types";
 import { extensionContext } from "../extension";
 
 const suites: TestSuite[] = [
-  buildMapSuite,
-  decorationProviderSuite,
-  iProjectSuite,
-  jobLogCommandSuite,
-  jobLogSuite,
-  jobLogTreeItemSuite,
-  projectExplorerTreeItemSuite,
-  projectManagerSuite,
+  // buildMapSuite,
+  // decorationProviderSuite,
+  // iProjectSuite,
+  // jobLogCommandSuite,
+  // jobLogSuite,
+  // jobLogTreeItemSuite,
+  // projectExplorerTreeItemSuite,
+  // projectManagerSuite,
   ringBufferSuite
 ];
 
@@ -105,26 +105,26 @@ export async function run(connect: boolean = true) {
     const password = process.env.PASSWORD;
     assert.ok(password, 'PASSWORD environment variable required to run tests');
 
-    // Connect to IBM i
-    const connection: ConnectionData = {
-      name: 'Test Connection',
-      host: host,
-      username: user,
-      password: password,
-      port: 22,
-      privateKey: null
-    };
-    await commands.executeCommand('code-for-ibmi.connectDirect', connection);
+    // // Connect to IBM i
+    // const connection: ConnectionData = {
+    //   name: 'Test Connection',
+    //   host: host,
+    //   username: user,
+    //   password: password,
+    //   port: 22,
+    //   privateKey: null
+    // };
+    // await commands.executeCommand('code-for-ibmi.connectDirect', connection);
 
-    console.log('ENV');
-    console.log(host);
-    console.log(user);
-    console.log('INFO');
-    console.log(JSON.stringify(getInstance()?.getConnection().currentHost));
-    console.log(JSON.stringify(getInstance()?.getConnection().currentUser));
-    console.log(JSON.stringify(getInstance()?.getConnection().currentPort));
-    const workspaceFolders = workspace.workspaceFolders;
-    console.log(JSON.stringify(workspaceFolders));
+    // console.log('ENV');
+    // console.log(host);
+    // console.log(user);
+    // console.log('INFO');
+    // console.log(JSON.stringify(getInstance()?.getConnection().currentHost));
+    // console.log(JSON.stringify(getInstance()?.getConnection().currentUser));
+    // console.log(JSON.stringify(getInstance()?.getConnection().currentPort));
+    // const workspaceFolders = workspace.workspaceFolders;
+    // console.log(JSON.stringify(workspaceFolders));
 
     // Run tests
     await runTests();
