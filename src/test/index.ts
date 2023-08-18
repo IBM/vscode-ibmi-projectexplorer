@@ -116,6 +116,9 @@ export async function run(connect: boolean = true) {
     };
     await commands.executeCommand('code-for-ibmi.connectDirect', connection);
 
+    console.log('ENV');
+    console.log(host);
+    console.log(user);
     console.log('INFO');
     console.log(JSON.stringify(getInstance()?.getConnection().currentHost));
     console.log(JSON.stringify(getInstance()?.getConnection().currentUser));
