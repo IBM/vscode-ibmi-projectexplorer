@@ -29,7 +29,7 @@
 				"${workspaceFolder}/out/**/*.js"
 			],
 			"sourceMaps": true,
-			"preLaunchTask": "npm: pretest",
+			"preLaunchTask": "npm: compile-tests",
 			"env": {
 				"testing": "true"
 			}
