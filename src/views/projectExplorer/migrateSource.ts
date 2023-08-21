@@ -114,7 +114,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
                 progress.report({ message: l10n.t('Downloading tarball to workspace...'), increment: increment });
                 try {
                     await connection.downloadFile(localTarball, remoteTarball);
-                    await connection.sendCommand({ command: `rm ${remoteTarball}}` });
+                    await connection.sendCommand({ command: `rm -rf ${tempDirectory}` });
                 } catch (error) {
                     window.showErrorMessage(l10n.t('Failed to download tarball to workspace'));
                     return migrationResult;
