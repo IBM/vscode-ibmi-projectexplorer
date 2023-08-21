@@ -159,11 +159,12 @@ export async function migrateSource(iProject: IProject, library: string): Promis
 
         // Output migration result
         if (migrationResult.numSuccess === migrationResult.numFiles && !migrationResult.error) {
-            window.showInformationMessage(l10n.t('Successfully migrated {0}/{1} source file(s)',
-                migrationResult.numSuccess, migrationResult.numFiles));
+            window.showInformationMessage(l10n.t('Successfully migrated {0}/{1} source file(s) from {2}',
+                migrationResult.numSuccess, migrationResult.numFiles, library));
         } else if (!migrationResult.error) {
-            window.showErrorMessage(l10n.t('Failed to migrate {0}/{1} source file(s)',
-                (migrationResult.numFiles - migrationResult.numSuccess), migrationResult.numFiles), l10n.t('View log')).then(async choice => {
+            window.showErrorMessage(l10n.t('Failed to migrate {0}/{1} source file(s) from {2}',
+                (migrationResult.numFiles - migrationResult.numSuccess), migrationResult.numFiles, library), l10n.t('View log'))
+                .then(async choice => {
                     if (choice === l10n.t('View log')) {
                         connection.outputChannel?.show();
                     }
