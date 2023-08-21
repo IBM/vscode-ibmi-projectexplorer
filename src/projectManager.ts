@@ -7,6 +7,7 @@ import { IProject } from "./iproject";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 import Project from "./views/projectExplorer/project";
 import { Validator } from "jsonschema";
+import { ConfigurationManager, ConfigurationSection } from "./configurationManager";
 
 /**
  * Project explorer events each serve a different purpose:
@@ -199,7 +200,10 @@ export class ProjectManager {
             };
         }
 
-        await commands.executeCommand('setContext', 'code-for-ibmi:libraryListDisabled', this.activeProject ? true : false);
+        const disableUserLibraryList = ConfigurationManager.get(ConfigurationSection.disableUserLibraryList);
+        if (disableUserLibraryList) {
+            await commands.executeCommand('setContext', 'code-for-ibmi:libraryListDisabled', this.activeProject ? true : false);
+        }
         await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:hasActiveProject', this.activeProject ? true : false);
         this.fire({ type: 'activeProject', iProject: this.activeProject });
     }

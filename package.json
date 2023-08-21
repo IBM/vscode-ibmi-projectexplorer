@@ -981,6 +981,16 @@
         }
       ]
     },
+    "configuration": {
+      "title": "%configuration.title%",
+      "properties": {
+        "IBM i Project Explorer.disableUserLibraryList": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.IBM i Project Explorer.disableUserLibraryList%"
+        }
+      }
+    },
     "jsonValidation": [
       {
         "fileMatch": [
@@ -1180,7 +1190,7 @@
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "@vscode/l10n-dev": "^0.0.29",
-    "esbuild-loader": "^4.0.0",
+    "esbuild-loader": "^4.0.1",
     "eslint": "^8.47.0",
     "tar": "^6.1.15",
     "typescript": "^5.1.6",
