@@ -981,6 +981,16 @@
         }
       ]
     },
+    "configuration": {
+      "title": "%configuration.title%",
+      "properties": {
+        "IBM i Project Explorer.disableUserLibraryList": {
+          "type": "boolean",
+          "default": true,
+          "description": "%configuration.IBM i Project Explorer.disableUserLibraryList%"
+        }
+      }
+    },
     "jsonValidation": [
       {
         "fileMatch": [
