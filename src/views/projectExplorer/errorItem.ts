@@ -7,6 +7,7 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import Library from "./library";
 import { Position } from "../../iproject";
+import { EnvironmentManager } from "../../environmentManager";
 
 /**
  * Tree item for error information.
@@ -72,6 +73,8 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
   }
 
   static createNoConnectionError(workspaceFolder: WorkspaceFolder, label: string): ErrorItem {
+    const isInMerlin = EnvironmentManager.isInMerlin();
+
     return new ErrorItem(
       workspaceFolder,
       label,
@@ -79,7 +82,7 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
         description: l10n.t('Please connect to an IBM i'),
         contextValue: ErrorItem.contextValue + ContextValue.openConnectionBrowser,
         command: {
-          command: `connectionBrowser.focus`,
+          command: isInMerlin ? `ibmideveloper.connectionBrowser.focus` : `connectionBrowser.focus`,
           title: l10n.t('Open Connection Browser')
         }
       }
