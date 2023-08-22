@@ -94,7 +94,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
             if (unresolvedState) {
               const command = await window.showInputBox({
-                prompt: l10n.t('Enter build command'),
+                prompt: l10n.t('Enter build command (')
+                  + l10n.t('{0} resolves to the base file name being edited. ', '{filename}')
+                  + l10n.t('{0} resolves to the full IFS path corresponding to the source in the editor. ', '{path}')
+                  + l10n.t('{0} resolves to the IBM i hostname. ', '{host}')
+                  + l10n.t('{0} resolves to the user profile that the command will be executed under. ', '{usrprf}')
+                  + l10n.t('{0} resolves to the name of the current git branch if this project is managed by git.)', '{branch}'),
                 placeHolder: l10n.t('Build command'),
                 value: unresolvedState.buildCommand,
               });
@@ -135,7 +140,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
             if (unresolvedState) {
               const command = await window.showInputBox({
-                prompt: l10n.t('Enter compile command'),
+                prompt: l10n.t('Enter compile command (')
+                  + l10n.t('{0} resolves to the base file name being edited. ', '{filename}')
+                  + l10n.t('{0} resolves to the full IFS path corresponding to the source in the editor. ', '{path}')
+                  + l10n.t('{0} resolves to the IBM i hostname. ', '{host}')
+                  + l10n.t('{0} resolves to the user profile that the command will be executed under. ', '{usrprf}')
+                  + l10n.t('{0} resolves to the name of the current git branch if this project is managed by git.)', '{branch}'),
                 placeHolder: l10n.t('Compile command'),
                 value: unresolvedState.compileCommand,
               });
