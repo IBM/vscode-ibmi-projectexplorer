@@ -2,6 +2,10 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+## `1.2.0`
+
+- 
+
 ## `1.1.0`
 
 - Add offline project support
