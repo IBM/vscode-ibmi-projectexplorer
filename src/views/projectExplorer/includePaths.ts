@@ -65,13 +65,13 @@ export default class IncludePaths extends TreeItem implements ProjectExplorerTre
             // Relative local include path
             items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, position, variable));
           } catch (e) {
-            const deployDir = iProject!.getDeployDir();
-            if (includePath.startsWith('/') || !deployDir) {
+            const deployLocation = iProject!.getDeployLocation();
+            if (includePath.startsWith('/') || !deployLocation) {
               // Absolute remote include path
               items.push(new RemoteIncludePath(this.workspaceFolder, includePath, position, variable));
             } else {
               // Relative remote include path
-              const absoluteIncludePath = path.posix.join(deployDir, includePath);
+              const absoluteIncludePath = path.posix.join(deployLocation, includePath);
               items.push(new RemoteIncludePath(this.workspaceFolder, absoluteIncludePath, position, variable, { label: includePath }));
             }
           }

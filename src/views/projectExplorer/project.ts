@@ -23,6 +23,7 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
   static contextValue = ContextValue.project;
   static callBack: ((iProject: IProject) => Promise<ProjectExplorerTreeItem[]>)[] = [];
   private extensibleChildren: ProjectExplorerTreeItem[] = [];
+  public children: ProjectExplorerTreeItem[] = [];
 
   constructor(public workspaceFolder: WorkspaceFolder, state?: IProjectT) {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
@@ -45,9 +46,10 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
     const iProject = ProjectManager.get(this.workspaceFolder);
 
     if (ibmi && ibmi.getConnection()) {
-      const deployDir = iProject!.getDeployDir();
-      if (deployDir) {
-        items.push(new Source(this.workspaceFolder, deployDir));
+      const deploymentParameters = await iProject?.getDeploymentParameters();
+
+      if (deploymentParameters && deploymentParameters.remotePath) {
+        items.push(new Source(this.workspaceFolder, deploymentParameters));
       } else {
         items.push(ErrorItem.createNoDeployLocationError(this.workspaceFolder));
       }
@@ -91,6 +93,7 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
     }
     items.push(...this.extensibleChildren);
 
+    this.children = items;
     return items;
   }
 
