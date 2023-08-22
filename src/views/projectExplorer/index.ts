@@ -25,6 +25,7 @@ import RemoteIncludePath from "./remoteIncludePath";
 import Source from "./source";
 import SourceFile from "./sourceFile";
 import Variable from "./variable";
+import { EnvironmentManager } from "../../environmentManager";
 
 /**
  * Represents the Project Explorer tree data provider.
@@ -1007,7 +1008,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.openConnectionBrowser`, async (element: ErrorItem) => {
         if (element) {
-          await commands.executeCommand(`connectionBrowser.focus`);
+          const isInMerlin = EnvironmentManager.isInMerlin();
+          await commands.executeCommand(isInMerlin ? `ibmideveloper.connectionBrowser.focus` : `connectionBrowser.focus`);
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.setDeployLocation`, async (element: ErrorItem | WorkspaceFolder) => {
