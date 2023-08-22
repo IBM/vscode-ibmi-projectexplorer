@@ -2,12 +2,12 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { Action, DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import * as dotenv from 'dotenv';
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
 import { TextEncoder } from "util";
-import { l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { commands, l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import envUpdater from "./envUpdater";
 import { getDeployTools, getInstance } from "./ibmi";
 import { IBMiJsonT } from "./ibmiJsonT";
@@ -428,6 +428,88 @@ export class IProject {
   }
 
   /**
+   * Run the project's build or compile command.
+   * 
+   * @param isBuild True for build command and false for compile command.
+   */
+  public async runBuildOrCompileCommand(isBuild: boolean) {
+    const unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      const command = isBuild ? unresolvedState.buildCommand : unresolvedState.compileCommand;
+
+      if (command) {
+        for await (const folder of ['.logs', '.evfevent']) {
+          const folderUri = Uri.file(path.join(this.workspaceFolder.uri.fsPath, folder));
+          try {
+            await workspace.fs.stat(folderUri);
+            await workspace.fs.delete(folderUri, { recursive: true });
+          } finally {
+            await workspace.fs.createDirectory(folderUri);
+          }
+        }
+
+        const action: Action = {
+          name: command,
+          command: command,
+          environment: `pase`,
+          extensions: [`GLOBAL`],
+          deployFirst: true,
+          type: `file`,
+          postDownload: [
+            ".logs",
+            ".evfevent"
+          ]
+        };
+        await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
+        ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
+      } else {
+        if (isBuild) {
+          window.showErrorMessage(l10n.t('Project\'s build command not set'), l10n.t('Set Build Command'))
+            .then(async (item) => {
+              if (item === l10n.t('Set Build Command')) {
+                await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, this);
+              }
+            });
+        } else {
+          window.showErrorMessage(l10n.t('Project\'s compile command not set'), l10n.t('Set Compile Command'))
+            .then(async (item) => {
+              if (item === l10n.t('Set Compile Command')) {
+                await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`, this);
+              }
+            });
+        }
+      }
+    }
+  }
+
+  /**
+   * Set the `buildCommand` or `compileCommand` attribute of the project's
+   * `iproj.json.
+   * 
+   * @param command The command to set.
+   * @param isBuild True for build command and false for compile command.
+   */
+  public async setBuildOrCompileCommand(command: string, isBuild: boolean) {
+    const unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      const attribute = isBuild ? 'buildCommand' : 'compileCommand';
+
+      if (unresolvedState[attribute] === command) {
+        window.showErrorMessage(isBuild ? l10n.t('Build command already set to {0}', command) : l10n.t('Compile command already set to {0}', command));
+        return;
+      } else {
+        unresolvedState[attribute] = command;
+      }
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+  }
+
+  /**
    * Add a directory to the `includePath` attribute of the project's `iproj.json`
    * file. *Note* that directories will be resolved based on the project's
    * deploy location.
@@ -468,9 +550,9 @@ export class IProject {
    * to a variable. *Note* that the variable and value will also be added to the 
    * project's `.env` file.
    * 
-   * @param attributes 
-   * @param variable 
-   * @param value 
+   * @param attributes The attributes to update.
+   * @param variable The variable to set.
+   * @param value The value of the variable.
    */
   public async configureAsVariable(attributes: (keyof IProjectT)[], variable: string, value: string) {
     const unresolvedState = await this.getUnresolvedState();
@@ -1190,11 +1272,7 @@ export class IProject {
    */
   public async deployProject() {
     const deployTools = getDeployTools();
-    const deploymentParameters = await this.getDeploymentParameters();
-
-    if (deploymentParameters) {
-      await deployTools?.deploy(deploymentParameters);
-    }
+    await deployTools?.launchDeploy(this.workspaceFolder.index, this.deploymentMethod);
   }
 
   /**
