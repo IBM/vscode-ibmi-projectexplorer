@@ -144,12 +144,12 @@ export async function migrateSource(iProject: IProject, library: string): Promis
 
             const workspaceFolder = workspace.getWorkspaceFolder(migrationConfig.workspaceFolderUri!);
             if (migrationConfig.automaticRename) {
-                progress.report({ message: l10n.t('Running automatic rename...'), increment: increment });
+                progress.report({ message: l10n.t('Renaming file extensions to be more precise...'), increment: increment });
                 await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'renames');
             }
 
             if (migrationConfig.fixIncludes) {
-                progress.report({ message: l10n.t('Fixing includes...'), increment: increment });
+                progress.report({ message: l10n.t('Adjusting include statements to IFS syntax...'), increment: increment });
                 await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'includes');
             }
 
