@@ -45,7 +45,9 @@
   "Description: {0}\n": "Description: {0}\n",
   "Version: {0}\n": "Version: {0}\n",
   "Repository: {0}\n": "Repository: {0}\n",
-  "License: {0}": "License: {0}",
+  "License: {0}\n": "License: {0}\n",
+  "Build Command: {0}\n": "Build Command: {0}\n",
+  "Compile Command: {0}": "Compile Command: {0}",
   "Library List": "Library List",
   "Object Libraries": "Object Libraries",
   "Work with the set of libraries defined in the curlib, objlib, preUsrlibl, and postUsrlibl entries of the iproj.json": "Work with the set of libraries defined in the curlib, objlib, preUsrlibl, and postUsrlibl entries of the iproj.json",
@@ -154,6 +156,7 @@
   "Create .env": "Create .env",
   "Unable to retrieve environment variables": "Unable to retrieve environment variables",
   "Not specified": "Not specified",
+  "License: {0}": "License: {0}",
   "No job log found": "No job log found",
   "No build output found": "No build output found",
   "Failed to copy command": "Failed to copy command"
