@@ -108,6 +108,12 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.refresh",
+        "title": "%commands.projectExplorer.refresh%",
+        "icon": "$(refresh)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
         "title": "%commands.projectExplorer.setActiveProject%",
         "icon": "$(circle-filled)"
@@ -130,11 +136,30 @@
         "title": "%commands.projectExplorer.migrateSource%"
       },
       {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
         "title": "%commands.projectExplorer.editDeployLocation%",
         "icon": "$(edit)"
       },
       {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod",
+        "title": "%commands.projectExplorer.setDeploymentMethod%",
+        "icon": "$(filter)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
+        "title": "%commands.projectExplorer.deployProject%",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.compareWithRemote",
+        "title": "%commands.projectExplorer.compareWithRemote%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
         "title": "%commands.projectExplorer.iprojShortcut%",
         "icon": "$(go-to-file)"
@@ -378,31 +403,37 @@
 				"enablement": "!code-for-ibmi:connected"
 			},
       {
-        "category": "Job Log",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
         "title": "%commands.jobLog.refreshJobLog%",
         "icon": "$(refresh)"
       },
       {
-        "category": "Job Log",
+        "category": "%commands.jobLog%",
+        "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
+        "title": "%commands.jobLog.refresh%",
+        "icon": "$(refresh)"
+      },
+      {
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
         "title": "%commands.jobLog.showJobLog%",
         "icon": "$(book)"
       },
       {
-        "category": "Job Log",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
         "title": "%commands.jobLog.showBuildOutput%",
         "icon": "$(note)"
       },
       {
-        "category": "Job Log",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
         "title": "%commands.jobLog.clearJobLogs%",
         "icon": "$(clear-all)"
       },
       {
-        "category": "Job Log",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.copy",
         "title": "%commands.jobLog.copy%",
         "icon": "$(copy)"
@@ -410,6 +441,10 @@
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.refresh",
+          "when": "never"
+        },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
           "when": "never"
@@ -428,6 +463,18 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.compareWithRemote",
           "when": "never"
         },
         {
@@ -604,6 +651,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.setDeployLocation",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
           "when": "never"
         },
         {
@@ -680,6 +731,11 @@
       ],
       "view/item/context": [
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.refresh",
+          "when": "view == projectExplorer && viewItem =~ /^(?!(objectFile(PHY|PF)|memberFile|sourceFile|ifsFile|variable(?!s)|includePath_local|error)).*/",
+          "group": "0_refresh"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.runAction",
           "when": "view == projectExplorer && viewItem =~ /^project.*/ && code-for-ibmi:connected",
           "group": "inline@0"
@@ -702,7 +758,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "3_migrate@0"
+          "group": "4_migrate@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
@@ -711,8 +767,23 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
-          "when": "view == projectExplorer && viewItem =~ /^source.*/",
+          "when": "view == projectExplorer && viewItem =~ /^source(?!(File|Directory)).*/",
           "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod",
+          "when": "view == projectExplorer && viewItem =~ /^source(?!(File|Directory)).*/",
+          "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
+          "when": "view == projectExplorer && viewItem =~ /^source(?!(File|Directory)).*/",
+          "group": "inline@2"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.compareWithRemote",
+          "when": "view == projectExplorer && viewItem =~ /^sourceFile.*/",
+          "group": "1_compare@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
@@ -752,7 +823,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "2_variable@1"
+          "group": "3_variable@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.assignToVariable",
@@ -797,12 +868,12 @@
         {
           "command": "vscode-ibmi-projectexplorer.configureAsVariable",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/ && viewItem =~ /^.*_configurable.*/",
-          "group": "2_variable@0"
+          "group": "3_variable@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.configureAsVariable",
           "when": "view == projectExplorer && viewItem =~ /^includePath(?!s).*/ && viewItem =~ /^.*_configurable.*/",
-          "group": "0_variable@0"
+          "group": "1_variable@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.moveIncludePathUp",
@@ -817,122 +888,122 @@
         {
           "command": "vscode-ibmi-projectexplorer.changeLibraryDescription",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "0_libraryActions@0"
+          "group": "1_libraryActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.copyLibrary",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "0_libraryActions@1"
+          "group": "1_libraryActions@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.renameLibrary",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "0_libraryActions@2"
+          "group": "1_libraryActions@2"
         },
         {
           "command": "vscode-ibmi-projectexplorer.clearLibrary",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "0_libraryActions@3"
+          "group": "1_libraryActions@3"
         },
         {
           "command": "vscode-ibmi-projectexplorer.deleteLibrary",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "0_libraryActions@4"
+          "group": "1_libraryActions@4"
         },
         {
           "command": "vscode-ibmi-projectexplorer.createSourceFile",
           "when": "view == projectExplorer && viewItem =~ /^library(?!List).*/",
-          "group": "1_objectActions@0"
+          "group": "2_objectActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.runAction",
           "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
-          "group": "0_actions@0"
+          "group": "1_actions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.changeObjectDescription",
           "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
-          "group": "1_objectActions@0"
+          "group": "2_objectActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.copyObject",
           "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
-          "group": "1_objectActions@1"
+          "group": "2_objectActions@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.renameObject",
           "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
-          "group": "1_objectActions@2"
+          "group": "2_objectActions@2"
         },
         {
           "command": "vscode-ibmi-projectexplorer.deleteObject",
           "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
-          "group": "1_objectActions@3"
+          "group": "2_objectActions@3"
         },
         {
           "command": "vscode-ibmi-projectexplorer.moveObject",
           "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
-          "group": "1_objectActions@4"
+          "group": "2_objectActions@4"
         },
         {
           "command": "vscode-ibmi-projectexplorer.createMember",
           "when": "view == projectExplorer && viewItem =~ /^objectFile_PHY.*/",
-          "group": "2_memberActions@0"
+          "group": "3_memberActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.searchSourceFile",
           "when": "view == projectExplorer && viewItem =~ /^objectFile_PHY.*/",
-          "group": "3_search@0"
+          "group": "4_search@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.runAction",
           "when": "view == projectExplorer && viewItem =~ /^member.*/",
-          "group": "0_actions@0"
+          "group": "1_actions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.browse",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "1_browse@0"
+          "group": "2_browse@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.selectForCompare",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "2_compare@0"
+          "group": "3_compare@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.compareWithSelected",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "2_compare@1"
+          "group": "3_compare@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.updateMemberText",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "3_memberActions@0"
+          "group": "4_memberActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.copyMember",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "3_memberActions@1"
+          "group": "4_memberActions@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.renameMember",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "3_memberActions@2"
+          "group": "4_memberActions@2"
         },
         {
           "command": "vscode-ibmi-projectexplorer.deleteMember",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "3_memberActions@3"
+          "group": "4_memberActions@3"
         },
         {
           "command": "vscode-ibmi-projectexplorer.download",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "4_transfer@0"
+          "group": "5_transfer@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.uploadAndReplace",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
-          "group": "4_transfer@1"
+          "group": "5_transfer@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.addFolderToWorkspace",
@@ -950,6 +1021,11 @@
           "group": "inline@0"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
+          "when": "view == jobLog && viewItem =~ /^(?!message).*/",
+          "group": "0_refresh"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
           "when": "view == jobLog && viewItem =~ /^project.*/",
           "group": "inline@0"
@@ -957,7 +1033,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
           "when": "view == jobLog && viewItem =~ /^project.*/",
-          "group": "0_viewFile@0"
+          "group": "1_viewFile@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
@@ -967,12 +1043,12 @@
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
           "when": "view == jobLog && viewItem =~ /^project.*/",
-          "group": "0_viewFile@1"
+          "group": "1_viewFile@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
           "when": "view == jobLog && viewItem =~ /^project.*/",
-          "group": "1_modification@0"
+          "group": "2_modification@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
@@ -1197,6 +1273,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.3",
+    "ignore": "^5.2.4",
     "jsonschema": "^1.4.1"
   }
 }

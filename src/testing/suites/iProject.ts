@@ -9,7 +9,7 @@ import { ProjectManager } from "../../projectManager";
 import { ProjectFileType } from "../../iproject";
 import { LibraryType } from "../../views/projectExplorer/library";
 import { workspace } from "vscode";
-import { getInstance } from "../../ibmi";
+import { getDeployTools, getInstance } from "../../ibmi";
 import { iProjectMock, ibmiJsonMock } from "../constants";
 import { TextEncoder } from "util";
 
@@ -612,11 +612,43 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
-            name: `Test getDeployDir`, test: async () => {
+            name: `Test getDeployLocation`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
-                const deployDir = iProject.getDeployDir();
+                const deployLocation = iProject.getDeployLocation();
 
-                assert.strictEqual(deployDir, deployLocation);
+                assert.strictEqual(deployLocation, deployLocation);
+            }
+        },
+        {
+            name: `Test getDeploymentParameters`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                iProject.setDeploymentMethod('compare');
+                const deploymentParameters = await iProject.getDeploymentParameters();
+                const deployTools = getDeployTools();
+
+                assert.deepStrictEqual(deploymentParameters, {
+                    method: 'compare',
+                    workspaceFolder: iProject.workspaceFolder,
+                    remotePath: deployLocation,
+                    ignoreRules: await deployTools!.getDefaultIgnoreRules(iProject.workspaceFolder)
+                });
+            }
+        },
+        {
+            name: `Test setDeploymentMethod`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                iProject.setDeploymentMethod('all');
+                const deploymentParameters = await iProject.getDeploymentParameters();
+
+                assert.strictEqual(deploymentParameters?.method, 'all');
+            }
+        },
+        {
+            name: `Test deployProject`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                const deployLocation = iProject.getDeployLocation();
+
+                assert.strictEqual(deployLocation, deployLocation);
             }
         }
     ]

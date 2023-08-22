@@ -2,14 +2,14 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import * as dotenv from 'dotenv';
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
 import { TextEncoder } from "util";
 import { l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
 import envUpdater from "./envUpdater";
-import { getInstance } from "./ibmi";
+import { getDeployTools, getInstance } from "./ibmi";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { IProjectT } from "./iProjectT";
 import { JobLogInfo } from "./jobLog";
@@ -91,6 +91,11 @@ export class IProject {
   private environmentValues: EnvironmentVariables;
 
   /**
+   * Represents the project's current deployment method.
+   */
+  private deploymentMethod: DeploymentMethod;
+
+  /**
    * Represents the validation result of the project against the `iproj.json`
    * schema.
    */
@@ -103,6 +108,7 @@ export class IProject {
     this.libraryList = undefined;
     this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
+    this.deploymentMethod = 'compare';
   }
 
   /**
@@ -429,9 +435,9 @@ export class IProject {
    * @param directory The directory to add.
    */
   public async addToIncludePaths(directory: string) {
-    const deployDir = this.getDeployDir();
-    if (deployDir) {
-      const relative = path.posix.relative(deployDir, directory);
+    const deployLocation = this.getDeployLocation();
+    if (deployLocation) {
+      const relative = path.posix.relative(deployLocation, directory);
 
       if (!relative.startsWith("..") && relative !== '') {
         directory = relative;
@@ -1124,10 +1130,10 @@ export class IProject {
   /**
    * Get the project's deploy location. *Note* that for a project that
    * has not set their deploy location, `undefined` will be returned.
-   * 
+   *
    * @returns The project's deploy location or `undefined`.
    */
-  public getDeployDir(): string | undefined {
+  public getDeployLocation(): string | undefined {
     const ibmi = getInstance();
     const storage = ibmi?.getStorage();
     if (storage) {
@@ -1150,9 +1156,51 @@ export class IProject {
   }
 
   /**
+   * Get the project's deployment parameters which includes the workspace folder,
+   * deployment method, remote path, and ignore rules.
+   * 
+   * @returns The project's deployment parameters or `undefined`.
+   */
+  public async getDeploymentParameters(): Promise<DeploymentParameters | undefined> {
+    const deployLocation = this.getDeployLocation();
+
+    if (deployLocation) {
+      const deployTools = getDeployTools();
+
+      return {
+        method: this.deploymentMethod,
+        workspaceFolder: this.workspaceFolder,
+        remotePath: deployLocation,
+        ignoreRules: await deployTools?.getDefaultIgnoreRules(this.workspaceFolder)
+      };
+    }
+  }
+
+  /**
+   * Set the project's deployment method.
+   * 
+   * @param deploymentMethod The deployment method.
+   */
+  public setDeploymentMethod(deploymentMethod: DeploymentMethod) {
+    this.deploymentMethod = deploymentMethod;
+  }
+
+  /**
+   * Deploy the project using the current deployment parameters.
+   */
+  public async deployProject() {
+    const deployTools = getDeployTools();
+    const deploymentParameters = await this.getDeploymentParameters();
+
+    if (deploymentParameters) {
+      await deployTools?.deploy(deploymentParameters);
+    }
+  }
+
+  /**
    * Get all the project job logs which includes the local `joblog.json`
    * and any kept in memory.
-   * 
+   *
    * @returns The project's job logs.
    */
   public getJobLogs(): JobLogInfo[] {

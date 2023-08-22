@@ -9,16 +9,16 @@ import * as path from "path";
 import { TreeItem, Uri, extensions, workspace } from "vscode";
 import { IBMiProjectExplorer } from "../../ibmiProjectExplorer";
 import ProjectExplorer from "../../views/projectExplorer";
-import { getDeploy, getInstance } from "../../ibmi";
+import { getInstance } from "../../ibmi";
 import { ProjectExplorerTreeItem } from "../../views/projectExplorer/projectExplorerTreeItem";
 import MemberFile from "../../views/projectExplorer/memberFile";
-import IFSDirectory from "../../views/projectExplorer/ifsDirectory";
+import SourceDirectory from "../../views/projectExplorer/sourceDirectory";
 import { iProjectMock } from "../constants";
 
 class File {
     readonly name: string;
     readonly content: string;
-    localPath?: Uri;
+    localUri?: Uri;
 
     constructor(name: string, content: string) {
         this.name = name;
@@ -30,7 +30,7 @@ type Folder = {
     name: string,
     folders?: Folder[],
     files?: File[],
-    localPath?: Uri
+    localUri?: Uri
 };
 
 const testFolder: Folder = {
@@ -76,8 +76,8 @@ export const projectExplorerTreeItemSuite: TestSuite = {
         deployLocation = ibmi!.getConnection().getTempRemote(iProject.getName());
         existingPaths[iProject.workspaceFolder.uri.fsPath] = deployLocation;
         await storage.setDeployment(existingPaths);
-        const deploy = getDeploy()!;
-        await deploy({ method: 'all', workspaceFolder: iProject.workspaceFolder, remotePath: deployLocation });
+        iProject.setDeploymentMethod('all');
+        await iProject.deployProject();
     },
     afterAll: async () => {
         const iProject = ProjectManager.getProjects()[0];
@@ -97,12 +97,14 @@ export const projectExplorerTreeItemSuite: TestSuite = {
         },
         {
             name: `Test project`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                const deploymentMethod = (await iProject.getDeploymentParameters())!.method;
                 const projectTreeItem = (await projectExplorer!.getChildren())[0];
                 const children = await projectExplorer?.getChildren(projectTreeItem)!;
 
                 assertTreeItem(children[0], {
                     label: 'Source',
-                    description: deployLocation
+                    description: `${deployLocation} (${deploymentMethod})`
                 });
                 assertTreeItem(children[1], {
                     label: 'Variables'
@@ -122,51 +124,29 @@ export const projectExplorerTreeItemSuite: TestSuite = {
             name: `Test source`, test: async () => {
                 const projectTreeItem = (await projectExplorer!.getChildren())[0];
                 const sourceTreeItem = (await projectExplorer?.getChildren(projectTreeItem)!)[0];
-                const children = await projectExplorer?.getChildren(sourceTreeItem)!;
-                const folder1 = children.find(child => child.label === testFolder.name)! as IFSDirectory;
+                const sourceChildren = await projectExplorer?.getChildren(sourceTreeItem)!;
+                const folder1 = sourceChildren.find(child => child.label === testFolder.name)! as SourceDirectory;
 
                 assertTreeItem(folder1, {
-                    label: testFolder.name,
-                    ifsDirectoryInfo: {
-                        type: 'directory',
-                        name: testFolder.name,
-                        path: path.posix.join(deployLocation, testFolder.name),
-                        size: folder1.ifsDirectoryInfo.size,
-                        modified: folder1.ifsDirectoryInfo.modified,
-                        owner: folder1.ifsDirectoryInfo.owner
-                    }
+                    label: testFolder.name
                 });
             }
         },
         {
-            name: `Test IFS directory`, test: async () => {
+            name: `Test source directory`, test: async () => {
                 const projectTreeItem = (await projectExplorer!.getChildren())[0];
                 const sourceTreeItem = (await projectExplorer?.getChildren(projectTreeItem)!)[0];
                 const sourceChildren = await projectExplorer?.getChildren(sourceTreeItem)!;
-                const folder1 = sourceChildren.find(child => child.label === testFolder.name)!;
-                const children = await projectExplorer?.getChildren(folder1)! as any[];
+                const folder1TreeItem = sourceChildren.find(child => child.label === testFolder.name);
+                const folder1Children = await folder1TreeItem!.getChildren();
+                const folder11 = folder1Children.find(child => child.label === testFolder.folders![0].name)!;
+                const file11 = folder1Children.find(child => child.label === testFolder.files![0].name)!;
 
-                assertTreeItem(children[0], {
-                    label: testFolder.files![0].name,
-                    ifsFileInfo: {
-                        type: 'streamfile',
-                        name: testFolder.files![0].name,
-                        path: path.posix.join(deployLocation, testFolder.name, testFolder.files![0].name),
-                        size: children[0].ifsFileInfo.size,
-                        modified: children[0].ifsFileInfo.modified,
-                        owner: children[0].ifsFileInfo.owner
-                    }
+                assertTreeItem(folder11, {
+                    label: testFolder.folders![0].name
                 });
-                assertTreeItem(children[1], {
-                    label: testFolder.folders![0].name,
-                    ifsDirectoryInfo: {
-                        type: 'directory',
-                        name: testFolder.folders![0].name,
-                        path: path.posix.join(deployLocation, testFolder.name, testFolder.folders![0].name),
-                        size: children[1].ifsDirectoryInfo.size,
-                        modified: children[1].ifsDirectoryInfo.modified,
-                        owner: children[1].ifsDirectoryInfo.owner
-                    }
+                assertTreeItem(file11, {
+                    label: testFolder.files![0].name
                 });
             }
         },
@@ -412,7 +392,32 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                     }
                 });
             }
-        }
+        },
+        {
+            name: `Test IFS directory`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                await deleteFolder(iProject.workspaceFolder.uri, testFolder);
+                const projectTreeItem = (await projectExplorer!.getChildren())[0];
+                const includePathsTreeItem = (await projectExplorer?.getChildren(projectTreeItem)!)[4];
+                const includePathsChildren = await projectExplorer?.getChildren(includePathsTreeItem)!;
+                const remoteIncludePathTreeItem = includePathsChildren.find(child => child.label === testFolder.name)!;
+                const remoteIncludePathChildren = await projectExplorer?.getChildren(remoteIncludePathTreeItem)!;
+                const folder1TreeItem = remoteIncludePathChildren.find(child => child.label === testFolder.folders![0].name)!;
+                const children = await projectExplorer?.getChildren(folder1TreeItem)! as any[];
+
+                assertTreeItem(children[0], {
+                    label: testFolder.folders![0].files![0].name,
+                    ifsFileInfo: {
+                        type: 'streamfile',
+                        name: testFolder.folders![0].files![0].name,
+                        path: path.posix.join(deployLocation, testFolder.name, testFolder.folders![0].name, testFolder.folders![0].files![0].name),
+                        size: children[0].ifsFileInfo.size,
+                        modified: children[0].ifsFileInfo.modified,
+                        owner: children[0].ifsFileInfo.owner
+                    }
+                });
+            }
+        },
     ]
 };
 
@@ -423,24 +428,24 @@ function assertTreeItem(treeItem: ProjectExplorerTreeItem, attributes: { [key: s
 }
 
 async function createFolder(parent: Uri, folder: Folder) {
-    folder.localPath = Uri.joinPath(parent, folder.name);
-    await workspace.fs.createDirectory(folder.localPath);
+    folder.localUri = Uri.joinPath(parent, folder.name);
+    await workspace.fs.createDirectory(folder.localUri);
 
     for await (const file of folder.files || []) {
-        await createFile(folder.localPath!, file);
+        await createFile(folder.localUri!, file);
     }
 
     for await (const childFolder of folder.folders || []) {
-        await createFolder(folder.localPath!, childFolder);
+        await createFolder(folder.localUri!, childFolder);
     }
 }
 
 async function createFile(folder: Uri, file: File): Promise<void> {
-    file.localPath = Uri.joinPath(folder, file.name);
-    await workspace.fs.writeFile(file.localPath, Buffer.from(file.content));
+    file.localUri = Uri.joinPath(folder, file.name);
+    await workspace.fs.writeFile(file.localUri, Buffer.from(file.content));
 }
 
 async function deleteFolder(parent: Uri, folder: Folder) {
-    folder.localPath = Uri.joinPath(parent, folder.name);
-    await workspace.fs.delete(folder.localPath, { recursive: true });
+    folder.localUri = Uri.joinPath(parent, folder.name);
+    await workspace.fs.delete(folder.localUri, { recursive: true });
 }
