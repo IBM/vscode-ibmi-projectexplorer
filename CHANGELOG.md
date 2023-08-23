@@ -4,7 +4,14 @@ All notable changes to the "vscode-ibmi-projectexplorer" extension will be docum
 
 ## `1.2.0`
 
-- 
+- Add Connect to/Connect previous actions to project explorer
+- Fix IProject state "extensions" mapping
+- Add variable support for `extensions` attribute in `iproj.json`
+- Add configuration to enable/disable Code4i user library list view
+- Add `Set Deployment Method` and `Deploy Project` actions
+- Add Environment Manager to detect if running in Merlin
+- Add clean up from Source Orbit to source migration
+- Add build/compile actions and improved optional action support
 
 ## `1.1.0`
 
