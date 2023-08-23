@@ -889,7 +889,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut",
-          "when": "view == projectExplorer && viewItem =~ /^project.*/",
+          "when": "view == projectExplorer && viewItem =~ /^(project|error_resolveIProj).*/",
           "group": "inline@1"
         },
         {
