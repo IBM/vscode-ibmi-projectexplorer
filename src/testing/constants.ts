@@ -14,7 +14,8 @@ export const iProjectMock: IProjectT = {
     "includePath": ["includes", "QPROTOSRC", "&path1", "&path2"],
     "preUsrlibl": ["&lib1", "&lib2"],
     "postUsrlibl": ["&lib3", "&lib4"],
-    "setIBMiEnvCmd": []
+    "setIBMiEnvCmd": [],
+    "extensions": new Map<string, object>([["vendor1", { "keyA": "&valueA" }], ["vendor2", { "keyB": "VALUEB" }]])
 };
 
 export const ibmiJsonMock: IBMiJsonT = {

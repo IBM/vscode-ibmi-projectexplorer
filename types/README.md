@@ -159,6 +159,8 @@ Refer to the different events below.
 | `activeProject`  | Fired when there is a change to the active project                       |
 | `libraryList`    | Fired when there is a change to a project's library list                 |
 | `deployLocation` | Fired when there is a change to a project's deploy location              |
+| `build`          | Fired when a build is finished                                           |
+| `compile`        | Fired when a compile is finished                                         |
 
 ---
 

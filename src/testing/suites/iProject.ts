@@ -9,7 +9,7 @@ import { ProjectManager } from "../../projectManager";
 import { ProjectFileType } from "../../iproject";
 import { LibraryType } from "../../views/projectExplorer/library";
 import { workspace } from "vscode";
-import { getInstance } from "../../ibmi";
+import { getDeployTools, getInstance } from "../../ibmi";
 import { iProjectMock, ibmiJsonMock } from "../constants";
 import { TextEncoder } from "util";
 
@@ -41,6 +41,7 @@ export const iProjectSuite: TestSuite = {
         await iProject.updateEnv('lib1', 'SYSTOOLS');
         await iProject.updateEnv('lib3', 'QSYSINC');
         await iProject.updateEnv('path1', 'PATH1');
+        await iProject.updateEnv('valueA', 'VALUEA');
 
         await iProject.updateIProj(iProjectMock);
         await iProject.updateIBMiJson(ibmiJsonMock, iProject.workspaceFolder.uri);
@@ -90,6 +91,7 @@ export const iProjectSuite: TestSuite = {
                 const env6 = iProject.resolveVariable('&lib2', env);
                 const env7 = iProject.resolveVariable('&lib3', env);
                 const env8 = iProject.resolveVariable('&lib4', env);
+                const env9 = iProject.resolveVariable('&valueA', env);
 
                 assert.strictEqual(env1, '&OBJLIB');
                 assert.strictEqual(env2, 'QGPL');
@@ -99,6 +101,7 @@ export const iProjectSuite: TestSuite = {
                 assert.strictEqual(env6, '&lib2');
                 assert.strictEqual(env7, 'QSYSINC');
                 assert.strictEqual(env8, '&lib4');
+                assert.strictEqual(env9, 'VALUEA');
             }
         },
         {
@@ -114,7 +117,8 @@ export const iProjectSuite: TestSuite = {
                     "includePath": ["includes", "QPROTOSRC", "PATH1", "&path2"],
                     "preUsrlibl": ["SYSTOOLS", "&lib2"],
                     "postUsrlibl": ["QSYSINC", "&lib4"],
-                    "setIBMiEnvCmd": []
+                    "setIBMiEnvCmd": [],
+                    "extensions": new Map<string, object>([["vendor1", { "keyA": "VALUEA" }], ["vendor2", { "keyB": "VALUEB" }]])
                 });
             }
         },
@@ -155,6 +159,17 @@ export const iProjectSuite: TestSuite = {
                 const unresolvedState = await iProject.getUnresolvedState();
 
                 assert.deepStrictEqual(unresolvedState, iProjectMock);
+            }
+        },
+        {
+            name: `Test setBuildOrCompileCommand`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                await iProject.setBuildOrCompileCommand('makei build', true);
+                await iProject.setBuildOrCompileCommand('makei compile -f {filename}', false);
+                const state = await iProject.getState();
+
+                assert.deepStrictEqual(state?.buildCommand, 'makei build');
+                assert.deepStrictEqual(state?.compileCommand, 'makei compile -f {filename}');
             }
         },
         {
@@ -518,6 +533,7 @@ export const iProjectSuite: TestSuite = {
                     "lib4": '',
                     "path1": '',
                     "path2": '',
+                    "valueA": '',
                 });
             }
         },
@@ -535,6 +551,7 @@ export const iProjectSuite: TestSuite = {
                     "lib4": '',
                     "path1": 'PATH1',
                     "path2": '',
+                    "valueA": 'VALUEA',
                 });
             }
         },
@@ -554,6 +571,7 @@ export const iProjectSuite: TestSuite = {
                     "lib4": '',
                     "path1": 'PATH1',
                     "path2": '',
+                    "valueA": 'VALUEA',
                     "var": 'VAR'
                 });
             }
@@ -581,7 +599,7 @@ export const iProjectSuite: TestSuite = {
                 const iProject = ProjectManager.getProjects()[0];
                 const variables = await iProject.getVariables();
 
-                assert.deepStrictEqual(variables, ['CURLIB', 'OBJLIB', 'lib3', 'lib4', 'lib1', 'lib2', 'path1', 'path2']);
+                assert.deepStrictEqual(variables, ['CURLIB', 'OBJLIB', 'lib3', 'lib4', 'lib1', 'lib2', 'path1', 'path2', 'valueA']);
             }
         },
         {
@@ -605,11 +623,43 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
-            name: `Test getDeployDir`, test: async () => {
+            name: `Test getDeployLocation`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
-                const deployDir = iProject.getDeployDir();
+                const deployLocation = iProject.getDeployLocation();
 
-                assert.strictEqual(deployDir, deployLocation);
+                assert.strictEqual(deployLocation, deployLocation);
+            }
+        },
+        {
+            name: `Test getDeploymentParameters`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                iProject.setDeploymentMethod('compare');
+                const deploymentParameters = await iProject.getDeploymentParameters();
+                const deployTools = getDeployTools();
+
+                assert.deepStrictEqual(deploymentParameters, {
+                    method: 'compare',
+                    workspaceFolder: iProject.workspaceFolder,
+                    remotePath: deployLocation,
+                    ignoreRules: await deployTools!.getDefaultIgnoreRules(iProject.workspaceFolder)
+                });
+            }
+        },
+        {
+            name: `Test setDeploymentMethod`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                iProject.setDeploymentMethod('all');
+                const deploymentParameters = await iProject.getDeploymentParameters();
+
+                assert.strictEqual(deploymentParameters?.method, 'all');
+            }
+        },
+        {
+            name: `Test deployProject`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                const deployLocation = iProject.getDeployLocation();
+
+                assert.strictEqual(deployLocation, deployLocation);
             }
         }
     ]
