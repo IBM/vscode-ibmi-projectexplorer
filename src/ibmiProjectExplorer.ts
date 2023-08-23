@@ -65,6 +65,7 @@ export enum ContextValue {
   remote = '_remote',
   error = 'error',
   createIProj = '_createIProj',
+  resolveIProj = '_resolveIProj',
   createEnv = '_createEnv',
   addFolderToWorkspace = '_addFolderToWorkspace',
   openConnectionBrowser = '_openConnectionBrowser',

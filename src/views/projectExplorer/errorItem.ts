@@ -18,9 +18,8 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
   private constructor(public workspaceFolder: WorkspaceFolder | undefined, label: string, options: { description?: string, contextValue?: string, command?: Command, tooltip?: string } = {}) {
     super(label, TreeItemCollapsibleState.None);
 
-    this.contextValue = ErrorItem.contextValue;
     this.description = options.description;
-    this.contextValue = options.contextValue;
+    this.contextValue = options.contextValue ? options.contextValue : ErrorItem.contextValue;
     this.command = options.command;
     this.tooltip = options.tooltip;
     this.iconPath = new ThemeIcon(`error`);
@@ -62,6 +61,7 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
       workspaceFolder.name,
       {
         description: l10n.t('Please resolve project metadata'),
+        contextValue: ErrorItem.contextValue + ContextValue.resolveIProj,
         tooltip: l10n.t('This project contains the following errors:\n{0}', errors),
         command: {
           command: 'vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut',
