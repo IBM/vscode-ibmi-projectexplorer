@@ -839,6 +839,7 @@ export class IProject {
    */
   public setLibraryList(libraryList: LibraryList | undefined) {
     this.libraryList = libraryList;
+    ProjectManager.fire({ type: 'libraryList', iProject: this });
   }
 
   /**
