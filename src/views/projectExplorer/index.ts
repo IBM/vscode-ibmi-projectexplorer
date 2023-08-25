@@ -41,7 +41,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     ibmi?.onEvent(`connected`, () => {
       this.refresh();
 
-      currentDeploymentStorage = ibmi?.getStorage().getDeployment();
+      currentDeploymentStorage = JSON.parse(JSON.stringify(ibmi?.getStorage().getDeployment()));
     });
     ibmi?.onEvent(`deploy`, () => {
       this.refresh();
@@ -57,7 +57,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
       }
 
-      currentDeploymentStorage = newDeploymentStorage;
+      currentDeploymentStorage = JSON.parse(JSON.stringify(newDeploymentStorage));
     });
     ibmi?.onEvent(`disconnected`, () => {
       this.refresh();
