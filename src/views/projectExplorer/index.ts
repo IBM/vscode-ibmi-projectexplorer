@@ -680,34 +680,43 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: IncludePaths | any) => {
-        if (element instanceof IncludePaths) {
-          const iProject = ProjectManager.get(element.workspaceFolder);
+      commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: IncludePaths | Uri | any) => {
+        if (element) {
+          let iProject: IProject | undefined;
+          let includePath: string | undefined;
+          if (element instanceof IncludePaths) {
+            // Invoked from Include Paths heading
+            iProject = ProjectManager.get(element.workspaceFolder);
 
-          if (iProject) {
-            const includePath = await window.showInputBox({
-              prompt: l10n.t('Enter include path'),
-              placeHolder: l10n.t('Include path')
-            });
+            if (iProject) {
+              includePath = await window.showInputBox({
+                prompt: l10n.t('Enter include path'),
+                placeHolder: l10n.t('Include path')
+              });
+            }
+          } else if (element instanceof Uri) {
+            // Invoked from the file explorer
+            includePath = element.path;
+
+            iProject = ProjectManager.getProjectFromUri(element);
+          } else {
+            // Invoked from the Code4i IFS browser
+            includePath = element.path;
 
             if (includePath) {
-              await iProject.addToIncludePaths(includePath);
+              iProject = ProjectManager.getActiveProject();
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve path to directory'));
+              return;
             }
-          } else {
-            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
-        } else {
-          const includePath = element.path;
 
           if (includePath) {
-            const iProject = ProjectManager.getActiveProject();
             if (iProject) {
               await iProject.addToIncludePaths(includePath);
             } else {
               window.showErrorMessage(l10n.t('Failed to retrieve project'));
             }
-          } else {
-            window.showErrorMessage(l10n.t('Failed to retrieve path to directory'));
           }
         }
       }),
