@@ -2,9 +2,19 @@
    - [IBM i Project Explorer](./README.md)
    - [Code for IBM i](pages/welcome/code-for-ibm-i.md)
    - [Installation](./pages/welcome/installation.md)
-- Views
-   - [Project Explorer](pages/views/project-explorer.md)
-   - [Job Log](pages/views/job-log.md)
+- Project Explorer
+   - [Connecting to a Remote System](pages/projectExplorer/connecting-to-a-remote-system.md)
+   - [Source and Deployment](pages/projectExplorer/source-and-deployment.md)
+   - [Running Builds, Compiles, and Actions](pages/projectExplorer/running-builds-compiles-and-actions.md)
+   - [Working with Variables](pages/projectExplorer/working-with-variables.md)
+   - [Managing the Library List](pages/projectExplorer/managing-the-library-list.md)
+   - [Browsing Object Libraries](pages/projectExplorer/browsing-object-libraries.md)
+   - [Libraries, Objects, and Members](pages/projectExplorer/libraries-objects-and-members.md)
+   - [Adding Include Paths](pages/projectExplorer/adding-include-paths.md)
+   - [Setting the Active Project](pages/projectExplorer/setting-the-active-project.md)
+   - [Migrating Source](pages/projectExplorer/migrating-source.md)
+- Job Log
+   - [Viewing Job Logs](pages/jobLog/viewing-job-logs.md)
 - IBM i Projects
   - [Overview](pages/ibm-i-projects/overview.md)
   - [iproj.json](pages/ibm-i-projects/iproj-json.md)
