@@ -109,20 +109,23 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runCompile`, async (element?: Project | Uri) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runCompile`, async (element?: Uri) => {
         let iProject: IProject | undefined;
         if (element) {
-          if (element instanceof Project) {
-            iProject = ProjectManager.get(element.workspaceFolder);
-          } else {
+          // Invoked from the editor or file explorer
+          iProject = ProjectManager.getProjectFromUri(element);
+        } else {
+          // Invoked from the command palette
+          let activeFileUri = window.activeTextEditor?.document.uri;
+          element = activeFileUri?.scheme === 'file' ? activeFileUri : undefined;
+
+          if (element) {
             iProject = ProjectManager.getProjectFromUri(element);
           }
-        } else {
-          iProject = ProjectManager.getActiveProject();
         }
 
         if (iProject) {
-          iProject.runBuildOrCompileCommand(false);
+          iProject.runBuildOrCompileCommand(false, element);
         } else {
           window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
