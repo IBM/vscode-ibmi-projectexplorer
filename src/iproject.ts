@@ -426,13 +426,13 @@ export class IProject {
       return ibmiJson;
     }
   }
-
-  /**
+/**
    * Run the project's build or compile command.
    * 
    * @param isBuild True for build command and false for compile command.
+   * @param fileUri The file uri to compile or `undefined` for builds.
    */
-  public async runBuildOrCompileCommand(isBuild: boolean) {
+  public async runBuildOrCompileCommand(isBuild: boolean, fileUri?: Uri) {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
@@ -461,7 +461,7 @@ export class IProject {
             ".evfevent"
           ]
         };
-        await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
+        await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
         ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
       } else {
         if (isBuild) {
@@ -512,17 +512,22 @@ export class IProject {
   /**
    * Add a directory to the `includePath` attribute of the project's `iproj.json`
    * file. *Note* that directories will be resolved based on the project's
-   * deploy location.
+   * workspace folder or deploy location.
    * 
    * @param directory The directory to add.
    */
   public async addToIncludePaths(directory: string) {
+    // Attempt to get the relative path to the project's workspace folder first and then try the deploy location
+    const workspaceFolderPath = this.workspaceFolder.uri.path;
     const deployLocation = this.getDeployLocation();
-    if (deployLocation) {
-      const relative = path.posix.relative(deployLocation, directory);
+    for (const parent of [workspaceFolderPath, deployLocation]) {
+      if (parent) {
+        const relative = path.posix.relative(parent, directory);
 
-      if (!relative.startsWith("..") && relative !== '') {
-        directory = relative;
+        if (!relative.startsWith("..") && relative !== '') {
+          directory = relative;
+          break;
+        }
       }
     }
 
@@ -839,6 +844,7 @@ export class IProject {
    */
   public setLibraryList(libraryList: LibraryList | undefined) {
     this.libraryList = libraryList;
+    ProjectManager.fire({ type: 'libraryList', iProject: this });
   }
 
   /**
