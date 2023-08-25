@@ -121,6 +121,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (element) {
             iProject = ProjectManager.getProjectFromUri(element);
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve file to compile'));
+            return;
           }
         }
 
