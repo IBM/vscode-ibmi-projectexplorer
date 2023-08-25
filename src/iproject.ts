@@ -426,13 +426,13 @@ export class IProject {
       return ibmiJson;
     }
   }
-
-  /**
+/**
    * Run the project's build or compile command.
    * 
    * @param isBuild True for build command and false for compile command.
+   * @param fileUri The file uri to compile or `undefined` for builds.
    */
-  public async runBuildOrCompileCommand(isBuild: boolean) {
+  public async runBuildOrCompileCommand(isBuild: boolean, fileUri?: Uri) {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
@@ -461,7 +461,7 @@ export class IProject {
             ".evfevent"
           ]
         };
-        await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
+        await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
         ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
       } else {
         if (isBuild) {
