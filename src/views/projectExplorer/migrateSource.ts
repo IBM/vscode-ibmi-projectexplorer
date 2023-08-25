@@ -66,10 +66,10 @@ export async function migrateSource(iProject: IProject, library: string): Promis
 
             // Verify makei is installed
             progress.report({ message: l10n.t('Verifying makei is installed...'), increment: increment });
-            const isCvtsrcpfInstalled = await connection.sendCommand({
+            const isMakeiInstalled = await connection.sendCommand({
                 command: `ls -p /QOpenSys/pkgs/bin/makei`
             });
-            if (isCvtsrcpfInstalled?.code !== 0 || isCvtsrcpfInstalled.stdout !== '/QOpenSys/pkgs/bin/makei') {
+            if (isMakeiInstalled?.code !== 0 || isMakeiInstalled.stdout !== '/QOpenSys/pkgs/bin/makei') {
                 window.showErrorMessage(l10n.t('Required component ({0}) to migrate source not installed on host IBM i. Run {1} to get it.', 'bob', '\'yum install bob\''));
                 return migrationResult;
             }
@@ -80,7 +80,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
             const createTempDirResult = await connection.sendCommand({
                 command: `rm -rf ${tempDirectory}; mkdir ${tempDirectory}`
             });
-            if (createTempDirResult && createTempDirResult.code !== 0) {
+            if (createTempDirResult?.code !== 0) {
                 window.showErrorMessage(createTempDirResult.stderr);
                 return migrationResult;
             }
@@ -88,13 +88,23 @@ export async function migrateSource(iProject: IProject, library: string): Promis
             // Run cvtsrcpf on each source file
             for await (const file of migrationConfig.sourceFiles) {
                 progress.report({ message: file, increment: increment });
+                // Create directory
+                const sourceFile = path.parse(file).name;
+                const directoryPath = path.posix.join(tempDirectory, sourceFile);
+                const mkdirResult = await connection.sendCommand({
+                    command: `mkdir -p ${directoryPath}`
+                });
+                if (mkdirResult?.code !== 0) {
+                    continue;
+                }
 
-                const result = await connection.sendCommand({
-                    command: `export PATH="/QOpenSys/pkgs/bin:$PATH:" && /QOpenSys/pkgs/bin/makei cvtsrcpf ${migrationConfig.defaultCCSID ? `-c ${migrationConfig.defaultCCSID}` : ``} ${path.parse(file).name} ${library}`,
-                    directory: tempDirectory
+                // Run CVTSRCPF
+                const cvtsrcpfResult = await connection.sendCommand({
+                    command: `export PATH="/QOpenSys/pkgs/bin:$PATH:" && /QOpenSys/pkgs/bin/makei cvtsrcpf ${migrationConfig.defaultCCSID ? `-c ${migrationConfig.defaultCCSID}` : ``} ${sourceFile} ${library}`,
+                    directory: directoryPath
                 });
 
-                if (result?.code === 0) {
+                if (cvtsrcpfResult?.code === 0) {
                     migrationResult.numSuccess++;
                 }
             }
