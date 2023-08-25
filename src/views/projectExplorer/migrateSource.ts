@@ -78,7 +78,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
             progress.report({ message: l10n.t('Creating temporary remote directory...'), increment: increment });
             const tempDirectory = connection.getTempRemote(`migrate_${library}`);
             const createTempDirResult = await connection.sendCommand({
-                command: `rm -rf ${tempDirectory}; mkdir ${tempDirectory}`
+                command: `rm -rf ${tempDirectory}; mkdir -p ${tempDirectory}`
             });
             if (createTempDirResult?.code !== 0) {
                 window.showErrorMessage(createTempDirResult.stderr);
