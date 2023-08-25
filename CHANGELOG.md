@@ -2,6 +2,10 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+## `1.2.1`
+
+- 
+
 ## `1.2.0`
 
 - Add Connect to/Connect previous actions to project explorer
