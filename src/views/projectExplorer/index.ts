@@ -26,6 +26,7 @@ import Source from "./source";
 import SourceFile from "./sourceFile";
 import Variable from "./variable";
 import { EnvironmentManager } from "../../environmentManager";
+import SourceDirectory from "./sourceDirectory";
 
 /**
  * Represents the Project Explorer tree data provider.
@@ -109,9 +110,14 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runCompile`, async (element?: Uri) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runCompile`, async (element?: SourceFile | SourceDirectory | Uri) => {
         let iProject: IProject | undefined;
         if (element) {
+          if (element instanceof SourceFile || element instanceof SourceDirectory) {
+            // Invoked from a file or directory under the Source heading
+            element = element.sourceInfo.localUri;
+          }
+
           // Invoked from the editor or file explorer
           iProject = ProjectManager.getProjectFromUri(element);
         } else {
@@ -443,8 +449,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetLibraryForCompiles`, async (element: Uri) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetLibraryForCompiles`, async (element: SourceDirectory | Uri) => {
         if (element) {
+          if (element instanceof SourceDirectory) {
+            // Invoked from a directory under the Source heading
+            element = element.sourceInfo.localUri;
+          }
+
           const iProject = ProjectManager.getProjectFromUri(element);
 
           if (iProject) {
@@ -520,8 +531,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles`, async (element: Uri) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles`, async (element: SourceDirectory | Uri) => {
         if (element) {
+          if (element instanceof SourceDirectory) {
+            // Invoked from a directory under the Source heading
+            element = element.sourceInfo.localUri;
+          }
+
           const iProject = ProjectManager.getProjectFromUri(element);
 
           if (iProject) {
@@ -686,34 +702,48 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: IncludePaths | any) => {
-        if (element instanceof IncludePaths) {
-          const iProject = ProjectManager.get(element.workspaceFolder);
+      commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: IncludePaths | SourceDirectory | Uri | any) => {
+        if (element) {
+          let iProject: IProject | undefined;
+          let includePath: string | undefined;
+          if (element instanceof IncludePaths) {
+            // Invoked from Include Paths heading
+            iProject = ProjectManager.get(element.workspaceFolder);
 
-          if (iProject) {
-            const includePath = await window.showInputBox({
-              prompt: l10n.t('Enter include path'),
-              placeHolder: l10n.t('Include path')
-            });
+            if (iProject) {
+              includePath = await window.showInputBox({
+                prompt: l10n.t('Enter include path'),
+                placeHolder: l10n.t('Include path')
+              });
+            }
+          } else if (element instanceof SourceDirectory) {
+            // Invoked from a directory under the Source heading
+            includePath = element.sourceInfo.localUri.path;
+
+            iProject = ProjectManager.get(element.workspaceFolder);
+          } else if (element instanceof Uri) {
+            // Invoked from the file explorer
+            includePath = element.path;
+
+            iProject = ProjectManager.getProjectFromUri(element);
+          } else {
+            // Invoked from the Code4i IFS browser
+            includePath = element.path;
 
             if (includePath) {
-              await iProject.addToIncludePaths(includePath);
+              iProject = ProjectManager.getActiveProject();
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve path to directory'));
+              return;
             }
-          } else {
-            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
-        } else {
-          const includePath = element.path;
 
           if (includePath) {
-            const iProject = ProjectManager.getActiveProject();
             if (iProject) {
               await iProject.addToIncludePaths(includePath);
             } else {
               window.showErrorMessage(l10n.t('Failed to retrieve project'));
             }
-          } else {
-            window.showErrorMessage(l10n.t('Failed to retrieve path to directory'));
           }
         }
       }),

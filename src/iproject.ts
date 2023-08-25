@@ -512,17 +512,22 @@ export class IProject {
   /**
    * Add a directory to the `includePath` attribute of the project's `iproj.json`
    * file. *Note* that directories will be resolved based on the project's
-   * deploy location.
+   * workspace folder or deploy location.
    * 
    * @param directory The directory to add.
    */
   public async addToIncludePaths(directory: string) {
+    // Attempt to get the relative path to the project's workspace folder first and then try the deploy location
+    const workspaceFolderPath = this.workspaceFolder.uri.path;
     const deployLocation = this.getDeployLocation();
-    if (deployLocation) {
-      const relative = path.posix.relative(deployLocation, directory);
+    for (const parent of [workspaceFolderPath, deployLocation]) {
+      if (parent) {
+        const relative = path.posix.relative(parent, directory);
 
-      if (!relative.startsWith("..") && relative !== '') {
-        directory = relative;
+        if (!relative.startsWith("..") && relative !== '') {
+          directory = relative;
+          break;
+        }
       }
     }
 
