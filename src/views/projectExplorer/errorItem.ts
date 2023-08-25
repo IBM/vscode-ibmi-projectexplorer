@@ -7,6 +7,7 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import Library from "./library";
 import { Position } from "../../iproject";
+import { EnvironmentManager } from "../../environmentManager";
 
 /**
  * Tree item for error information.
@@ -17,9 +18,8 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
   private constructor(public workspaceFolder: WorkspaceFolder | undefined, label: string, options: { description?: string, contextValue?: string, command?: Command, tooltip?: string } = {}) {
     super(label, TreeItemCollapsibleState.None);
 
-    this.contextValue = ErrorItem.contextValue;
     this.description = options.description;
-    this.contextValue = options.contextValue;
+    this.contextValue = options.contextValue ? options.contextValue : ErrorItem.contextValue;
     this.command = options.command;
     this.tooltip = options.tooltip;
     this.iconPath = new ThemeIcon(`error`);
@@ -61,6 +61,7 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
       workspaceFolder.name,
       {
         description: l10n.t('Please resolve project metadata'),
+        contextValue: ErrorItem.contextValue + ContextValue.resolveIProj,
         tooltip: l10n.t('This project contains the following errors:\n{0}', errors),
         command: {
           command: 'vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut',
@@ -72,6 +73,8 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
   }
 
   static createNoConnectionError(workspaceFolder: WorkspaceFolder, label: string): ErrorItem {
+    const isInMerlin = EnvironmentManager.isInMerlin();
+
     return new ErrorItem(
       workspaceFolder,
       label,
@@ -79,7 +82,7 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
         description: l10n.t('Please connect to an IBM i'),
         contextValue: ErrorItem.contextValue + ContextValue.openConnectionBrowser,
         command: {
-          command: `connectionBrowser.focus`,
+          command: isInMerlin ? `ibmideveloper.connectionBrowser.focus` : `connectionBrowser.focus`,
           title: l10n.t('Open Connection Browser')
         }
       }

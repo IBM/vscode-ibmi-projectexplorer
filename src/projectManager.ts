@@ -7,6 +7,7 @@ import { IProject } from "./iproject";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 import Project from "./views/projectExplorer/project";
 import { Validator } from "jsonschema";
+import { ConfigurationManager, ConfigurationSection } from "./configurationManager";
 
 /**
  * Project explorer events each serve a different purpose:
@@ -14,8 +15,10 @@ import { Validator } from "jsonschema";
  * - `activeProject` event is fired when there is a change to the active project
  * - `libraryList` event is fired when there is a change to a project's library list
  * - `deployLocation` event is fired when there is a change to a project's deploy location
+ * - `build` event is fired when a build is finished
+ * - `compile` event is fired when a compile is finished
  */
-export type ProjectExplorerEventT = 'projects' | 'activeProject' | 'libraryList' | 'deployLocation';
+export type ProjectExplorerEventT = 'projects' | 'activeProject' | 'libraryList' | 'deployLocation' | 'build' | 'compile';
 
 /**
  * Project explorer event
@@ -181,6 +184,11 @@ export class ProjectManager {
      * @param workspaceFolder A workspace folder or `undefined`.
      */
     public static async setActiveProject(workspaceFolder: WorkspaceFolder | undefined) {
+        // Check if active project is already set to given workspace folder
+        if (workspaceFolder === this.activeProject?.workspaceFolder) {
+            return;
+        }
+
         if (workspaceFolder) {
             this.activeProject = this.loaded[workspaceFolder.index];
             this.activeProjectStatusBarItem.text = '$(root-folder) ' + l10n.t('Project: {0}', this.activeProject.workspaceFolder.name);
@@ -199,7 +207,10 @@ export class ProjectManager {
             };
         }
 
-        await commands.executeCommand('setContext', 'code-for-ibmi:libraryListDisabled', this.activeProject ? true : false);
+        const disableUserLibraryList = ConfigurationManager.get(ConfigurationSection.disableUserLibraryList);
+        if (disableUserLibraryList) {
+            await commands.executeCommand('setContext', 'code-for-ibmi:libraryListDisabled', this.activeProject ? true : false);
+        }
         await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:hasActiveProject', this.activeProject ? true : false);
         this.fire({ type: 'activeProject', iProject: this.activeProject });
     }

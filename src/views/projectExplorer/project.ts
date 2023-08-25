@@ -23,6 +23,7 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
   static contextValue = ContextValue.project;
   static callBack: ((iProject: IProject) => Promise<ProjectExplorerTreeItem[]>)[] = [];
   private extensibleChildren: ProjectExplorerTreeItem[] = [];
+  public children: ProjectExplorerTreeItem[] = [];
 
   constructor(public workspaceFolder: WorkspaceFolder, state?: IProjectT) {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
@@ -35,7 +36,9 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
       (state?.description ? l10n.t('Description: {0}\n', state.description) : ``) +
       (state?.version ? l10n.t('Version: {0}\n', state.version) : ``) +
       (state?.repository ? l10n.t('Repository: {0}\n', state.repository) : ``) +
-      (state?.license ? l10n.t('License: {0}', state.license) : ``);
+      (state?.license ? l10n.t('License: {0}\n', state.license) : ``) +
+      (state?.buildCommand ? l10n.t('Build Command: {0}\n', state.buildCommand) : ``) +
+      (state?.compileCommand ? l10n.t('Compile Command: {0}', state.compileCommand) : ``);
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
@@ -45,9 +48,10 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
     const iProject = ProjectManager.get(this.workspaceFolder);
 
     if (ibmi && ibmi.getConnection()) {
-      const deployDir = iProject!.getDeployDir();
-      if (deployDir) {
-        items.push(new Source(this.workspaceFolder, deployDir));
+      const deploymentParameters = await iProject?.getDeploymentParameters();
+
+      if (deploymentParameters && deploymentParameters.remotePath) {
+        items.push(new Source(this.workspaceFolder, deploymentParameters));
       } else {
         items.push(ErrorItem.createNoDeployLocationError(this.workspaceFolder));
       }
@@ -91,6 +95,7 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
     }
     items.push(...this.extensibleChildren);
 
+    this.children = items;
     return items;
   }
 
