@@ -4,7 +4,12 @@ All notable changes to the "vscode-ibmi-projectexplorer" extension will be docum
 
 ## `1.2.1`
 
-- 
+- Fix missing action to resolve project metadata
+- Fix file watcher exception
+- Fix `libraryList` and `deployLocation` events not firing
+- Fix incorrect file uri when running compile
+- Create directories during source migration
+- Add missing `Add to Include Paths` action in the file explorer and add actions to the Source
 
 ## `1.2.0`
 
