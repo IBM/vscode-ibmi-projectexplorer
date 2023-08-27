@@ -21,7 +21,7 @@
   "commands.projectExplorer.addFolderToWorkspace": "Add Folder to Workspace",
   "commands.projectExplorer.addLibraryListEntry": "Add Library List Entry",
   "commands.projectExplorer.addToIncludePaths": "Add to Include Paths",
-  "commands.projectExplorer.addToLibraryList": "Add to Library list",
+  "commands.projectExplorer.addToLibraryList": "Add to Library List",
   "commands.projectExplorer.assignToVariable": "Assign to Variable",
   "commands.projectExplorer.browse": "Browse",
   "commands.projectExplorer.changeLibraryDescription": "Change Library Description",
