@@ -1,4 +1,4 @@
-# Create a New Project
+# Create New Project
 
 To get starting with an IBM i project, create a folder and open it in the workspace. For a workspace folder to be treated as an IBM i project, it must contain an `iproj.json` file. This can be done from the **Project Explorer** view using the **Create iproj.json** action. This will prompt you to enter a description for the project and then create the file.
 

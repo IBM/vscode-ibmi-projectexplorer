@@ -8,13 +8,13 @@ To learn more about this source code conversion too, check out the documentation
 
 To begin the source migration process, browse for the library containing the source physical files you would like to migrate using the **Object Browser** view. Once you have found the desired library, use the **Migrate Source** action.
 
-![Migrate Source](../../assets/ProjectExplorer_32.png)
+![Migrate Source](../../assets/ProjectExplorer_37.png)
 
 ## Configure Settings
 
 This action will pop up a form in the editor for you to configure the migration process. Under the **Settings** tab, you can specify an optional CCSID value to be used when source physical file is 65535. If not specified, the `*JOB` CCSID will be used. You can also adjust the workspace folder to which the files are to be downloaded to.
 
-![Configure Settings for Migrate Source](../../assets/ProjectExplorer_33.png)
+![Configure Settings for Migrate Source](../../assets/ProjectExplorer_38.png)
 
 ## Enable Clean Up
 
@@ -26,10 +26,10 @@ To learn more about this clean up process, check out the documentation on [Sourc
 >
 > The use of these two clean up features requires the **Source Orbit** extension to be installed which can be done from the Visual Studio Code Marketplace: [Source Orbit]().
 
-![Clean Up for Migrate Source](../../assets/ProjectExplorer_33.png)
+![Clean Up for Migrate Source](../../assets/ProjectExplorer_39.png)
 
 ## Select Source Files
 
 The last step in this process is to select the source physical files in the library which you would like to migrate. Once this is done, select the **Migrate Source** button at the bottom to initiate the process.
 
-![Select Source Files for Migrate Source](../../assets/ProjectExplorer_34.png)
+![Select Source Files for Migrate Source](../../assets/ProjectExplorer_40.png)

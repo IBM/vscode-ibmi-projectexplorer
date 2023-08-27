@@ -6,17 +6,17 @@ The **Source** heading is what will be used to work with the source files that e
 
 To set the project's deploy location, use the **Set Deploy Location** action on the **Source** heading. You can modify this location later on as well using the **Edit Deploy Location** action.
 
-![Set Deploy Location](../../assets/ProjectExplorer_03.png)
+![Set Deploy Location](../../assets/ProjectExplorer_05.png)
 
 If you need to browse to the exact deploy location which you would like to set, this can be done frm the **IFS Browser** by creating an IFS shortcut and using the right-click **Set Deploy Workspace Location** action from any directory.
 
-![Set Deploy Workspace Location](../../assets/ProjectExplorer_04.png)
+![Set Deploy Workspace Location](../../assets/ProjectExplorer_06.png)
 
 ## Set the Deployment Method
 
 Once the deploy location is set, you can use the **Set Deployment Method** action to set the deployment method to be used when deploying the project.
 
-![Set Deployment Method](../../assets/ProjectExplorer_05.png)
+![Set Deployment Method](../../assets/ProjectExplorer_07.png)
 
 There are five options for deployment:
 
@@ -28,14 +28,14 @@ There are five options for deployment:
 
 In addition to affecting the deployment process, the deployment method for the project will also impact the content rendered under the **Source** heading. The source files and directories visuzlied here are a direct reflection of what will be deployed based on the chosen deployment method.
 
-![Source Files and Directories](../../assets/ProjectExplorer_06.png)
+![Source Files and Directories](../../assets/ProjectExplorer_08.png)
 
 For files that have been deployed, you have the ability to compare the local copy versus the remote using the **Compare with Remote** action. 
 
-![Compare with Remote](../../assets/ProjectExplorer_07.png)
+![Compare with Remote](../../assets/ProjectExplorer_09.png)
 
 ## Deploy the Project
 
 To start the deployment process, you can use the **Deploy Project** action on the **Source** heading. This will upload the project's local files to the deploy location using the current deployment method. To view the output of this deployment process, navigate to the **Output** view and select the **IBM i Deployment** channel.
 
-![Deploy Project](../../assets/ProjectExplorer_08.png)
+![Deploy Project](../../assets/ProjectExplorer_10.png)

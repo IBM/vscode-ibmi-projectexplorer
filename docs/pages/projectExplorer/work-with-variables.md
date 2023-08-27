@@ -9,22 +9,22 @@ To get started with viewing and defining project variables, there must exists a 
 > [!ATTENTION]
 > To avoid accidently pushing your `.env` file to your Git repository, make sure that you add it as an entry into your `.gitignore` file.
 
-![Create .env](../../assets/ProjectExplorer_15.png)
+![Create .env](../../assets/ProjectExplorer_17.png)
 
 ## Edit Variable
 
 To assign a value to a variable, use the **Edit Variable** action. This will be stored in the project's `.env` file.
 
-![Edit Variable](../../assets/ProjectExplorer_15.png)
+![Edit Variable](../../assets/ProjectExplorer_18.png)
 
 ## Assign to Variable
 
 Instead of manually inputting the value of a variable, you also have the ability to assign a library names or directory to a variable using the **Assign to Variable** action. This can be done from a library in the **Project Explorer** view or the **Object Browser** as well as directories in the **IFS Browser**.
 
-![Assign to Variable](../../assets/ProjectExplorer_16.png)
+![Assign to Variable](../../assets/ProjectExplorer_19.png)
 
 ## Configure as Variable
 
 For libraries or include paths which are hardcoded in the project's `iproj.json` file, they can be converted to variables using the **Configure as Variable** action. This will substitute the hardcoded value for a variable which you will provide and set the value of this variable to be the hardcoded value.
 
-![Configure as Variable](../../assets/ProjectExplorer_17.png)
+![Configure as Variable](../../assets/ProjectExplorer_20.png)
