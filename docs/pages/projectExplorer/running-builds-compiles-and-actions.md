@@ -50,7 +50,7 @@ Refer to the example below of having setup a project to use `ibmi-bob`:
       "GLOBAL"
     ],
     "name": "Build current",
-    "command": "OPT=*EVENTF BUILDLIB=&CURLIB /QOpenSys/pkgs/bin/makei compile -f &BASENAME",
+    "command": "OPT=*EVENTF BUILDLIB=&CURLIB /QOpenSys/pkgs/bin/makei compile -f {filename}",
     "environment": "pase",
     "deployFirst": true,
     "postDownload": [
