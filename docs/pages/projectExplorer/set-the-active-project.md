@@ -1,4 +1,4 @@
-# Setting the Active Project
+# Set the Active Project
 
 The notion of an active project is used to simplfy actions present in other views outside the **Project Explorer** and is more relevant when with several projects at the same time. In particular, certain actions in the **Object Browser** and **IFS Browser** views require an associated project to which that action should be invoked on. For example, using the **Assign to Variable** action on a library in the pressence of there being several projects in the workspace requires some way to indicate which project this action is for. This is the relevance of defining an active project.
 

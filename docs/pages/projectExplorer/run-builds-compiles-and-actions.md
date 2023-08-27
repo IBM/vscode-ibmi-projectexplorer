@@ -1,8 +1,8 @@
-# Running Builds, Compiles, and Actions
+# Run Builds, Compiles, and Actions
 
 The build or compiles of a project are based on the `buildCommand` and `compileCommand` fields in the project's iproj.json. Similarly, another solution is to use an `actions.json` file to store configurations for different technologies.
 
-## Running a Build
+## Run a Build
 
 Before running a build, the project's build command must be set. This can be done using the **Set Build Command** action on the project. Here you can leverage any build tool such as `elias` in ARCAD Builder or `makei` in `ibmi-bob`.
 
@@ -12,7 +12,7 @@ To then launch a build, use the **Run Build** action on the project heading or t
 
 ![Run Build](../../assets/ProjectExplorer_10.png)
 
-## Running a Compile
+## Run a Compile
 
 Similar to the build command, the project's compile command must be first set using the **Set Compile Compile** action on the project.
 
@@ -25,7 +25,7 @@ To compile a directory or file, this can be achieved from several locations:
 
 ![Run Compile](../../assets/ProjectExplorer_12.png)
 
-## Running an Action
+## Run an Action
 
 An alternative to using the build or compile command is to leverage the use of Code for IBM i workspace actions. These actions are stored in `.vscode/actions.json` at the root of the project and should be pushed to the Git repository. To generate an initial `actions.json` file, use the **Launch Action Setup** action on the project. Here you will be prompted to select from a set of pre-defined actions.
 

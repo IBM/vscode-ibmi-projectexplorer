@@ -1,4 +1,4 @@
-# Working with Variables
+# Work with Variables
 
 The project metadata for IBM i projects support the use of variables in the following fields: `objlib`, `curlib`, `preUsrlibl`, `postUsrlibl`, `setIBMiEnvCmd`, `buildCommand`, `compileCommand`, and `includePath`. These variables are always prefaced with an &. By levering the use of variables, the same project definition can be used to target a different build library from one developer to another. The **Variables** heading is where you will be able to visualize these variables.
 
