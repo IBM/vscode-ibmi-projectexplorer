@@ -247,7 +247,7 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                 .addParagraph(l10n.t('Convert all members in source physical files of a library to IFS files and then download them to a workspace folder. To learn more about {0}, click {1}here{2}.', '<code>cvtsrcpf</code>', '<a href="https://ibm.github.io/ibmi-bob/#/cli/makei?id=cvtsrcpf">', '</a>'))
                 .addComplexTabs(tabs)
                 .addHorizontalRule()
-                .addButtons({ id: `migrate`, label: l10n.t('Migrate source'), requiresValidation: true });
+                .addButtons({ id: `migrate`, label: l10n.t('Migrate Source'), requiresValidation: true });
 
             const page = await basePage.loadPage<any>(l10n.t('Migrate Source ({0})', library));
             if (page && page.data) {

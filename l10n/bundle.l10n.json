@@ -87,7 +87,7 @@
   "Source Files": "Source Files",
   "Migrate Source ({0})": "Migrate Source ({0})",
   "Convert all members in source physical files of a library to IFS files and then download them to a workspace folder. To learn more about {0}, click {1}here{2}.": "Convert all members in source physical files of a library to IFS files and then download them to a workspace folder. To learn more about {0}, click {1}here{2}.",
-  "Migrate source": "Migrate source",
+  "Migrate Source": "Migrate Source",
   "{0} does not contain any source files": "{0} does not contain any source files",
   "Workspace folder not specified": "Workspace folder not specified",
   "No source files selected to be migrated": "No source files selected to be migrated",
