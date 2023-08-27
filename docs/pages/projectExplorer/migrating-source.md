@@ -10,13 +10,13 @@ To begin the source migration process, browse for the library containing the sou
 
 ![Migrate Source](../../assets/ProjectExplorer_32.png)
 
-### Configuring Settings
+## Configuring Settings
 
 This action will pop up a form in the editor for you to configure the migration process. Under the **Settings** tab, you can specify an optional CCSID value to be used when source physical file is 65535. If not specified, the `*JOB` CCSID will be used. You can also adjust the workspace folder to which the files are to be downloaded to.
 
 ![Configure Settings for Migrate Source](../../assets/ProjectExplorer_33.png)
 
-### Enabling Clean Up
+## Enabling Clean Up
 
 As part of this source migration process, you can enable the use of another extension called **Source Orbit** to assist with cleaning up the migrated code. This extension offers the ability to automatically have the migrated source extensions corrected and include/copy directives fixed to use Unix style paths.
 
@@ -27,7 +27,7 @@ To learn more about this clean up process, check out the documentation on [Sourc
 
 ![Clean Up for Migrate Source](../../assets/ProjectExplorer_33.png)
 
-### Selecting Source Files
+## Selecting Source Files
 
 The last step in this process is to select the source physical files in the library which you would like to migrate. Once this is done, select the **Migrate Source** button at the bottom to initiate the process.
 
