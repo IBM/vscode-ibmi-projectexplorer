@@ -3,6 +3,7 @@
 The **Source** heading is what will be used to work with the source files that exist locally in your workspaces. From here you will be able to visualize, compare, and deploy your local source files to your deploy location in the IFS which is where you will be running your builds and compiles out of.
 
 ## Setting the Deploy Location
+
 To set the project's deploy location, use the **Set Deploy Location** action on the **Source** heading. You can modify this location later on as well using the **Edit Deploy Location** action.
 
 ![Set Deploy Location](../../assets/ProjectExplorer_03.png)
@@ -12,6 +13,7 @@ If you need to browse to the exact deploy location which you would like to set, 
 ![Set Deploy Workspace Location](../../assets/ProjectExplorer_04.png)
 
 ## Setting the Deployment Method
+
 Once the deploy location is set, you can use the **Set Deployment Method** action to set the deployment method to be used when deploying the project.
 
 ![Set Deployment Method](../../assets/ProjectExplorer_05.png)
@@ -33,6 +35,7 @@ For files that have been deployed, you have the ability to compare the local cop
 ![Compare with Remote](../../assets/ProjectExplorer_07.png)
 
 ## Deploying the Project
+
 To start the deployment process, you can use the **Deploy Project** action on the **Source** heading. This will upload the project's local files to the deploy location using the current deployment method. To view the output of this deployment process, navigate to the **Output** view and select the **IBM i Deployment** channel.
 
 ![Deploy Project](../../assets/ProjectExplorer_08.png)
