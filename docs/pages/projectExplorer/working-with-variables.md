@@ -1,11 +1,19 @@
 # Working with Variables
 
-The project metadata for IBM i projects support the use of variables in the following fields: `objlib`, `curlib`, `preUsrlibl`, `postUsrlibl`, `setIBMiEnvCmd`, `buildCommand`, `compileCommand`, and `includePath`. These variables are always prefaced with an &. By levering the use of variables, the same project definition can be used to target a different build library from one developer to another.
+The project metadata for IBM i projects support the use of variables in the following fields: `objlib`, `curlib`, `preUsrlibl`, `postUsrlibl`, `setIBMiEnvCmd`, `buildCommand`, `compileCommand`, and `includePath`. These variables are always prefaced with an &. By levering the use of variables, the same project definition can be used to target a different build library from one developer to another. The **Variables** heading is where you will be able to visualize these variables.
 
-The **Variables** heading is where you will be able to visualize the set of variables defined in the iproj.json. To assign a value to a variable, use the **Edit Variable** action. The values for all variables will be stored in a `.env` file in the root of the project.
+## Create Environment File
+
+To get started with viewing and defining project variables, there must exists a root level `.env` file which will be used for storing the value of these variables. This can be done by using the **Create .env** action.
 
 > [!ATTENTION]
 > To avoid accidently pushing your `.env` file to your Git repository, make sure that you add it as an entry into your `.gitignore` file.
+
+![Create .env](../../assets/ProjectExplorer_15.png)
+
+## Edit Variable
+
+To assign a value to a variable, use the **Edit Variable** action. This will be stored in the project's `.env` file.
 
 ![Edit Variable](../../assets/ProjectExplorer_15.png)
 

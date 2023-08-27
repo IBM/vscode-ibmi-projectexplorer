@@ -3,6 +3,7 @@
    - [Code for IBM i](pages/welcome/code-for-ibm-i.md)
    - [Installation](./pages/welcome/installation.md)
 - Project Explorer
+   - [Creating a New Project](pages/projectExplorer/creating-a-new-project.md)
    - [Connecting to a Remote System](pages/projectExplorer/connecting-to-a-remote-system.md)
    - [Source and Deployment](pages/projectExplorer/source-and-deployment.md)
    - [Running Builds, Compiles, and Actions](pages/projectExplorer/running-builds-compiles-and-actions.md)
