@@ -36,6 +36,6 @@ Libraries defined in the `preUsrlibl` or `postUsrlibl` field in the project's `i
 
 ## Removing from the Library List
 
-Libraries defined in the project's `iproj.json` are the only libraries which can be removed from the library list. This can be done using the **Remove from Library List** action. Note that removing any library which corresponds to a variable will only remove the value from the `.env` file and not the variable itself from the `iproj.json`.
+Libraries defined in the project's `iproj.json` are the only libraries which can be removed from the library list. This can be done using the **Remove from Library List** action. Note that removing any library which corresponds to a variable will only remove the value from the `.env` file and not the variable itself from the `iproj.json` file.
 
 ![Remove from Library List](../../assets/ProjectExplorer_21.png)

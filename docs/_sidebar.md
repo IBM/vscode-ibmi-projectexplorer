@@ -9,8 +9,7 @@
    - [Working with Variables](pages/projectExplorer/working-with-variables.md)
    - [Managing the Library List](pages/projectExplorer/managing-the-library-list.md)
    - [Browsing Object Libraries](pages/projectExplorer/browsing-object-libraries.md)
-   - [Libraries, Objects, and Members](pages/projectExplorer/libraries-objects-and-members.md)
-   - [Adding Include Paths](pages/projectExplorer/adding-include-paths.md)
+   - [Updating Include Paths](pages/projectExplorer/updating-include-paths.md)
    - [Setting the Active Project](pages/projectExplorer/setting-the-active-project.md)
    - [Migrating Source](pages/projectExplorer/migrating-source.md)
 - Job Log
