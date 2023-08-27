@@ -4,7 +4,7 @@
    - [Installation](./pages/welcome/installation.md)
 - Project Explorer
    - [Create New Project](pages/projectExplorer/create-new-project.md)
-   - [Connect to a Remote System](pages/projectExplorer/conect-to-a-remote-system.md)
+   - [Connect to a Remote System](pages/projectExplorer/connect-to-a-remote-system.md)
    - [Source and Deployment](pages/projectExplorer/source-and-deployment.md)
    - [Run Builds, Compiles, and Actions](pages/projectExplorer/run-builds-compiles-and-actions.md)
    - [Work with Variables](pages/projectExplorer/work-with-variables.md)
