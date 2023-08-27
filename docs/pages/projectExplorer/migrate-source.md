@@ -23,6 +23,7 @@ As part of this source migration process, you can enable the use of another exte
 To learn more about this clean up process, check out the documentation on [Source Orbit](https://ibm.github.io/sourceorbit/#/).
 
 > [!NOTE]
+>
 > The use of these two clean up features requires the **Source Orbit** extension to be installed which can be done from the Visual Studio Code Marketplace: [Source Orbit]().
 
 ![Clean Up for Migrate Source](../../assets/ProjectExplorer_33.png)
