@@ -9,7 +9,7 @@ To get started with viewing and defining project variables, there must exists a 
 ![Create .env](../../assets/ProjectExplorer_17.png)
 
 > [!ATTENTION]
-> To avoid accidently pushing your `.env` file to your Git repository, make sure that you add it as an entry into your `.gitignore` file.
+> To avoid accidentally pushing your `.env` file to your Git repository, make sure that you add it as an entry into your `.gitignore` file.
 
 ## Edit Variable
 

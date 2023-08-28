@@ -12,7 +12,7 @@ To add an include path to a directory in the local project, leverage the **Add t
 
 ![Add to Include Paths from the File Explorer](../../assets/ProjectExplorer_29.png)
 
-Simiarly, to add an include path to a directory in the IFS, leverage the same action in the **IFS Browser**.
+Similarly, to add an include path to a directory in the IFS, leverage the same action in the **IFS Browser**.
 
 ![Add to Include Paths from the IFS Browser](../../assets/ProjectExplorer_30.png)
 

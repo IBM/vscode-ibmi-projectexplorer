@@ -30,7 +30,7 @@ You also have the freedom to query for libraries in the **Object Browser** view 
 
 ## Reorder the Library List
 
-Libraries defined in the `preUsrlibl` or `postUsrlibl` field in the project's `iproj.json` file can be reorded directly in the **Project Explorer** view. Note that you will only be able to reorder the libraries within each group itself. This can be done using **Move Up** or **Move Down** actions accordingly.
+Libraries defined in the `preUsrlibl` or `postUsrlibl` field in the project's `iproj.json` file can be reordered directly in the **Project Explorer** view. Note that you will only be able to reorder the libraries within each group itself. This can be done using **Move Up** or **Move Down** actions accordingly.
 
 ![Move Up and Move Down](../../assets/ProjectExplorer_25.png)
 

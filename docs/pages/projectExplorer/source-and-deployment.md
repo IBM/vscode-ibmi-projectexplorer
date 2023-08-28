@@ -26,7 +26,7 @@ There are five options for deployment:
 4. `Staged Changes`: The same as the `Working Changes` method, but only uploads staged and indexed files.
 5. `All`: This method will upload all files project excluding those that are listed in the `.gitignore` file.
 
-In addition to affecting the deployment process, the deployment method for the project will also impact the content rendered under the **Source** heading. The source files and directories visuzlied here are a direct reflection of what will be deployed based on the chosen deployment method.
+In addition to affecting the deployment process, the deployment method for the project will also impact the content rendered under the **Source** heading. The source files and directories visualized here are a direct reflection of what will be deployed based on the chosen deployment method.
 
 ![Source Files and Directories](../../assets/ProjectExplorer_08.png)
 

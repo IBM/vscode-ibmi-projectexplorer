@@ -1,6 +1,6 @@
 # Migrate Source
 
-A quick and easy way to get started with local development is to begin with migrating source from QSYS. This source migrating process leverages the `cvtsrcpf` command in `makei` as a source code conversion tool. This command essentially converts all members in a given source physical file to properly encoded, terminated, and named source files in an IFS directory. Following this conversion, the files will be bundled into a tar file which will be donwloaded and extracted into the project so that you can begin with local development.
+A quick and easy way to get started with local development is to begin with migrating source from QSYS. This source migrating process leverages the `cvtsrcpf` command in `makei` as a source code conversion tool. This command essentially converts all members in a given source physical file to properly encoded, terminated, and named source files in an IFS directory. Following this conversion, the files will be bundled into a tar file which will be downloaded and extracted into the project so that you can begin with local development.
 
 ?> To learn more about this source code conversion too, check out the documentation on [cvtsrcpf](https://ibm.github.io/ibmi-bob/#/cli/makei?id=cvtsrcpf).
 
