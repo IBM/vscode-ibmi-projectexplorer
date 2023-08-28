@@ -16,4 +16,4 @@ In the scenario you ever find that your project's `iproj.json` file is corrupt, 
 
 > [!TIP]
 >
-> To get started with working on source code locally in your project from source physical files in QSYS, check out the documentation on how to [migrate source](./migrate-source.md).
+> To get started with working on source code locally in your project from source physical files in QSYS, check out the documentation on how to [migrate source](pages/projectExplorer/migrate-source.md).
