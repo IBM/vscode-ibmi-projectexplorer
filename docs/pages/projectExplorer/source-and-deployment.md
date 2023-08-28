@@ -4,7 +4,7 @@ The **Source** heading is what will be used to work with the source files that e
 
 ## Set the Deploy Location
 
-To set the project's deploy location, use the **Set Deploy Location** action on the **Source** heading. You can modify this location later on as well using the **Edit Deploy Location** action.
+To set the project's deploy location, use the **Set Deploy Location** action on the **Source** heading. You can modify this location later on as well using the **Edit Deploy Location** action. The suggested deploy location is `/home/<user>/builds/<project_name>`.
 
 ![Set Deploy Location](../../assets/ProjectExplorer_05.png)
 

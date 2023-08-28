@@ -1,6 +1,6 @@
 # Update Include Paths
 
-The `includePath` field in the project's `iproj.json` file specifies directories to be searched for includes or copy files. These set of directories can be managed using the **Include Paths** heading.
+The `includePath` field in the project's `iproj.json` file specifies directories to be searched for includes or copy files. These set of directories can be managed using the **Include Paths** heading. Include paths which can be resolved locally are not expandable, but can be clicked on to be taken to the directory in the **File Explorer**. However, include paths which are resolved to remote locations in the IFS can be expanded.
 
 ## Add Include Paths
 

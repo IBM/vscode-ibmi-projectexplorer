@@ -6,14 +6,14 @@ The project metadata for IBM i projects support the use of variables in the foll
 
 To get started with viewing and defining project variables, there must exists a root level `.env` file which will be used for storing the value of these variables. This can be done by using the **Create .env** action.
 
+![Create .env](../../assets/ProjectExplorer_17.png)
+
 > [!ATTENTION]
 > To avoid accidently pushing your `.env` file to your Git repository, make sure that you add it as an entry into your `.gitignore` file.
 
-![Create .env](../../assets/ProjectExplorer_17.png)
-
 ## Edit Variable
 
-To assign a value to a variable, use the **Edit Variable** action. This will be stored in the project's `.env` file.
+Listed under the **Variables** heading are all variables used in the root level `iproj.json` or in any `.ibmi.json` within the project. When there are variables which do not have a value assigned, the heading itself will have a red decoration to indicate the number of unresolved variables. To assign a value to a variable, use the **Edit Variable** action. This will be stored in the project's `.env` file.
 
 ![Edit Variable](../../assets/ProjectExplorer_18.png)
 

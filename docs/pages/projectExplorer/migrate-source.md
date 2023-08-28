@@ -6,7 +6,7 @@ A quick and easy way to get started with local development is to begin with migr
 
 ## Start the Source Migration
 
-To begin the source migration process, browse for the library containing the source physical files you would like to migrate using the **Object Browser** view. Once you have found the desired library, use the **Migrate Source** action.
+To begin the source migration process, browse for the library containing the source physical files you would like to migrate using the **Object Browser** view. Once you have found the desired library, use the **Migrate Source** action. This can also be done on any library in the **Project Explorer** view.
 
 ![Migrate Source](../../assets/ProjectExplorer_37.png)
 
@@ -20,11 +20,11 @@ This action will pop up a form in the editor for you to configure the migration 
 
 As part of this source migration process, you can enable the use of another extension called **Source Orbit** to assist with cleaning up the migrated code. This extension offers the ability to automatically have the migrated source extensions corrected and include/copy directives fixed to use Unix style paths.
 
+![Clean Up for Migrate Source](../../assets/ProjectExplorer_39.png)
+
 > [!NOTE]
 >
 > The use of these two clean up features requires the **Source Orbit** extension to be installed which can be done from the Visual Studio Code Marketplace: [Source Orbit]().
-
-![Clean Up for Migrate Source](../../assets/ProjectExplorer_39.png)
 
 ?> To learn more about this clean up process, check out the documentation on [Source Orbit](https://ibm.github.io/sourceorbit/#/).
 
