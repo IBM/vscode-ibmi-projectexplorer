@@ -4,6 +4,8 @@ To connect to a remote IBM i, expand any project and select the **Open Connectio
 
 ![Open Connection Browser](../../assets/ProjectExplorer_03.png)
 
+?> To learn more about connecting to a remote system using Code for IBM i, check out their [documentation](https://halcyon-tech.github.io/docs/#/pages/login).
+
 From the **Project Explorer** view, you also have the option to quickly connect to a previous connection using the **Connect to Previous IBM i** action.
 
 ![Connect to Previous IBM i](../../assets/ProjectExplorer_04.png)
