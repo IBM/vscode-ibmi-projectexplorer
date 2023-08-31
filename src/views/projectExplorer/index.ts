@@ -672,9 +672,16 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.assignToVariable`, async (element: any) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.assignToVariable`, async (element: Library | any) => {
         if (element) {
-          const value = element.name ? element.name : element.path;
+          let value: string;
+          if (element instanceof Library) {
+            // Invoked from library in Project Explorer
+            value = element.label!.toString();
+          } else {
+            // Invoked from library in Object Browser or directory in IFS Browser
+            value = element.name ? element.name : element.path;
+          }
 
           if (value) {
             const variableItems: QuickPickItem[] = [];
