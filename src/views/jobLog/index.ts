@@ -100,7 +100,11 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
 
           const iProject = ProjectManager.get(folder);
           if (iProject) {
-            state = await iProject.getState();
+            const metadataExists = await iProject.projectFileExists('iproj.json');
+
+            if (metadataExists) {
+              state = await iProject.getState();
+            }
           }
 
           items.push(new Project(folder, state));
