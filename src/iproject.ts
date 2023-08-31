@@ -426,7 +426,8 @@ export class IProject {
       return ibmiJson;
     }
   }
-/**
+
+  /**
    * Run the project's build or compile command.
    * 
    * @param isBuild True for build command and false for compile command.
@@ -439,14 +440,18 @@ export class IProject {
       const command = isBuild ? unresolvedState.buildCommand : unresolvedState.compileCommand;
 
       if (command) {
-        for await (const folder of ['.logs', '.evfevent']) {
-          const folderUri = Uri.file(path.join(this.workspaceFolder.uri.fsPath, folder));
+        // Delete existing directories
+        const directoryUris = ['.logs', '.evfevent'].map(dir => Uri.file(path.join(this.workspaceFolder.uri.fsPath, dir)));
+        for await (const uri of directoryUris) {
           try {
-            await workspace.fs.stat(folderUri);
-            await workspace.fs.delete(folderUri, { recursive: true });
-          } finally {
-            await workspace.fs.createDirectory(folderUri);
-          }
+            await workspace.fs.stat(uri);
+            await workspace.fs.delete(uri, { recursive: true });
+          } catch { }
+        }
+
+        // Create directories
+        for await (const uri of directoryUris) {
+          await workspace.fs.createDirectory(uri);
         }
 
         const action: Action = {
