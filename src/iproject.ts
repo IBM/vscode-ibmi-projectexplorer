@@ -426,12 +426,12 @@ export class IProject {
       return ibmiJson;
     }
   }
-  /**
-     * Run the project's build or compile command.
-     * 
-     * @param isBuild True for build command and false for compile command.
-     * @param fileUri The file uri to compile or `undefined` for builds.
-     */
+/**
+   * Run the project's build or compile command.
+   * 
+   * @param isBuild True for build command and false for compile command.
+   * @param fileUri The file uri to compile or `undefined` for builds.
+   */
   public async runBuildOrCompileCommand(isBuild: boolean, fileUri?: Uri) {
     const unresolvedState = await this.getUnresolvedState();
 
@@ -439,18 +439,14 @@ export class IProject {
       const command = isBuild ? unresolvedState.buildCommand : unresolvedState.compileCommand;
 
       if (command) {
-        // Delete existing directories
-        const directoryUris = ['.logs', '.evfevent'].map(dir => Uri.file(path.join(this.workspaceFolder.uri.fsPath, dir)));
-        for await (const uri of directoryUris) {
+        for await (const folder of ['.logs', '.evfevent']) {
+          const folderUri = Uri.file(path.join(this.workspaceFolder.uri.fsPath, folder));
           try {
-            await workspace.fs.stat(uri);
-            await workspace.fs.delete(uri, { recursive: true });
-          } catch { }
-        }
-
-        // Create directories
-        for await (const uri of directoryUris) {
-          await workspace.fs.createDirectory(uri);
+            await workspace.fs.stat(folderUri);
+            await workspace.fs.delete(folderUri, { recursive: true });
+          } finally {
+            await workspace.fs.createDirectory(folderUri);
+          }
         }
 
         const action: Action = {
