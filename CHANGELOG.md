@@ -2,6 +2,14 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+## `1.2.2`
+- Contribute the job log to the bottom panel
+- Add docs about installation and Project Explorer features
+- Add docs for release process
+- Fix assign to variable from Project Explorer
+- Fix build and compile when no `.logs` or `.evfevent`
+- Fix job log error when no `iproj.json`
+
 ## `1.2.1`
 
 - Fix missing action to resolve project metadata
