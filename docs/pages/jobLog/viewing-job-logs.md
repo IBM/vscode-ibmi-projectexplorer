@@ -1,4 +1,4 @@
-# Job Log
+# Viewing Job Log
 
 > [!NOTE]
 >

@@ -10,4 +10,4 @@ Since the IBM i Project Explorer is built on top of the Code for IBM i extension
 
 ## Getting Started
 
-To get started with using the IBM i Project Explorer, refer to the [installation](./pages/welcome/installation.md) instructions to install all the necessary extensions. Once complete, try out the [Project Explorer](./pages/views/project-explorer.md) and read more about the nature of [IBM i projects](./pages/ibm-i-projects/overview.md).
+To get started with using the IBM i Project Explorer, refer to the [installation](pages/welcome/installation.md) instructions to install all the necessary extensions. Once complete, read more about the nature of [IBM i projects](pages/ibm-i-projects/overview.md) and getting started by [connect to a remote system](pages/projectExplorer/connect-to-a-remote-system).
