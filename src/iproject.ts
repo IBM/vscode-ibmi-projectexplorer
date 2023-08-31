@@ -427,11 +427,11 @@ export class IProject {
     }
   }
   /**
-     * Run the project's build or compile command.
-     * 
-     * @param isBuild True for build command and false for compile command.
-     * @param fileUri The file uri to compile or `undefined` for builds.
-     */
+   * Run the project's build or compile command.
+   * 
+   * @param isBuild True for build command and false for compile command.
+   * @param fileUri The file uri to compile or `undefined` for builds.
+   */
   public async runBuildOrCompileCommand(isBuild: boolean, fileUri?: Uri) {
     const unresolvedState = await this.getUnresolvedState();
 
