@@ -49,14 +49,25 @@
           "icon": "$(remote-explorer)"
         },
         {
-          "id": "jobLog",
-          "name": "%explorer.jobLog%",
-          "icon": "$(book)"
-        },
-        {
           "id": "testing",
           "name": "Test Cases",
           "when": "code-for-ibmi:connected && projectExplorer:testing"
+        }
+      ],
+      "ibmi": [
+        {
+          "id": "jobLog",
+          "name": "%ibmi.jobLog%",
+          "icon": "$(book)"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "ibmi",
+          "title": "%panel.ibmi%",
+          "icon": "$(book)"
         }
       ]
     },
