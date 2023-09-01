@@ -2,6 +2,10 @@
  * (c) Copyright IBM Corp. 2023
  */
 
+/**
+ * Represents the state of an IBM i Project which is a project consisting of
+ * an `iproj.json`.
+ */
 export interface IProjectT {
 
     /**
@@ -86,22 +90,4 @@ export interface IProjectT {
      * Attributes used by external software vendors to provide additional functionality.
      */
     extensions?: Map<string, object>;
-}
-
-export interface SQLProperties {
-    /**
-     * The system uses this SQL schema to resolve unqualified names in SQL statements.
-     */
-    defaultSchema?: string;
-
-    /**
-     * Specifies the naming convention used when referring to tables.
-     */
-    naming?: string;
-
-    /**
-     * The system uses this path to resolve the schema name for unqualified types,
-     * functions, variables, and procedures.
-     */
-    currentPath?: string[];
 }

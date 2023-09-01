@@ -6,20 +6,44 @@ import { ProjectManager } from "./projectManager";
 import JobLog from "./views/jobLog";
 import ProjectExplorer from "./views/projectExplorer";
 
-export interface ProjectExplorerApi {
+/**
+ * The IBM i Project Explorer API to be used by other extensions.
+ */
+export interface IBMiProjectExplorer {
+  /**
+   * The set of APIs associated with managing the projects.
+   */
   projectManager: typeof ProjectManager,
+
+  /**
+   * The set of APIs associated with managing the Project Explorer view.
+   */
   projectExplorer: ProjectExplorer,
+
+  /**
+   * The set of APIs associated with managing the Job Log view.
+   */
   jobLog: JobLog
 }
 
+/**
+ * An enum that represents context values used by each tree item in the
+ * Project Explorer view and Job Log view.
+ * 
+ * A tree item's context value is composed of base context value along with
+ * suffixes (`_<suffix>`) that contain additional information for when the 
+ * tree item can take on multiple states.
+ */
 export enum ContextValue {
   project = 'project',
   inactive = '_inactive',
   active = '_active',
   source = 'source',
+  sourceFile = 'sourceFile',
+  sourceDirectory = 'sourceDirectory',
   variables = 'variables',
+  variable = 'variable',
   libraryList = 'libraryList',
-  objectLibraries = 'objectLibraries',
   library = 'library',
   system = '_system',
   current = '_current',
@@ -29,11 +53,11 @@ export enum ContextValue {
   configurable = '_configurable',
   objectFile = `objectFile`,
   memberFile = 'memberFile',
-  ifsDirectory = 'ifsDirectory',
-  ifsFile = 'ifsFile',
-  variable = 'variable',
+  objectLibraries = 'objectLibraries',
   includePaths = 'includePaths',
   includePath = 'includePath',
+  ifsDirectory = 'ifsDirectory',
+  ifsFile = 'ifsFile',
   first = '_first',
   middle = '_middle',
   last = '_last',
@@ -41,6 +65,7 @@ export enum ContextValue {
   remote = '_remote',
   error = 'error',
   createIProj = '_createIProj',
+  resolveIProj = '_resolveIProj',
   createEnv = '_createEnv',
   addFolderToWorkspace = '_addFolderToWorkspace',
   openConnectionBrowser = '_openConnectionBrowser',

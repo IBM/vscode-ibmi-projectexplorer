@@ -6,7 +6,16 @@ import { TextEncoder } from "util";
 import { Uri, l10n, window, workspace } from "vscode";
 import { EnvironmentVariables } from "./iproject";
 
-export default async function envUpdater(envUri: Uri, variables: EnvironmentVariables) {
+/**
+ * Update the environment variables in a `.env` file. *Note* that if the
+ * file does not exist, it will be created with all the given environment
+ * variables.
+ * 
+ * @param envUri The uri of a `.env` file.
+ * @param variables The environment variables to update.
+ * @returns True if the operation was successful and false otherwise.
+ */
+export default async function envUpdater(envUri: Uri, variables: EnvironmentVariables): Promise<boolean> {
   let text = '';
   try {
     const content = await workspace.fs.readFile(envUri);

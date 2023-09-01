@@ -38,14 +38,15 @@ export const projectManagerSuite: TestSuite = {
                         "includePath": "includes",
                         "preUsrlibl": "&lib1",
                         "postUsrlibl": "&lib3",
-                        "setIBMiEnvCmd": ""
+                        "setIBMiEnvCmd": "",
+                        "extensions": ""
                     }, null, 2)
                 ));
                 const content = (await workspace.fs.readFile(fileUri)).toString();
                 const validatorResult = validator.validate(JSON.parse(content), schema);
 
                 assert.ok('/iproj' in validator.schemas);
-                assert.strictEqual(validatorResult.errors.length, 7);
+                assert.strictEqual(validatorResult.errors.length, 8);
             }
         },
         {

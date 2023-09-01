@@ -2,18 +2,18 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { ProjectManager } from "../../projectManager";
 import Log from "./log";
-import ErrorItem from "../projectExplorer/errorItem";
 import { IProjectT } from "../../iProjectT";
+import ErrorItem from "./errorItem";
 
 /**
- * Tree item for a project
+ * Tree item for a project.
  */
-export default class Project extends ProjectExplorerTreeItem {
+export default class Project extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.project;
 
   constructor(public workspaceFolder: WorkspaceFolder, state?: IProjectT) {
@@ -51,9 +51,7 @@ export default class Project extends ProjectExplorerTreeItem {
       }
       ));
     } else {
-      items.push(new ErrorItem(
-        this.workspaceFolder, l10n.t('No job log found'))
-      );
+      items.push(ErrorItem.createNoJobLogError(this.workspaceFolder));
     }
 
     return items;

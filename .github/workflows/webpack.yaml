@@ -1,6 +1,8 @@
 name: NodeJS with Webpack
 
 on:
+  workflow_dispatch:
+
   push:
     branches: ["main"]
 

@@ -3,14 +3,17 @@
  */
 
 import { commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, window, workspace } from "vscode";
-import ErrorItem from "../projectExplorer/errorItem";
 import { ProjectManager } from "../../projectManager";
 import Project from "./project";
 import Command from "./command";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import { IProjectT } from "../../iProjectT";
+import ErrorItem from "./errorItem";
 
+/**
+ * Represents the Job Log tree data provider.
+ */
 export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
@@ -19,6 +22,9 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
     context.subscriptions.push(
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.refreshJobLog`, () => {
         this.refresh();
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.refresh`, (element: ProjectExplorerTreeItem) => {
+        this.refresh(element);
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showJobLog`, async (element: Project) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
@@ -65,8 +71,13 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
     );
   }
 
-  refresh() {
-    this._onDidChangeTreeData.fire(null);
+  /**
+   * Refresh the entire tree view or a specific tree item.
+   * 
+   * @param element The tree item to refresh.
+   */
+  refresh(element?: ProjectExplorerTreeItem) {
+    this._onDidChangeTreeData.fire(element);
   }
 
   getTreeItem(element: ProjectExplorerTreeItem): ProjectExplorerTreeItem | Thenable<ProjectExplorerTreeItem> {
@@ -89,23 +100,17 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
 
           const iProject = ProjectManager.get(folder);
           if (iProject) {
-            state = await iProject.getState();
+            const metadataExists = await iProject.projectFileExists('iproj.json');
+
+            if (metadataExists) {
+              state = await iProject.getState();
+            }
           }
 
           items.push(new Project(folder, state));
         }
       } else {
-        items.push(new ErrorItem(
-          undefined,
-          l10n.t('Please open a local workspace folder'),
-          {
-            contextValue: ErrorItem.contextValue + ContextValue.addFolderToWorkspace,
-            command: {
-              command: 'workbench.action.addRootFolder',
-              title: l10n.t('Add Folder to Workspace')
-            }
-          }
-        ));
+        items.push(ErrorItem.createNoWorkspaceFolderError());
       }
 
       return items;

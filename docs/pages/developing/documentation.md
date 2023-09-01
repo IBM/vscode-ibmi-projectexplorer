@@ -15,7 +15,7 @@ npm i docsify-cli -g
 
 ---
 
-## Preview website
+## Preview Website
 
 To preview the website in your browser, run the local server using the command below. The website can be accessed on http://localhost:3000.
 

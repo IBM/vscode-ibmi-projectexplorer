@@ -2,34 +2,68 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, TreeItem, Uri, window, workspace, WorkspaceFolder } from "vscode";
-import ErrorItem from "./errorItem";
+import { ConnectionData, DeploymentMethod } from "@halcyontech/vscode-ibmi-types";
+import { commands, EventEmitter, ExtensionContext, l10n, QuickPickItem, TreeDataProvider, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
+import { getDeployTools, getInstance, getTools } from "../../ibmi";
 import { IProject } from "../../iproject";
-import Project from "./project";
+import { IProjectT } from "../../iProjectT";
 import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
-import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
+import ErrorItem from "./errorItem";
 import IncludePaths from "./includePaths";
-import LibraryList from "./libraryList";
 import Library, { LibraryType } from "./library";
+import LibraryList from "./libraryList";
 import LocalIncludePath from "./localIncludePath";
-import RemoteIncludePath from "./remoteIncludePath";
-import { migrateSource } from "./migrateSource";
-import { IProjectT } from "../../iProjectT";
-import Source from "./source";
-import * as vscode from 'vscode';
-import ObjectFile from "./objectFile";
 import MemberFile from "./memberFile";
-import { getInstance } from "../../ibmi";
-import { ContextValue } from "../../projectExplorerApi";
+import { migrateSource } from "./migrateSource";
+import ObjectFile from "./objectFile";
+import * as path from "path";
+import Project from "./project";
+import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
+import RemoteIncludePath from "./remoteIncludePath";
+import Source from "./source";
+import SourceFile from "./sourceFile";
 import Variable from "./variable";
+import { EnvironmentManager } from "../../environmentManager";
+import SourceDirectory from "./sourceDirectory";
 
+/**
+ * Represents the Project Explorer tree data provider.
+ */
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
   private projectTreeItems: Project[] = [];
 
   constructor(context: ExtensionContext) {
+    const ibmi = getInstance();
+    let currentDeploymentStorage: DeploymentPath;
+    ibmi?.onEvent(`connected`, () => {
+      this.refresh();
+
+      currentDeploymentStorage = JSON.parse(JSON.stringify(ibmi?.getStorage().getDeployment()));
+    });
+    ibmi?.onEvent(`deploy`, () => {
+      this.refresh();
+    });
+    ibmi?.onEvent(`deployLocation`, () => {
+      this.refresh();
+
+      const newDeploymentStorage = ibmi?.getStorage().getDeployment();
+      for (const [workspaceFolderPath, deployLocation] of Object.entries(newDeploymentStorage)) {
+        if (!currentDeploymentStorage || currentDeploymentStorage[workspaceFolderPath] !== deployLocation) {
+          const iProject = ProjectManager.getProjectFromUri(Uri.file(workspaceFolderPath));
+          ProjectManager.fire({ type: 'deployLocation', iProject: iProject });
+        }
+      }
+
+      currentDeploymentStorage = JSON.parse(JSON.stringify(newDeploymentStorage));
+    });
+    ibmi?.onEvent(`disconnected`, () => {
+      this.refresh();
+    });
+
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
@@ -39,12 +73,112 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.goToIFSBrowser`, async () => {
         await commands.executeCommand(`ifsBrowser.focus`);
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runBuild`, async (element?: Project) => {
+        let iProject: IProject | undefined;
+        if (element && element instanceof Project) {
+          iProject = ProjectManager.get(element.workspaceFolder);
+        } else {
+          iProject = ProjectManager.getActiveProject();
+        }
+
+        if (iProject) {
+          iProject.runBuildOrCompileCommand(true);
+        } else {
+          window.showErrorMessage(l10n.t('Failed to retrieve project'));
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, async (element: Project) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const unresolvedState = await iProject.getUnresolvedState();
+
+            if (unresolvedState) {
+              const command = await window.showInputBox({
+                prompt: l10n.t('Enter build command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by git.)', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
+                placeHolder: l10n.t('Build command'),
+                value: unresolvedState.buildCommand,
+              });
+
+              if (command) {
+                await iProject.setBuildOrCompileCommand(command, true);
+              }
+            }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runCompile`, async (element?: SourceFile | SourceDirectory | Uri) => {
+        let iProject: IProject | undefined;
+        if (element) {
+          if (element instanceof SourceFile || element instanceof SourceDirectory) {
+            // Invoked from a file or directory under the Source heading
+            element = element.sourceInfo.localUri;
+          }
+
+          // Invoked from the editor or file explorer
+          iProject = ProjectManager.getProjectFromUri(element);
+        } else {
+          // Invoked from the command palette
+          let activeFileUri = window.activeTextEditor?.document.uri;
+          element = activeFileUri?.scheme === 'file' ? activeFileUri : undefined;
+
+          if (element) {
+            iProject = ProjectManager.getProjectFromUri(element);
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve file to compile'));
+            return;
+          }
+        }
+
+        if (iProject) {
+          iProject.runBuildOrCompileCommand(false, element);
+        } else {
+          window.showErrorMessage(l10n.t('Failed to retrieve project'));
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`, async (element: Project) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const unresolvedState = await iProject.getUnresolvedState();
+
+            if (unresolvedState) {
+              const command = await window.showInputBox({
+                prompt: l10n.t('Enter compile command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by git.)', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
+                placeHolder: l10n.t('Compile command'),
+                value: unresolvedState.compileCommand,
+              });
+
+              if (command) {
+                await iProject.setBuildOrCompileCommand(command, false);
+              }
+            }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup`, async (element: Project) => {
+        if (element) {
+          await ProjectManager.setActiveProject(element.workspaceFolder);
+
+          const deployTools = getDeployTools();
+          await deployTools?.launchActionsSetup(element.workspaceFolder);
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
         this.refresh();
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refresh`, (element: ProjectExplorerTreeItem) => {
+        this.refresh(element);
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, async (element?: Project) => {
         if (element) {
-          await ProjectManager.setActiveProject(element.workspaceFolder!);
+          await ProjectManager.setActiveProject(element.workspaceFolder);
           this.refresh();
         } else {
           const projectItems: QuickPickItem[] = [];
@@ -90,7 +224,69 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation`, async (element: Source) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${element.description}`);
+          await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${element.deploymentParameters.remotePath}`);
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod`, async (element: Source) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            const ibmi = getInstance();
+            const connection = ibmi!.getConnection();
+
+            const methods: { method: DeploymentMethod, label: string, description?: string }[] = [];
+            if (connection.remoteFeatures.md5sum) {
+              methods.push({ method: 'compare', label: l10n.t('Compare'), description: l10n.t('Synchronizes using MD5 hash comparison') });
+            }
+
+            const deployTools = getDeployTools();
+            const deploymentParameters = await iProject.getDeploymentParameters();
+            const files = await deployTools?.getDeployChangedFiles(deploymentParameters!);
+            const changes = files?.length || 0;
+            methods.push({ method: 'changed', label: l10n.t('Changes'), description: changes > 1 || changes === 0 ? l10n.t('{0} changes detected since last upload', changes) : l10n.t('1 change detected since last upload') });
+
+            const tools = getTools();
+            if (tools!.getGitAPI()) {
+              methods.push(
+                { method: 'unstaged', label: l10n.t('Working Changes'), description: l10n.t('Unstaged changes in git') },
+                { method: 'staged', label: l10n.t('Staged Changes') }
+              );
+            }
+
+            methods.push({ method: 'all', label: l10n.t('All'), description: l10n.t('Every file in the local workspace') });
+
+            const deploymentMethod = await window.showQuickPick(methods, { placeHolder: l10n.t('Select deployment method to {0}', element.deploymentParameters.remotePath) });
+            if (deploymentMethod) {
+              iProject.setDeploymentMethod(deploymentMethod.method);
+
+              this.refresh();
+            }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.deployProject`, async (element: Source) => {
+        if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+
+          if (iProject) {
+            await iProject.deployProject();
+
+            this.refresh();
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.compareWithRemote`, async (element: SourceFile) => {
+        if (element) {
+          const remoteFile = path.parse(element.sourceInfo.remoteUri.path);
+          const ibmi = getInstance();
+          const remoteFileExists = await ibmi?.getContent().streamfileResolve([remoteFile.base], [remoteFile.dir]);
+
+          if (remoteFileExists) {
+            await commands.executeCommand(`vscode.diff`, element.sourceInfo.remoteUri, element.sourceInfo.localUri);
+          } else {
+            window.showErrorMessage(l10n.t('{0} does not exist remotely', remoteFile.base));
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut`, async (element: Project) => {
@@ -99,8 +295,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (iProject) {
             const fileUri = iProject.getProjectFileUri('iproj.json');
-            const document = await vscode.workspace.openTextDocument(fileUri);
-            await vscode.window.showTextDocument(document);
+            const document = await workspace.openTextDocument(fileUri);
+            await window.showTextDocument(document);
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
@@ -253,8 +449,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetLibraryForCompiles`, async (element: Uri) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetLibraryForCompiles`, async (element: SourceDirectory | Uri) => {
         if (element) {
+          if (element instanceof SourceDirectory) {
+            // Invoked from a directory under the Source heading
+            element = element.sourceInfo.localUri;
+          }
+
           const iProject = ProjectManager.getProjectFromUri(element);
 
           if (iProject) {
@@ -330,8 +531,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles`, async (element: Uri) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setTargetCCSIDForCompiles`, async (element: SourceDirectory | Uri) => {
         if (element) {
+          if (element instanceof SourceDirectory) {
+            // Invoked from a directory under the Source heading
+            element = element.sourceInfo.localUri;
+          }
+
           const iProject = ProjectManager.getProjectFromUri(element);
 
           if (iProject) {
@@ -466,9 +672,16 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.assignToVariable`, async (element: any) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.assignToVariable`, async (element: Library | any) => {
         if (element) {
-          const value = element.name ? element.name : element.path;
+          let value: string;
+          if (element instanceof Library) {
+            // Invoked from library in Project Explorer
+            value = element.label!.toString();
+          } else {
+            // Invoked from library in Object Browser or directory in IFS Browser
+            value = element.name ? element.name : element.path;
+          }
 
           if (value) {
             const variableItems: QuickPickItem[] = [];
@@ -496,34 +709,48 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: IncludePaths | any) => {
-        if (element instanceof IncludePaths) {
-          const iProject = ProjectManager.get(element.workspaceFolder);
+      commands.registerCommand(`vscode-ibmi-projectexplorer.addToIncludePaths`, async (element: IncludePaths | SourceDirectory | Uri | any) => {
+        if (element) {
+          let iProject: IProject | undefined;
+          let includePath: string | undefined;
+          if (element instanceof IncludePaths) {
+            // Invoked from Include Paths heading
+            iProject = ProjectManager.get(element.workspaceFolder);
 
-          if (iProject) {
-            const includePath = await window.showInputBox({
-              prompt: l10n.t('Enter include path'),
-              placeHolder: l10n.t('Include path')
-            });
+            if (iProject) {
+              includePath = await window.showInputBox({
+                prompt: l10n.t('Enter include path'),
+                placeHolder: l10n.t('Include path')
+              });
+            }
+          } else if (element instanceof SourceDirectory) {
+            // Invoked from a directory under the Source heading
+            includePath = element.sourceInfo.localUri.path;
+
+            iProject = ProjectManager.get(element.workspaceFolder);
+          } else if (element instanceof Uri) {
+            // Invoked from the file explorer
+            includePath = element.path;
+
+            iProject = ProjectManager.getProjectFromUri(element);
+          } else {
+            // Invoked from the Code4i IFS browser
+            includePath = element.path;
 
             if (includePath) {
-              await iProject.addToIncludePaths(includePath);
+              iProject = ProjectManager.getActiveProject();
+            } else {
+              window.showErrorMessage(l10n.t('Failed to retrieve path to directory'));
+              return;
             }
-          } else {
-            window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
-        } else {
-          const includePath = element.path;
 
           if (includePath) {
-            const iProject = ProjectManager.getActiveProject();
             if (iProject) {
               await iProject.addToIncludePaths(includePath);
             } else {
               window.showErrorMessage(l10n.t('Failed to retrieve project'));
             }
-          } else {
-            window.showErrorMessage(l10n.t('Failed to retrieve path to directory'));
           }
         }
       }),
@@ -599,7 +826,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const path = `${element.libraryInfo.library}/${element.libraryInfo.name}`;
           const type = element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type;
 
-          const result = await vscode.window.showWarningMessage(l10n.t('Are you sure you want to clear {0} *{1}?', path, type), l10n.t('Yes'), l10n.t('Cancel'));
+          const result = await window.showWarningMessage(l10n.t('Are you sure you want to clear {0} *{1}?', path, type), l10n.t('Yes'), l10n.t('Cancel'));
 
           if (result === l10n.t('Yes')) {
             const ibmi = getInstance();
@@ -608,10 +835,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             try {
               await connection.runCommand({ command: `CLRLIB LIB(${library})` });
 
-              vscode.window.showInformationMessage(l10n.t('Cleared {0} *{1}.', path, type));
+              window.showInformationMessage(l10n.t('Cleared {0} *{1}.', path, type));
               this.refresh();
             } catch (e: any) {
-              vscode.window.showErrorMessage(l10n.t('Error clearing library! {0}', e));
+              window.showErrorMessage(l10n.t('Error clearing library! {0}', e));
             }
           }
         }
@@ -628,7 +855,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.createSourceFile`, async (element: Library) => {
         if (element) {
-          const sourceFileName = await vscode.window.showInputBox({
+          const sourceFileName = await window.showInputBox({
             prompt: l10n.t('Enter source file name'),
             placeHolder: l10n.t('Source file name'),
             validateInput: (library) => {
@@ -647,18 +874,26 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               const library = element.libraryInfo.name;
               const path = `${library}/${sourceFileName.toUpperCase()}`;
 
-              vscode.window.showInformationMessage(l10n.t('Creating source file {0}.', path));
+              window.showInformationMessage(l10n.t('Creating source file {0}.', path));
               await connection.runCommand({ command: `CRTSRCPF FILE(${path}) RCDLEN(112)` });
 
               this.refresh();
             } catch (e: any) {
-              vscode.window.showErrorMessage(l10n.t('Error creating source file! {0}', e));
+              window.showErrorMessage(l10n.t('Error creating source file! {0}', e));
             }
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: ObjectFile | MemberFile) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: Project | ObjectFile | MemberFile) => {
         if (element) {
+          if (element instanceof Project) {
+            await ProjectManager.setActiveProject(element.workspaceFolder);
+
+            await commands.executeCommand(`code-for-ibmi.runAction`, {
+              resourceUri: element.workspaceFolder.uri
+            });
+          }
+
           await commands.executeCommand(`code-for-ibmi.runAction`, {
             resourceUri: element.resourceUri
           });
@@ -823,7 +1058,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.openConnectionBrowser`, async (element: ErrorItem) => {
         if (element) {
-          await commands.executeCommand(`connectionBrowser.focus`);
+          const isInMerlin = EnvironmentManager.isInMerlin();
+          await commands.executeCommand(isInMerlin ? `ibmideveloper.connectionBrowser.focus` : `connectionBrowser.focus`);
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.setDeployLocation`, async (element: ErrorItem | WorkspaceFolder) => {
@@ -837,10 +1073,24 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, workspaceFolder, defaultDeployLocation);
           }
         }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.connect`, async () => {
+        const connections = workspace.getConfiguration(`code-for-ibmi`).get<ConnectionData[]>('connections');
+        if (connections && connections.length) {
+          await commands.executeCommand(`code-for-ibmi.connectTo`, connections.length === 1 ? connections[0].name : undefined);
+        } else {
+          //Connect to a new system
+          await commands.executeCommand(`code-for-ibmi.connect`);
+        }
       })
     );
   }
 
+  /**
+   * Refresh the entire tree view or a specific tree item.
+   * 
+   * @param element The tree item to refresh.
+   */
   refresh(element?: ProjectExplorerTreeItem) {
     this._onDidChangeTreeData.fire(element);
   }
@@ -875,38 +1125,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                   const errors = validatorResult.errors
                     .map(error => `• ${error.stack.replace('instance.', '').replace('instance', 'iproj')}`)
                     .join('\n');
-                  const tooltip = l10n.t('This project contains the following errors:\n{0}', errors);
-                  items.push(new ErrorItem(
-                    folder,
-                    folder.name,
-                    {
-                      description: l10n.t('Please resolve project metadata'),
-                      tooltip: tooltip,
-                      command: {
-                        command: 'vscode-ibmi-projectexplorer.projectExplorer.iprojShortcut',
-                        arguments: [{ workspaceFolder: iProject.workspaceFolder }],
-                        title: l10n.t('Open iproj.json')
-                      }
-                    }
-                  ));
+                  items.push(ErrorItem.createResolveIProjError(folder, errors));
                 } else {
                   items.push(new Project(folder));
                 }
               }
             } else {
-              items.push(new ErrorItem(
-                folder,
-                folder.name,
-                {
-                  description: l10n.t('Please configure project metadata'),
-                  contextValue: ErrorItem.contextValue + ContextValue.createIProj,
-                  command: {
-                    command: 'vscode-ibmi-projectexplorer.createIProj',
-                    arguments: [folder],
-                    title: l10n.t('Create iproj.json')
-                  }
-                }
-              ));
+              items.push(ErrorItem.createNoIProjError(folder));
             }
           }
 
@@ -922,23 +1147,19 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
 
       } else {
-        items.push(new ErrorItem(
-          undefined,
-          l10n.t('Please open a local workspace folder'),
-          {
-            contextValue: ErrorItem.contextValue + ContextValue.addFolderToWorkspace,
-            command: {
-              command: 'workbench.action.addRootFolder',
-              title: l10n.t('Add Folder to Workspace')
-            }
-          }
-        ));
+        items.push(ErrorItem.createNoWorkspaceFolderError());
       }
 
       return items;
     }
   }
 
+  /**
+   * Get the project tree item associated with an IBM i project.
+   * 
+   * @param iProject The IBM i project.
+   * @returns The project tree item or `undefined`.
+   */
   getProjectTreeItem(iProject: IProject): Project | undefined {
     for (const projectTreeItem of this.projectTreeItems) {
       if (projectTreeItem.workspaceFolder === iProject.workspaceFolder) {

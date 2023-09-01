@@ -2,17 +2,17 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n, window } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import IFSFile from "./ifsFile";
 import { getInstance } from "../../ibmi";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import * as vscodeIbmiTypes from "@halcyontech/vscode-ibmi-types";
 
 /**
- * Tree item for an IFS directory
+ * Tree item for an IFS directory.
  */
-export default class IFSDirectory extends ProjectExplorerTreeItem {
+export default class IFSDirectory extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.ifsDirectory;
   ifsDirectoryInfo: vscodeIbmiTypes.IFSFile;
 
@@ -34,15 +34,19 @@ export default class IFSDirectory extends ProjectExplorerTreeItem {
     let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
-    const files = await ibmi?.getContent().getFileList(this.ifsDirectoryInfo.path, { order: 'name' });
-    if (files) {
-      for (const file of files) {
-        if (file.type === 'directory') {
-          items.push(new IFSDirectory(this.workspaceFolder, file));
-        } else {
-          items.push(new IFSFile(this.workspaceFolder, file));
+    if (ibmi && ibmi.getConnection()) {
+      const files = await ibmi?.getContent().getFileList(this.ifsDirectoryInfo.path, { order: 'name' });
+      if (files) {
+        for (const file of files) {
+          if (file.type === 'directory') {
+            items.push(new IFSDirectory(this.workspaceFolder, file));
+          } else {
+            items.push(new IFSFile(this.workspaceFolder, file));
+          }
         }
       }
+    } else {
+      window.showErrorMessage(l10n.t('Please connect to an IBM i'));
     }
 
     return items;

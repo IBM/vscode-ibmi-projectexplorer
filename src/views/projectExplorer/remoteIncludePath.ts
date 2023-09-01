@@ -3,13 +3,13 @@
  */
 
 import { ThemeIcon, WorkspaceFolder } from "vscode";
-import { ContextValue } from "../../projectExplorerApi";
+import { ContextValue } from "../../ibmiProjectExplorer";
 import IFSDirectory from "./ifsDirectory";
 import * as path from "path";
 import { Position } from "../../iproject";
 
 /**
- * Tree item for a remote include path
+ * Tree item for a remote include path.
  */
 export default class RemoteIncludePath extends IFSDirectory {
   static contextValue = ContextValue.includePath;
