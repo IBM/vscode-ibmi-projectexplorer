@@ -2,12 +2,12 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { EventEmitter, ExtensionContext, l10n, StatusBarAlignment, StatusBarItem, Uri, window, workspace, WorkspaceFolder, commands } from "vscode";
-import { IProject } from "./iproject";
-import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
-import Project from "./views/projectExplorer/project";
 import { Validator } from "jsonschema";
+import { EventEmitter, ExtensionContext, StatusBarAlignment, StatusBarItem, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import { ConfigurationManager, ConfigurationSection } from "./configurationManager";
+import { IProject } from "./iproject";
+import Project from "./views/projectExplorer/project";
+import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 
 /**
  * Project explorer events each serve a different purpose:
@@ -19,7 +19,7 @@ import { ConfigurationManager, ConfigurationSection } from "./configurationManag
  * - `compile` event is fired when a compile is finished
  */
 export type ProjectExplorerEventT = 'projects' | 'activeProject' | 'libraryList' | 'deployLocation' | 'build' | 'compile';
-
+export type ProjectExplorerEventCallback = (iProject?: IProject) => void;
 /**
  * Project explorer event
  */
@@ -70,7 +70,7 @@ export class ProjectManager {
      * An array of events that store an association between an event and a subscriber's
      * call back function.
      */
-    private static events: { event: ProjectExplorerEventT, func: Function }[] = [];
+    private static events: { event: ProjectExplorerEventT, callback: ProjectExplorerEventCallback}[] = [];
 
     /**
      * Initialize the project manager by setting up the JSON schema validator, the 
@@ -88,7 +88,7 @@ export class ProjectManager {
 
         this.emitter.event(e => {
             this.events.filter(event => event.event === e.type)
-                .forEach(event => event.func(e.iProject));
+                .forEach(event => event.callback(e.iProject));
         });
 
         this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
@@ -120,8 +120,8 @@ export class ProjectManager {
      * @param event 
      * @param func 
      */
-    public static onEvent(event: ProjectExplorerEventT, func: Function) {
-        this.events.push({ event, func });
+    public static onEvent(event: ProjectExplorerEventT, callback: ProjectExplorerEventCallback) {
+        this.events.push({ event, callback });
     }
 
     /**
