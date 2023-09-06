@@ -38,6 +38,7 @@
   "commands.projectExplorer.createIProj": "Create iproj.json",
   "commands.projectExplorer.createMember": "Create Member",
   "commands.projectExplorer.createSourceFile": "Create Source File",
+  "commands.projectExplorer.debugProgram": "Debug Program",
   "commands.projectExplorer.deleteLibrary": "Delete Library",
   "commands.projectExplorer.deleteMember": "Delete Member",
   "commands.projectExplorer.deleteObject": "Delete Object",

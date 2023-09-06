@@ -388,6 +388,11 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.debugProgram",
+        "title": "%commands.projectExplorer.debugProgram%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.browse",
         "title": "%commands.projectExplorer.browse%"
       },
@@ -677,6 +682,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.searchSourceFile",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.debugProgram",
           "when": "never"
         },
         {
@@ -1085,13 +1094,18 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.createMember",
-          "when": "view == projectExplorer && viewItem =~ /^objectFile_PHY.*/",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.FILE.PHY.*/",
           "group": "3_memberActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.searchSourceFile",
-          "when": "view == projectExplorer && viewItem =~ /^objectFile_PHY.*/",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.FILE.PHY.*/",
           "group": "4_search@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.debugProgram",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.PGM.*/ && !inDebugMode ",
+          "group": "4_debug@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.runAction",
