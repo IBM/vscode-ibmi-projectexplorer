@@ -8,7 +8,7 @@ To set the project's deploy location, use the **Set Deploy Location** action on 
 
 ![Set Deploy Location](../../assets/ProjectExplorer_05.png)
 
-If you need to browse to the exact deploy location which you would like to set, this can be done frm the **IFS Browser** by creating an IFS shortcut and using the right-click **Set Deploy Workspace Location** action from any directory.
+If you need to browse to the exact deploy location which you would like to set, this can be done from the **IFS Browser** by creating an IFS shortcut and using the right-click **Set Deploy Workspace Location** action from any directory.
 
 ![Set Deploy Workspace Location](../../assets/ProjectExplorer_06.png)
 
@@ -36,6 +36,6 @@ For files that have been deployed, you have the ability to compare the local cop
 
 ## Deploy the Project
 
-To start the deployment process, you can use the **Deploy Project** action on the **Source** heading. This will upload the project's local files to the deploy location using the current deployment method. To view the output of this deployment process, navigate to the **Output** view and select the **IBM i Deployment** channel.
+To start the deployment process, you can use the **Deploy Project** action on the **Source** heading. This will upload the project's local files to the deploy location using the current deployment method. To view the output of this deployment process, navigate to the **Output** view and select the **IBM i Deployment** channel.  Note that when invoking the [build or compile](./run-builds-compiles-and-actions.md), the source is automatically deployed before running the compile commands so no explicit deploy action is required.
 
 ![Deploy Project](../../assets/ProjectExplorer_10.png)
