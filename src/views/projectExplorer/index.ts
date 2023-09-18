@@ -1002,7 +1002,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         if (element) {
           await commands.executeCommand(`code-for-ibmi.updateMemberText`, {
             path: element.resourceUri?.path,
-            description: element.memberFileInfo.text
+            member: {
+              text: element.memberFileInfo.text
+            }
           });
 
           this.refresh();
