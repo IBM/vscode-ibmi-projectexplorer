@@ -1,0 +1,48 @@
+name: Test
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches: ["main"]
+
+  pull_request_target:
+    branches: ["main"]
+
+
+env:
+  HOST: ${{ secrets.HOST }}
+  PORT: ${{ secrets.PORT }}
+  USER: ${{ secrets.USER }}  
+  PASSWORD: ${{ secrets.PASSWORD }}
+
+jobs:
+  test:
+    name: Test
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install NPM Dependencies
+        run: npm install
+
+      - name: Run Test (${{ matrix.os }})
+        run: xvfb-run -a npm test
+        if: runner.os == 'Linux'
+
+      - name: Run Test (${{ matrix.os }})
+        run: npm test
+        if: runner.os != 'Linux'

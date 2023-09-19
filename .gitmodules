@@ -1,0 +1,3 @@
+[submodule "src/test/testFixtures/ibmi-company_system"]
+	path = src/test/testFixtures/ibmi-company_system
+	url = https://github.com/IBM/ibmi-company_system.git

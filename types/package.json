@@ -17,7 +17,7 @@
   },
   "typings": "./ibmiProjectExplorer.d.ts",
   "scripts": {
-    "prepublish": "rm -rf testing",
+    "prepublish": "rm -rf test",
     "deploy": "npm publish --access public"
   },
   "dependencies": {
