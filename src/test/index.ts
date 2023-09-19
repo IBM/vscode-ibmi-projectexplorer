@@ -108,7 +108,6 @@ export async function run(connect: boolean = true) {
     assert.ok(password, 'PASSWORD environment variable required to run tests');
 
     // Verify test fixtures are loaded
-    console.log(JSON.stringify(workspace.workspaceFolders));
     const workspaceFolders = workspace.workspaceFolders;
     assert.ok(workspaceFolders, 'Failed to load workspace folders');
     assert.strictEqual(workspaceFolders.length, 1, 'Incorrect number of workspace folders');
@@ -188,6 +187,33 @@ async function runTests() {
 
       testSuitesTreeProvider.refresh(suite);
     }
+  }
+
+  // Process test results
+  let suitesPassed = 0;
+  let suiteTotal = suites.length;
+  let testsPassed = 0;
+  let testTotal = 0;
+  for (const suite of suites) {
+    suiteTotal++;
+    if (!suite.failure) {
+      suitesPassed++;
+    }
+
+    for (const test of suite.tests) {
+      testTotal++;
+      if (!test.failure) {
+        testTotal++;
+      }
+    }
+  }
+
+  // Output resylts
+  console.log();
+  console.log(`Test Suites: ${suitesPassed} passed, ${suiteTotal} total`);
+  console.log(`Tests: ${testsPassed} passed, ${testTotal} total`);
+  if (testsPassed !== testsPassed || suitesPassed !== suiteTotal) {
+    process.exit(1);
   }
 }
 
