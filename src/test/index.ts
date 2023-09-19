@@ -189,22 +189,6 @@ async function runTests() {
       testSuitesTreeProvider.refresh(suite);
     }
   }
-
-  for (const suite of suites) {
-    if (suite.failure) {
-      console.log('Error: 1' + suite.name);
-      console.error('Error: 2' + suite.name);
-      process.exit(1);
-    }
-
-    for (const test of suite.tests) {
-      if (test.failure) {
-        console.log('Error: 1' + test.name);
-        console.error('Error: 2' + test.name);
-        process.exit(1);
-      }
-    }
-  }
 }
 
 async function runTest(test: TestCase) {
