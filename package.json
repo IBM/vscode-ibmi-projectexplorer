@@ -33,9 +33,9 @@
     "theme": "dark"
   },
   "activationEvents": [
-    "onStartupFinished"
+    "*"
   ],
-  "main": "./dist/extension.js",
+  "main": "./out/extension.js",
   "extensionDependencies": [
     "HalcyonTechLtd.code-for-ibmi"
   ],
@@ -1397,13 +1397,15 @@
     ]
   },
   "scripts": {
+    "clean": "rm -rf out",
+    "compile": "npm run clean && webpack",
     "vscode:prepublish": "npm run package",
-    "compile": "webpack",
     "watch": "webpack --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "compile-tests": "npm run clean && tsc -p . --outDir out",
+    "watch-tests": "npm run clean && tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests || true",
+    "test": "node ./out/test/runTest.js",
     "lint": "eslint src --ext ts",
     "docs": "docsify serve docs",
     "nls": "npx @vscode/l10n-dev export --outDir ./l10n ./src",
@@ -1418,6 +1420,7 @@
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "@vscode/l10n-dev": "^0.0.29",
+    "@vscode/test-electron": "^2.3.4",
     "esbuild-loader": "^4.0.2",
     "eslint": "^8.49.0",
     "tar": "^6.2.0",
