@@ -72,5 +72,6 @@ export enum ContextValue {
   setDeployLocation = '_setDeployLocation',
   log = 'log',
   command = 'command',
+  commandRepresentation = 'commandRepresentation',
   message = 'message'
 }

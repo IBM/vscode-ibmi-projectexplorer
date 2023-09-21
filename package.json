@@ -496,6 +496,24 @@
         "command": "vscode-ibmi-projectexplorer.jobLog.copy",
         "title": "%commands.jobLog.copy%",
         "icon": "$(copy)"
+      },
+      {
+        "category": "%commands.showObjectOutput%",
+        "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
+        "title": "%commands.jobLog.showObjectOutput%",
+        "icon": "$(note)"
+      },
+      {
+        "category": "%commands.toggleFailed%",
+        "command": "vscode-ibmi-projectexplorer.jobLog.toggleFailed",
+        "title": "%commands.jobLog.toggleFailed%",
+        "icon": "$(circle)"
+      },
+      {
+        "category": "%commands.filterMessageSeverity%",
+        "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
+        "title": "%commands.jobLog.filterMessageSeverity%",
+        "icon": "$(filter)"
       }
     ],
     "menus": {
@@ -758,6 +776,18 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.connect",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.toggleFailed",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
           "when": "never"
         }
       ],
@@ -1205,7 +1235,22 @@
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
           "when": "view == jobLog && viewItem =~ /^command.*/",
-          "group": "inline"
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
+          "when": "view == jobLog && viewItem =~ /^command.*/",
+          "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
+          "when": "view == jobLog && viewItem =~ /^command.*/",
+          "group": "inline@2"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.toggleFailed",
+          "when": "view == jobLog && viewItem =~ /^log.*/",
+          "group": "inline@1"
         }
       ]
     },
@@ -1389,6 +1434,22 @@
       {
         "id": "joblog.severity.50",
         "description": "%colors.jobLog.severity.50%",
+        "defaults": {
+          "dark": "#ee816b",
+          "light": "#ee816b"
+        }
+      },
+      {
+        "id": "joblog.failed.false",
+        "description": "%colors.jobLog.failed.false%",
+        "defaults": {
+          "dark": "#87d167",
+          "light": "#87d167"
+        }
+      },
+      {
+        "id": "joblog.failed.true",
+        "description": "%colors.jobLog.failed.true%",
         "defaults": {
           "dark": "#ee816b",
           "light": "#ee816b"
