@@ -30,8 +30,7 @@ export const DEFAULT_OBJLIB = '&OBJLIB';
 /**
  * Represents a file that stores project information.
  */
-export type ProjectFileType = 'iproj.json' | '.ibmi.json' | 'joblog.json' | 'output.log' | '.env';
-
+export type ProjectFileType = 'iproj.json' | '.ibmi.json' | 'joblog.json' | 'output.log' | '.env' | `${string}.splf`;
 /**
  * Represents a project's library list.
  */
@@ -131,7 +130,7 @@ export class IProject {
    * @returns A uri of the desired resource.
    */
   public getProjectFileUri(type: ProjectFileType, directory?: Uri): Uri {
-    const logDirectory = (type === 'joblog.json' || type === 'output.log') ? `.logs` : ``;
+    const logDirectory = (type === 'joblog.json' || type === 'output.log' || type.endsWith('.splf') ) ? `.logs` : ``;
 
     return Uri.file(path.join(directory ? directory.fsPath : this.workspaceFolder.uri.fsPath, logDirectory, type));
   }
