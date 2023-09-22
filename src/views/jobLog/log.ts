@@ -14,7 +14,7 @@ import { ContextValue } from "../../ibmiProjectExplorer";
 export default class Log extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.log;
   jobLogInfo: JobLogInfo;
-  showFailedCommands : boolean;
+  onlyShowFailedCommands : boolean;
 
   constructor(public workspaceFolder: WorkspaceFolder, jobLogInfo: JobLogInfo, isLocal: boolean = false) {
     super(jobLogInfo.createdTime.toLocaleString(), TreeItemCollapsibleState.Collapsed);
@@ -22,11 +22,11 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
     this.jobLogInfo = jobLogInfo;
     this.iconPath = new ThemeIcon('archive', isLocal ? new ThemeColor('joblog.local') : undefined);
     this.contextValue = Log.contextValue;
-    this.showFailedCommands = false;
+    this.onlyShowFailedCommands = false;
   }
 
   toggleShowFailed(): void {
-    this.showFailedCommands = this.showFailedCommands === false ? true : false;
+    this.onlyShowFailedCommands = this.onlyShowFailedCommands === false ? true : false;
   }
 
   getChildren(): ProjectExplorerTreeItem[] {
@@ -34,9 +34,9 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
 
     const jobLogInfo = this.jobLogInfo;
 
-    if (this.showFailedCommands) {
+    if (this.onlyShowFailedCommands) {
       items.push(...jobLogInfo.commands?.filter(
-        command => command.failed === this.showFailedCommands
+        command => command.failed
       ).map(
         command => new Command(this.workspaceFolder, command)
       ));
