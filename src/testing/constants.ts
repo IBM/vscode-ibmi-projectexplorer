@@ -28,27 +28,49 @@ export const ibmiJsonMock: IBMiJsonT = {
 
 export const jobLogMock: CommandInfo[] = [
     {
-        "cmd": "crtclmod module(WDSCTEST/ORD100CA) srcstmf('ORD100C.CLLE') AUT() DBGVIEW(*ALL) OPTION(*EVENTF) TEXT('') TGTRLS()",
-        "cmd_time": "2023-07-14-14.54.44.168562000",
+        "cmd": "CRTCLMOD MODULE(bobtest/PAR201) SRCFILE(QTEMP/QSOURCE) SRCMBR(PAR201) AUT() DBGVIEW(*ALL) OPTIMIZE() OPTION(*EVENTF) TEXT(' ') TGTRLS() INCDIR('/bob-recursive-example/includes' '/bob-recursive-example/QPROTOSRC')",
+        "cmd_time": "2023-09-22-10.30.27.709187",
         "msgs": [
             {
-                "msgid": "CPCA081",
+                "msgid": "CPF1124",
+                "type": "INFORMATIONAL",
+                "severity": 0,
+                "message_time": "2023-09-22-10.26.57.234832",
+                "message_text": "Job 948101/QUSER/QSQSRVR started on 09/22/23 at 10:26:57 in subsystem QSYSWRK in QSYS. Job entered system on 09/22/23 at 10:26:57.",
+                "second_level": null,
+                "from_program": "QWTPIIPP",
+                "from_library": "QSYS",
+                "from_instruction": "04CC",
+                "to_program": "*EXT",
+                "to_library": null,
+                "to_module": null,
+                "to_procedure": null,
+                "to_instruction": "*N"
+            },
+            {
+                "msgid": "CPC2198",
                 "type": "COMPLETION",
                 "severity": 20,
-                "message_time": "2023-07-14-14.54.44.214251",
-                "message_text": "Stream file copied to object.",
-                "second_level": "&N Cause . . . . . :   Stream file /home/ECLIPSETEST/bob-recursive-example-master/QCLSRC/ORD100C.CLLE was successfully copied to object /QSYS.LIB/QTEMP.LIB/QCLTEMPSRC.FILE/ORD100C.MBR in CCSID (Coded Character Set Identifier) 37.",
-                "from_program": "QDDCLF",
+                "message_time": "2023-09-22-10.30.27.706913",
+                "message_text": "Current library changed to BOBTEST.",
+                "second_level": "&N Cause . . . . . :   The current library in the library list was changed to BOBTEST.",
+                "from_program": "QLICHLLE",
                 "from_library": "QSYS",
-                "from_instruction": "1555",
-                "to_program": "CRTFRMSTMF",
-                "to_library": "CRTFRMSTMF",
-                "to_module": "CRTFRMSTMF",
-                "to_procedure": "CRTFRMSTMF",
-                "to_instruction": "272"
+                "from_instruction": "01A3",
+                "to_program": "QSQRUN4",
+                "to_library": "QSYS",
+                "to_module": "QSQCALLSP",
+                "to_procedure": "CALLPROGRAM",
+                "to_instruction": "44918"
             }
-        ]
+        ],
+        "object": "PAR201.MODULE",
+        "source": "/bob-recursive-example/QCLSRC/PAR201.CLLE",
+        "output": "/bob-recursive-example/.logs/PAR201.splf",
+        "failed": false
     }
 ];
 
 export const outputMock = '';
+
+export const splfMock = '';
