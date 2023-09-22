@@ -42,9 +42,9 @@ export const jobLogMock: CommandInfo[] = [
                 "from_library": "QSYS",
                 "from_instruction": "04CC",
                 "to_program": "*EXT",
-                "to_library": null,
-                "to_module": null,
-                "to_procedure": null,
+                "to_library": "CRTFRMSTMF",
+                "to_module": "CRTFRMSTMF",
+                "to_procedure": "CRTFRMSTMF",
                 "to_instruction": "*N"
             },
             {

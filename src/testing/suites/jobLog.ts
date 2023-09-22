@@ -44,7 +44,7 @@ export const jobLogSuite: TestSuite = {
             name: `Test parseDateTime`, test: async () => {
                 const dateTime = parseDateTime(jobLogMock[0].cmd_time);
 
-                assert.deepStrictEqual(dateTime, new Date(2023, 6, 14, 14, 54, 44));
+                assert.deepStrictEqual(dateTime, new Date(2023, 8, 22, 10, 30, 27));
                 assert.throws(() => { parseDateTime('2021-12-12-21-30-34-07141'); });
                 assert.throws(() => { parseDateTime(''); });
             }
@@ -55,7 +55,7 @@ export const jobLogSuite: TestSuite = {
                 const jobLogs = iProject.getJobLogs();
                 const fromToText = JobLogInfo.createFromToTextForMsgEntity(jobLogs[0].commands[0].msgs![0]);
 
-                assert.strictEqual(fromToText, 'From: QSYS/QDDCLF:1555\nTo: CRTFRMSTMF/CRTFRMSTMF/CRTFRMSTMF/CRTFRMSTMF:272');
+                assert.strictEqual(fromToText, 'From: QSYS/QWTPIIPP:04CC\nTo: CRTFRMSTMF/CRTFRMSTMF/*EXT/CRTFRMSTMF:*N');
             }
         }
     ]
