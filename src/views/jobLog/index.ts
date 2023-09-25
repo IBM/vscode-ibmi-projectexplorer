@@ -66,7 +66,7 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.copy`, async (element: Command) => {
         try {
-          await env.clipboard.writeText(element.label!.toString());
+          await env.clipboard.writeText(element.commandInfo.cmd);
         } catch (error) {
           window.showErrorMessage(l10n.t('Failed to copy command'));
         }
