@@ -504,9 +504,15 @@
         "icon": "$(note)"
       },
       {
-        "category": "%commands.toggleFailed%",
-        "command": "vscode-ibmi-projectexplorer.jobLog.toggleFailed",
-        "title": "%commands.jobLog.toggleFailed%",
+        "category": "%commands.showOnlyFailedJobs%",
+        "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs",
+        "title": "%commands.jobLog.showOnlyFailedJobs%",
+        "icon": "$(error-small)"
+      },
+      {
+        "category": "%commands.showAllJobs%",
+        "command": "vscode-ibmi-projectexplorer.jobLog.showAllJobs",
+        "title": "%commands.jobLog.showAllJobs%",
         "icon": "$(circle)"
       },
       {
@@ -783,7 +789,11 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.toggleFailed",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.showAllJobs",
           "when": "never"
         },
         {
@@ -1248,9 +1258,14 @@
           "group": "inline@2"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.toggleFailed",
-          "when": "view == jobLog && viewItem =~ /^log.*/",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs",
+          "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showFailedJobs.*/",
           "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.showAllJobs",
+          "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showAllJobs.*/",
+          "group": "inline@0"
         }
       ]
     },
