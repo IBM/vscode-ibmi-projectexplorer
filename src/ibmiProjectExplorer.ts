@@ -73,5 +73,7 @@ export enum ContextValue {
   log = 'log',
   command = 'command',
   commandRepresentation = 'commandRepresentation',
-  message = 'message'
+  message = 'message',
+  showFailedJobsAction = "_showFailedJobs",
+  showAllJobsAction = "_showAllJobs"
 }

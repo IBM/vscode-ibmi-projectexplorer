@@ -22,13 +22,17 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
 
     this.jobLogInfo = jobLogInfo;
     this.iconPath = new ThemeIcon('archive', isLocal ? new ThemeColor('joblog.local') : undefined);
-    this.contextValue = Log.contextValue;
+    this.contextValue = Log.contextValue + ContextValue.showFailedJobsAction;
     this.onlyShowFailedCommands = false;
     this.showSeverityLevels = 0;
   }
 
   toggleShowFailed(): void {
     this.onlyShowFailedCommands = this.onlyShowFailedCommands === false ? true : false;
+    
+    this.contextValue = Log.contextValue;
+    this.contextValue += this.onlyShowFailedCommands ? 
+                             ContextValue.showAllJobsAction : ContextValue.showFailedJobsAction;
   }
 
   setSeverityLevel(severityLevel: number): void {

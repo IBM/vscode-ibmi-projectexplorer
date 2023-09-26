@@ -13,7 +13,7 @@ import CommandRepresentation from "./commandRepresentation";
  * Tree item for a command.
  */
 export default class Command extends TreeItem implements ProjectExplorerTreeItem {
-    static contextValue = ContextValue.command;
+  static contextValue = ContextValue.command;
   commandInfo: CommandInfo;
   showSeverityLevels: number;
 
@@ -43,7 +43,7 @@ export default class Command extends TreeItem implements ProjectExplorerTreeItem
         msg => new Message(this.workspaceFolder, msg)
       ));
     }
-    
+
     return items;
   }
 }
