@@ -10,6 +10,9 @@ import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeI
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { IProjectT } from "../../iProjectT";
 import ErrorItem from "./errorItem";
+import Log from "./log";
+
+const path = require('path');
 
 /**
  * Represents the Job Log tree data provider.
@@ -63,9 +66,62 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.copy`, async (element: Command) => {
         try {
-          await env.clipboard.writeText(element.label!.toString());
+          await env.clipboard.writeText(element.commandInfo.cmd);
         } catch (error) {
           window.showErrorMessage(l10n.t('Failed to copy command'));
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showObjectOutput`, async (element: Command) => {
+        const iProject = ProjectManager.get(element.workspaceFolder);
+        if (iProject) {
+
+          const fileName = path.basename(element.commandInfo.output);
+          const buildOutputExists = await iProject.projectFileExists(fileName);
+
+          if (buildOutputExists) {
+            const buildOutputUri = iProject.getProjectFileUri(fileName);
+            await workspace.openTextDocument(buildOutputUri).then(async buildOutputDoc => {
+              await window.showTextDocument(buildOutputDoc);
+            });
+          } else {
+            window.showErrorMessage(l10n.t('No object build output found'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs`, async (element: Log) => {
+        const iProject = ProjectManager.get(element.workspaceFolder);
+
+        if (iProject) {
+          element.toggleShowFailed();
+          this.refresh(element);
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showAllJobs`, async (element: Log) => {
+        const iProject = ProjectManager.get(element.workspaceFolder);
+
+        if (iProject) {
+          element.toggleShowFailed();
+          this.refresh(element);
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity`, async (element: Log) => {
+        const iProject = ProjectManager.get(element.workspaceFolder);
+
+        if (iProject) {
+          let severities = [];
+
+          severities.push({ severityLevel: 0, label: l10n.t('All'), description: l10n.t('All Messages') });
+          severities.push({ severityLevel: 10, label: l10n.t('10'), description: l10n.t('Severity 10 or more') });
+          severities.push({ severityLevel: 20, label: l10n.t('20'), description: l10n.t('Severity 20 or more') });
+          severities.push({ severityLevel: 30, label: l10n.t('30'), description: l10n.t('Severity 30 or more') });
+          severities.push({ severityLevel: 40, label: l10n.t('40'), description: l10n.t('Severity 40 or more') });
+          severities.push({ severityLevel: 50, label: l10n.t('50'), description: l10n.t('Severity 50 or more') });
+
+          const severityFilter = await window.showQuickPick(severities, { placeHolder: l10n.t('Select Severity Level'), canPickMany: false });
+          if (severityFilter) {
+            element.setSeverityLevel(severityFilter.severityLevel);
+            this.refresh(element);
+          }
         }
       })
     );

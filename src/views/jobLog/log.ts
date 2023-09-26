@@ -14,13 +14,29 @@ import { ContextValue } from "../../ibmiProjectExplorer";
 export default class Log extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.log;
   jobLogInfo: JobLogInfo;
+  onlyShowFailedCommands : boolean;
+  showSeverityLevels: number;
 
   constructor(public workspaceFolder: WorkspaceFolder, jobLogInfo: JobLogInfo, isLocal: boolean = false) {
     super(jobLogInfo.createdTime.toLocaleString(), TreeItemCollapsibleState.Collapsed);
 
     this.jobLogInfo = jobLogInfo;
     this.iconPath = new ThemeIcon('archive', isLocal ? new ThemeColor('joblog.local') : undefined);
+    this.contextValue = Log.contextValue + ContextValue.showFailedJobsAction;
+    this.onlyShowFailedCommands = false;
+    this.showSeverityLevels = 0;
+  }
+
+  toggleShowFailed(): void {
+    this.onlyShowFailedCommands = this.onlyShowFailedCommands === false ? true : false;
+    
     this.contextValue = Log.contextValue;
+    this.contextValue += this.onlyShowFailedCommands ? 
+                             ContextValue.showAllJobsAction : ContextValue.showFailedJobsAction;
+  }
+
+  setSeverityLevel(severityLevel: number): void {
+    this.showSeverityLevels = severityLevel;
   }
 
   getChildren(): ProjectExplorerTreeItem[] {
@@ -28,10 +44,17 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
 
     const jobLogInfo = this.jobLogInfo;
 
-    items.push(...jobLogInfo.commands?.map(
-      command => new Command(this.workspaceFolder, command)
-    ));
-
+    if (this.onlyShowFailedCommands) {
+      items.push(...jobLogInfo.commands?.filter(
+        command => command.failed
+      ).map(
+        command => new Command(this.workspaceFolder, command, this.showSeverityLevels)
+      ));
+    }else{
+      items.push(...jobLogInfo.commands?.map(
+        command => new Command(this.workspaceFolder, command, this.showSeverityLevels)
+      ));
+    }
     return items;
   }
 }

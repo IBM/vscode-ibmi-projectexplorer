@@ -47,7 +47,7 @@ export const jobLogTreeItemSuite: TestSuite = {
                 const children = await jobLog?.getChildren(projectTreeItem)!;
 
                 assertTreeItem(children[0], {
-                    label: '7/14/2023, 2:54:44 PM'
+                    label: '9/22/2023, 10:30:27 AM'
                 });
             }
         },
@@ -58,8 +58,8 @@ export const jobLogTreeItemSuite: TestSuite = {
                 const children = await jobLog?.getChildren(logTreeItem)!;
 
                 assertTreeItem(children[0], {
-                    label: 'crtclmod module(WDSCTEST/ORD100CA) srcstmf(\'ORD100C.CLLE\') AUT() DBGVIEW(*ALL) OPTION(*EVENTF) TEXT(\'\') TGTRLS()',
-                    description: '7/14/2023, 2:54:44 PM'
+                    label: 'PAR201.MODULE',
+                    description: '/bob-recursive-example/QCLSRC/PAR201.CLLE'
                 });
             }
         },
@@ -71,9 +71,12 @@ export const jobLogTreeItemSuite: TestSuite = {
                 const children = await jobLog?.getChildren(commandTreeItem)!;
 
                 assertTreeItem(children[0], {
-                    label: '[20] CPCA081 - Stream file copied to object.',
-                    description: 'COMPLETION (7/14/2023, 2:54:44 PM)',
-                    iconPath: new ThemeIcon('warning', new ThemeColor('joblog.severity.20'))
+                    label: "CRTCLMOD MODULE(bobtest/PAR201) SRCFILE(QTEMP/QSOURCE) SRCMBR(PAR201) AUT() DBGVIEW(*ALL) OPTIMIZE() OPTION(*EVENTF) TEXT(' ') TGTRLS() INCDIR('/bob-recursive-example/includes' '/bob-recursive-example/QPROTOSRC')",
+                });
+                assertTreeItem(children[1], {
+                    label: '[00] CPF1124 - Job 948101/QUSER/QSQSRVR started on 09/22/23 at 10:26:57 in subsystem QSYSWRK in QSYS. Job entered system on 09/22/23 at 10:26:57.',
+                    description: 'INFORMATIONAL (9/22/2023, 10:26:57 AM)',
+                    iconPath: new ThemeIcon('info', new ThemeColor('joblog.severity.0'))
                 });
             }
         }

@@ -10,6 +10,10 @@ import { l10n } from "vscode";
 export interface CommandInfo {
     cmd: string;
     cmd_time: string;
+    object: string;
+    source: string;
+    output: string;
+    failed: boolean;
     msgs?: (MessageInfo)[];
 };
 
@@ -73,10 +77,10 @@ export function parseDateTime(dateTime: string): Date {
         const day = Number(split1[2]);
 
         const split2 = split1[3].split(".");
-        assert(split2.length === 4);
+        assert(split2.length >= 3);
         const hour = Number(split2[0]);
         const min = Number(split2[1]);
-        const sec = Number(split2[2]) + Number(`0.${split2[3]}`);
+        const sec = split2.length === 3 ? Number(split2[2]) : Number(split2[2]) +  Number(`0.${split2[3]}`);
 
         return new Date(year, month, day, hour, min, sec);
     } catch {
