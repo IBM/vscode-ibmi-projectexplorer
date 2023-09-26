@@ -100,7 +100,7 @@ export const jobLogCommandSuite: TestSuite = {
                 const logTreeItem = (await projectTreeItem!.getChildren())[0];
 
                 const commandsLengthPreFilter = (await logTreeItem.getChildren()).length;
-                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.toggleFailed', logTreeItem);
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs', logTreeItem);
                 const commandsLengthPostFilter = (await logTreeItem.getChildren()).length;
 
                 assert.equal(commandsLengthPreFilter, 1);
@@ -111,11 +111,14 @@ export const jobLogCommandSuite: TestSuite = {
             name: `Test filterMessageSeverity`, test: async () => {
                 const projectTreeItem = (await jobLog!.getChildren())[0];
                 const logTreeItem = (await projectTreeItem!.getChildren())[0];
-                const commandTreeItem = (await logTreeItem!.getChildren())[0];
 
-                const msgsLengthPreFilter = (await commandTreeItem.getChildren()).length;
-                (commandTreeItem as Command).setSeverityLevel(10);
-                const msgsLengthPostFilter = (await commandTreeItem.getChildren()).length;
+                const commandTreeItemPreFilter = (await logTreeItem!.getChildren())[0];
+                const msgsLengthPreFilter =  (await commandTreeItemPreFilter.getChildren()).length;
+                
+                (logTreeItem as Log).setSeverityLevel(10);
+                
+                const commandTreeItemPostFilter = (await logTreeItem!.getChildren())[0];
+                const msgsLengthPostFilter = (await commandTreeItemPostFilter.getChildren()).length;
 
                 assert.equal(msgsLengthPreFilter, 3);
                 assert.equal(msgsLengthPostFilter, 2);
