@@ -13,25 +13,22 @@ import CommandRepresentation from "./commandRepresentation";
  * Tree item for a command.
  */
 export default class Command extends TreeItem implements ProjectExplorerTreeItem {
-  static contextValue = ContextValue.command;
+    static contextValue = ContextValue.command;
   commandInfo: CommandInfo;
   showSeverityLevels: number;
 
-  constructor(public workspaceFolder: WorkspaceFolder, commandInfo: CommandInfo) {
+  constructor(public workspaceFolder: WorkspaceFolder, commandInfo: CommandInfo, severityLevel?: number) {
     super(commandInfo.object, TreeItemCollapsibleState.Collapsed);
 
     this.commandInfo = commandInfo;
     this.contextValue = Command.contextValue;
-    this.showSeverityLevels = 0;
+    this.showSeverityLevels = severityLevel ? severityLevel : 0;
 
     this.description = commandInfo.source;
     this.iconPath = commandInfo.failed ? new ThemeIcon('error', new ThemeColor('joblog.failed.true')) :
       new ThemeIcon('pass', new ThemeColor('joblog.failed.false'));
   }
 
-  setSeverityLevel(severityLevel: number): void {
-    this.showSeverityLevels = severityLevel;
-  }
 
   getChildren(): ProjectExplorerTreeItem[] {
     let items: ProjectExplorerTreeItem[] = [];

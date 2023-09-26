@@ -1244,7 +1244,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
-          "when": "view == jobLog && viewItem =~ /^command.*/",
+          "when": "view == jobLog && viewItem =~ /^log.*/",
           "group": "inline@2"
         },
         {

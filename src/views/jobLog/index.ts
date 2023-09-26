@@ -96,7 +96,7 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
           this.refresh(element);
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity`, async (element: Command) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity`, async (element: Log) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
 
         if (iProject) {
