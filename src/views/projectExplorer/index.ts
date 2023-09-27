@@ -1119,7 +1119,8 @@ function toObjectBrowserFile(objectFile: ObjectFile) {
   const object = Object.assign({}, objectFile.objectFileInfo);
   return {
     path: `${objectFile.objectFileInfo.library}/${objectFile.objectFileInfo.name}`,
-    object
+    object,
+    updateDescription: () => {}
   };
 }
 
@@ -1127,6 +1128,6 @@ function toObjectBrowserMember(memberFile: MemberFile) {
   const member = Object.assign({}, memberFile.memberFileInfo);
   return {
     path: memberFile.resourceUri?.path,
-    member
+    member    
   };
 }
