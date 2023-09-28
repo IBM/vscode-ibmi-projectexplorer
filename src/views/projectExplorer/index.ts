@@ -791,32 +791,45 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.changeLibraryDescription`, async (element: Library) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.changeObjectDesc`, {
-            path: `${element.libraryInfo.library}/${element.libraryInfo.name}`,
-            type: element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type,
-            text: element.libraryInfo.text
-          });
-
+          await commands.executeCommand(`code-for-ibmi.changeObjectDesc`, toObjectBrowserObject(element));
           this.refresh();
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.copyLibrary`, async (element: Library) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.copyObject`, {
-            path: `${element.libraryInfo.library}/${element.libraryInfo.name}`,
-            type: element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type
+          const libraryName = await window.showInputBox({
+            prompt: l10n.t('Enter new library file name'),
+            placeHolder: l10n.t('New library name'),
+            validateInput: (name) => {
+              if (name.length > 10) {
+                return l10n.t('Library name must be 10 characters or less');
+              }
+              else if (name.toLocaleUpperCase() === element.libraryInfo.name.toLocaleUpperCase()) {
+                return l10n.t('New library name must be different from the existing one');
+              }
+              else {
+                return null;
+              }
+            }
           });
 
-          this.refresh();
+          if (libraryName) {
+            try {
+              const result = await ibmi!.getConnection().runCommand({ command: `CPYLIB FROMLIB(${element.libraryInfo.name}) TOLIB(${libraryName})` });
+              if (!result.code) {
+                if (await window.showInformationMessage(l10n.t('{0} successfully copied to {1}.', element.libraryInfo.name, libraryName), l10n.t("Add to library list"))) {
+                  commands.executeCommand("vscode-ibmi-projectexplorer.projectExplorer.addToLibraryList", {name: libraryName});
+                }
+              }
+            } catch (e: any) {
+              window.showErrorMessage(l10n.t('Error clearing library! {0}', e));
+            }
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.renameLibrary`, async (element: Library) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.renameObject`, {
-            path: `${element.libraryInfo.library}/${element.libraryInfo.name}`,
-            type: element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type
-          });
-
+          await commands.executeCommand(`code-for-ibmi.renameObject`, toObjectBrowserObject(element));
           this.refresh();
         }
       }),
@@ -845,11 +858,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.deleteLibrary`, async (element: Library) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.deleteObject`, {
-            path: `${element.libraryInfo.library}/${element.libraryInfo.name}`,
-            type: element.libraryInfo.type.startsWith(`*`) ? element.libraryInfo.type.substring(1) : element.libraryInfo.type
-          });
-
+          await commands.executeCommand(`code-for-ibmi.deleteObject`, toObjectBrowserObject(element));
           this.refresh();
         }
       }),
@@ -858,8 +867,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const sourceFileName = await window.showInputBox({
             prompt: l10n.t('Enter source file name'),
             placeHolder: l10n.t('Source file name'),
-            validateInput: (library) => {
-              if (library.length > 10) {
+            validateInput: (name) => {
+              if (name.length > 10) {
                 return l10n.t('Source file name must be 10 characters or less');
               } else {
                 return null;
@@ -903,48 +912,48 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.changeObjectDescription`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.changeObjectDesc`, toObjectBrowserFile(element));
+          await commands.executeCommand(`code-for-ibmi.changeObjectDesc`, toObjectBrowserObject(element));
           this.refresh();
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.copyObject`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.copyObject`, toObjectBrowserFile(element));
+          await commands.executeCommand(`code-for-ibmi.copyObject`, toObjectBrowserObject(element));
           this.refresh();
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.renameObject`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.renameObject`, toObjectBrowserFile(element));
+          await commands.executeCommand(`code-for-ibmi.renameObject`, toObjectBrowserObject(element));
           this.refresh();
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.deleteObject`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.deleteObject`, toObjectBrowserFile(element));
+          await commands.executeCommand(`code-for-ibmi.deleteObject`, toObjectBrowserObject(element));
           this.refresh();
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.moveObject`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.moveObject`, toObjectBrowserFile(element));
+          await commands.executeCommand(`code-for-ibmi.moveObject`, toObjectBrowserObject(element));
           this.refresh();
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.createMember`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.createMember`, toObjectBrowserFile(element));
+          await commands.executeCommand(`code-for-ibmi.createMember`, toObjectBrowserObject(element));
           this.refresh();
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.searchSourceFile`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.searchSourceFile`, toObjectBrowserFile(element));
+          await commands.executeCommand(`code-for-ibmi.searchSourceFile`, toObjectBrowserObject(element));
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.debugProgram`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.debug.program`, toObjectBrowserFile(element));
+          await commands.executeCommand(`code-for-ibmi.debug.program`, toObjectBrowserObject(element));
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.browse`, async (element: MemberFile) => {
@@ -1115,12 +1124,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
   }
 }
 
-function toObjectBrowserFile(objectFile: ObjectFile) {
-  const object = Object.assign({}, objectFile.objectFileInfo);
+function toObjectBrowserObject(objectFile: Library | ObjectFile) {
+  const object = Object.assign({}, "objectFileInfo" in objectFile ? objectFile.objectFileInfo : objectFile.libraryInfo);
   return {
-    path: `${objectFile.objectFileInfo.library}/${objectFile.objectFileInfo.name}`,
+    path: `${object.library}/${object.name}`,
     object,
-    updateDescription: () => {}
+    updateDescription: () => { }
   };
 }
 
@@ -1128,6 +1137,6 @@ function toObjectBrowserMember(memberFile: MemberFile) {
   const member = Object.assign({}, memberFile.memberFileInfo);
   return {
     path: memberFile.resourceUri?.path,
-    member    
+    member
   };
 }

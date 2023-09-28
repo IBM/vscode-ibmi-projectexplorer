@@ -170,5 +170,9 @@
   "License: {0}": "License: {0}",
   "No job log found": "No job log found",
   "No build output found": "No build output found",
-  "Failed to copy command": "Failed to copy command"
+  "Failed to copy command": "Failed to copy command",
+  "Enter new library file name":"Enter new library file name",
+  "New library name":"New library name",
+  "New library name must be different from the existing one":"New library name must be different from the existing one",
+  "Add to library list":"Add to library list"
 }
