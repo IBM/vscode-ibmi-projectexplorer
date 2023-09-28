@@ -822,7 +822,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 }
               }
             } catch (e: any) {
-              window.showErrorMessage(l10n.t('Error clearing library! {0}', e));
+              window.showErrorMessage(l10n.t('Error copying library {0} to {1}', e));
             }
           }
         }
