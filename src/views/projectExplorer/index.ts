@@ -818,7 +818,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               const result = await ibmi!.getConnection().runCommand({ command: `CPYLIB FROMLIB(${element.libraryInfo.name}) TOLIB(${libraryName})` });
               if (!result.code) {
                 if (await window.showInformationMessage(l10n.t('{0} successfully copied to {1}.', element.libraryInfo.name, libraryName), l10n.t("Add to library list"))) {
-                  commands.executeCommand("vscode-ibmi-projectexplorer.projectExplorer.addToLibraryList", {name: libraryName});
+                  await commands.executeCommand("vscode-ibmi-projectexplorer.projectExplorer.addToLibraryList", {name: libraryName});
                 }
               }
             } catch (e: any) {
