@@ -3,18 +3,18 @@
  */
 
 import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
-import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
-import { ProjectManager } from "../../projectManager";
+import { IProjectT } from "../../iProjectT";
 import { getInstance } from "../../ibmi";
-import ErrorItem from "./errorItem";
-import Variables from "./variables";
-import ObjectLibraries from "./objectlibraries";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
+import { ProjectManager } from "../../projectManager";
+import ErrorItem from "./errorItem";
 import IncludePaths from "./includePaths";
-import Source from "./source";
 import LibraryList from "./libraryList";
-import { IProjectT } from "../../iProjectT";
+import ObjectLibraries from "./objectlibraries";
+import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
+import Source from "./source";
+import Variables from "./variables";
 
 /**
  * Tree item for a project.
@@ -22,8 +22,8 @@ import { IProjectT } from "../../iProjectT";
 export default class Project extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.project;
   static callBack: ((iProject: IProject) => Promise<ProjectExplorerTreeItem[]>)[] = [];
-  private extensibleChildren: ProjectExplorerTreeItem[] = [];
-  public children: ProjectExplorerTreeItem[] = [];
+  private readonly extensibleChildren: ProjectExplorerTreeItem[] = [];
+  public readonly children: ProjectExplorerTreeItem[] = [];
 
   constructor(public workspaceFolder: WorkspaceFolder, state?: IProjectT) {
     super(workspaceFolder.name, TreeItemCollapsibleState.Collapsed);
@@ -42,8 +42,9 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
   }
 
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
-    let items: ProjectExplorerTreeItem[] = [];
-
+    this.children.splice(0, this.children.length);
+    this.extensibleChildren.splice(0, this.extensibleChildren.length);
+    
     const ibmi = getInstance();
     const iProject = ProjectManager.get(this.workspaceFolder);
 
@@ -51,12 +52,12 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
       const deploymentParameters = await iProject?.getDeploymentParameters();
 
       if (deploymentParameters && deploymentParameters.remotePath) {
-        items.push(new Source(this.workspaceFolder, deploymentParameters));
+        this.children.push(new Source(this.workspaceFolder, deploymentParameters));
       } else {
-        items.push(ErrorItem.createNoDeployLocationError(this.workspaceFolder));
+        this.children.push(ErrorItem.createNoDeployLocationError(this.workspaceFolder));
       }
     } else {
-      items.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Source')));
+      this.children.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Source')));
     }
 
     const hasEnv = await iProject?.projectFileExists('.env');
@@ -69,21 +70,21 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
         unresolvedVariableCount = possibleVariables.filter(varName => !actualValues[varName]).length;
       }
 
-      items.push(new Variables(this.workspaceFolder, unresolvedVariableCount));
+      this.children.push(new Variables(this.workspaceFolder, unresolvedVariableCount));
 
     } else {
-      items.push(ErrorItem.createNoEnvironmentVariablesError(this.workspaceFolder));
+      this.children.push(ErrorItem.createNoEnvironmentVariablesError(this.workspaceFolder));
     }
 
     if (ibmi && ibmi.getConnection()) {
-      items.push(new LibraryList(this.workspaceFolder));
-      items.push(new ObjectLibraries(this.workspaceFolder));
+      this.children.push(new LibraryList(this.workspaceFolder));
+      this.children.push(new ObjectLibraries(this.workspaceFolder));
     } else {
-      items.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Library List')));
-      items.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Object Libraries')));
+      this.children.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Library List')));
+      this.children.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Object Libraries')));
     }
 
-    items.push(new IncludePaths(this.workspaceFolder));
+    this.children.push(new IncludePaths(this.workspaceFolder));
 
     for await (const extensibleChildren of Project.callBack) {
       let children: ProjectExplorerTreeItem[] = [];
@@ -93,10 +94,8 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
 
       this.extensibleChildren.push(...children);
     }
-    items.push(...this.extensibleChildren);
 
-    this.children = items;
-    return items;
+    return [...this.children, ...this.extensibleChildren];
   }
 
   getExtensibleChildren() {
