@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ConnectionData, DeploymentMethod } from "@halcyontech/vscode-ibmi-types";
+import { ConnectionData, DeploymentMethod, ObjectItem } from "@halcyontech/vscode-ibmi-types";
 import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
 import * as path from "path";
 import { EventEmitter, ExtensionContext, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
@@ -206,10 +206,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.migrateSource`, async (element: Library | any) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.migrateSource`, async (element: Library | ObjectItem) => {
         if (element) {
-          const library = element.name ? element.name : element.label.toString();
-          const iProject = element.name ? ProjectManager.getActiveProject() : ProjectManager.get(element.workspaceFolder);
+          const library = ("object" in element ? element.object : element.libraryInfo).name.toLocaleUpperCase();
+          const iProject = "workspaceFolder" in element ? ProjectManager.get(element.workspaceFolder) : ProjectManager.getActiveProject();
 
           if (iProject) {
             const result = await migrateSource(iProject, library);
@@ -818,7 +818,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               const result = await ibmi!.getConnection().runCommand({ command: `CPYLIB FROMLIB(${element.libraryInfo.name}) TOLIB(${libraryName})` });
               if (!result.code) {
                 if (await window.showInformationMessage(l10n.t('{0} successfully copied to {1}.', element.libraryInfo.name, libraryName), l10n.t("Add to library list"))) {
-                  await commands.executeCommand("vscode-ibmi-projectexplorer.projectExplorer.addToLibraryList", {name: libraryName});
+                  await commands.executeCommand("vscode-ibmi-projectexplorer.projectExplorer.addToLibraryList", { name: libraryName });
                 }
               }
             } catch (e: any) {
