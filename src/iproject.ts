@@ -7,11 +7,11 @@ import * as dotenv from 'dotenv';
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
 import { TextEncoder } from "util";
-import { commands, l10n, Uri, window, workspace, WorkspaceFolder } from "vscode";
+import { Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import envUpdater from "./envUpdater";
+import { IProjectT } from "./iProjectT";
 import { getDeployTools, getInstance } from "./ibmi";
 import { IBMiJsonT } from "./ibmiJsonT";
-import { IProjectT } from "./iProjectT";
 import { JobLogInfo } from "./jobLog";
 import { ProjectManager } from "./projectManager";
 import { RingBuffer } from "./views/jobLog/RingBuffer";
@@ -130,7 +130,7 @@ export class IProject {
    * @returns A uri of the desired resource.
    */
   public getProjectFileUri(type: ProjectFileType, directory?: Uri): Uri {
-    const logDirectory = (type === 'joblog.json' || type === 'output.log' || type.endsWith('.splf') ) ? `.logs` : ``;
+    const logDirectory = (type === 'joblog.json' || type === 'output.log' || type.endsWith('.splf')) ? `.logs` : ``;
 
     return Uri.file(path.join(directory ? directory.fsPath : this.workspaceFolder.uri.fsPath, logDirectory, type));
   }
@@ -1159,12 +1159,12 @@ export class IProject {
         .map(ibmiJson => ibmiJson.build!.objlib) : [])
     ].filter(x => x) as string[];
 
-    // Get everything that starts with an &
-    const variableNameList = valueList.filter(value => value.startsWith(`&`)).map(value => value.substring(1));
-
-    // Remove duplicates
-    return variableNameList.filter((name,
-      index) => variableNameList.indexOf(name) === index);
+    // Get every unique string value that starts with an &
+    return valueList
+      .filter(value => typeof value === "string")
+      .filter(value => value.startsWith(`&`))
+      .map(value => value.substring(1))            
+      .filter((value, index, array) => array.indexOf(value) === index);
   }
 
   /**
