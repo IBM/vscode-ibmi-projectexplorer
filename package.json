@@ -1495,7 +1495,7 @@
     "@typescript-eslint/parser": "^5.31.0",
     "@vscode/l10n-dev": "^0.0.29",
     "esbuild-loader": "^4.0.2",
-    "eslint": "^8.50.0",
+    "eslint": "^8.52.0",
     "tar": "^6.2.0",
     "typescript": "^5.2.2",
     "webpack": "^5.89.0",
