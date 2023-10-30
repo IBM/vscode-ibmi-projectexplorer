@@ -1,6 +1,16 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+## `1.2.3`
+- Gave explicit type to event's callback function by @sebjulliand in #201
+- Add debug action to programs by @SanjulaGanepola in #86
+- Fix update member text action by @SanjulaGanepola in #210
+- Implement Job Log Updates by @irfanshar in #219
+- Fixed explorer command calls by @sebjulliand in #225
+- Fixed library actions by @sebjulliand in #228
+- Fixed explorer crashing on non string values in iproj.json by @sebjulliand in #232
+- Fixed launch configuration to run actual watch task by @sebjulliand in #233
+- Fixed explorer crashing when refreshing project with extensible children by @sebjulliand in #234
 
 ## `1.2.2`
 - Contribute the job log to the bottom panel
