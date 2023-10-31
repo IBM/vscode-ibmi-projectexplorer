@@ -1,7 +1,7 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
-## `1.2.3`
+## `1.2.4`
 - Gave explicit type to event's callback function by @sebjulliand in #201
 - Add debug action to programs by @SanjulaGanepola in #86
 - Fix update member text action by @SanjulaGanepola in #210
