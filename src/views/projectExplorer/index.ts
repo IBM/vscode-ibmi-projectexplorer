@@ -696,11 +696,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 }
 
                 const variable = await window.showQuickPick(variableItems, {
-                  placeHolder: l10n.t('Select a variable')
+                  placeHolder: l10n.t('Select  a variable')
                 });
 
                 if (variable) {
-                  await activeProject.updateEnv(variable.label.substring(1), value);
+                  await activeProject.updateEnv(variable.label.substring(1), 
+                  value.toLocaleUpperCase().startsWith("QSYS/") ? value.toLocaleUpperCase(): value);
                 }
               } else {
                 window.showErrorMessage(l10n.t('No variables found'));
