@@ -696,7 +696,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 }
 
                 const variable = await window.showQuickPick(variableItems, {
-                  placeHolder: l10n.t('Select  a variable')
+                  placeHolder: l10n.t('Select a variable')
                 });
 
                 if (variable) {
