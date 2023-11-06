@@ -701,7 +701,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
                 if (variable) {
                   await activeProject.updateEnv(variable.label.substring(1), 
-                  value.toLocaleUpperCase().startsWith("QSYS/") ? value.toLocaleUpperCase(): value);
+                  value.toLocaleUpperCase().startsWith("QSYS/") ? value.substring(5).toLocaleUpperCase(): value);
                 }
               } else {
                 window.showErrorMessage(l10n.t('No variables found'));
