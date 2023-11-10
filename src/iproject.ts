@@ -258,9 +258,10 @@ export class IProject {
    * @returns The project state or `undefined`.
    */
   public async getUnresolvedState(): Promise<IProjectT | undefined> {
-    const content = (await workspace.fs.readFile(this.getProjectFileUri('iproj.json'))).toString();
     let unresolvedState: IProjectT | undefined;
+
     try {
+      const content = (await workspace.fs.readFile(this.getProjectFileUri('iproj.json'))).toString();
       unresolvedState = JSON.parse(content, (key, value) => {
         if (key === 'extensions') {
           return new Map(Object.entries(value));
@@ -268,18 +269,20 @@ export class IProject {
 
         return value;
       });
-    } catch (e) { }
 
-    const validator = ProjectManager.getValidator();
-    const schema = validator.schemas['/iproj'];
-    const validatorResult = validator.validate(unresolvedState || content, schema);
-
-    if (validatorResult && validatorResult.errors.length > 0 && content.trim() !== '') {
-      this.validatorResult = validatorResult;
+      const validator = ProjectManager.getValidator();
+      const schema = validator.schemas['/iproj'];
+      const validatorResult = validator.validate(unresolvedState || content, schema);
+  
+      if (validatorResult && validatorResult.errors.length > 0 && content.trim() !== '') {
+        this.validatorResult = validatorResult;
+        return undefined;
+      } else {
+        this.validatorResult = undefined;
+        return unresolvedState;
+      }
+    } catch (e) {
       return undefined;
-    } else {
-      this.validatorResult = undefined;
-      return unresolvedState;
     }
   }
 
