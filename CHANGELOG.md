@@ -1,6 +1,10 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+## `1.2.5`
+- The project state API threw an exception if no `iproj.json` is found in the project root.
+  This caused extensions using this API to fail, including Merlin by @william-xiang
+  
 ## `1.2.4`
 - Gave explicit type to event's callback function by @sebjulliand in #201
 - Add debug action to programs by @SanjulaGanepola in #86
