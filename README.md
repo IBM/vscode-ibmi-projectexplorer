@@ -19,3 +19,11 @@ The IBM i Project Explorer supports developing IBM i applications using buildabl
 2. Clone this repository
 3. `npm install`
 4. `Run Extension` from VS Code
+
+### To release the extension
+1. Update `CHANGELOG.md` with the improvements
+2. Update the version number in `package.json` and `types/package.json`
+3. Create a new release with a tag with the corresponding version number
+A github action will automatically be triggered which will build and pubish the vsix to 
+both OpenVSX and Micrsoft registries.  Also the types will be published to `npmjs` so that
+the API is available to any JavaScript code.

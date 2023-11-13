@@ -1,7 +1,7 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
-## `1.2.5`
+## `1.2.6`
 - The project state API threw an exception if no `iproj.json` is found in the project root.
   This caused extensions using this API to fail, including Merlin by @william-xiang
   
