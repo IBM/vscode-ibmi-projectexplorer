@@ -26,7 +26,8 @@ Objects created by building source in this directory will be put into the `objli
 
 #### tgtCcsid
 
-Value of the `TGTCCSID` to be used when compiling source in this directory.
+Value of the `TGTCCSID` to be used when compiling source in this directory.  Any national characters in string literals
+will be stored into the binary in this CCSID.
 
 > [!NOTE]
 >
@@ -34,7 +35,8 @@ Value of the `TGTCCSID` to be used when compiling source in this directory.
 
 ## Example
 
-In the example below, the `objlib` is set to a variable named `L01` that can be set at build time. This allows different directories to compile into different object libraries. The EBCDIC CCSID that the source will be compiled in will be the CCSID of the current JOB.
+In the example below, the `objlib` is set to a variable named `L01` that can be set at build time. This allows different directories to compile into different object libraries. 
+The EBCDIC CCSID that the source will be compiled in will be the CCSID of the current JOB.
 
 ```json
 {
