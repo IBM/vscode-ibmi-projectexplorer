@@ -54,7 +54,9 @@ Libraries to add at the end of the user portion of the LIBL (can contain referen
 ### setIBMiEnvCmd
 
 List of CL commands to be executed whenever this project connects to the IBM i (typically this involves LIBL, ENVVAR and iASP setup).
-
+While these commands will configure the build and compile environment, due to limitations in the way that `Code for IBM i` is architected they will
+not impact the LIBL shown in the Project Explorer UI.
+ 
 ### includePath
 
 Directories to be searched for includes/copy file (can contain references to named directories).
