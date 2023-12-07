@@ -27,7 +27,7 @@ Objects created by building source in this directory will be put into the `objli
 #### tgtCcsid
 
 Value of the `TGTCCSID` to be used when compiling source in this directory.  Any national characters in string literals
-will be stored into the binary in this CCSID.
+will be stored into the compiled object in this CCSID.
 
 > [!NOTE]
 >
