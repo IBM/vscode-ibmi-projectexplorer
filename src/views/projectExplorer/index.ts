@@ -150,10 +150,14 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const unresolvedState = await iProject.getUnresolvedState();
 
             if (unresolvedState) {
+              let defaultCommand = '/QOpenSys/pkgs/bin/makei build';
+              if (unresolvedState.compileCommand) {
+                defaultCommand = unresolvedState.compileCommand;
+              }
               const command = await window.showInputBox({
                 prompt: l10n.t('Enter compile command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by git.)', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
                 placeHolder: l10n.t('Compile command'),
-                value: unresolvedState.compileCommand,
+                value: defaultCommand,
               });
 
               if (command) {
