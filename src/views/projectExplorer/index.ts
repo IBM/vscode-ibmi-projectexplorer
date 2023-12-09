@@ -88,29 +88,32 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, async (element: Project) => {
+        let iProject: IProject | undefined;
         if (element) {
-          const iProject = ProjectManager.get(element.workspaceFolder);
+          iProject = ProjectManager.get(element.workspaceFolder);
+        } else {
+          iProject = ProjectManager.getActiveProject();
+        }
 
-          if (iProject) {
-            const unresolvedState = await iProject.getUnresolvedState();
-            if (unresolvedState) {
-              let defaultCommand = '/QOpenSys/pkgs/bin/makei build';
-              if (unresolvedState.buildCommand) {
-                defaultCommand = unresolvedState.buildCommand;
-              }
-              const command = await window.showInputBox({
-                prompt: l10n.t('Enter build command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by git.)', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
-                placeHolder: l10n.t('Build command'),
-                value: defaultCommand,
-              });
-
-              if (command) {
-                await iProject.setBuildOrCompileCommand(command, true);
-              }
+        if (iProject) {
+          const unresolvedState = await iProject.getUnresolvedState();
+          if (unresolvedState) {
+            let defaultCommand = '/QOpenSys/pkgs/bin/makei build';
+            if (unresolvedState.buildCommand) {
+              defaultCommand = unresolvedState.buildCommand;
             }
-          } else {
-            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+            const command = await window.showInputBox({
+              prompt: l10n.t('Enter build command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by git.)', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
+              placeHolder: l10n.t('Build command'),
+              value: defaultCommand,
+            });
+
+            if (command) {
+              await iProject.setBuildOrCompileCommand(command, true);
+            }
           }
+        } else {
+          window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runCompile`, async (element?: SourceFile | SourceDirectory | Uri) => {
@@ -143,30 +146,33 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`, async (element: Project) => {
+        let iProject: IProject | undefined;
         if (element) {
-          const iProject = ProjectManager.get(element.workspaceFolder);
+          iProject = ProjectManager.get(element.workspaceFolder);
+        } else {
+          iProject = ProjectManager.getActiveProject();
+        }
 
-          if (iProject) {
-            const unresolvedState = await iProject.getUnresolvedState();
+        if (iProject) {
+          const unresolvedState = await iProject.getUnresolvedState();
 
-            if (unresolvedState) {
-              let defaultCommand = '/QOpenSys/pkgs/bin/makei compile -f {filename}';
-              if (unresolvedState.compileCommand) {
-                defaultCommand = unresolvedState.compileCommand;
-              }
-              const command = await window.showInputBox({
-                prompt: l10n.t('Enter compile command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by git.)', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
-                placeHolder: l10n.t('Compile command'),
-                value: defaultCommand,
-              });
-
-              if (command) {
-                await iProject.setBuildOrCompileCommand(command, false);
-              }
+          if (unresolvedState) {
+            let defaultCommand = '/QOpenSys/pkgs/bin/makei compile -f {filename}';
+            if (unresolvedState.compileCommand) {
+              defaultCommand = unresolvedState.compileCommand;
             }
-          } else {
-            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+            const command = await window.showInputBox({
+              prompt: l10n.t('Enter compile command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by git.)', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
+              placeHolder: l10n.t('Compile command'),
+              value: defaultCommand,
+            });
+
+            if (command) {
+              await iProject.setBuildOrCompileCommand(command, false);
+            }
           }
+        } else {
+          window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup`, async (element: Project) => {
