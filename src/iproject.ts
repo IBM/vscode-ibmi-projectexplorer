@@ -470,22 +470,45 @@ export class IProject {
         };
         await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
         ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
-      } else {
+      } 
+    }
+  }
+  /**
+   * Run the project's build or compile command.
+   * If no command is specified prompt for it and then run the provided command
+   * 
+   * @param isBuild True for build command and false for compile command.
+   * @param fileUri The file uri to compile or `undefined` for builds.
+   */
+  public async runBuildOrCompileCommandWithPrompt(isBuild: boolean, fileUri?: Uri) {
+    let unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      let command = isBuild ? unresolvedState.buildCommand : unresolvedState.compileCommand;
+      if (!command) {
         if (isBuild) {
           window.showErrorMessage(l10n.t('Project\'s build command not set'), l10n.t('Set Build Command'))
             .then(async (item) => {
               if (item === l10n.t('Set Build Command')) {
                 await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, this);
               }
-            });
+            })
+            .then(async () => 
+              {this.runBuildOrCompileCommand(isBuild, fileUri);}
+            );
         } else {
           window.showErrorMessage(l10n.t('Project\'s compile command not set'), l10n.t('Set Compile Command'))
             .then(async (item) => {
               if (item === l10n.t('Set Compile Command')) {
                 await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`, this);
               }
-            });
+            })
+            .then(async () => 
+              {this.runBuildOrCompileCommand(isBuild, fileUri);}
+            );
         }
+      } else {
+        this.runBuildOrCompileCommand(isBuild, fileUri);
       }
     }
   }

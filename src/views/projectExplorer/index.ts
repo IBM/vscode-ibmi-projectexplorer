@@ -82,7 +82,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
 
         if (iProject) {
-          iProject.runBuildOrCompileCommand(true);
+          iProject.runBuildOrCompileCommandWithPrompt(true);
         } else {
           window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
@@ -137,7 +137,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
 
         if (iProject) {
-          iProject.runBuildOrCompileCommand(false, element);
+          iProject.runBuildOrCompileCommandWithPrompt(false, element);
         } else {
           window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
