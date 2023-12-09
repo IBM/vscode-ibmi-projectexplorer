@@ -150,7 +150,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const unresolvedState = await iProject.getUnresolvedState();
 
             if (unresolvedState) {
-              let defaultCommand = '/QOpenSys/pkgs/bin/makei build';
+              let defaultCommand = '/QOpenSys/pkgs/bin/makei compile -f {filename}';
               if (unresolvedState.compileCommand) {
                 defaultCommand = unresolvedState.compileCommand;
               }
