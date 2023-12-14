@@ -1,6 +1,21 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+
+## `2.6.0`
+- Version numbers will now be in sync with the required `Code for i` extension.
+  This caused extensions using this API to fail, including Merlin by @william-xiang
+- When using the Compare filter on the Source node of the explorer, the temp files
+  in the deployed directory will not be deleted upon refresh of the view. BOB builds
+  that rely on generated `.Rules.mk.build` files will now succeed.
+- When deleting deploy directories, the parent directory could mistakenly be synched
+  and files not in the current project would be deleted.  This is now fixed.
+- When the build and compile commands are not set, the prompt will now be prefilled
+  with the BOB build and compile commands.  Once the command is set, it will also be
+  run as invoked.
+- If the `Set Build Command` or `Set Compile Command` are invoked from the command
+  pallete, the prompt will appear.
+
 ## `1.2.6`
 - The project state API threw an exception if no `iproj.json` is found in the project root.
   This caused extensions using this API to fail, including Merlin by @william-xiang
