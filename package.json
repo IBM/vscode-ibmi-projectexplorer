@@ -1497,7 +1497,7 @@
     "esbuild-loader": "^4.0.2",
     "eslint": "^8.55.0",
     "tar": "^6.2.0",
-    "typescript": "^5.3.2",
+    "typescript": "^5.3.3",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   },
