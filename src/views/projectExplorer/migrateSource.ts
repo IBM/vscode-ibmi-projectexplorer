@@ -20,7 +20,8 @@ interface MigrationConfig {
     sourceFiles: string[];
     automaticRename: boolean;
     fixIncludes: boolean;
-    importText: boolean
+    importText: boolean;
+    lower: boolean;
 }
 
 /**
@@ -101,7 +102,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
 
                 // Run CVTSRCPF
                 const cvtsrcpfResult = await connection.sendCommand({
-                    command: `export PATH="/QOpenSys/pkgs/bin:$PATH:" && /QOpenSys/pkgs/bin/makei cvtsrcpf ${migrationConfig.defaultCCSID ? `-c ${migrationConfig.defaultCCSID}` : ``} ${migrationConfig.importText ? `-t` : ``} ${sourceFile} ${library}`,
+                    command: `export PATH="/QOpenSys/pkgs/bin:$PATH:" && /QOpenSys/pkgs/bin/makei cvtsrcpf ${migrationConfig.defaultCCSID ? `-c ${migrationConfig.defaultCCSID}` : ``} ${migrationConfig.importText ? `-t` : ``} ${migrationConfig.lower ? `-l` : ``} ${sourceFile} ${library}`,
                     directory: directoryPath
                 });
 
@@ -224,7 +225,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                 .addInput(`srcLib`, l10n.t('Source Library'), l10n.t('The name of the library containing the source files to migrate.'), { default: library, readonly: true })
                 .addInput(`defaultCCSID`, l10n.t('Default CCSID'), l10n.t('The CCSID to be used when the source file is 65535.'), { default: `*JOB`, minlength: 1 })
                 .addSelect(`workspaceFolder`, l10n.t('Workspace folder'), projectSelectItems, l10n.t('The workspace folder to which the files are to be downloaded to.'))
-                .addCheckbox(`importText`, l10n.t('Import Member Text'), l10n.t('Imports member text at top of source as comment.'), true);
+                .addCheckbox(`importText`, l10n.t('Import Member Text'), l10n.t('Imports member text at top of source as comment.'), true)
+                .addCheckbox(`lower`, l10n.t('Lowercase Filenames'), l10n.t('The generated source file names will be in lowercase.'), true);
 
             // Clean up tab
             cleanUpTab
@@ -267,6 +269,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                 delete data.fixIncludes;
                 const importText = data.importText;
                 delete data.importText;
+                const lower = data.lower;
+                delete data.lower;
 
                 const sourceFiles = Object.entries<boolean>(data)
                     .filter(sourceFile => sourceFile[1] === true)
@@ -278,7 +282,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                     sourceFiles: sourceFiles,
                     automaticRename: automaticRename,
                     fixIncludes: fixIncludes,
-                    importText: importText
+                    importText: importText,
+                    lower: lower
                 };
             }
         }
