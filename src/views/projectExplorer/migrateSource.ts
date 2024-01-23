@@ -10,6 +10,7 @@ import { ComplexTab, SelectItem } from "@halcyontech/vscode-ibmi-types/api/Custo
 import { IProject } from "../../iproject";
 import * as path from "path";
 import * as tar from "tar";
+import * as fs from 'fs';
 
 /**
  * Represents the configuration for a migration.
@@ -158,6 +159,11 @@ export async function migrateSource(iProject: IProject, library: string): Promis
             if (migrationConfig.automaticRename) {
                 progress.report({ message: l10n.t('Renaming file extensions to be more precise...'), increment: increment });
                 await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'renames');
+
+                // Fix file extensions with the format FILE.pgm.CLLE to FILE.PGM.CLLE
+                if (!migrationConfig.lower) {
+                    fixExtensions(migrationConfig.workspaceFolderUri!.fsPath);
+                }
             }
 
             if (migrationConfig.fixIncludes) {
@@ -185,6 +191,36 @@ export async function migrateSource(iProject: IProject, library: string): Promis
 
         return migrationResult.numSuccess > 0 && !migrationResult.error;
     }
+}
+
+function fixExtensions(workspaceFolder: string): void {
+    const filesAndDirs = fs.readdirSync(workspaceFolder);
+
+    filesAndDirs.forEach((fileDir: string) => {
+        const path = `${workspaceFolder}/${fileDir}`;
+        const stats = fs.statSync(path);
+
+        if (stats.isDirectory()) {
+            fixExtensions(path);
+        } else {
+            const fileSplit = fileDir.split('.');
+            const extension = fileSplit.at(-1);
+
+            if (fileSplit.length === 3 && extension?.toUpperCase() === extension) {
+                fileSplit[1] = fileSplit[1].toUpperCase();
+
+                const newFileName = fileSplit.join('.');
+
+                fs.rename(path, workspaceFolder + "/" + newFileName, (error) => {
+                    if (error) {
+                        console.error(`Error fixing extension's case for file: ${fileDir}`);
+                    } else {
+                        console.log(`File ${fileDir} renamed successfully to ${newFileName}`);
+                    }
+                });
+            }
+        }
+    });
 }
 
 /**
