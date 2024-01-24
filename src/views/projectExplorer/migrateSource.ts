@@ -211,12 +211,7 @@ function fixExtensions(workspaceFolder: string): void {
 
                 const newFileName = fileSplit.join('.');
 
-                fs.rename(path, workspaceFolder + "/" + newFileName, (error) => {
-                    if (error) {
-                        console.error(`Error fixing extension's case for file: ${fileDir}`);
-                    } else {
-                        console.log(`File ${fileDir} renamed successfully to ${newFileName}`);
-                    }
+                fs.rename(path, workspaceFolder + "/" + newFileName, () => {
                 });
             }
         }
