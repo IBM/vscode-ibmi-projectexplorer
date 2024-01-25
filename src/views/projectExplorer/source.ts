@@ -63,7 +63,7 @@ export default class Source extends TreeItem implements ProjectExplorerTreeItem 
     const deployFiles: Uri[] = [];
     switch (this.deploymentParameters.method) {
       case 'compare':
-        deployFiles.push(...await deployTools.getDeployCompareFiles(this.deploymentParameters));
+        deployFiles.push(...(await deployTools.getDeployCompareFiles(this.deploymentParameters)).uploads);
         break;
       case 'changed':
         deployFiles.push(...await deployTools.getDeployChangedFiles(this.deploymentParameters));
