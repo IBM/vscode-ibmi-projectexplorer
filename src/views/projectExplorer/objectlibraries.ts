@@ -38,7 +38,8 @@ export default class ObjectLibraries extends TreeItem implements ProjectExplorer
           library = iProject!.resolveVariable(library, values);
         }
 
-        if (library.startsWith('&')) {
+        if (!library || // empty strings end up returning all libraries - so flag as invalid
+            library.startsWith('&')) {
           items.push(ErrorItem.createLibraryNotSpecifiedError(this.workspaceFolder, library));
           continue;
         }
