@@ -20,7 +20,8 @@ interface MigrationConfig {
     sourceFiles: string[];
     automaticRename: boolean;
     fixIncludes: boolean;
-    importText: boolean
+    importText: boolean;
+    generateBob: boolean;
 }
 
 /**
@@ -163,7 +164,10 @@ export async function migrateSource(iProject: IProject, library: string): Promis
                 progress.report({ message: l10n.t('Adjusting include statements to IFS syntax...'), increment: increment });
                 await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'includes');
             }
-
+            if (migrationConfig.generateBob) {
+                progress.report({ message: l10n.t('Generating Rules.mk for Better Object Builder...'), increment: increment });
+                await commands.executeCommand('vscode-sourceorbit.generateBuildFile', workspaceFolder, 'bob');
+            }
             migrationResult.error = false;
             return migrationResult;
         });
@@ -229,7 +233,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
             // Clean up tab
             cleanUpTab
                 .addCheckbox(`automaticRename`, l10n.t('Automatic Rename'), l10n.t('Rename your project sources to have the correct extensions required for most build tools.'), true)
-                .addCheckbox(`fixIncludes`, l10n.t('Fix Includes'), l10n.t('Fixes all include and copy directives (in RPGLE) to use Unix style paths instead of member styled paths.'), true);
+                .addCheckbox(`fixIncludes`, l10n.t('Fix Includes'), l10n.t('Fixes all include and copy directives (in RPGLE) to use Unix style paths instead of member styled paths.'), true)
+                .addCheckbox(`generateBob`, l10n.t('Generate Rules.mk for BOB'), l10n.t('Generates the makefiles for the Better Object Builder that encodes all dependencies.'), true);
 
             // Source files tab
             sourceFiles.forEach(srcPf => {
@@ -267,6 +272,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                 delete data.fixIncludes;
                 const importText = data.importText;
                 delete data.importText;
+                const generateBob = data.generateBob;
+                delete data.generateBob;
 
                 const sourceFiles = Object.entries<boolean>(data)
                     .filter(sourceFile => sourceFile[1] === true)
@@ -278,7 +285,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                     sourceFiles: sourceFiles,
                     automaticRename: automaticRename,
                     fixIncludes: fixIncludes,
-                    importText: importText
+                    importText: importText,
+                    generateBob: generateBob
                 };
             }
         }
