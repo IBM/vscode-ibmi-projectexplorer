@@ -10,6 +10,7 @@ import { ComplexTab, SelectItem } from "@halcyontech/vscode-ibmi-types/api/Custo
 import { IProject } from "../../iproject";
 import * as path from "path";
 import * as tar from "tar";
+import * as fs from 'fs';
 
 /**
  * Represents the configuration for a migration.
@@ -21,6 +22,7 @@ interface MigrationConfig {
     automaticRename: boolean;
     fixIncludes: boolean;
     importText: boolean;
+    lower: boolean;
     generateBob: boolean;
 }
 
@@ -102,7 +104,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
 
                 // Run CVTSRCPF
                 const cvtsrcpfResult = await connection.sendCommand({
-                    command: `export PATH="/QOpenSys/pkgs/bin:$PATH:" && /QOpenSys/pkgs/bin/makei cvtsrcpf ${migrationConfig.defaultCCSID ? `-c ${migrationConfig.defaultCCSID}` : ``} ${migrationConfig.importText ? `-t` : ``} ${sourceFile} ${library}`,
+                    command: `export PATH="/QOpenSys/pkgs/bin:$PATH:" && /QOpenSys/pkgs/bin/makei cvtsrcpf ${migrationConfig.defaultCCSID ? `-c ${migrationConfig.defaultCCSID}` : ``} ${migrationConfig.importText ? `-t` : ``} ${migrationConfig.lower ? `-l` : ``} ${sourceFile} ${library}`,
                     directory: directoryPath
                 });
 
@@ -158,6 +160,11 @@ export async function migrateSource(iProject: IProject, library: string): Promis
             if (migrationConfig.automaticRename) {
                 progress.report({ message: l10n.t('Renaming file extensions to be more precise...'), increment: increment });
                 await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'renames');
+
+                // Fix file extensions with the format FILE.pgm.CLLE to FILE.PGM.CLLE
+                if (!migrationConfig.lower) {
+                    fixExtensions(migrationConfig.workspaceFolderUri!.fsPath);
+                }
             }
 
             if (migrationConfig.fixIncludes) {
@@ -188,6 +195,31 @@ export async function migrateSource(iProject: IProject, library: string): Promis
 
         return migrationResult.numSuccess > 0 && !migrationResult.error;
     }
+}
+
+function fixExtensions(workspaceFolder: string): void {
+    const filesAndDirs = fs.readdirSync(workspaceFolder);
+
+    filesAndDirs.forEach((fileDir: string) => {
+        const path = `${workspaceFolder}/${fileDir}`;
+        const stats = fs.statSync(path);
+
+        if (stats.isDirectory()) {
+            fixExtensions(path);
+        } else {
+            const fileSplit = fileDir.split('.');
+            const extension = fileSplit.at(-1);
+
+            if (fileSplit.length === 3 && extension?.toUpperCase() === extension) {
+                fileSplit[1] = fileSplit[1].toUpperCase();
+
+                const newFileName = fileSplit.join('.');
+
+                fs.rename(path, workspaceFolder + "/" + newFileName, () => {
+                });
+            }
+        }
+    });
 }
 
 /**
@@ -228,7 +260,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                 .addInput(`srcLib`, l10n.t('Source Library'), l10n.t('The name of the library containing the source files to migrate.'), { default: library, readonly: true })
                 .addInput(`defaultCCSID`, l10n.t('Default CCSID'), l10n.t('The CCSID to be used when the source file is 65535.'), { default: `*JOB`, minlength: 1 })
                 .addSelect(`workspaceFolder`, l10n.t('Workspace folder'), projectSelectItems, l10n.t('The workspace folder to which the files are to be downloaded to.'))
-                .addCheckbox(`importText`, l10n.t('Import Member Text'), l10n.t('Imports member text at top of source as comment.'), true);
+                .addCheckbox(`importText`, l10n.t('Import Member Text'), l10n.t('Imports member text at top of source as comment.'), true)
+                .addCheckbox(`lower`, l10n.t('Lowercase Filenames'), l10n.t('The generated source file names will be in lowercase.'), true);
 
             // Clean up tab
             cleanUpTab
@@ -272,6 +305,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                 delete data.fixIncludes;
                 const importText = data.importText;
                 delete data.importText;
+                const lower = data.lower;
+                delete data.lower;
                 const generateBob = data.generateBob;
                 delete data.generateBob;
 
@@ -285,8 +320,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                     sourceFiles: sourceFiles,
                     automaticRename: automaticRename,
                     fixIncludes: fixIncludes,
-                    importText: importText,
-                    generateBob: generateBob
+                    lower: lower,
+                    importText: importText
                 };
             }
         }

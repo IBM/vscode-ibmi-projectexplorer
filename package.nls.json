@@ -92,7 +92,7 @@
   "description": "Develop IBM i applications using buildable local projects in VS Code",
   "explorer.projectExplorer": "Project Explorer",
   "ibmi.jobLog": "Job Log",
-  "panel.ibmi": "IBM i",
+  "panel.ibmi": "IBM i Project Explorer",
   "submenus.projectExplorer.gotTo": "Go To...",
   "submenus.projectExplorer.run": "Run...",
   "viewsWelcome.jobLog.noWorkspace": "No workspace folder opened",
