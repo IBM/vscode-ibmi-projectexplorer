@@ -321,7 +321,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                     automaticRename: automaticRename,
                     fixIncludes: fixIncludes,
                     lower: lower,
-                    importText: importText
+                    importText: importText,
+                    generateBob: generateBob
                 };
             }
         }
