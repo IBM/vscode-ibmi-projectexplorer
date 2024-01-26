@@ -3,13 +3,14 @@
  */
 
 import * as path from "path";
-import { FileType, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
+import { FileStat, FileType, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { DeploymentParameters } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { getDeployTools } from "../../ibmi";
 import SourceDirectory from "./sourceDirectory";
 import SourceFile from "./sourceFile";
+import DeletedFile from "./deletedFile";
 
 export interface SourceInfo {
   name: string,
@@ -63,7 +64,9 @@ export default class Source extends TreeItem implements ProjectExplorerTreeItem 
     const deployFiles: Uri[] = [];
     switch (this.deploymentParameters.method) {
       case 'compare':
-        deployFiles.push(...(await deployTools.getDeployCompareFiles(this.deploymentParameters)).uploads);
+        let changes = (await deployTools.getDeployCompareFiles(this.deploymentParameters));
+        let results = [...changes.uploads, ...changes.relativeRemoteDeletes.map(relativePath => Uri.joinPath(this.workspaceFolder.uri, relativePath))];
+        deployFiles.push(...results);
         break;
       case 'changed':
         deployFiles.push(...await deployTools.getDeployChangedFiles(this.deploymentParameters));
@@ -83,6 +86,8 @@ export default class Source extends TreeItem implements ProjectExplorerTreeItem 
     for (const child of deployFileTree.children) {
       if (child.type === FileType.Directory) {
         items.push(new SourceDirectory(this.workspaceFolder, child));
+      } else if (child.type === FileType.Unknown) { // File was deleted so we switched to Unknown on catch
+        items.push(new DeletedFile(this.workspaceFolder, child));
       } else {
         items.push(new SourceFile(this.workspaceFolder, child));
       }
@@ -121,12 +126,18 @@ export default class Source extends TreeItem implements ProjectExplorerTreeItem 
           subTree = subTree.children[index];
         } else {
           const localUri = Uri.joinPath(subTree.localUri, part);
-          const statResult = await workspace.fs.stat(localUri);
+          var fileType : FileType;
+          try {
+            const statResult = await workspace.fs.stat(localUri);
+            fileType = statResult.type;
+          } catch (ex) {
+            fileType = FileType.Unknown; 
+          }
           const remoteUri = Uri.joinPath(subTree.remoteUri, part);
 
           subTree.children.push({
             name: part,
-            type: statResult.type,
+            type: fileType,
             localUri: localUri,
             remoteUri: remoteUri,
             children: []
