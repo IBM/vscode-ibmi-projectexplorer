@@ -2,6 +2,24 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+## `2.7.1`
+- Add checkbox to generate bob Rules.mk files on migrate source by @edmundreinhardt in #329
+- Adds checkbox to import member text on migrate source by @irfanshar in #298
+- Changed IBM i panel to IBM i Project Explorer by @sebjulliand in #308
+- Adds option during migrate source to have files in lowercase by @irfanshar in #322
+- Fix incorrect link to library list and object library doc pages by @SanjulaGanepola in #316
+- Fix file extension during file source orbit rename by @irfanshar in #325
+- Fixes the iterable warning by @edmundreinhardt in #327
+
+- Bump @halcyontech/vscode-ibmi-types from 2.6.0 to 2.6.5 by @dependabot in #314
+- Bump typescript from 5.3.2 to 5.3.3 by @dependabot in #294
+- Bump eslint from 8.55.0 to 8.56.0 by @dependabot in #292
+- Bump actions/upload-artifact from 3 to 4 by @dependabot in #291
+- Bump @typescript-eslint/parser from 6.18.0 to 6.19.1 by @dependabot in #321
+- Bump dotenv from 16.3.1 to 16.3.2 by @dependabot in #320
+- Bump @types/node from 20.10.7 to 20.11.5 by @dependabot in #319
+- Bump @typescript-eslint/eslint-plugin from 6.13.2 to 6.19.1 by @dependabot in #318
+
 ## `2.6.0`
 - Version numbers will now be in sync with the required `Code for i` extension.
   This caused extensions using this API to fail, including Merlin by @william-xiang
