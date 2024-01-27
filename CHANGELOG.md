@@ -2,7 +2,7 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
-## `2.7.1`
+## `2.6.2`
 - Add checkbox to generate bob Rules.mk files on migrate source by @edmundreinhardt in #329
 - Adds checkbox to import member text on migrate source by @irfanshar in #298
 - Changed IBM i panel to IBM i Project Explorer by @sebjulliand in #308
