@@ -9,7 +9,7 @@
   },
   "publisher": "IBM",
   "license": "Apache-2.0",
-  "version": "2.6.2",
+  "version": "2.6.3",
   "repository": {
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
   },
@@ -871,7 +871,7 @@
           "group": "navigation@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.connect",
+          "command": "vscode-ibmi-projectexplorer.openConnectionBrowser",
           "when": "view === projectExplorer && workspaceFolderCount > 0 && !code-for-ibmi:connected",
           "group": "navigation@0"
         },
