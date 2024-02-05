@@ -1502,7 +1502,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "dotenv": "^16.3.2",
+    "dotenv": "^16.4.1",
     "ignore": "^5.3.0",
     "jsonschema": "^1.4.1"
   }
