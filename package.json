@@ -1503,7 +1503,7 @@
   },
   "dependencies": {
     "dotenv": "^16.4.1",
-    "ignore": "^5.3.0",
+    "ignore": "^5.3.1",
     "jsonschema": "^1.4.1"
   }
 }
