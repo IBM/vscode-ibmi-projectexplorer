@@ -34,7 +34,8 @@ export type ProjectFileType = 'iproj.json' | '.ibmi.json' | 'joblog.json' | 'out
 /**
  * Represents a project's library list.
  */
-export type LibraryList = { libraryInfo: IBMiObject; libraryType: string; }[];
+export type LibraryLocation = 'SYS' | 'CUR' | 'USR';
+export type LibraryList = { libraryInfo: IBMiObject; libraryType: LibraryLocation; }[];
 
 /**
  * Represents the environment variables in a `.env` file.
@@ -827,14 +828,13 @@ export class IProject {
           if (libraryListString !== ``) {
             const libraries = libraryListString.split(`\n`);
 
-            let libraryList: { name: string, libraryType: string }[] = [];
+            const libraryList: { name: string, libraryType: LibraryLocation }[] = [];
             for (const library of libraries) {
               libraryList.push({
-                name: library.substring(0, 10).trim(),
-                libraryType: library.substring(12)
+                name: library.substring(0, 10).trim(),                
+                libraryType: toLibraryLocation(library.substring(12))
               });
             }
-
             const libraryListInfo = await ibmi.getContent().getLibraryList(libraryList.map(lib => lib.name));
             if (libraryListInfo) {
               let libl = [];
@@ -1355,5 +1355,15 @@ export class IProject {
     } else {
       this.jobLogs.fromArray([]);
     }
+  }
+}
+
+function toLibraryLocation(location:string) : LibraryLocation {
+  if(location === 'USR' || location === 'SYS' || location === 'CUR'){
+    return location;
+  }
+  else{
+    //Should not happen
+    return 'USR';
   }
 }
