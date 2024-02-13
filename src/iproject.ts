@@ -274,7 +274,7 @@ export class IProject {
       const validator = ProjectManager.getValidator();
       const schema = validator.schemas['/iproj'];
       const validatorResult = validator.validate(unresolvedState || content, schema);
-  
+
       if (validatorResult && validatorResult.errors.length > 0 && content.trim() !== '') {
         this.validatorResult = validatorResult;
         return undefined;
@@ -471,7 +471,7 @@ export class IProject {
         };
         await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
         ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
-      } 
+      }
     }
   }
   /**
@@ -831,7 +831,7 @@ export class IProject {
             const libraryList: { name: string, libraryType: LibraryLocation }[] = [];
             for (const library of libraries) {
               libraryList.push({
-                name: library.substring(0, 10).trim(),                
+                name: library.substring(0, 10).trim(),
                 libraryType: toLibraryLocation(library.substring(12))
               });
             }
@@ -1181,7 +1181,7 @@ export class IProject {
     return valueList
       .filter(value => typeof value === "string")
       .filter(value => value.startsWith(`&`))
-      .map(value => value.substring(1))            
+      .map(value => value.substring(1))
       .filter((value, index, array) => array.indexOf(value) === index);
   }
 
@@ -1358,11 +1358,11 @@ export class IProject {
   }
 }
 
-function toLibraryLocation(location:string) : LibraryLocation {
-  if(location === 'USR' || location === 'SYS' || location === 'CUR'){
+function toLibraryLocation(location: string): LibraryLocation {
+  if (location === 'USR' || location === 'SYS' || location === 'CUR') {
     return location;
   }
-  else{
+  else {
     //Should not happen
     return 'USR';
   }
