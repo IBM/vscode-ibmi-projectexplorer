@@ -3,9 +3,9 @@
  */
 
 import { Uri, workspace } from 'vscode';
+import { ProjectManager } from './projectManager';
 import JobLog from "./views/jobLog";
 import ProjectExplorer from "./views/projectExplorer";
-import { ProjectManager } from './projectManager';
 import { ProjectExplorerTreeItem } from './views/projectExplorer/projectExplorerTreeItem';
 import Source from './views/projectExplorer/source';
 
@@ -54,7 +54,7 @@ export namespace ProjectFileWatcher {
                 iProject.setBuildMap(undefined);
                 iProject.setLibraryList(undefined);
 
-                ProjectManager.fire({ type: 'projects' });
+                ProjectManager.fire({ type: 'projects', iProject });
             } else if (uri.path.endsWith('iproj.json') && (type === 'delete')) {
                 const activeProject = ProjectManager.getActiveProject();
 
