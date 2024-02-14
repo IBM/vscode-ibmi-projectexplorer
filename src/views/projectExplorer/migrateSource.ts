@@ -11,6 +11,7 @@ import { IProject } from "../../iproject";
 import * as path from "path";
 import * as tar from "tar";
 import * as fs from 'fs';
+import { sourceOrbitEnabled } from "../../sourceOrbit";
 
 /**
  * Represents the configuration for a migration.
@@ -144,37 +145,38 @@ export async function migrateSource(iProject: IProject, library: string): Promis
                 }
             }
 
-            // Clean up using Source Orbit
-            const sourceOrbit = extensions.getExtension(`IBM.vscode-sourceorbit`);
-            if (!sourceOrbit) {
-                window.showErrorMessage(l10n.t('Failed to run clean up as Source Orbit extension is not installed'));
-                return migrationResult;
-            }
+            const soEnabled = await sourceOrbitEnabled();
+            const workspaceFolder = workspace.getWorkspaceFolder(migrationConfig.workspaceFolderUri!);
 
-            if (!sourceOrbit?.isActive) {
+            if (soEnabled) {
+                if (migrationConfig.fixIncludes) {
+                    progress.report({ message: l10n.t('Adjusting include statements to IFS syntax...'), increment: increment });
+                    await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'includes');
+                }
+    
+                if (migrationConfig.generateBob) {
+                    progress.report({ message: l10n.t('Generating Rules.mk for Better Object Builder...'), increment: increment });
+                    await commands.executeCommand('vscode-sourceorbit.generateBuildFile', workspaceFolder, 'bob');
+                }
+    
+                if (migrationConfig.automaticRename) {
+                    progress.report({ message: l10n.t('Renaming file extensions to be more precise...'), increment: increment });
+                    await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'renames');
+    
+                    // Fix file extensions with the format FILE.pgm.CLLE to FILE.PGM.CLLE
+                    if (!migrationConfig.lower) {
+                        fixExtensions(migrationConfig.workspaceFolderUri!.fsPath);
+                    }
+                }
+
+            } else if (migrationConfig.fixIncludes || migrationConfig.generateBob || migrationConfig.automaticRename) {
+                // If any of those options are chosen, but SO is not available, show an error message
                 window.showErrorMessage(l10n.t('Failed to run clean up as Source Orbit extension is not activated'));
                 return migrationResult;
             }
 
-            const workspaceFolder = workspace.getWorkspaceFolder(migrationConfig.workspaceFolderUri!);
-            if (migrationConfig.automaticRename) {
-                progress.report({ message: l10n.t('Renaming file extensions to be more precise...'), increment: increment });
-                await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'renames');
 
-                // Fix file extensions with the format FILE.pgm.CLLE to FILE.PGM.CLLE
-                if (!migrationConfig.lower) {
-                    fixExtensions(migrationConfig.workspaceFolderUri!.fsPath);
-                }
-            }
 
-            if (migrationConfig.fixIncludes) {
-                progress.report({ message: l10n.t('Adjusting include statements to IFS syntax...'), increment: increment });
-                await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'includes');
-            }
-            if (migrationConfig.generateBob) {
-                progress.report({ message: l10n.t('Generating Rules.mk for Better Object Builder...'), increment: increment });
-                await commands.executeCommand('vscode-sourceorbit.generateBuildFile', workspaceFolder, 'bob');
-            }
             migrationResult.error = false;
             return migrationResult;
         });
@@ -240,12 +242,13 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
         sourceFiles = await ibmi?.getContent().getObjectList({ library: library, types: ['*SRCPF'] });
     });
 
+    const soEnabled = await sourceOrbitEnabled();
+
     if (sourceFiles && sourceFiles.length > 0) {
         const customUI = getCustomUI();
         const settingsTab = getCustomUI();
-        const cleanUpTab = getCustomUI();
         const sourceFilesTab = getCustomUI();
-        if (customUI && settingsTab && sourceFilesTab && cleanUpTab) {
+        if (customUI && settingsTab && sourceFilesTab) {
             // Settings tab
             const projects = ProjectManager.getProjects();
             const projectSelectItems = projects.map<SelectItem>(project => {
@@ -263,12 +266,6 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                 .addCheckbox(`importText`, l10n.t('Import Member Text'), l10n.t('Imports member text at top of source as comment.'), true)
                 .addCheckbox(`lower`, l10n.t('Lowercase Filenames'), l10n.t('The generated source file names will be in lowercase.'), true);
 
-            // Clean up tab
-            cleanUpTab
-                .addCheckbox(`automaticRename`, l10n.t('Automatic Rename'), l10n.t('Rename your project sources to have the correct extensions required for most build tools.'), true)
-                .addCheckbox(`fixIncludes`, l10n.t('Fix Includes'), l10n.t('Fixes all include and copy directives (in RPGLE) to use Unix style paths instead of member styled paths.'), true)
-                .addCheckbox(`generateBob`, l10n.t('Generate Rules.mk for BOB'), l10n.t('Generates the makefiles for the Better Object Builder that encodes all dependencies.'), true);
-
             // Source files tab
             sourceFiles.forEach(srcPf => {
                 const type = srcPf.type.startsWith(`*`) ? srcPf.type.substring(1) : srcPf.type;
@@ -276,11 +273,22 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                 sourceFilesTab.addCheckbox(srcPfLabel, srcPfLabel, srcPf.text, true);
             });
 
+            const cleanUpTab = getCustomUI();
+
+            if (soEnabled && cleanUpTab) {
+                // Clean up tab
+                cleanUpTab
+                    .addCheckbox(`automaticRename`, l10n.t('Automatic Rename'), l10n.t('Rename your project sources to have the correct extensions required for most build tools.'), true)
+                    .addCheckbox(`fixIncludes`, l10n.t('Fix Includes'), l10n.t('Fixes all include and copy directives (in RPGLE) to use Unix style paths instead of member styled paths.'), true)
+                    .addCheckbox(`generateBob`, l10n.t('Generate Rules.mk for BOB'), l10n.t('Generates the makefiles for the Better Object Builder that encodes all dependencies.'), true);
+            }
+
             let tabs: ComplexTab[] = [
                 { label: l10n.t('Settings'), fields: settingsTab.fields },
-                { label: l10n.t('Clean Up'), fields: cleanUpTab.fields },
+                ...(soEnabled ? [{ label: l10n.t('Clean Up'), fields: cleanUpTab!.fields }] : []),
                 { label: l10n.t('Source Files'), fields: sourceFilesTab.fields }
             ];
+
 
             const basePage = customUI
                 .addHeading(l10n.t('Migrate Source ({0})', library), 1)
