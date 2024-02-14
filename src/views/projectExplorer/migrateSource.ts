@@ -149,16 +149,6 @@ export async function migrateSource(iProject: IProject, library: string): Promis
             const workspaceFolder = workspace.getWorkspaceFolder(migrationConfig.workspaceFolderUri!);
 
             if (soEnabled) {
-                if (migrationConfig.fixIncludes) {
-                    progress.report({ message: l10n.t('Adjusting include statements to IFS syntax...'), increment: increment });
-                    await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'includes');
-                }
-    
-                if (migrationConfig.generateBob) {
-                    progress.report({ message: l10n.t('Generating Rules.mk for Better Object Builder...'), increment: increment });
-                    await commands.executeCommand('vscode-sourceorbit.generateBuildFile', workspaceFolder, 'bob');
-                }
-    
                 if (migrationConfig.automaticRename) {
                     progress.report({ message: l10n.t('Renaming file extensions to be more precise...'), increment: increment });
                     await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'renames');
@@ -167,6 +157,16 @@ export async function migrateSource(iProject: IProject, library: string): Promis
                     if (!migrationConfig.lower) {
                         fixExtensions(migrationConfig.workspaceFolderUri!.fsPath);
                     }
+                }
+
+                if (migrationConfig.fixIncludes) {
+                    progress.report({ message: l10n.t('Adjusting include statements to IFS syntax...'), increment: increment });
+                    await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'includes');
+                }
+    
+                if (migrationConfig.generateBob) {
+                    progress.report({ message: l10n.t('Generating Rules.mk for Better Object Builder...'), increment: increment });
+                    await commands.executeCommand('vscode-sourceorbit.generateBuildFile', workspaceFolder, 'bob');
                 }
 
             } else if (migrationConfig.fixIncludes || migrationConfig.generateBob || migrationConfig.automaticRename) {
