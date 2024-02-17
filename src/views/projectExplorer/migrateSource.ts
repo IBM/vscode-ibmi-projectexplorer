@@ -4,7 +4,7 @@
 
 import { getCustomUI, getInstance } from "../../ibmi";
 import { ProgressLocation, Uri, commands, extensions, l10n, window, workspace } from "vscode";
-import { IBMiFile } from "@halcyontech/vscode-ibmi-types";
+import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import { ProjectManager } from "../../projectManager";
 import { ComplexTab, SelectItem } from "@halcyontech/vscode-ibmi-types/api/CustomUI";
 import { IProject } from "../../iproject";
@@ -233,7 +233,7 @@ function fixExtensions(workspaceFolder: string): void {
  * @returns The migration configuration.
  */
 export async function getMigrationConfig(iProject: IProject, library: string): Promise<MigrationConfig | undefined> {
-    let sourceFiles: IBMiFile[] | undefined;
+    let sourceFiles: IBMiObject[] | undefined;
     await window.withProgress({
         location: { viewId: `projectExplorer` },
         title: l10n.t('Migrating Source'),
