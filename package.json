@@ -949,7 +949,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.compareWithRemote",
-          "when": "view == projectExplorer && viewItem =~ /^sourceFile.*/",
+          "when": "view == projectExplorer && viewItem =~ /^sourceFile(?!(_deleted)).*/",
           "group": "1_compare@0"
         },
         {
@@ -1024,7 +1024,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
-          "when": "view == projectExplorer && viewItem =~ /^(sourceFile|sourceDirectory).*/",
+          "when": "view == projectExplorer && viewItem =~ /^(sourceFile(?!(_deleted))|sourceDirectory).*/",
           "group": "1_iproj@3"
         },
         {

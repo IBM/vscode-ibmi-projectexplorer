@@ -7,6 +7,7 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { SourceInfo } from "./source";
 import SourceFile from "./sourceFile";
+import DeletedFile from "./deletedFile";
 
 /**
  * Tree item for a source directory
@@ -31,9 +32,10 @@ export default class SourceDirectory extends TreeItem implements ProjectExplorer
 
         for (const child of this.sourceInfo.children) {
             try {
-                const statResult = await workspace.fs.stat(child.localUri);
-                if (statResult.type === FileType.Directory) {
+                if (child.type === FileType.Directory) {
                     items.push(new SourceDirectory(this.workspaceFolder, child));
+                } else if (child.type === FileType.Unknown) { // File was deleted so we switched to Unknown on catch
+                    items.push(new DeletedFile(this.workspaceFolder, child));
                 } else {
                     items.push(new SourceFile(this.workspaceFolder, child));
                 }
