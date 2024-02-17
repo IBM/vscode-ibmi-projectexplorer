@@ -1272,10 +1272,10 @@
     "configuration": {
       "title": "%configuration.title%",
       "properties": {
-        "IBM i Project Explorer.disableUserLibraryList": {
+        "IBM i Project Explorer.disableUserLibraryListView": {
           "type": "boolean",
           "default": true,
-          "description": "%configuration.IBM i Project Explorer.disableUserLibraryList%"
+          "description": "%configuration.IBM i Project Explorer.disableUserLibraryListView%"
         }
       }
     },

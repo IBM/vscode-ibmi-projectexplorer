@@ -207,8 +207,8 @@ export class ProjectManager {
             };
         }
 
-        const disableUserLibraryList = ConfigurationManager.get(ConfigurationSection.disableUserLibraryList);
-        if (disableUserLibraryList) {
+        const disableUserLibraryListView = ConfigurationManager.get(ConfigurationSection.disableUserLibraryListView);
+        if (disableUserLibraryListView) {
             await commands.executeCommand('setContext', 'code-for-ibmi:libraryListDisabled', this.activeProject ? true : false);
         }
         await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:hasActiveProject', this.activeProject ? true : false);
