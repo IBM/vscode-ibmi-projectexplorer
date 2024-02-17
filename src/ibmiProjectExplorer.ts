@@ -40,6 +40,7 @@ export enum ContextValue {
   active = '_active',
   source = 'source',
   sourceFile = 'sourceFile',
+  deleted = '_deleted',
   sourceDirectory = 'sourceDirectory',
   variables = 'variables',
   variable = 'variable',

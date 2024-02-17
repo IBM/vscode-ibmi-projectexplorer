@@ -126,7 +126,7 @@ export default class Source extends TreeItem implements ProjectExplorerTreeItem 
           subTree = subTree.children[index];
         } else {
           const localUri = Uri.joinPath(subTree.localUri, part);
-          var fileType : FileType;
+          let fileType : FileType;
           try {
             const statResult = await workspace.fs.stat(localUri);
             fileType = statResult.type;
