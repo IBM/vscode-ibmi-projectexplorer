@@ -273,7 +273,7 @@ export class IProject {
       const validator = ProjectManager.getValidator();
       const schema = validator.schemas['/iproj'];
       const validatorResult = validator.validate(unresolvedState || content, schema);
-  
+
       if (validatorResult && validatorResult.errors.length > 0 && content.trim() !== '') {
         this.validatorResult = validatorResult;
         return undefined;
@@ -470,7 +470,7 @@ export class IProject {
         };
         await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
         ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
-      } 
+      }
     }
   }
   /**
@@ -858,6 +858,24 @@ export class IProject {
   }
 
   /**
+   * Force reset the library list to be `undefined` if the given library exists
+   * in the library list. If no library is given, it will always be reset.
+   * 
+   * @param library The library to check whether it exists in the library list.
+   */
+  public async forceResetLibraryList(library?: string) {
+    const libraryList = await this.getLibraryList();
+
+    if (libraryList) {
+      const libraryExistsInLibl = libraryList.find(liblEntry => liblEntry.libraryInfo.name === library);
+
+      if (libraryExistsInLibl || !library) {
+        this.setLibraryList(undefined);
+      }
+    }
+  }
+
+  /**
    * Set the project's library list. *Note* that setting the library list to
    * be `undefined` represents the current library list is invalid and will
    * be automatically updated whenever it is retrieved again.
@@ -1181,7 +1199,7 @@ export class IProject {
     return valueList
       .filter(value => typeof value === "string")
       .filter(value => value.startsWith(`&`))
-      .map(value => value.substring(1))            
+      .map(value => value.substring(1))
       .filter((value, index, array) => array.indexOf(value) === index);
   }
 

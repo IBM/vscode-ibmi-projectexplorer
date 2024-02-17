@@ -186,7 +186,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
         this.refresh();
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refresh`, (element: ProjectExplorerTreeItem) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refresh`, async (element: ProjectExplorerTreeItem) => {
+        if (element instanceof LibraryList) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
+          await iProject?.forceResetLibraryList();
+        }
+
         this.refresh(element);
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setActiveProject`, async (element?: Project) => {
@@ -713,8 +718,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 });
 
                 if (variable) {
-                  await activeProject.updateEnv(variable.label.substring(1), 
-                  value.toLocaleUpperCase().startsWith("QSYS/") ? value.substring(5).toLocaleUpperCase(): value);
+                  await activeProject.updateEnv(variable.label.substring(1),
+                    value.toLocaleUpperCase().startsWith("QSYS/") ? value.substring(5).toLocaleUpperCase() : value);
                 }
               } else {
                 window.showErrorMessage(l10n.t('No variables found'));
@@ -806,6 +811,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.changeLibraryDescription`, async (element: Library) => {
         if (element) {
           await commands.executeCommand(`code-for-ibmi.changeObjectDesc`, toObjectBrowserObject(element));
+
+          const iProject = ProjectManager.get(element.workspaceFolder);
+          await iProject?.forceResetLibraryList(element.libraryInfo.name);
+
           this.refresh();
         }
       }),
