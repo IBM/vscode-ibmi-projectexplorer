@@ -9,7 +9,7 @@ import { ProjectManager } from "./projectManager";
  * Represents all IBM i Project Explorer configuration sections.
  */
 export enum ConfigurationSection {
-    disableUserLibraryList = "disableUserLibraryList"
+    disableUserLibraryListView = "disableUserLibraryListView"
 }
 
 /**
@@ -25,10 +25,10 @@ export namespace ConfigurationManager {
     export function initialize(context: ExtensionContext) {
         context.subscriptions.push(
             workspace.onDidChangeConfiguration(async event => {
-                if (event.affectsConfiguration(`IBM i Project Explorer.${ConfigurationSection.disableUserLibraryList}`)) {
-                    const disableUserLibraryList = ConfigurationManager.get(ConfigurationSection.disableUserLibraryList);
+                if (event.affectsConfiguration(`IBM i Project Explorer.${ConfigurationSection.disableUserLibraryListView}`)) {
+                    const disableUserLibraryListView = ConfigurationManager.get(ConfigurationSection.disableUserLibraryListView);
 
-                    if (disableUserLibraryList) {
+                    if (disableUserLibraryListView) {
                         const activeProject = ProjectManager.getActiveProject();
                         await commands.executeCommand('setContext', 'code-for-ibmi:libraryListDisabled', activeProject ? true : false);
                     } else {

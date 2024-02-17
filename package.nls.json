@@ -88,7 +88,7 @@
   "commands.projectExplorer.updateMemberText": "Update Member Text",
   "commands.projectExplorer.uploadAndReplace": "Upload and Replace",
   "configuration.title": "IBM i Project Explorer",
-  "configuration.IBM i Project Explorer.disableUserLibraryList": "When disabled, the User Library List view in Code for IBM i will not be visible when an i Project is present in the workspace.",
+  "configuration.IBM i Project Explorer.disableUserLibraryListView": "When disabled, the User Library List view in Code for IBM i will not be visible when an i Project is present in the workspace.",
   "description": "Develop IBM i applications using buildable local projects in VS Code",
   "explorer.projectExplorer": "Project Explorer",
   "ibmi.jobLog": "Job Log",
