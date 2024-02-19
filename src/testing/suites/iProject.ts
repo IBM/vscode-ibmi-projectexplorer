@@ -3,15 +3,15 @@
  */
 
 import * as assert from "assert";
-import { TestSuite } from "..";
 import * as path from "path";
-import { ProjectManager } from "../../projectManager";
-import { ProjectFileType } from "../../iproject";
-import { LibraryType } from "../../views/projectExplorer/library";
-import { workspace } from "vscode";
-import { getDeployTools, getInstance } from "../../ibmi";
-import { iProjectMock, ibmiJsonMock } from "../constants";
 import { TextEncoder } from "util";
+import { workspace } from "vscode";
+import { TestSuite } from "..";
+import { getDeployTools, getInstance } from "../../ibmi";
+import { ProjectFileType } from "../../iproject";
+import { ProjectManager } from "../../projectManager";
+import { LibraryType } from "../../views/projectExplorer/library";
+import { iProjectMock, ibmiJsonMock } from "../constants";
 
 let deployLocation: string;
 
@@ -385,7 +385,7 @@ export const iProjectSuite: TestSuite = {
                             attribute: 'TEST',
                             text: 'Test Library'
                         },
-                        libraryType: 'USR'
+                        libraryListPortion: 'USR'
                     }
                 ]);
                 const libraryList = await iProject.getLibraryList();
