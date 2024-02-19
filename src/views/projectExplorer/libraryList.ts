@@ -3,12 +3,12 @@
  */
 
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n, window } from "vscode";
-import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
+import { getInstance } from "../../ibmi";
 import { ContextValue } from "../../ibmiProjectExplorer";
+import { Position } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
 import Library, { LibraryType } from "./library";
-import { Position } from "../../iproject";
-import { getInstance } from "../../ibmi";
+import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 
 /**
  * Tree item for the Library List heading.
@@ -37,7 +37,7 @@ export default class LibraryList extends TreeItem implements ProjectExplorerTree
         for (const library of libraryList) {
           let variable = undefined;
 
-          switch (library.libraryType) {
+          switch (library.libraryListPortion) {
             case `SYS`:
               items.push(new Library(this.workspaceFolder, library.libraryInfo, LibraryType.systemLibrary));
               break;
