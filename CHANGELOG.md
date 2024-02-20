@@ -2,6 +2,27 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+## `2.6.3`
+- Create connection action in merlin should NOT be Code for IBM i dialog
+- Hide Source Orbit migration options if Source Orbit not installed
+- Missing iProject field when projects event is fired
+- Make library type more explicit
+- Fix missing deleted files in sub-directories
+- Force refresh library list when changing library list description
+- Rename configuration to `Disable User Library List View`
+- Fix retrieval of members and objects
+
+# Housekeeping
+- Bump webpack from 5.89.0 to 5.90.3
+- Bump @vscode/l10n-dev from 0.0.31 to 0.0.33
+- Bump @types/tar from 6.1.10 to 6.1.11
+- Bump dotenv from 16.3.2 to 16.4.4 by
+- Bump @types/node from 20.11.5 to 20.11.19
+- Bump @typescript-eslint/parser from 6.19.1 to 7.0.2
+- Bump @typescript-eslint/eslint-plugin from 6.19.1 to 7.0.0
+- Bump esbuild-loader from 4.0.2 to 4.0.3
+- Bump ignore from 5.3.0 to 5.3.1
+
 ## `2.6.2`
 - Add checkbox to generate bob Rules.mk files on migrate source by @edmundreinhardt in #329
 - Adds checkbox to import member text on migrate source by @irfanshar in #298
