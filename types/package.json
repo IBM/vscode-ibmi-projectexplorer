@@ -1,7 +1,7 @@
 {
   "name": "@ibm/vscode-ibmi-projectexplorer-types",
   "description": "Type definitions for the IBM i Project Explorer API",
-  "version": "2.6.2",
+  "version": "2.6.4",
   "author": {
     "name": "IBM",
     "url": "https://github.com/IBM"
@@ -21,7 +21,7 @@
     "deploy": "npm publish --access public"
   },
   "dependencies": {
-    "@halcyontech/vscode-ibmi-types": "^2.6.5",
+    "@halcyontech/vscode-ibmi-types": "^2.7.0",
     "jsonschema": "^1.4.1"
   }
 }
