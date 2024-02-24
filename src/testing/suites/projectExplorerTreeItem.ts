@@ -250,7 +250,9 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         name: 'H',
                         type: '*FILE',
                         attribute: 'PF',
-                        text: 'DATA BASE FILE FOR C INCLUDES'
+                        text: 'DATA BASE FILE FOR C INCLUDES',
+                        sourceFile: true,
+                        memberCount: 1088
                     }
                 });
             }
@@ -301,7 +303,9 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         type: '*LIB',
                         name: 'QGPL',
                         attribute: 'PROD',
-                        text: 'General Purpose Library'
+                        text: 'General Purpose Library',
+                        sourceFile: false,
+                        memberCount: undefined
                     }
                 });
                 assertTreeItem(children[2], {
@@ -312,7 +316,9 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         type: '*LIB',
                         name: 'SYSTOOLS',
                         attribute: 'PROD',
-                        text: 'System Library for DB2'
+                        text: 'System Library for DB2',
+                        sourceFile: false,
+                        memberCount: undefined
                     }
                 });
                 assertTreeItem(children[3], {
@@ -327,7 +333,9 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         type: '*LIB',
                         name: 'QSYSINC',
                         attribute: 'PROD',
-                        text: ''
+                        text: '',
+                        sourceFile: false,
+                        memberCount: undefined
                     }
                 });
                 assertTreeItem(children[5], {

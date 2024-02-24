@@ -265,6 +265,34 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
+            name: `Test deleteLibrary`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                await iProject.deleteLibrary('QGPL');
+                await iProject.deleteLibrary('SYSTOOLS');
+                const state = await iProject.getState();
+                const unresolvedState = await iProject.getUnresolvedState();
+
+                assert.strictEqual(state?.curlib, '&CURLIB');
+                assert.strictEqual(unresolvedState?.curlib, '&CURLIB');
+                assert.deepStrictEqual(state?.preUsrlibl, ['&lib1', '&lib2']);
+                assert.deepStrictEqual(unresolvedState?.preUsrlibl, ['&lib1', '&lib2']);
+            }
+        },
+        {
+            name: `Test renameLibrary`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                await iProject.renameLibrary('QGPL', 'MYLIB1');
+                await iProject.renameLibrary('SYSTOOLS', 'MYLIB2');
+                const state = await iProject.getState();
+                const unresolvedState = await iProject.getUnresolvedState();
+
+                assert.strictEqual(state?.curlib, 'MYLIB1');
+                assert.strictEqual(unresolvedState?.curlib, '&CURLIB');
+                assert.deepStrictEqual(state?.preUsrlibl, ['MYLIB2', '&lib2']);
+                assert.deepStrictEqual(unresolvedState?.preUsrlibl, ['&lib1', '&lib2']);
+            }
+        },
+        {
             name: `Test setAsTargetLibraryForCompiles`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 await iProject.setAsTargetLibraryForCompiles('MYLIB1');
@@ -321,7 +349,7 @@ export const iProjectSuite: TestSuite = {
                         attribute: 'PROD',
                         text: 'General Purpose Library'
                     },
-                    libraryType: 'CUR'
+                    libraryListPortion: 'CUR'
                 });
                 assert.deepStrictEqual(lib2, {
                     libraryInfo: {
@@ -331,7 +359,7 @@ export const iProjectSuite: TestSuite = {
                         attribute: 'PROD',
                         text: 'System Library for DB2'
                     },
-                    libraryType: 'USR'
+                    libraryListPortion: 'USR'
                 });
                 assert.deepStrictEqual(lib3, {
                     libraryInfo: {
@@ -341,7 +369,7 @@ export const iProjectSuite: TestSuite = {
                         attribute: 'PROD',
                         text: ''
                     },
-                    libraryType: 'USR'
+                    libraryListPortion: 'USR'
                 });
             }
         },
@@ -367,7 +395,7 @@ export const iProjectSuite: TestSuite = {
                         attribute: 'PROD',
                         text: 'General Purpose Library'
                     },
-                    libraryType: 'CUR'
+                    libraryListPortion: 'CUR'
                 });
                 assert.strictEqual(lib2, undefined);
                 assert.strictEqual(lib3, undefined);
