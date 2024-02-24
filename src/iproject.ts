@@ -665,6 +665,73 @@ export class IProject {
   }
 
   /**
+   * Remove all instances of a library in the project's `iproj.json` file
+   * and `.env` file.
+   * 
+   * @param library The library to delete.
+   */
+  public async deleteLibrary(library: string) {
+    const unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      // Remove library from all iproj attributes
+      for (const [key, value] of Object.entries(unresolvedState)) {
+        if (value === library) {
+          delete (unresolvedState as any)[key];
+        } else if (Array.isArray(value) && value.includes(library)) {
+          (unresolvedState as any)[key] = (unresolvedState as any)[key].filter((item: string) => item !== library);
+        }
+      }
+
+      // Remove library from all environment variables
+      const env = await this.getEnv();
+      for await (const [variable, value] of Object.entries(env)) {
+        if (value === library) {
+          await this.updateEnv(variable, "");
+        }
+      }
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+  }
+
+  /**
+   * Rename all instances of a library in the project's `iproj.json` file
+   * and `.env` file.
+   * 
+   * @param library The library to rename.
+   * @param newLibrary The name of the new library.
+   */
+  public async renameLibrary(library: string, newLibrary: string) {
+    const unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      // Rename library in all iproj attributes
+      for (const [key, value] of Object.entries(unresolvedState)) {
+        if (value === library) {
+          (unresolvedState as any)[key] = newLibrary;
+        } else if (Array.isArray(value) && value.includes(library)) {
+          (unresolvedState as any)[key] = (unresolvedState as any)[key].map((item: string) => item === library ? newLibrary : item);
+        }
+      }
+
+      // Rename library in all environment variables
+      const env = await this.getEnv();
+      for await (const [variable, value] of Object.entries(env)) {
+        if (value === library) {
+          await this.updateEnv(variable, newLibrary);
+        }
+      }
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
+  }
+
+  /**
    * Set the `objlib` attribute of the project's `iproj.json` file. *Note*
    * that if the current value is a hardcoded library, the default `&OBJLIB`
    * variable will be set and the variable and value will be added to the
