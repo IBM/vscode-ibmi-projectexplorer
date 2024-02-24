@@ -5,7 +5,7 @@
 import { ConnectionData, DeploymentMethod, ObjectItem } from "@halcyontech/vscode-ibmi-types";
 import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
 import * as path from "path";
-import { EventEmitter, ExtensionContext, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
+import { EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
 import { getDeployTools, getInstance, getTools } from "../../ibmi";
@@ -852,8 +852,57 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.renameLibrary`, async (element: Library) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.renameObject`, toObjectBrowserObject(element));
-          this.refresh();
+          const objectBrowseObject = toObjectBrowserObject(element);
+
+          let [, newObject] = objectBrowseObject.path.split(`/`);
+          let newObjectOK;
+          do {
+            newObject = await window.showInputBox({
+              prompt: l10n.t('Enter new library file name'),
+              placeHolder: l10n.t('New library name'),
+              validateInput: (name) => {
+                if (name.length > 10) {
+                  return l10n.t('Library name must be 10 characters or less');
+                }
+                else if (name.toLocaleUpperCase() === element.libraryInfo.name.toLocaleUpperCase()) {
+                  return l10n.t('New library name must be different from the existing one');
+                }
+                else {
+                  return null;
+                }
+              }
+            }) || "";
+
+            if (newObject) {
+              const escapedObject = newObject.replace(/'/g, `''`).replace(/`/g, `\\\``).split(`/`);
+              const ibmi = getInstance();
+              const connection = ibmi!.getConnection();
+              newObjectOK = await window.withProgress({ location: ProgressLocation.Notification, title: l10n.t('Renaming object {0} {1} to {2}...', objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase(), escapedObject.toString()) }
+                , async (progress) => {
+                  const renameResult = await connection.runCommand({
+                    command: `RNMOBJ OBJ(${objectBrowseObject.path}) OBJTYPE(${objectBrowseObject.object.type}) NEWOBJ(${escapedObject})`,
+                    noLibList: true
+                  });
+
+                  if (renameResult.code !== 0) {
+                    window.showErrorMessage(l10n.t('Error renaming object {0}! {1}', objectBrowseObject.path, renameResult.stderr));
+                    return false;
+                  }
+
+                  const iProject = ProjectManager.get(element.workspaceFolder);
+                  if (iProject) {
+                    await iProject.renameLibrary(element.label!.toString(), newObject);
+                  } else {
+                    window.showErrorMessage(l10n.t('Failed to retrieve project'));
+                  }
+
+                  window.showInformationMessage(l10n.t('Renamed object {0} {1} to {2}', objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase(), escapedObject.toString()));
+                  this.refresh();
+                  return true;
+                }
+              );
+            }
+          } while (newObject && !newObjectOK);
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.clearLibrary`, async (element: Library) => {
@@ -881,8 +930,37 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.deleteLibrary`, async (element: Library) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.deleteObject`, toObjectBrowserObject(element));
-          this.refresh();
+          const objectBrowseObject = toObjectBrowserObject(element);
+
+          let result = await window.showWarningMessage(l10n.t('Are you sure you want to delete {0} {1}?', objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase()), l10n.t(`Yes`), l10n.t(`Cancel`));
+
+          if (result === l10n.t(`Yes`)) {
+            const ibmi = getInstance();
+            const connection = ibmi!.getConnection();
+
+            await window.withProgress({ location: ProgressLocation.Notification, title: l10n.t('Deleting object {0} {1}...', objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase()) }
+              , async (progress) => {
+                const deleteResult = await connection.runCommand({
+                  command: `DLTOBJ OBJ(${objectBrowseObject.path}) OBJTYPE(${objectBrowseObject.object.type})`,
+                  noLibList: true
+                });
+
+                if (deleteResult.code === 0) {
+                  const iProject = ProjectManager.get(element.workspaceFolder);
+                  if (iProject) {
+                    await iProject.deleteLibrary(element.label!.toString());
+                  } else {
+                    window.showErrorMessage(l10n.t('Failed to retrieve project'));
+                  }
+
+                  window.showInformationMessage(l10n.t(`Deleted {0} {1}`, objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase()));
+                  this.refresh();
+                } else {
+                  window.showErrorMessage(l10n.t(`Error deleting object! {0}`, deleteResult.stderr));
+                }
+              }
+            );
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.createSourceFile`, async (element: Library) => {
