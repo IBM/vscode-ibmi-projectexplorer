@@ -1491,18 +1491,18 @@
     "@types/node": "20.x",
     "@types/tar": "^6.1.11",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.1.0",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@vscode/l10n-dev": "^0.0.33",
     "esbuild-loader": "^4.0.3",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "tar": "^6.2.0",
     "typescript": "^5.3.3",
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "dotenv": "^16.4.4",
+    "dotenv": "^16.4.5",
     "ignore": "^5.3.1",
     "jsonschema": "^1.4.1"
   }
