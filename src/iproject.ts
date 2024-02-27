@@ -34,7 +34,7 @@ export type ProjectFileType = 'iproj.json' | '.ibmi.json' | 'joblog.json' | 'out
 /**
  * Represents a project's library list.
  */
-export type LibraryListPortion = 'SYS' | 'CUR' | 'USR';
+export type LibraryListPortion = 'SYS' | 'CUR' | 'USR' | 'PRD';
 export type LibraryList = { libraryInfo: IBMiObject; libraryListPortion: LibraryListPortion; }[];
 
 /**
@@ -897,9 +897,12 @@ export class IProject {
 
             const libraryList: { name: string, libraryType: LibraryListPortion }[] = [];
             for (const library of libraries) {
+              const liblPortion = toLiblPortion(library.substring(12));
+              // issue 377: PRD library was inserted by command used to query LIBL so skip it
+              if (liblPortion === "PRD") { continue;} 
               libraryList.push({
                 name: library.substring(0, 10).trim(),
-                libraryType: toLibraryLocation(library.substring(12))
+                libraryType: liblPortion
               });
             }
             const libraryListInfo = await ibmi.getContent().getLibraryList(libraryList.map(lib => lib.name));
@@ -1443,12 +1446,13 @@ export class IProject {
   }
 }
 
-function toLibraryLocation(location: string): LibraryListPortion {
-  if (location === 'USR' || location === 'SYS' || location === 'CUR') {
+function toLiblPortion(location: string): LibraryListPortion {
+  if (location === 'USR' || location === 'SYS'  || location === 'CUR'|| location === 'PRD') {
     return location;
   }
   else {
     //Should not happen
+    console.log(`Encountered unexpect library list portion type: ${location}`);
     return 'USR';
   }
 }
