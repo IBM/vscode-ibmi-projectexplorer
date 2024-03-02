@@ -171,8 +171,9 @@ export const projectManagerSuite: TestSuite = {
                 const projectTreeItem = new Project(workspaceFolder, { description: 'SAMPLE PROJECT' });
                 const children = await projectTreeItem.getChildren();
                 Project.callBack = [];
+                const last = children.length-1;
 
-                assert.strictEqual(children[5].label, 'Test Tree Item');
+                assert.strictEqual(children[last].label, 'Test Tree Item');
             }
         }
     ]
