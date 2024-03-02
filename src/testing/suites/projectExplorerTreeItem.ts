@@ -252,7 +252,10 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         attribute: 'PF',
                         text: 'DATA BASE FILE FOR C INCLUDES',
                         sourceFile: true,
-                        memberCount: 1088
+                        CCSID: 37,
+                        created_by: '*IBM',
+                        owner: 'QSYS',
+                        sourceLength: 92
                     }
                 });
             }
@@ -305,7 +308,11 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         attribute: 'PROD',
                         text: 'General Purpose Library',
                         sourceFile: false,
-                        memberCount: undefined
+                        memberCount: undefined,
+                        CCSID: undefined,
+                        created_by: "*IBM",
+                        owner: 'QSYS',
+                        sourceLength: undefined
                     }
                 });
                 assertTreeItem(children[2], {
@@ -318,7 +325,11 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         attribute: 'PROD',
                         text: 'System Library for DB2',
                         sourceFile: false,
-                        memberCount: undefined
+                        memberCount: undefined,
+                        CCSID: undefined,
+                        created_by: "*IBM",
+                        owner: 'QSYS',
+                        sourceLength: undefined
                     }
                 });
                 assertTreeItem(children[3], {
@@ -335,7 +346,11 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         attribute: 'PROD',
                         text: '',
                         sourceFile: false,
-                        memberCount: undefined
+                        memberCount: undefined,
+                        CCSID: undefined,
+                        created_by: "QLPINSTALL",
+                        owner: 'QSYS',
+                        sourceLength: undefined
                     }
                 });
                 assertTreeItem(children[5], {
@@ -431,7 +446,19 @@ export const projectExplorerTreeItemSuite: TestSuite = {
 
 function assertTreeItem(treeItem: ProjectExplorerTreeItem, attributes: { [key: string]: any }) {
     for (const [key, value] of (Object.entries(attributes))) {
-        assert.deepStrictEqual(treeItem[key as keyof TreeItem], value);
+        if (key === 'libraryInfo' ||
+            key === 'objectFileInfo') {
+            assertIBMiObject(treeItem[key as keyof TreeItem] as { [key: string]: any }, value);
+        } else {
+            assert.deepStrictEqual(treeItem[key as keyof TreeItem], value);
+        }
+    }
+}
+ // Test IBMiObject but ignore timesctamps and size that will vary           
+function assertIBMiObject(actual: { [key: string]: any }, expected: { [key: string]: any }) {
+      for (const [key, value] of (Object.entries(expected))) {
+        if (key in ['changed', 'created', 'size', 'memberCount']) {continue;}
+        assert.deepStrictEqual(actual[key], value);
     }
 }
 
