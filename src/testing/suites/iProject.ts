@@ -8,7 +8,7 @@ import { TextEncoder } from "util";
 import { workspace } from "vscode";
 import { TestSuite } from "..";
 import { getDeployTools, getInstance } from "../../ibmi";
-import { ProjectFileType } from "../../iproject";
+import { ProjectFileType, escArray, escQuotes } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
 import { LibraryType } from "../../views/projectExplorer/library";
 import { iProjectMock, ibmiJsonMock } from "../constants";
@@ -691,6 +691,35 @@ export const iProjectSuite: TestSuite = {
                 const deployLocation = iProject.getDeployLocation();
 
                 assert.strictEqual(deployLocation, deployLocation);
+            }
+        },
+        {
+            name: `Test escapeQuotes`, test: async () => {
+                const escapedStr = escQuotes('"abc"');
+                assert.strictEqual(escapedStr, '\\"abc\\"');
+
+                // Now test escArray()
+                const arrayStr   = ['abc', '\"def\"',   'ghi', '\"@#$\"'];
+                const escapedArr = ['abc', '\\"def\\"', 'ghi', '\\"@#$\\"'];
+                assert.deepEqual(escArray(arrayStr), escapedArr);
+            }
+        },
+        {
+            name: `Test calcUpdateLibraryListCommand`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                const ibmi = getInstance();
+                const state = await iProject.getState();
+                if (!state) {assert.fail("No iproj state found!");}
+                const command = await iProject.calcUpdateLibraryListCommand(ibmi!, state!);
+                if (!command){assert.fail('LIBL command calculation failed!');}
+                assert.strictEqual(command,'liblist -d TDD_ER RPGUNIT QTEMP ; liblist -c QGPL ; liblist -a QSYSINC QTEMP RPGUNIT TDD_ER SYSTOOLS ; liblist');
+
+                // iProject.setCurrentLibrary('"abcdefg"');
+                // const state2 = await iProject.getState();
+                // if (!state2) {assert.fail("No iproj state2 found!");}
+                // const command2 = await iProject.calcUpdateLibraryListCommand(ibmi!, state2!);
+                // if (!command2){assert.fail('LIBL command2 calculation failed!');}
+                // assert.strictEqual(command2,'liblist -d TDD_ER RPGUNIT QTEMP ; liblist -c QGPL ; liblist -a QSYSINC QTEMP RPGUNIT TDD_ER SYSTOOLS ; liblist');
             }
         }
     ]
