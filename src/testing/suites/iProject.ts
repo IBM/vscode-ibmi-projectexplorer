@@ -562,6 +562,7 @@ export const iProjectSuite: TestSuite = {
                     "path1": '',
                     "path2": '',
                     "valueA": '',
+                    "DTALIB": '',
                 });
             }
         },
@@ -580,6 +581,7 @@ export const iProjectSuite: TestSuite = {
                     "path1": 'PATH1',
                     "path2": '',
                     "valueA": 'VALUEA',
+                    "DTALIB": '',
                 });
             }
         },
@@ -600,7 +602,8 @@ export const iProjectSuite: TestSuite = {
                     "path1": 'PATH1',
                     "path2": '',
                     "valueA": 'VALUEA',
-                    "var": 'VAR'
+                    "var": 'VAR',
+                    "DTALIB": ''
                 });
             }
         },
@@ -627,7 +630,7 @@ export const iProjectSuite: TestSuite = {
                 const iProject = ProjectManager.getProjects()[0];
                 const variables = await iProject.getVariables();
 
-                assert.deepStrictEqual(variables, ['CURLIB', 'OBJLIB', 'lib3', 'lib4', 'lib1', 'lib2', 'path1', 'path2', 'valueA']);
+                assert.deepStrictEqual(variables, ['CURLIB', 'OBJLIB', 'lib3', 'lib4', 'lib1', 'lib2', 'path1', 'path2', 'valueA', 'DTALIB']);
             }
         },
         {
