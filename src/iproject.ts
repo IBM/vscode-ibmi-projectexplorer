@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { Action, DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { Action, CommandResult, DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import * as dotenv from 'dotenv';
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
@@ -16,6 +16,7 @@ import { JobLogInfo } from "./jobLog";
 import { ProjectManager } from "./projectManager";
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { LibraryType } from "./views/projectExplorer/library";
+import Instance from "@halcyontech/vscode-ibmi-types/api/Instance";
 
 /**
  * Represents the default variable for a project's current library.
@@ -841,6 +842,56 @@ export class IProject {
     }
     return this.libraryList;
   }
+  /*
+   * Generate the commands to update the library list using pase 'liblist' commmands and execute them
+   * Return the result of those commands
+   */
+  public async updateLibraryListOnIbmi(ibmi: Instance, state: IProjectT): Promise<CommandResult> {
+    let buildLibraryListCommand = await this.calcUpdateLibraryListCommand(ibmi, state);
+
+    const liblResult = await ibmi.getConnection().sendQsh({
+      command: buildLibraryListCommand
+    });
+    return liblResult;
+  }
+
+  /**
+   * Calculate the commands to replace USRLIBL and set CURLIB within library list
+   * @param ibmi connection
+   * @param state resolved iproj.json state
+   * @returns command
+   */
+  public async calcUpdateLibraryListCommand(ibmi: Instance, state: IProjectT): Promise<string> {
+    const defaultUserLibraries = ibmi.getConnection().defaultUserLibraries;
+    let userLibrariesToAdd: string[] = [
+      ...(state.preUsrlibl ? state.preUsrlibl : []),
+      ...(defaultUserLibraries ? defaultUserLibraries : []),
+      ...(state.postUsrlibl ? state.postUsrlibl : [])
+    ];
+    userLibrariesToAdd = [...new Set(userLibrariesToAdd.filter(lib => !lib.startsWith('&')))].reverse();
+
+    // Get current library
+    let curlib = state.curlib && !state.curlib.startsWith('&') ? state.curlib : undefined;
+
+    // Validate libraries
+    let librariesToValidate = curlib && !userLibrariesToAdd.includes(curlib) ? userLibrariesToAdd.concat(curlib) : userLibrariesToAdd;
+    const badLibs = await ibmi.getContent().validateLibraryList(librariesToValidate);
+    if (curlib && badLibs?.includes(curlib)) {
+      curlib = undefined;
+    }
+    if (badLibs) {
+      userLibrariesToAdd = userLibrariesToAdd.filter(lib => !badLibs.includes(lib));
+    }
+
+    // Retrieve library list
+    let buildLibraryListCommand = [
+      defaultUserLibraries ? `liblist -d ${defaultUserLibraries.join(` `)}` : ``,
+      state.curlib && state.curlib !== '' ? `liblist -c ${state.curlib}` : ``,
+      userLibrariesToAdd && userLibrariesToAdd.length > 0 ? `liblist -a ${userLibrariesToAdd.join(` `)}` : ``,
+      `liblist`
+    ].filter(cmd => cmd !== ``).join(` ; `);
+    return buildLibraryListCommand;
+  }
 
   /**
    * Update the project's library list by retrieving the resolved `curlib`,
@@ -849,77 +900,40 @@ export class IProject {
    */
   public async updateLibraryList() {
     const ibmi = getInstance();
+    // Get user libraries with variables resolved
+    const state = await this.getState();
 
-    if (ibmi && ibmi.getConnection()) {
-      const defaultUserLibraries = ibmi.getConnection().defaultUserLibraries;
+    if (ibmi && ibmi.getConnection() && state) {
+      const liblResult = await this.updateLibraryListOnIbmi(ibmi, state);
+      if (liblResult && liblResult.code === 0) {
+        const libraryListString = liblResult.stdout;
 
-      // Get user libraries
-      const state = await this.getState();
+        if (libraryListString !== ``) {
+          const libraries = libraryListString.split(`\n`);
 
-      if (state) {
-        let userLibrariesToAdd: string[] = [
-          ...(state.preUsrlibl ? state.preUsrlibl : []),
-          ...(defaultUserLibraries ? defaultUserLibraries : []),
-          ...(state.postUsrlibl ? state.postUsrlibl : [])
-        ];
-        userLibrariesToAdd = [... new Set(userLibrariesToAdd.filter(lib => !lib.startsWith('&')))].reverse();
-
-        // Get current library
-        let curlib = state.curlib && !state.curlib.startsWith('&') ? state.curlib : undefined;
-
-        // Validate libraries
-        let librariesToValidate = curlib && !userLibrariesToAdd.includes(curlib) ? userLibrariesToAdd.concat(curlib) : userLibrariesToAdd;
-        const badLibs = await ibmi.getContent().validateLibraryList(librariesToValidate);
-        if (curlib && badLibs?.includes(curlib)) {
-          curlib = undefined;
-        }
-        if (badLibs) {
-          userLibrariesToAdd = userLibrariesToAdd.filter(lib => !badLibs.includes(lib));
-        }
-
-        // Retrieve library list
-        let buildLibraryListCommand = [
-          defaultUserLibraries ? `liblist -d ${defaultUserLibraries.join(` `)}` : ``,
-          state.curlib && state.curlib !== '' ? `liblist -c ${state.curlib}` : ``,
-          userLibrariesToAdd && userLibrariesToAdd.length > 0 ? `liblist -a ${userLibrariesToAdd.join(` `)}` : ``,
-          `liblist`
-        ].filter(cmd => cmd !== ``).join(` ; `);
-
-        const liblResult = await ibmi.getConnection().sendQsh({
-          command: buildLibraryListCommand
-        });
-
-        if (liblResult && liblResult.code === 0) {
-          const libraryListString = liblResult.stdout;
-
-          if (libraryListString !== ``) {
-            const libraries = libraryListString.split(`\n`);
-
-            const libraryList: { name: string, libraryType: LibraryListPortion }[] = [];
-            for (const library of libraries) {
-              const liblPortion = toLiblPortion(library.substring(12));
-              // issue 377: PRD library was inserted by command used to query LIBL so skip it
-              if (liblPortion === "PRD") { continue;} 
-              libraryList.push({
-                name: library.substring(0, 10).trim(),
-                libraryType: liblPortion
+          const libraryList: { name: string, libraryType: LibraryListPortion }[] = [];
+          for (const library of libraries) {
+            const liblPortion = toLiblPortion(library.substring(12));
+            // issue 377: PRD library was inserted by command used to query LIBL so skip it
+            if (liblPortion === "PRD") { continue;} 
+            libraryList.push({
+              name: library.substring(0, 10).trim(),
+              libraryType: liblPortion
+            });
+          }
+          const libraryListInfo = await ibmi.getContent().getLibraryList(libraryList.map(lib => lib.name));
+          if (libraryListInfo) {
+            let libl = [];
+            for (const [index, library] of libraryList.entries()) {
+              libl.push({
+                libraryInfo: libraryListInfo[index],
+                libraryListPortion: library.libraryType
               });
             }
-            const libraryListInfo = await ibmi.getContent().getLibraryList(libraryList.map(lib => lib.name));
-            if (libraryListInfo) {
-              let libl = [];
-              for (const [index, library] of libraryList.entries()) {
-                libl.push({
-                  libraryInfo: libraryListInfo[index],
-                  libraryListPortion: library.libraryType
-                });
-              }
 
+            if (!this.libraryList || libl.toString() !== this.libraryList.toString()) {
               this.libraryList = libl;
-
-              if (libl.toString() !== this.libraryList.toString()) {
-                ProjectManager.fire({ type: 'libraryList', iProject: this });
-              }
+              ProjectManager.fire({ type: 'libraryList', iProject: this });
             }
           }
         }
@@ -1455,4 +1469,16 @@ function toLiblPortion(location: string): LibraryListPortion {
     console.log(`Encountered unexpect library list portion type: ${location}`);
     return 'USR';
   }
+}
+export function escQuotes(input: string): string
+{
+  return input.replace(/"/g,'\\"');
+}
+export function escArray(oldArray: string[]) : string[]
+{
+  var newArray = oldArray.map(function(e) { 
+    e = escQuotes(e); 
+    return e;
+  });
+  return newArray;
 }
