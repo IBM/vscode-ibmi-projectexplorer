@@ -2,7 +2,20 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
-## `2.6.3`
+## `2.6.5`
+* Update `iproj.json` and `.env` after renaming/deleting library 
+* Identify and filter out PRD libraries as they are side effect of command to query the library list
+* Allow retesting individual unit tests 
+# Housekeeping
+* Bump @typescript-eslint/eslint-plugin from 7.0.0 to 7.1.1 
+* Bump @types/node from 20.11.19 to 20.11.24
+* Bump @vscode/l10n-dev from 0.0.33 to 0.0.34
+* Bump @typescript-eslint/parser from 7.0.2 to 7.1.1
+* Bump @halcyontech/vscode-ibmi-types from 2.7.0 to 2.8.0
+* Bump eslint from 8.56.0 to 8.57.0
+* Bump dotenv from 16.4.4 to 16.4.5
+
+## `2.6.4`
 - Create connection action in merlin should NOT be Code for IBM i dialog
 - Hide Source Orbit migration options if Source Orbit not installed
 - Missing iProject field when projects event is fired
@@ -11,7 +24,6 @@ All notable changes to the "vscode-ibmi-projectexplorer" extension will be docum
 - Force refresh library list when changing library list description
 - Rename configuration to `Disable User Library List View`
 - Fix retrieval of members and objects
-
 # Housekeeping
 - Bump webpack from 5.89.0 to 5.90.3
 - Bump @vscode/l10n-dev from 0.0.31 to 0.0.33
@@ -31,7 +43,7 @@ All notable changes to the "vscode-ibmi-projectexplorer" extension will be docum
 - Fix incorrect link to library list and object library doc pages by @SanjulaGanepola in #316
 - Fix file extension during file source orbit rename by @irfanshar in #325
 - Fixes the iterable warning by @edmundreinhardt in #327
-
+# Housekeeping
 - Bump @halcyontech/vscode-ibmi-types from 2.6.0 to 2.6.5 by @dependabot in #314
 - Bump typescript from 5.3.2 to 5.3.3 by @dependabot in #294
 - Bump eslint from 8.55.0 to 8.56.0 by @dependabot in #292
