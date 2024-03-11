@@ -1491,7 +1491,7 @@
     "@types/node": "20.x",
     "@types/tar": "^6.1.11",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/parser": "^7.1.1",
+    "@typescript-eslint/parser": "^7.2.0",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@vscode/l10n-dev": "^0.0.34",
     "esbuild-loader": "^4.0.3",
