@@ -8,7 +8,7 @@ import { TextEncoder } from "util";
 import { workspace } from "vscode";
 import { TestSuite } from "..";
 import { getDeployTools, getInstance } from "../../ibmi";
-import { ProjectFileType, escArray, escQuotes } from "../../iproject";
+import { ProjectFileType } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
 import { LibraryType } from "../../views/projectExplorer/library";
 import { iProjectMock, ibmiJsonMock } from "../constants";
@@ -449,17 +449,28 @@ export const iProjectSuite: TestSuite = {
                 await iProject.setCurrentLibrary('MYLIB1');
                 const state1 = await iProject.getState();
                 const unresolvedState1 = await iProject.getUnresolvedState();
+                assert.strictEqual(state1?.curlib, 'MYLIB1');
+                assert.strictEqual(unresolvedState1?.curlib, '&CURLIB');
                 await iProject.updateIProj({
                     "version": "0.0.2"
                 });
                 await iProject.setCurrentLibrary('MYLIB2');
                 const state2 = await iProject.getState();
                 const unresolvedState2 = await iProject.getUnresolvedState();
-
-                assert.strictEqual(state1?.curlib, 'MYLIB1');
-                assert.strictEqual(unresolvedState1?.curlib, '&CURLIB');
                 assert.strictEqual(state2?.curlib, 'MYLIB2');
                 assert.strictEqual(unresolvedState2?.curlib, '&CURLIB');
+
+                await iProject.setCurrentLibrary('\"abcdefg\"');
+                const state3 = await iProject.getState();
+                const unresolvedState3 = await iProject.getUnresolvedState();
+                assert.strictEqual(unresolvedState3?.curlib, '&CURLIB');
+                assert.strictEqual(state3?.curlib, '"abcdefg"');
+
+                await iProject.setCurrentLibrary('"abcdefg"');
+                const state4 = await iProject.getState();
+                const unresolvedState4 = await iProject.getUnresolvedState();
+                assert.strictEqual(unresolvedState4?.curlib, '&CURLIB');
+                assert.strictEqual(state4?.curlib, '"abcdefg"');
             }
         },
         {
@@ -694,17 +705,6 @@ export const iProjectSuite: TestSuite = {
             }
         },
         {
-            name: `Test escapeQuotes`, test: async () => {
-                const escapedStr = escQuotes('"abc"');
-                assert.strictEqual(escapedStr, '\\"abc\\"');
-
-                // Now test escArray()
-                const arrayStr   = ['abc', '\"def\"',   'ghi', '\"@#$\"'];
-                const escapedArr = ['abc', '\\"def\\"', 'ghi', '\\"@#$\\"'];
-                assert.deepEqual(escArray(arrayStr), escapedArr);
-            }
-        },
-        {
             name: `Test calcUpdateLibraryListCommand`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 const ibmi = getInstance();
@@ -714,12 +714,42 @@ export const iProjectSuite: TestSuite = {
                 if (!command){assert.fail('LIBL command calculation failed!');}
                 assert.strictEqual(command,'liblist -d TDD_ER RPGUNIT QTEMP ; liblist -c QGPL ; liblist -a QSYSINC QTEMP RPGUNIT TDD_ER SYSTOOLS ; liblist');
 
-                // iProject.setCurrentLibrary('"abcdefg"');
-                // const state2 = await iProject.getState();
-                // if (!state2) {assert.fail("No iproj state2 found!");}
-                // const command2 = await iProject.calcUpdateLibraryListCommand(ibmi!, state2!);
-                // if (!command2){assert.fail('LIBL command2 calculation failed!');}
-                // assert.strictEqual(command2,'liblist -d TDD_ER RPGUNIT QTEMP ; liblist -c QGPL ; liblist -a QSYSINC QTEMP RPGUNIT TDD_ER SYSTOOLS ; liblist');
+                await iProject.setCurrentLibrary('QTEMP');
+                const state1 = await iProject.getState();
+                const unresolvedState1 = await iProject.getUnresolvedState();
+                assert.strictEqual(unresolvedState1?.curlib, '&CURLIB');
+                assert.strictEqual(state1?.curlib, 'QTEMP');
+
+                // quoted library as CURLIB
+                await iProject.setCurrentLibrary('"abcdefg"');
+                const state2 = await iProject.getState();
+                const unresolvedState2 = await iProject.getUnresolvedState();
+                assert.strictEqual(state2?.curlib, '"abcdefg"');
+                assert.strictEqual(unresolvedState2?.curlib, '&CURLIB');
+                const command2 = await iProject.calcUpdateLibraryListCommand(ibmi!, state2!);
+                if (!command2){assert.fail('LIBL command2 calculation failed!');}
+                assert.strictEqual(command2,'liblist -d TDD_ER RPGUNIT QTEMP ; liblist -c \\"abcdefg\\" ; liblist -a QSYSINC QTEMP RPGUNIT TDD_ER SYSTOOLS ; liblist');
+                
+                // quoted library in beginnning of USRLIBL
+                await iProject.setCurrentLibrary('QGPL');
+                await iProject.addToLibraryList('"abcdefg"', 'preUsrlibl');
+                const state3 = await iProject.getState();
+                const unresolvedState3 = await iProject.getUnresolvedState();
+                assert.strictEqual(state3?.curlib, 'QGPL');
+                assert.equal(state3?.preUsrlibl![0], '"abcdefg"');
+                const command3 = await iProject.calcUpdateLibraryListCommand(ibmi!, state3!);
+                if (!command3){assert.fail('LIBL command3 calculation failed!');}
+                assert.strictEqual(command3,'liblist -d TDD_ER RPGUNIT QTEMP ; liblist -c QGPL ; liblist -a QSYSINC QTEMP RPGUNIT TDD_ER SYSTOOLS \\"abcdefg\\" ; liblist');
+                
+                // quoted library in post user LIBL
+                await iProject.removeFromLibraryList('"abcdefg"', LibraryType.preUserLibrary);
+                await iProject.addToLibraryList('"abcdefg"', 'postUsrlibl');
+                const state4 = await iProject.getState();
+                const unresolvedState4 = await iProject.getUnresolvedState();
+                assert.strictEqual(state4?.postUsrlibl![state4?.postUsrlibl!.length-1], '"abcdefg"');
+                const command4 = await iProject.calcUpdateLibraryListCommand(ibmi!, state4!);
+                if (!command4){assert.fail('LIBL command4 calculation failed!');}
+                assert.strictEqual(command4,'liblist -d TDD_ER RPGUNIT QTEMP ; liblist -c QGPL ; liblist -a \\"abcdefg\\" QSYSINC QTEMP RPGUNIT TDD_ER SYSTOOLS ; liblist');           
             }
         }
     ]
