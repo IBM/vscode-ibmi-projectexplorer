@@ -4,6 +4,7 @@
 
 import { Action, CommandResult, DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import * as dotenv from 'dotenv';
+import { isEscapeQuoted, stripEscapeFromQuotes, escapeQuoted, escapeArray } from "./util";
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
 import { TextEncoder } from "util";
@@ -884,10 +885,11 @@ export class IProject {
     }
 
     // Retrieve library list
+    // Note quoted library names need to be escaped in order for the comman shell not tointerpret them but pass alon to theliblist command
     let buildLibraryListCommand = [
       defaultUserLibraries ? `liblist -d ${defaultUserLibraries.join(` `)}` : ``,
-      state.curlib && state.curlib !== '' ? `liblist -c ${state.curlib}` : ``,
-      userLibrariesToAdd && userLibrariesToAdd.length > 0 ? `liblist -a ${userLibrariesToAdd.join(` `)}` : ``,
+      state.curlib && state.curlib !== '' ? `liblist -c ${escapeQuoted(state.curlib)}` : ``,
+      userLibrariesToAdd && userLibrariesToAdd.length > 0 ? `liblist -a ${escapeArray(userLibrariesToAdd).join(` `)}` : ``,
       `liblist`
     ].filter(cmd => cmd !== ``).join(` ; `);
     return buildLibraryListCommand;
@@ -1218,6 +1220,14 @@ export class IProject {
     try {
       const content = await workspace.fs.readFile(this.getProjectFileUri('.env'));
       this.environmentValues = dotenv.parse(Buffer.from(content));
+      // Quoted libraries had to be escaped inorder to come through the parse line aboue
+      // Now those backslashes should be removed
+      for (const key in this.environmentValues){
+        const value = this.environmentValues[key];
+        if (isEscapeQuoted(value)) {
+          this.environmentValues[key] = stripEscapeFromQuotes(value);
+        }
+      }
     } catch (e) {
       this.environmentValues = {};
     }
@@ -1229,12 +1239,14 @@ export class IProject {
    * Update an environment variable in the project's `.env` file. *Note* that
    * if the file does not exist, it will be created with given environment variable
    * and all project variables.
+   * Quoted values are escaped so that the quotes are not lost by the dotenv.parse()
    * 
    * @param variable The variable to updated.
    * @param value The value to set.
    */
   public async updateEnv(variable: string, value: string) {
     const envUri = this.getProjectFileUri('.env');
+    value = escapeQuoted(value);
     const isEnvVarUpdated = await envUpdater(envUri, { [variable]: value });
 
     if (isEnvVarUpdated) {
@@ -1469,16 +1481,4 @@ function toLiblPortion(location: string): LibraryListPortion {
     console.log(`Encountered unexpect library list portion type: ${location}`);
     return 'USR';
   }
-}
-export function escQuotes(input: string): string
-{
-  return input.replace(/"/g,'\\"');
-}
-export function escArray(oldArray: string[]) : string[]
-{
-  var newArray = oldArray.map(function(e) { 
-    e = escQuotes(e); 
-    return e;
-  });
-  return newArray;
 }
