@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 /*
  * (c) Copyright IBM Corp. 2023
  */
