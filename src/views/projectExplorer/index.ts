@@ -996,17 +996,25 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: Project | ObjectFile | MemberFile) => {
         if (element) {
+          let chosenUri = element.resourceUri;
+
+          // if project, get the uri of the active editor file if appropriate
           if (element instanceof Project) {
             await ProjectManager.setActiveProject(element.workspaceFolder);
 
-            await commands.executeCommand(`code-for-ibmi.runAction`, {
-              resourceUri: element.workspaceFolder.uri
-            });
+            const activeProject = ProjectManager.getActiveProject();
+            chosenUri = activeProject?.workspaceFolder.uri;
+            let activeEditor = window.activeTextEditor;
+
+            if (activeEditor) {
+              const editorProject = ProjectManager.getProjectFromUri(activeEditor.document.uri);
+              if (activeProject?.workspaceFolder.uri === editorProject?.workspaceFolder.uri) {
+                chosenUri = activeEditor.document.uri;
+              }
+            }
           }
 
-          await commands.executeCommand(`code-for-ibmi.runAction`, {
-            resourceUri: element.resourceUri
-          });
+          await commands.executeCommand(`code-for-ibmi.runAction`, chosenUri);
 
           this.refresh();
         }
