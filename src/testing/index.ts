@@ -15,6 +15,7 @@ import { jobLogCommandSuite } from "./suites/jobLogCommand";
 import { jobLogTreeItemSuite } from "./suites/jobLogTreeItem";
 import { ringBufferSuite } from "./suites/ringBuffer";
 import { buildMapSuite } from "./suites/buildMap";
+import { utilSuite } from "./suites/utilTest";
 
 const suites: TestSuite[] = [
   buildMapSuite,
@@ -25,7 +26,8 @@ const suites: TestSuite[] = [
   jobLogTreeItemSuite,
   projectExplorerTreeItemSuite,
   projectManagerSuite,
-  ringBufferSuite
+  ringBufferSuite,
+  utilSuite
 ];
 
 export type TestSuite = {
