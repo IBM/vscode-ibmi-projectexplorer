@@ -1519,7 +1519,7 @@
     "@typescript-eslint/parser": "^7.3.0",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@vscode/l10n-dev": "^0.0.34",
-    "esbuild-loader": "^4.0.3",
+    "esbuild-loader": "^4.1.0",
     "eslint": "^8.57.0",
     "tar": "^6.2.0",
     "typescript": "^5.3.3",
