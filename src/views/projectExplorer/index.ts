@@ -1039,8 +1039,30 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.deleteObject`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.deleteObject`, toObjectBrowserObject(element));
-          this.refresh();
+          const objectBrowseObject = toObjectBrowserObject(element);
+
+          let result = await window.showWarningMessage(l10n.t('Are you sure you want to delete {0} {1}?', objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase()), { modal: true }, l10n.t(`Yes`));
+
+          if (result === l10n.t(`Yes`)) {
+            const ibmi = getInstance();
+            const connection = ibmi!.getConnection();
+
+            await window.withProgress({ location: ProgressLocation.Notification, title: l10n.t('Deleting object {0} {1}...', objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase()) }
+              , async (progress) => {
+                const deleteResult = await connection.runCommand({
+                  command: `DLTOBJ OBJ(${objectBrowseObject.path}) OBJTYPE(${objectBrowseObject.object.type})`,
+                  noLibList: true
+                });
+
+                if (deleteResult.code === 0) {
+                  window.showInformationMessage(l10n.t(`Deleted {0} {1}`, objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase()));
+                  this.refresh();
+                } else {
+                  window.showErrorMessage(l10n.t(`Error deleting object! {0}`, deleteResult.stderr));
+                }
+              }
+            );
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.moveObject`, async (element: ObjectFile) => {
@@ -1105,8 +1127,31 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.deleteMember`, async (element: MemberFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.deleteMember`, toObjectBrowserMember(element));
-          this.refresh();
+          const objectBrowseMember = toObjectBrowserMember(element);
+
+          let result = await window.showWarningMessage(l10n.t('Are you sure you want to delete {0}?', objectBrowseMember.path!), { modal: true }, l10n.t(`Yes`));
+
+          if (result === l10n.t(`Yes`)) {
+            const ibmi = getInstance();
+            const connection = ibmi!.getConnection();
+
+            await window.withProgress({ location: ProgressLocation.Notification, title: l10n.t('Deleting member {0}...', objectBrowseMember.path!) }
+              , async (progress) => {
+                const deleteResult = await connection.runCommand({
+                  command: `RMVM FILE(${objectBrowseMember.member.library}/${objectBrowseMember.member.file}) MBR(${objectBrowseMember.member.name})`,
+                  noLibList: true
+                });
+
+
+                if (deleteResult.code === 0) {
+                  window.showInformationMessage(l10n.t(`Deleted {0}`, objectBrowseMember.path!));
+                  this.refresh();
+                } else {
+                  window.showErrorMessage(l10n.t(`Error deleting member! {0}`, deleteResult.stderr));
+                }
+              }
+            );
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.download`, async (element: MemberFile) => {
