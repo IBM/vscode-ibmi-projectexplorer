@@ -1070,6 +1070,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           await commands.executeCommand(`code-for-ibmi.browse`, toObjectBrowserMember(element));
         }
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.edit`, async (element: MemberFile) => {
+        if (element) {
+          await commands.executeCommand(`code-for-ibmi.edit`, toObjectBrowserMember(element));
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.selectForCompare`, async (element: MemberFile) => {
         if (element) {
           await commands.executeCommand(`code-for-ibmi.selectForCompare`, toObjectBrowserMember(element));
@@ -1245,7 +1250,8 @@ function toObjectBrowserObject(objectFile: Library | ObjectFile) {
 function toObjectBrowserMember(memberFile: MemberFile) {
   const member = Object.assign({}, memberFile.memberFileInfo);
   return {
-    path: memberFile.resourceUri?.path,
+    resourceUri: memberFile.resourceUri,
+    path: memberFile.resourceUri?.path.substring(1),
     member
   };
 }

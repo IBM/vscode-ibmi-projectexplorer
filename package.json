@@ -115,7 +115,11 @@
         "id": "projectExplorer.run",
         "label": "%submenus.projectExplorer.run%",
         "icon": "$(tools)"
-      }
+      },
+			{
+				"id": "projectExplorer.open",
+        "label": "%submenus.projectExplorer.open%"
+			}
     ],
     "commands": [
       {
@@ -395,6 +399,11 @@
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.browse",
         "title": "%commands.projectExplorer.browse%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.edit",
+        "title": "%commands.projectExplorer.edit%"
       },
       {
         "category": "%commands.projectExplorer%",
@@ -717,6 +726,10 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.edit",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.selectForCompare",
           "when": "never"
         },
@@ -854,6 +867,18 @@
           "group": "0_run@1"
         }
       ],
+			"projectExplorer.open": [
+				{
+					"command": "vscode-ibmi-projectexplorer.browse",
+          "when": "view == projectExplorer",
+          "group": "0_open@1"
+				},
+				{
+					"command": "vscode-ibmi-projectexplorer.edit",
+          "when": "view == projectExplorer",
+          "group": "0_open@1"
+				}
+			],
       "view/title": [
         {
           "submenu": "projectExplorer.goTo",
@@ -1153,7 +1178,7 @@
           "group": "1_actions@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.browse",
+          "submenu": "projectExplorer.open",
           "when": "view == projectExplorer && viewItem =~ /^member*/",
           "group": "2_browse@0"
         },
