@@ -9,7 +9,7 @@
   },
   "publisher": "IBM",
   "license": "Apache-2.0",
-  "version": "2.6.4",
+  "version": "2.6.5",
   "repository": {
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
   },
@@ -1487,13 +1487,13 @@
     "types": "npx -p typescript tsc ./src/extension.ts --excludeDirectories ./src/testing --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node"
   },
   "devDependencies": {
-    "@halcyontech/vscode-ibmi-types": "^2.7.0",
+    "@halcyontech/vscode-ibmi-types": "^2.8.0",
     "@types/node": "20.x",
     "@types/tar": "^6.1.11",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/parser": "^7.1.0",
-    "@typescript-eslint/eslint-plugin": "^7.1.0",
-    "@vscode/l10n-dev": "^0.0.33",
+    "@typescript-eslint/parser": "^7.1.1",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@vscode/l10n-dev": "^0.0.34",
     "esbuild-loader": "^4.0.3",
     "eslint": "^8.57.0",
     "tar": "^6.2.0",

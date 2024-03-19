@@ -49,12 +49,17 @@ export interface TestCase {
   duration?: number
 }
 
+const testingEnabled = env.testing === `true`;
+const individualTesting = env.individual === `true`;
+
 let testSuitesTreeProvider: TestSuitesTreeProvider;
 export async function initialise(context: ExtensionContext) {
-  if (env.testing === `true`) {
+  if (testingEnabled) {
     await commands.executeCommand(`setContext`, `projectExplorer:testing`, true);
     const ibmi = getInstance()!;
-    ibmi.onEvent(`connected`, runTests);
+    if (!individualTesting) {
+      ibmi.onEvent(`connected`, runTests);
+    }
     ibmi.onEvent(`disconnected`, resetTests);
     testSuitesTreeProvider = new TestSuitesTreeProvider(suites);
     const testSuitesTreeView = window.createTreeView(`testing`, { treeDataProvider: testSuitesTreeProvider, showCollapseAll: true });
