@@ -1,12 +1,22 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
-
+## `2.6.6`
+* Issue 377 support doublequoted libraries
+* Issue 360 When running build current action, active editor path not used
+* Fix browse/edit actions and uri issue for comparing members
+* Fix object and member delete actions
+### Housekeeping
+* Bump @typescript-eslint/parser from 7.1.1 to 7.3.0
+* Bump @types/node from 20.11.24 to 20.11.28
+* Bump esbuild-loader from 4.0.3 to 4.1.0
+* Bump typescript from 5.3.3 to 5.4.2
+* Bump @typescript-eslint/eslint-plugin
 ## `2.6.5`
 * Update `iproj.json` and `.env` after renaming/deleting library 
 * Identify and filter out PRD libraries as they are side effect of command to query the library list
 * Allow retesting individual unit tests 
-# Housekeeping
+### Housekeeping
 * Bump @typescript-eslint/eslint-plugin from 7.0.0 to 7.1.1 
 * Bump @types/node from 20.11.19 to 20.11.24
 * Bump @vscode/l10n-dev from 0.0.33 to 0.0.34
@@ -24,7 +34,7 @@ All notable changes to the "vscode-ibmi-projectexplorer" extension will be docum
 - Force refresh library list when changing library list description
 - Rename configuration to `Disable User Library List View`
 - Fix retrieval of members and objects
-# Housekeeping
+### Housekeeping
 - Bump webpack from 5.89.0 to 5.90.3
 - Bump @vscode/l10n-dev from 0.0.31 to 0.0.33
 - Bump @types/tar from 6.1.10 to 6.1.11
@@ -43,7 +53,7 @@ All notable changes to the "vscode-ibmi-projectexplorer" extension will be docum
 - Fix incorrect link to library list and object library doc pages by @SanjulaGanepola in #316
 - Fix file extension during file source orbit rename by @irfanshar in #325
 - Fixes the iterable warning by @edmundreinhardt in #327
-# Housekeeping
+### Housekeeping
 - Bump @halcyontech/vscode-ibmi-types from 2.6.0 to 2.6.5 by @dependabot in #314
 - Bump typescript from 5.3.2 to 5.3.3 by @dependabot in #294
 - Bump eslint from 8.55.0 to 8.56.0 by @dependabot in #292
