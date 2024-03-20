@@ -25,5 +25,5 @@ The IBM i Project Explorer supports developing IBM i applications using buildabl
 2. Update the version number in `package.json` and `types/package.json`
 3. Create a new release with a tag with the corresponding version number
 A github action will automatically be triggered which will build and pubish the vsix to 
-both OpenVSX and Micrsoft registries.  Also the types will be published to `npmjs` so that
+both OpenVSX and Microsoft registries.  Also the types will be published to `npmjs` so that
 the API is available to any JavaScript code.
