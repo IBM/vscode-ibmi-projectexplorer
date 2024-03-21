@@ -17,7 +17,6 @@
   "commands.jobLog.copy": "Copy",
   "commands.jobLog.refresh": "Refresh",
   "commands.jobLog.refreshJobLog": "Refresh Job Log",
-  "commands.jobLog.showBuildOutput": "Show Build Output",
   "commands.jobLog.showJobLog": "Show Job Log",
   "commands.jobLog.showObjectOutput": "Show Object Build Output" ,
   "commands.jobLog.showOnlyFailedJobs": "Show Failed Jobs",

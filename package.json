@@ -490,12 +490,6 @@
       },
       {
         "category": "%commands.jobLog%",
-        "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
-        "title": "%commands.jobLog.showBuildOutput%",
-        "icon": "$(note)"
-      },
-      {
-        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
         "title": "%commands.jobLog.clearJobLogs%",
         "icon": "$(clear-all)"
@@ -779,10 +773,6 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
           "when": "never"
         },
         {
@@ -1251,16 +1241,6 @@
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
           "when": "view == jobLog && viewItem =~ /^project.*/",
           "group": "1_viewFile@0"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
-          "when": "view == jobLog && viewItem =~ /^project.*/",
-          "group": "inline@1"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
-          "when": "view == jobLog && viewItem =~ /^project.*/",
-          "group": "1_viewFile@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",

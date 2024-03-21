@@ -43,17 +43,6 @@ export const jobLogCommandSuite: TestSuite = {
             }
         },
         {
-            name: `Test showBuildOutput`, test: async () => {
-                const iProject = ProjectManager.getProjects()[0];
-                const projectTreeItem = (await jobLog!.getChildren())[0];
-                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showBuildOutput', projectTreeItem);
-                const activeFileUri = window.activeTextEditor?.document.uri;
-                await commands.executeCommand("workbench.action.closeActiveEditor");
-
-                assert.ok(activeFileUri?.fsPath.endsWith(path.join(iProject.workspaceFolder.name, '.logs', 'output.log')));
-            }
-        },
-        {
             name: `Test clearJobLogs`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 const newJobLogContent = JSON.parse(JSON.stringify(jobLogMock));

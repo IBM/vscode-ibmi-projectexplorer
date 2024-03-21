@@ -43,20 +43,6 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showBuildOutput`, async (element: Project) => {
-        const iProject = ProjectManager.get(element.workspaceFolder);
-        if (iProject) {
-          const buildOutputExists = await iProject.projectFileExists('output.log');
-          if (buildOutputExists) {
-            const buildOutputUri = iProject.getProjectFileUri('output.log');
-            await workspace.openTextDocument(buildOutputUri).then(async buildOutputDoc => {
-              await window.showTextDocument(buildOutputDoc);
-            });
-          } else {
-            window.showErrorMessage(l10n.t('No build output found'));
-          }
-        }
-      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.clearJobLogs`, async (element: Project) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
         if (iProject) {
