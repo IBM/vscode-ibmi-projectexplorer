@@ -13,7 +13,7 @@
   "colors.projectExplorer.systemLibraries": "Color for system libraries",
   "colors.projectExplorer.userLibraries": "Color for user libraries",
   "commands.jobLog": "Job Log",
-  "commands.jobLog.clearJobLogs": "Clear Job Log",
+  "commands.jobLog.clearJobLogs": "Clear Previous Job Logs",
   "commands.jobLog.copy": "Copy",
   "commands.jobLog.refresh": "Refresh",
   "commands.jobLog.refreshJobLog": "Refresh Job Log",
