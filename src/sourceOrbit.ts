@@ -16,5 +16,5 @@ export async function sourceOrbitEnabled(): Promise<boolean> {
   }
 
   // Source Orbit extension does not have an accessible API. We just want to know if we have it installed or not.
-  return (baseExtension && baseExtension.isActive && baseExtension.exports ? true : false);
+  return (baseExtension && baseExtension.isActive ? true : false);
 }
