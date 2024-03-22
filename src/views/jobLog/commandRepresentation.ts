@@ -15,6 +15,7 @@ export default class CommandRepresentation extends TreeItem implements ProjectEx
 
   constructor(public workspaceFolder: WorkspaceFolder, commandInfo: string) {
     super(commandInfo, TreeItemCollapsibleState.None);
+    this.contextValue = CommandRepresentation.contextValue;
     this.commandInfo = commandInfo;
   }
 

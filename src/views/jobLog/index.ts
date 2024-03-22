@@ -6,6 +6,7 @@ import { commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, 
 import { ProjectManager } from "../../projectManager";
 import Project from "./project";
 import Command from "./command";
+import CommandRepresentation from "./commandRepresentation";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { IProjectT } from "../../iProjectT";
@@ -50,9 +51,15 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
           this.refresh();
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.copy`, async (element: Command) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.copy`, async (element: Command | CommandRepresentation) => {
         try {
-          await env.clipboard.writeText(element.commandInfo.cmd);
+          var commandString = '';
+          if (element instanceof CommandRepresentation) {
+            commandString = element.commandInfo;
+          } else if (element instanceof Command) {
+            commandString = element.commandInfo.cmd;
+          }
+          await env.clipboard.writeText(commandString);
         } catch (error) {
           window.showErrorMessage(l10n.t('Failed to copy command'));
         }

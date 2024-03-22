@@ -1253,9 +1253,24 @@
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
+          "command": "vscode-ibmi-projectexplorer.jobLog.copy",
           "when": "view == jobLog && viewItem =~ /^command.*/",
+          "group": "1_copy"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
+          "when": "view == jobLog && viewItem == command",
           "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
+          "when": "view == jobLog && viewItem == command",
+          "group": "2_output"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
+          "when": "view == jobLog && viewItem =~ /^log.*/",
+          "group": "1_filter"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
