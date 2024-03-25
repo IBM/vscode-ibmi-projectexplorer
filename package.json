@@ -490,12 +490,6 @@
       },
       {
         "category": "%commands.jobLog%",
-        "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
-        "title": "%commands.jobLog.showBuildOutput%",
-        "icon": "$(note)"
-      },
-      {
-        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
         "title": "%commands.jobLog.clearJobLogs%",
         "icon": "$(clear-all)"
@@ -779,10 +773,6 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showJobLog",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
           "when": "never"
         },
         {
@@ -1253,16 +1243,6 @@
           "group": "1_viewFile@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
-          "when": "view == jobLog && viewItem =~ /^project.*/",
-          "group": "inline@1"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showBuildOutput",
-          "when": "view == jobLog && viewItem =~ /^project.*/",
-          "group": "1_viewFile@1"
-        },
-        {
           "command": "vscode-ibmi-projectexplorer.jobLog.clearJobLogs",
           "when": "view == jobLog && viewItem =~ /^project.*/",
           "group": "2_modification@0"
@@ -1273,9 +1253,24 @@
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
+          "command": "vscode-ibmi-projectexplorer.jobLog.copy",
           "when": "view == jobLog && viewItem =~ /^command.*/",
+          "group": "1_copy"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
+          "when": "view == jobLog && viewItem == command",
           "group": "inline@1"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
+          "when": "view == jobLog && viewItem == command",
+          "group": "2_output"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
+          "when": "view == jobLog && viewItem =~ /^log.*/",
+          "group": "1_filter"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
