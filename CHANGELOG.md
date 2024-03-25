@@ -1,6 +1,12 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+
+## `2.6.7`
+* Make version optional in .ibmi.json to avoid errors on `Migrate source`
+* fix source orbit enablement for Migrate Source
+* Describe deployment methods more clearly 
+* Fix `IBM i Job og` view actions and document thoroughly
 ## `2.6.6`
 * Issue 377 support doublequoted libraries
 * Issue 360 When running build current action, active editor path not used
