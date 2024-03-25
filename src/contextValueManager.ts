@@ -11,7 +11,6 @@ import { EnvironmentManager } from "./environmentManager";
 export namespace ContextValueManager {
     /**
      * Initialize the custom context values.
-     * 
      */
     export async function initialize() {
         const isInMerlin = EnvironmentManager.isInMerlin();
