@@ -11,7 +11,7 @@ The top level of this tree is the project name with the project description as i
 
 <img src="/assets/jl_action_clear.png" width="300">
 
-The `Show Job Log` action, which is also available inline, will load the backing .json file into the editor.  This might be useful for searching, etc.
+The `Show Job Log` action, which is also available inline, will load the joblog.json file with the raw data into the editor.  This might be useful for searching, etc.
 
 <img src="/assets/jl_action_show_joblog_inline.png" width="600">
 
@@ -58,7 +58,7 @@ Build commands such as BOB (https://github.com/IBM/ibmi-bob) and ARCAD generate 
 
 <img src="/assets/joblog_files.png" width="300">
 
-This copy process is automatic when invoking build or compile action for `IBM i Project Explorer` projects. For `Code for IBM i` actions the downloading of these files can be configured by the `postdownLoad` attribute in the `actions.json`  file.  The `.evfevent` directory specified here is necessary to get the compiler errors in the `Problems` view.
+This copy process is automatic when invoking build or compile action for `IBM i Project Explorer` projects. For `Code for IBM i` actions the downloading of these files can be configured by the `postDownload` attribute in the `actions.json`  file.  The `.evfevent` directory specified here is necessary to get the compiler errors in the `Problems` view.
 
 ![Configure download of .logs directory](../../assets/jl_actions_postdownload.png)
 
