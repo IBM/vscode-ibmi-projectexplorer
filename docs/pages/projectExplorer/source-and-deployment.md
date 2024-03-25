@@ -20,11 +20,13 @@ Once the deploy location is set, you can use the **Set Deployment Method** actio
 
 There are five options for deployment:
 
-1. `Compare`: This method will perform a MD5 hash comparison and upload those file which are different. 
-2. `Changes`: This method will upload all files which have been changed since the last upload.
-3. `Working Changes`: This method only works if the project is associated with a Git repository as it will upload files that have been been changed since the last commit (unstaged and staged).
+1. `Compare`: This method will perform a MD5 hash comparison and upload those file which are different. Any files that are in the deploy location that are not in the local workspace will be deleted.  Consequently, this is the only method that guarantees the deploy location and project will have identical contents after deployment.
+2. `Changes`: This method will upload all files which have been changed since the last upload.  Note that if the workspace is closed and reopened, this method will lose track of files changed in the previous session.
+3. `Working Changes`: This method only works if the project is associated with a Git repository as it will upload files that have been been changed since the last commit and are not yet staged.
 4. `Staged Changes`: The same as the `Working Changes` method, but only uploads staged and indexed files.
-5. `All`: This method will upload all files project excluding those that are listed in the `.gitignore` file.
+5. `All`: This method will upload all files in the local project.
+
+Note that in all methods files that are listed in the `.gitignore` file will not be deployed.
 
 In addition to affecting the deployment process, the deployment method for the project will also impact the content rendered under the **Source** heading. The source files and directories visualized here are a direct reflection of what will be deployed based on the chosen deployment method.
 
