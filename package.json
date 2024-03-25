@@ -1219,7 +1219,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.uploadAndReplace",
-          "when": "view == projectExplorer && viewItem =~ /^member*/",
+          "when": "view == projectExplorer && viewItem =~ /^member*/ && !vscode-ibmi-projectexplorer:isInMerlin",
           "group": "5_transfer@1"
         },
         {

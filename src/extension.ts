@@ -11,6 +11,7 @@ import { IBMiProjectExplorer } from './ibmiProjectExplorer';
 import { initialise } from './testing';
 import { ProjectFileWatcher } from './fileWatcher';
 import { ConfigurationManager } from './configurationManager';
+import { ContextValueManager } from './contextValueManager';
 
 export async function activate(context: ExtensionContext): Promise<IBMiProjectExplorer> {
 	console.log(l10n.t('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!'));
@@ -23,6 +24,9 @@ export async function activate(context: ExtensionContext): Promise<IBMiProjectEx
 
 	// Initialize configuration manager
 	ConfigurationManager.initialize(context);
+
+	// Initialize context value manager
+	await ContextValueManager.initialize();
 
 	// Setup tree views
 	const projectExplorer = new ProjectExplorer(context);
