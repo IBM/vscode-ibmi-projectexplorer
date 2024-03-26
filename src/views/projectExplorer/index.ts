@@ -1170,11 +1170,9 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           await commands.executeCommand(`workbench.action.addRootFolder`);
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.openConnectionBrowser`, async (element: ErrorItem) => {
-        if (element) {
-          const isInMerlin = EnvironmentManager.isInMerlin();
-          await commands.executeCommand(isInMerlin ? `ibmideveloper.connectionBrowser.focus` : `connectionBrowser.focus`);
-        }
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openConnectionBrowser`, async (element?: ErrorItem) => {
+        const isInMerlin = EnvironmentManager.isInMerlin();
+        await commands.executeCommand(isInMerlin ? `ibmideveloper.connectionBrowser.focus` : `connectionBrowser.focus`);
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.setDeployLocation`, async (element: ErrorItem | WorkspaceFolder) => {
         const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
