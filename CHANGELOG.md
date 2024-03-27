@@ -1,7 +1,8 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
-
+## `2.6.8`
+* Add merlin context value and suppress the upload member action in the cloud context
 ## `2.6.7`
 * Make version optional in .ibmi.json to avoid errors on `Migrate source`
 * fix source orbit enablement for Migrate Source

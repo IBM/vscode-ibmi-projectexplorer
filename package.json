@@ -9,7 +9,7 @@
   },
   "publisher": "IBM",
   "license": "Apache-2.0",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "repository": {
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
   },
