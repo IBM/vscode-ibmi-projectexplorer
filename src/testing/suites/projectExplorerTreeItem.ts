@@ -60,11 +60,11 @@ export const projectExplorerTreeItemSuite: TestSuite = {
         const iProject = ProjectManager.getProjects()[0];
 
         await iProject.createEnv();
-        await iProject.updateEnv('CURLIB', 'QGPL');
-        await iProject.updateEnv('lib1', 'SYSTOOLS');
-        await iProject.updateEnv('lib3', 'QSYSINC');
-        await iProject.updateEnv('path1', testFolder.name);
-        await iProject.updateEnv('valueA', 'VALUEA');
+        await iProject.updateEnvVar('CURLIB', 'QGPL');
+        await iProject.updateEnvVar('lib1', 'SYSTOOLS');
+        await iProject.updateEnvVar('lib3', 'QSYSINC');
+        await iProject.updateEnvVar('path1', testFolder.name);
+        await iProject.updateEnvVar('valueA', 'VALUEA');
 
         await iProject.updateIProj(iProjectMock);
 

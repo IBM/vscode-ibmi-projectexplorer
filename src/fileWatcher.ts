@@ -13,6 +13,8 @@ import Source from './views/projectExplorer/source';
  * Represents a project file watcher.
  */
 export namespace ProjectFileWatcher {
+    let lastLiblVarChanged = false;
+
     /**
      * Initialize the project file watcher to listen to changes to all files.
      * 
@@ -64,6 +66,12 @@ export namespace ProjectFileWatcher {
             } else if (uri.fsPath.endsWith('.ibmi.json')) {
                 iProject.setBuildMap(undefined);
             } else if (uri.fsPath.endsWith('.env')) {
+
+                // const hasChanged = await iProject.syncEnv();
+                // if (hasChanged) {
+                //     return;
+                // }
+                
                 iProject.setState(undefined);
                 iProject.setLibraryList(undefined);
             } else {

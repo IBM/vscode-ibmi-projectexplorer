@@ -601,7 +601,7 @@ export class IProject {
         }
       }
 
-      await this.updateEnv(variable, value);
+      await this.updateEnvVar(variable, value);
       await this.updateIProj(unresolvedState);
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
@@ -689,7 +689,7 @@ export class IProject {
       const env = await this.getEnv();
       for await (const [variable, value] of Object.entries(env)) {
         if (value === library) {
-          await this.updateEnv(variable, "");
+          await this.updateEnvVar(variable, "");
         }
       }
 
@@ -723,7 +723,7 @@ export class IProject {
       const env = await this.getEnv();
       for await (const [variable, value] of Object.entries(env)) {
         if (value === library) {
-          await this.updateEnv(variable, newLibrary);
+          await this.updateEnvVar(variable, newLibrary);
         }
       }
 
@@ -751,10 +751,10 @@ export class IProject {
         window.showErrorMessage(l10n.t('Target library for compiles already set to {0}', library));
         return;
       } else if (unresolvedState.objlib && unresolvedState.objlib.startsWith('&')) {
-        await this.updateEnv(unresolvedState.objlib.substring(1), library);
+        await this.updateEnvVar(unresolvedState.objlib.substring(1), library);
         return;
       } else {
-        await this.updateEnv(DEFAULT_OBJLIB.substring(1), library);
+        await this.updateEnvVar(DEFAULT_OBJLIB.substring(1), library);
         unresolvedState.objlib = DEFAULT_OBJLIB;
       }
 
@@ -780,7 +780,7 @@ export class IProject {
       window.showErrorMessage(l10n.t('Target library for compiles already set to {0} in {1}', library, directory.fsPath));
       return;
     } else if (unresolvedIBMiJson) {
-      await this.updateEnv(variable, library);
+      await this.updateEnvVar(variable, library);
       if (unresolvedIBMiJson.build) {
         unresolvedIBMiJson.build.objlib = `&${variable}`;
       } else {
@@ -789,7 +789,7 @@ export class IProject {
         };
       }
     } else {
-      await this.updateEnv(variable, library);
+      await this.updateEnvVar(variable, library);
       unresolvedIBMiJson = {
         build: {
           objlib: `&${variable}`
@@ -934,8 +934,7 @@ export class IProject {
             }
 
             if (!this.libraryList || libl.toString() !== this.libraryList.toString()) {
-              this.libraryList = libl;
-              ProjectManager.fire({ type: 'libraryList', iProject: this });
+              this.setLibraryList(libl);
             }
           }
         }
@@ -1027,10 +1026,10 @@ export class IProject {
         window.showErrorMessage(l10n.t('Current library already set to {0}', library));
         return;
       } else if (unresolvedState.curlib && unresolvedState.curlib.startsWith('&')) {
-        await this.updateEnv(unresolvedState.curlib.substring(1), library);
+        await this.updateEnvVar(unresolvedState.curlib.substring(1), library);
         return;
       } else {
-        await this.updateEnv(DEFAULT_CURLIB.substring(1), library);
+        await this.updateEnvVar(DEFAULT_CURLIB.substring(1), library);
         unresolvedState.curlib = DEFAULT_CURLIB;
       }
 
@@ -1056,7 +1055,7 @@ export class IProject {
         attribute = 'curlib';
 
         if (unresolvedState.curlib?.startsWith('&')) {
-          await this.updateEnv(unresolvedState.curlib.substring(1), '');
+          await this.updateEnvVar(unresolvedState.curlib.substring(1), '');
           return;
         } else {
           unresolvedState.curlib = undefined;
@@ -1073,7 +1072,7 @@ export class IProject {
 
             if (libIndex > -1) {
               if (unresolvedState[attribute]![libIndex].startsWith('&')) {
-                await this.updateEnv(unresolvedState[attribute]![libIndex].substring(1), '');
+                await this.updateEnvVar(unresolvedState[attribute]![libIndex].substring(1), '');
                 return;
               } else {
                 unresolvedState[attribute]!.splice(libIndex, 1);
@@ -1167,7 +1166,10 @@ export class IProject {
         return value;
       }, 2);
 
+      const newLibraryList = await this.getLibraryList();
+
       await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(content));
+      
       this.setState(undefined);
       this.setBuildMap(undefined);
       this.setLibraryList(undefined);
@@ -1244,7 +1246,7 @@ export class IProject {
    * @param variable The variable to updated.
    * @param value The value to set.
    */
-  public async updateEnv(variable: string, value: string) {
+  public async updateEnvVar(variable: string, value: string) {
     const envUri = this.getProjectFileUri('.env');
     value = escapeQuoted(value);
     const isEnvVarUpdated = await envUpdater(envUri, { [variable]: value });
@@ -1253,6 +1255,37 @@ export class IProject {
       this.state = undefined;
       this.libraryList = undefined;
     }
+  }
+  
+  /**
+   * Sync the environment variables to the `.env` file with the current project state
+   * Specifically, the `CURLIB` and `LIBL` environment variables are updated.
+   * These are important as they are picked up by the Code for IBM i extension
+   * when Actions are run.
+   */
+  public async syncEnv(): Promise<boolean> {
+    const env = await this.getEnv();
+
+    const curLib = await this.state?.curlib;
+    const libl = (await this.getLibraryList())?.filter(lib => lib.libraryListPortion === `USR`).map(lib => lib.libraryInfo.name).join(` `);
+    
+    let newEnv: {LIBL?: string, CURLIB?: string} = {}
+    
+    if (curLib && env.CURLIB !== curLib) {
+      newEnv.CURLIB = curLib;
+    }
+
+    if (libl && env.LIBL !== libl) {
+      newEnv.LIBL = libl;
+    }
+
+    // Only write change env vars if there are changes
+    if (Object.keys(newEnv).length > 0) {
+      await envUpdater(this.getProjectFileUri('.env'), newEnv);
+      return true;
+    }
+
+    return false;
   }
 
   /**

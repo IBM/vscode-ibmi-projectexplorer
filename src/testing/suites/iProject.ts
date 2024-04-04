@@ -38,11 +38,11 @@ export const iProjectSuite: TestSuite = {
         const iProject = ProjectManager.getProjects()[0];
 
         await iProject.createEnv();
-        await iProject.updateEnv('CURLIB', 'QGPL');
-        await iProject.updateEnv('lib1', 'SYSTOOLS');
-        await iProject.updateEnv('lib3', 'QSYSINC');
-        await iProject.updateEnv('path1', 'PATH1');
-        await iProject.updateEnv('valueA', 'VALUEA');
+        await iProject.updateEnvVar('CURLIB', 'QGPL');
+        await iProject.updateEnvVar('lib1', 'SYSTOOLS');
+        await iProject.updateEnvVar('lib3', 'QSYSINC');
+        await iProject.updateEnvVar('path1', 'PATH1');
+        await iProject.updateEnvVar('valueA', 'VALUEA');
 
         await iProject.updateIProj(iProjectMock);
         await iProject.updateIBMiJson(ibmiJsonMock, iProject.workspaceFolder.uri);
@@ -600,8 +600,8 @@ export const iProjectSuite: TestSuite = {
         {
             name: `Test updateEnv`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
-                await iProject.updateEnv('var', 'VAR');
-                await iProject.updateEnv('lib2', 'MYLIB');
+                await iProject.updateEnvVar('var', 'VAR');
+                await iProject.updateEnvVar('lib2', 'MYLIB');
                 const env = await iProject.getEnv();
 
                 assert.deepStrictEqual(env, {

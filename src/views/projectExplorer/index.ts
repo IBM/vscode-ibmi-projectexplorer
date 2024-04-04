@@ -335,7 +335,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             });
 
             if (newValue) {
-              await iProject.updateEnv(variable, newValue);
+              await iProject.updateEnvVar(variable, newValue);
             }
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve project'));
@@ -718,7 +718,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 });
 
                 if (variable) {
-                  await activeProject.updateEnv(variable.label.substring(1),
+                  await activeProject.updateEnvVar(variable.label.substring(1),
                     value.toLocaleUpperCase().startsWith("QSYS/") ? value.substring(5).toLocaleUpperCase() : value);
                 }
               } else {
@@ -1230,6 +1230,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               const state = await iProject.getState();
 
               if (state) {
+                await iProject.syncEnv();
                 items.push(new Project(folder, state));
               } else {
                 const validatorResult = iProject.getValidatorResult();
