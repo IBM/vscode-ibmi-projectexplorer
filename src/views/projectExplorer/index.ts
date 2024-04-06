@@ -1230,7 +1230,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               const state = await iProject.getState();
 
               if (state) {
-                await iProject.syncEnv();
+                await iProject.syncLiblVars();
                 items.push(new Project(folder, state));
               } else {
                 const validatorResult = iProject.getValidatorResult();

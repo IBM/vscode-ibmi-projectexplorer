@@ -102,6 +102,12 @@ export class IProject {
    * schema.
    */
   private validatorResult: ValidatorResult | undefined;
+  /**
+   * The vars LIBL and CURLIB are maintained so that Code 4 i uses the same LIBL for its actions
+   * If the .env was updated for this purpose, we don't want to trigger a refresh
+   * This flag will be used to signal that to the fileWatcher
+   */
+  private liblVarsUpdated: boolean = false;
 
   constructor(public workspaceFolder: WorkspaceFolder) {
     this.name = workspaceFolder.name;
@@ -1166,10 +1172,7 @@ export class IProject {
         return value;
       }, 2);
 
-      const newLibraryList = await this.getLibraryList();
-
       await workspace.fs.writeFile(this.getProjectFileUri('iproj.json'), new TextEncoder().encode(content));
-      
       this.setState(undefined);
       this.setBuildMap(undefined);
       this.setLibraryList(undefined);
@@ -1263,13 +1266,14 @@ export class IProject {
    * These are important as they are picked up by the Code for IBM i extension
    * when Actions are run.
    */
-  public async syncEnv(): Promise<boolean> {
+  public async syncLiblVars(): Promise<boolean> {
     const env = await this.getEnv();
 
     const curLib = await this.state?.curlib;
     const libl = (await this.getLibraryList())?.filter(lib => lib.libraryListPortion === `USR`).map(lib => lib.libraryInfo.name).join(` `);
     
-    let newEnv: {LIBL?: string, CURLIB?: string} = {}
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    let newEnv: {LIBL?: string, CURLIB?: string} = {};
     
     if (curLib && env.CURLIB !== curLib) {
       newEnv.CURLIB = curLib;
@@ -1281,6 +1285,7 @@ export class IProject {
 
     // Only write change env vars if there are changes
     if (Object.keys(newEnv).length > 0) {
+      this.liblVarsUpdated = true;
       await envUpdater(this.getProjectFileUri('.env'), newEnv);
       return true;
     }
@@ -1288,6 +1293,18 @@ export class IProject {
     return false;
   }
 
+  /**
+   * The FileWatcher checks this to see if it should ignore updates to .env because
+   * they were only made to variables cummunicate the LIBL state to other extensions
+   * andthe UI does not care about and should not be refreshed.
+   * Calling this function will have the side effect of turning this state off.
+   * @returns 
+   */
+  public wasLiblVarsUpdated() : boolean {
+    const returnValue = this.liblVarsUpdated;
+    this.liblVarsUpdated = false; // toggle off after it is cheched
+    return returnValue;
+  }
   /**
    * Get the validation result of the project against the `iproj.json` schema.
    * 
