@@ -119,6 +119,10 @@
 			{
 				"id": "projectExplorer.open",
         "label": "%submenus.projectExplorer.open%"
+			},
+			{
+				"id": "projectExplorer.debug",
+        "label": "%submenus.projectExplorer.debug%"
 			}
     ],
     "commands": [
@@ -392,8 +396,12 @@
       },
       {
         "category": "%commands.projectExplorer%",
-        "command": "vscode-ibmi-projectexplorer.debugProgram",
-        "title": "%commands.projectExplorer.debugProgram%"
+        "command": "vscode-ibmi-projectexplorer.debug.batch",
+        "title": "%commands.projectExplorer.debug.batch%"
+      },{
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.debug.sep",
+        "title": "%commands.projectExplorer.debug.sep%"
       },
       {
         "category": "%commands.projectExplorer%",
@@ -712,7 +720,11 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.debugProgram",
+          "command": "vscode-ibmi-projectexplorer.debug.batch",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.debug.sep",
           "when": "never"
         },
         {
@@ -867,6 +879,18 @@
 					"command": "vscode-ibmi-projectexplorer.edit",
           "when": "view == projectExplorer",
           "group": "0_open@1"
+				}
+			],
+      "projectExplorer.debug": [
+				{
+					"command": "vscode-ibmi-projectexplorer.debug.batch",
+          "when": "viewItem =~ /^objectFile.PGM.*/",
+          "group": "0_debug@1"
+				},
+				{
+					"command": "vscode-ibmi-projectexplorer.debug.sep",
+          "when": "viewItem =~ /^objectFile.(PGM|SRVPGM).*/",
+          "group": "0_debug@2"
 				}
 			],
       "view/title": [
@@ -1158,8 +1182,8 @@
           "group": "4_search@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.debugProgram",
-          "when": "view == projectExplorer && viewItem =~ /^objectFile.PGM.*/ && !inDebugMode ",
+          "submenu": "projectExplorer.debug",
+          "when": "view == projectExplorer && !inDebugMode ",
           "group": "4_debug@0"
         },
         {
