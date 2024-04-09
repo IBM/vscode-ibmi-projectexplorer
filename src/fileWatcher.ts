@@ -75,7 +75,8 @@ export namespace ProjectFileWatcher {
             } else {
                 const projectTreeItem = projectExplorer.getProjectTreeItem(iProject);
 
-                if (projectTreeItem && projectTreeItem.children.length > 0 && projectTreeItem.children[0] instanceof Source) {
+                if (projectTreeItem && projectTreeItem.children && 
+                    projectTreeItem.children.length > 0 && projectTreeItem.children[0] instanceof Source) {
                     elementToRefresh = projectTreeItem.children[0];
                 }
 
