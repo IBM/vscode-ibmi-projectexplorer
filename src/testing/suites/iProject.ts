@@ -9,7 +9,7 @@ import { TextEncoder } from "util";
 import { workspace } from "vscode";
 import { TestSuite } from "..";
 import { getDeployTools, getInstance } from "../../ibmi";
-import { ProjectFileType } from "../../iproject";
+import { IProject, ProjectFileType } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
 import { LibraryType } from "../../views/projectExplorer/library";
 import { iProjectMock, ibmiJsonMock } from "../constants";
@@ -442,6 +442,11 @@ export const iProjectSuite: TestSuite = {
                 assert.deepStrictEqual(unresolvedState2?.preUsrlibl, ['MYLIB1', '&lib1', '&lib2']);
                 assert.deepStrictEqual(state2.postUsrlibl, ['QSYSINC', '&lib4', 'MYLIB2']);
                 assert.deepStrictEqual(unresolvedState2.postUsrlibl, ['&lib3', '&lib4', 'MYLIB2']);
+
+                await iProject.syncLiblVars();
+                const libl = await iProject.getEnvVar('LIBL');
+                assert.equal(true, libl.startsWith('SYSTOOLS '));
+                assert.equal(true, libl.endsWith(' QSYSINC'));
             }
         },
         {
@@ -472,6 +477,10 @@ export const iProjectSuite: TestSuite = {
                 const unresolvedState4 = await iProject.getUnresolvedState();
                 assert.strictEqual(unresolvedState4?.curlib, '&CURLIB');
                 assert.strictEqual(state4?.curlib, '"abcdefg"');
+
+                await iProject.syncLiblVars();
+                const curlib = await iProject.getEnvVar('CURLIB');
+                assert.equal(curlib, '"abcdefg"');
             }
         },
         {
@@ -573,8 +582,7 @@ export const iProjectSuite: TestSuite = {
                     "lib4": '',
                     "path1": '',
                     "path2": '',
-                    "valueA": '',
-                    "DTALIB": '',
+                    "valueA": ''
                 });
             }
         },
@@ -592,8 +600,7 @@ export const iProjectSuite: TestSuite = {
                     "lib4": '',
                     "path1": 'PATH1',
                     "path2": '',
-                    "valueA": 'VALUEA',
-                    "DTALIB": '',
+                    "valueA": 'VALUEA'
                 });
             }
         },
@@ -614,8 +621,7 @@ export const iProjectSuite: TestSuite = {
                     "path1": 'PATH1',
                     "path2": '',
                     "valueA": 'VALUEA',
-                    "var": 'VAR',
-                    "DTALIB": ''
+                    "var": 'VAR'
                 });
             }
         },
@@ -642,7 +648,7 @@ export const iProjectSuite: TestSuite = {
                 const iProject = ProjectManager.getProjects()[0];
                 const variables = await iProject.getVariables();
 
-                assert.deepStrictEqual(variables, ['CURLIB', 'OBJLIB', 'lib3', 'lib4', 'lib1', 'lib2', 'path1', 'path2', 'valueA', 'DTALIB']);
+                assert.deepStrictEqual(variables, ['CURLIB', 'OBJLIB', 'lib3', 'lib4', 'lib1', 'lib2', 'path1', 'path2', 'valueA']);
             }
         },
         {

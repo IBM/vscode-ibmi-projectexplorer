@@ -1294,6 +1294,16 @@ export class IProject {
   }
 
   /**
+   * Retrieve the value of the named environment variable
+   * @param varName string
+   * @returns undefined if the variable does not exist
+   */
+  public async getEnvVar(varName: string) {
+    const env =  await this.getEnv();
+    return env[varName];
+  }
+
+  /**
    * The FileWatcher checks this to see if it should ignore updates to .env because
    * they were only made to variables cummunicate the LIBL state to other extensions
    * andthe UI does not care about and should not be refreshed.
