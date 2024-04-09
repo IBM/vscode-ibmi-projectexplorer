@@ -64,12 +64,19 @@ export namespace ProjectFileWatcher {
             } else if (uri.fsPath.endsWith('.ibmi.json')) {
                 iProject.setBuildMap(undefined);
             } else if (uri.fsPath.endsWith('.env')) {
+                // IF the .env was updated only for keeping track of the LIBL state for other
+                // extensions, then we don't want to refresh the UI and state
+                if (iProject.wasLiblVarsUpdated()) {
+                    return;
+                }
+
                 iProject.setState(undefined);
                 iProject.setLibraryList(undefined);
             } else {
                 const projectTreeItem = projectExplorer.getProjectTreeItem(iProject);
 
-                if (projectTreeItem && projectTreeItem.children.length > 0 && projectTreeItem.children[0] instanceof Source) {
+                if (projectTreeItem && projectTreeItem.children && 
+                    projectTreeItem.children.length > 0 && projectTreeItem.children[0] instanceof Source) {
                     elementToRefresh = projectTreeItem.children[0];
                 }
 

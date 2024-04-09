@@ -9,7 +9,7 @@ import { TextEncoder } from "util";
 import { workspace } from "vscode";
 import { TestSuite } from "..";
 import { getDeployTools, getInstance } from "../../ibmi";
-import { ProjectFileType } from "../../iproject";
+import { IProject, ProjectFileType } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
 import { LibraryType } from "../../views/projectExplorer/library";
 import { iProjectMock, ibmiJsonMock } from "../constants";
@@ -38,11 +38,11 @@ export const iProjectSuite: TestSuite = {
         const iProject = ProjectManager.getProjects()[0];
 
         await iProject.createEnv();
-        await iProject.updateEnv('CURLIB', 'QGPL');
-        await iProject.updateEnv('lib1', 'SYSTOOLS');
-        await iProject.updateEnv('lib3', 'QSYSINC');
-        await iProject.updateEnv('path1', 'PATH1');
-        await iProject.updateEnv('valueA', 'VALUEA');
+        await iProject.updateEnvVar('CURLIB', 'QGPL');
+        await iProject.updateEnvVar('lib1', 'SYSTOOLS');
+        await iProject.updateEnvVar('lib3', 'QSYSINC');
+        await iProject.updateEnvVar('path1', 'PATH1');
+        await iProject.updateEnvVar('valueA', 'VALUEA');
 
         await iProject.updateIProj(iProjectMock);
         await iProject.updateIBMiJson(ibmiJsonMock, iProject.workspaceFolder.uri);
@@ -442,24 +442,29 @@ export const iProjectSuite: TestSuite = {
                 assert.deepStrictEqual(unresolvedState2?.preUsrlibl, ['MYLIB1', '&lib1', '&lib2']);
                 assert.deepStrictEqual(state2.postUsrlibl, ['QSYSINC', '&lib4', 'MYLIB2']);
                 assert.deepStrictEqual(unresolvedState2.postUsrlibl, ['&lib3', '&lib4', 'MYLIB2']);
+
+                await iProject.syncLiblVars();
+                const libl = await iProject.getEnvVar('LIBL');
+                assert.equal(true, libl.startsWith('SYSTOOLS '));
+                assert.equal(true, libl.endsWith(' QSYSINC'));
             }
         },
         {
             name: `Test setCurrentLibrary`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 await iProject.setCurrentLibrary('MYLIB1');
-                const state1 = await iProject.getState();
                 const unresolvedState1 = await iProject.getUnresolvedState();
-                assert.strictEqual(state1?.curlib, 'MYLIB1');
                 assert.strictEqual(unresolvedState1?.curlib, '&CURLIB');
+                const state1 = await iProject.getState();
+                assert.strictEqual(state1?.curlib, 'MYLIB1');
                 await iProject.updateIProj({
                     "version": "0.0.2"
                 });
                 await iProject.setCurrentLibrary('MYLIB2');
-                const state2 = await iProject.getState();
                 const unresolvedState2 = await iProject.getUnresolvedState();
-                assert.strictEqual(state2?.curlib, 'MYLIB2');
                 assert.strictEqual(unresolvedState2?.curlib, '&CURLIB');
+                const state2 = await iProject.getState();
+                assert.strictEqual(state2?.curlib, 'MYLIB2');
 
                 await iProject.setCurrentLibrary('\"abcdefg\"');
                 const state3 = await iProject.getState();
@@ -472,6 +477,10 @@ export const iProjectSuite: TestSuite = {
                 const unresolvedState4 = await iProject.getUnresolvedState();
                 assert.strictEqual(unresolvedState4?.curlib, '&CURLIB');
                 assert.strictEqual(state4?.curlib, '"abcdefg"');
+
+                await iProject.syncLiblVars();
+                const curlib = await iProject.getEnvVar('CURLIB');
+                assert.equal(curlib, '"abcdefg"');
             }
         },
         {
@@ -573,8 +582,7 @@ export const iProjectSuite: TestSuite = {
                     "lib4": '',
                     "path1": '',
                     "path2": '',
-                    "valueA": '',
-                    "DTALIB": '',
+                    "valueA": ''
                 });
             }
         },
@@ -592,16 +600,15 @@ export const iProjectSuite: TestSuite = {
                     "lib4": '',
                     "path1": 'PATH1',
                     "path2": '',
-                    "valueA": 'VALUEA',
-                    "DTALIB": '',
+                    "valueA": 'VALUEA'
                 });
             }
         },
         {
             name: `Test updateEnv`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
-                await iProject.updateEnv('var', 'VAR');
-                await iProject.updateEnv('lib2', 'MYLIB');
+                await iProject.updateEnvVar('var', 'VAR');
+                await iProject.updateEnvVar('lib2', 'MYLIB');
                 const env = await iProject.getEnv();
 
                 assert.deepStrictEqual(env, {
@@ -614,8 +621,7 @@ export const iProjectSuite: TestSuite = {
                     "path1": 'PATH1',
                     "path2": '',
                     "valueA": 'VALUEA',
-                    "var": 'VAR',
-                    "DTALIB": ''
+                    "var": 'VAR'
                 });
             }
         },
@@ -642,7 +648,7 @@ export const iProjectSuite: TestSuite = {
                 const iProject = ProjectManager.getProjects()[0];
                 const variables = await iProject.getVariables();
 
-                assert.deepStrictEqual(variables, ['CURLIB', 'OBJLIB', 'lib3', 'lib4', 'lib1', 'lib2', 'path1', 'path2', 'valueA', 'DTALIB']);
+                assert.deepStrictEqual(variables, ['CURLIB', 'OBJLIB', 'lib3', 'lib4', 'lib1', 'lib2', 'path1', 'path2', 'valueA']);
             }
         },
         {
@@ -720,6 +726,11 @@ export const iProjectSuite: TestSuite = {
                 const unresolvedState1 = await iProject.getUnresolvedState();
                 assert.strictEqual(unresolvedState1?.curlib, '&CURLIB');
                 assert.strictEqual(state1?.curlib, 'QTEMP');
+                // Even though CURLIB not a var in iproj.json, it needs to be
+                // set for Code 4 i extension
+                await iProject.syncLiblVars();
+                const curlib = await iProject.getEnvVar('CURLIB');
+                assert.equal(curlib, 'QTEMP');
 
                 // quoted library as CURLIB
                 await iProject.setCurrentLibrary('"abcdefg"');
