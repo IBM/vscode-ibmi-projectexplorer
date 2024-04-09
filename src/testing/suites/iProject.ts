@@ -453,18 +453,18 @@ export const iProjectSuite: TestSuite = {
             name: `Test setCurrentLibrary`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 await iProject.setCurrentLibrary('MYLIB1');
-                const state1 = await iProject.getState();
                 const unresolvedState1 = await iProject.getUnresolvedState();
-                assert.strictEqual(state1?.curlib, 'MYLIB1');
                 assert.strictEqual(unresolvedState1?.curlib, '&CURLIB');
+                const state1 = await iProject.getState();
+                assert.strictEqual(state1?.curlib, 'MYLIB1');
                 await iProject.updateIProj({
                     "version": "0.0.2"
                 });
                 await iProject.setCurrentLibrary('MYLIB2');
-                const state2 = await iProject.getState();
                 const unresolvedState2 = await iProject.getUnresolvedState();
-                assert.strictEqual(state2?.curlib, 'MYLIB2');
                 assert.strictEqual(unresolvedState2?.curlib, '&CURLIB');
+                const state2 = await iProject.getState();
+                assert.strictEqual(state2?.curlib, 'MYLIB2');
 
                 await iProject.setCurrentLibrary('\"abcdefg\"');
                 const state3 = await iProject.getState();
@@ -726,6 +726,11 @@ export const iProjectSuite: TestSuite = {
                 const unresolvedState1 = await iProject.getUnresolvedState();
                 assert.strictEqual(unresolvedState1?.curlib, '&CURLIB');
                 assert.strictEqual(state1?.curlib, 'QTEMP');
+                // Even though CURLIB not a var in iproj.json, it needs to be
+                // set for Code 4 i extension
+                await iProject.syncLiblVars();
+                const curlib = await iProject.getEnvVar('CURLIB');
+                assert.equal(curlib, 'QTEMP');
 
                 // quoted library as CURLIB
                 await iProject.setCurrentLibrary('"abcdefg"');
