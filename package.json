@@ -1228,7 +1228,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.download",
-          "when": "view == projectExplorer && viewItem =~ /^member*/",
+          "when": "view == projectExplorer && viewItem =~ /^member*/ && !vscode-ibmi-projectexplorer:isInMerlin",
           "group": "5_transfer@0"
         },
         {
