@@ -1,6 +1,11 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+## `2.9.0`
+* Depend on `Code for i` 2.9.0
+* Added debug as Service Entry Point (SEP) to debug menu
+* Disable Download member functionality in Merlin
+* Set LIBL and CURLIB in .env whenever they are updated by project so Code 4 i actions run correctly
 ## `2.6.8`
 * Add merlin context value and suppress the upload member action in the cloud context
 ## `2.6.7`
