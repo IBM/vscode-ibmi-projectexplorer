@@ -1183,7 +1183,7 @@
         },
         {
           "submenu": "projectExplorer.debug",
-          "when": "view == projectExplorer && !inDebugMode ",
+          "when": "view == projectExplorer",
           "group": "4_debug@0"
         },
         {
