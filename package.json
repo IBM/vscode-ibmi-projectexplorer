@@ -884,12 +884,12 @@
       "projectExplorer.debug": [
 				{
 					"command": "vscode-ibmi-projectexplorer.debug.batch",
-          "when": "viewItem =~ /^objectFile.PGM.*/",
+          "when": "code-for-ibmi:debug && viewItem =~ /^objectFile.PGM.*/",
           "group": "0_debug@1"
 				},
 				{
 					"command": "vscode-ibmi-projectexplorer.debug.sep",
-          "when": "viewItem =~ /^objectFile.(PGM|SRVPGM).*/",
+          "when": "code-for-ibmi:debug.SEP && viewItem =~ /^objectFile.(PGM|SRVPGM).*/",
           "group": "0_debug@2"
 				}
 			],
@@ -1183,7 +1183,7 @@
         },
         {
           "submenu": "projectExplorer.debug",
-          "when": "view == projectExplorer && !inDebugMode ",
+          "when": "view == projectExplorer",
           "group": "4_debug@0"
         },
         {
