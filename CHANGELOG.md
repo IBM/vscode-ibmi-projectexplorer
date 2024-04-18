@@ -1,6 +1,8 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+## `2.9.1`
+* Allow debugging multiple programs
 ## `2.9.0`
 * Depend on `Code for i` 2.9.0
 * Added debug as Service Entry Point (SEP) to debug menu
