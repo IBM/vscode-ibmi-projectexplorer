@@ -5,7 +5,7 @@
 import { ConnectionData, DeploymentMethod, ObjectItem } from "@halcyontech/vscode-ibmi-types";
 import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
 import * as path from "path";
-import { EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
+import { ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
 import { getDeployTools, getInstance, getTools } from "../../ibmi";
@@ -185,6 +185,17 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
         this.refresh();
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.toggleClearErrorsBeforeBuild`, async () => {
+        let config = workspace.getConfiguration(`code-for-ibmi`);
+        const currentVal = await config.get('clearErrorsBeforeBuild');
+        const newValue = !currentVal;
+
+        // Updated in-memory object
+        await config.update('clearErrorsBeforeBuild', newValue, ConfigurationTarget.Workspace);
+        
+        // Updates the settings.json
+        config = workspace.getConfiguration(`code-for-ibmi`) ;
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refresh`, async (element: ProjectExplorerTreeItem) => {
         if (element instanceof LibraryList) {

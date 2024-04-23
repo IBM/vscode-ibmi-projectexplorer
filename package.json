@@ -479,6 +479,12 @@
         "enablement": "!code-for-ibmi:connected"
       },
       {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.toggleClearErrorsBeforeBuild",
+        "title": "%commands.projectExplorer.toggleClearErrorsBeforeBuild%",
+        "icon": "$(circle-filled)"
+      },
+      {
         "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
         "title": "%commands.jobLog.refreshJobLog%",
@@ -814,6 +820,10 @@
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
           "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.toggleClearErrorsBeforeBuild",
+          "when": "never"
         }
       ],
       "explorer/context": [
@@ -917,6 +927,11 @@
         {
           "command": "code-for-ibmi.connectToPrevious",
           "when": "view === projectExplorer && workspaceFolderCount > 0 && code-for-ibmi:hasPreviousConnection && !code-for-ibmi:connected",
+          "group": "navigation@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.toggleClearErrorsBeforeBuild",
+          "when": "view === workbench.panel.markers.view",
           "group": "navigation@0"
         }
       ],
