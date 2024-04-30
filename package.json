@@ -926,7 +926,7 @@
         },
         {
           "command": "code-for-ibmi.connectToPrevious",
-          "when": "view === projectExplorer && workspaceFolderCount > 0 && code-for-ibmi:hasPreviousConnection && !code-for-ibmi:connected",
+          "when": "view === projectExplorer && workspaceFolderCount > 0 && code-for-ibmi:hasPreviousConnection && !code-for-ibmi:connected && !vscode-ibmi-projectexplorer:isInMerlin",
           "group": "navigation@0"
         },
         {
@@ -1548,10 +1548,10 @@
   "devDependencies": {
     "@halcyontech/vscode-ibmi-types": "^2.9.0",
     "@types/node": "20.x",
-    "@types/tar": "^6.1.12",
+    "@types/tar": "^6.1.13",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/parser": "^7.7.0",
-    "@typescript-eslint/eslint-plugin": "^7.7.0",
+    "@typescript-eslint/parser": "^7.7.1",
+    "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@vscode/l10n-dev": "^0.0.35",
     "esbuild-loader": "^4.1.0",
     "eslint": "^8.57.0",
