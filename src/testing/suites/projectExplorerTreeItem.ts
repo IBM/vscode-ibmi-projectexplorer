@@ -3,15 +3,15 @@
  */
 
 import * as assert from "assert";
-import { TestSuite } from "..";
-import { ProjectManager } from "../../projectManager";
 import * as path from "path";
 import { TreeItem, Uri, extensions, workspace } from "vscode";
-import { IBMiProjectExplorer } from "../../ibmiProjectExplorer";
-import ProjectExplorer from "../../views/projectExplorer";
+import { TestSuite } from "..";
 import { getInstance } from "../../ibmi";
-import { ProjectExplorerTreeItem } from "../../views/projectExplorer/projectExplorerTreeItem";
+import { IBMiProjectExplorer } from "../../ibmiProjectExplorer";
+import { ProjectManager } from "../../projectManager";
+import ProjectExplorer from "../../views/projectExplorer";
 import MemberFile from "../../views/projectExplorer/memberFile";
+import { ProjectExplorerTreeItem } from "../../views/projectExplorer/projectExplorerTreeItem";
 import SourceDirectory from "../../views/projectExplorer/sourceDirectory";
 import { iProjectMock } from "../constants";
 
@@ -252,7 +252,6 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         attribute: 'PF',
                         text: 'DATA BASE FILE FOR C INCLUDES',
                         sourceFile: true,
-                        CCSID: 37,
                         created_by: '*IBM',
                         owner: 'QSYS',
                         sourceLength: 92
@@ -308,8 +307,6 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         attribute: 'PROD',
                         text: 'General Purpose Library',
                         sourceFile: false,
-                        memberCount: undefined,
-                        CCSID: undefined,
                         created_by: "*IBM",
                         owner: 'QSYS',
                         sourceLength: undefined
@@ -325,8 +322,6 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         attribute: 'PROD',
                         text: 'System Library for DB2',
                         sourceFile: false,
-                        memberCount: undefined,
-                        CCSID: undefined,
                         created_by: "*IBM",
                         owner: 'QSYS',
                         sourceLength: undefined
@@ -346,8 +341,6 @@ export const projectExplorerTreeItemSuite: TestSuite = {
                         attribute: 'PROD',
                         text: '',
                         sourceFile: false,
-                        memberCount: undefined,
-                        CCSID: undefined,
                         created_by: "QLPINSTALL",
                         owner: 'QSYS',
                         sourceLength: undefined
@@ -457,7 +450,7 @@ function assertTreeItem(treeItem: ProjectExplorerTreeItem, attributes: { [key: s
  // Test IBMiObject but ignore timesctamps and size that will vary           
 function assertIBMiObject(actual: { [key: string]: any }, expected: { [key: string]: any }) {
       for (const [key, value] of (Object.entries(expected))) {
-        if (key in ['changed', 'created', 'size', 'memberCount']) {continue;}
+        if (key in ['changed', 'created', 'size']) {continue;}
         assert.deepStrictEqual(actual[key], value);
     }
 }
