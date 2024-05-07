@@ -116,14 +116,14 @@
         "label": "%submenus.projectExplorer.run%",
         "icon": "$(tools)"
       },
-			{
-				"id": "projectExplorer.open",
+      {
+        "id": "projectExplorer.open",
         "label": "%submenus.projectExplorer.open%"
-			},
-			{
-				"id": "projectExplorer.debug",
+      },
+      {
+        "id": "projectExplorer.debug",
         "label": "%submenus.projectExplorer.debug%"
-			}
+      }
     ],
     "commands": [
       {
@@ -398,7 +398,8 @@
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.debug.batch",
         "title": "%commands.projectExplorer.debug.batch%"
-      },{
+      },
+      {
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.debug.sep",
         "title": "%commands.projectExplorer.debug.sep%"
@@ -515,19 +516,19 @@
         "icon": "$(note)"
       },
       {
-        "category": "%commands.showOnlyFailedJobs%",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs",
         "title": "%commands.jobLog.showOnlyFailedJobs%",
         "icon": "$(error-small)"
       },
       {
-        "category": "%commands.showAllJobs%",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.showAllJobs",
         "title": "%commands.jobLog.showAllJobs%",
         "icon": "$(circle)"
       },
       {
-        "category": "%commands.filterMessageSeverity%",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
         "title": "%commands.jobLog.filterMessageSeverity%",
         "icon": "$(filter)"
@@ -869,30 +870,30 @@
           "group": "0_run@1"
         }
       ],
-			"projectExplorer.open": [
-				{
-					"command": "vscode-ibmi-projectexplorer.browse",
+      "projectExplorer.open": [
+        {
+          "command": "vscode-ibmi-projectexplorer.browse",
           "when": "view == projectExplorer",
           "group": "0_open@1"
-				},
-				{
-					"command": "vscode-ibmi-projectexplorer.edit",
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.edit",
           "when": "view == projectExplorer",
           "group": "0_open@1"
-				}
-			],
+        }
+      ],
       "projectExplorer.debug": [
-				{
-					"command": "vscode-ibmi-projectexplorer.debug.batch",
+        {
+          "command": "vscode-ibmi-projectexplorer.debug.batch",
           "when": "code-for-ibmi:debug && viewItem =~ /^objectFile.PGM.*/",
           "group": "0_debug@1"
-				},
-				{
-					"command": "vscode-ibmi-projectexplorer.debug.sep",
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.debug.sep",
           "when": "code-for-ibmi:debug.SEP && viewItem =~ /^objectFile.(PGM|SRVPGM).*/",
           "group": "0_debug@2"
-				}
-			],
+        }
+      ],
       "view/title": [
         {
           "submenu": "projectExplorer.goTo",
