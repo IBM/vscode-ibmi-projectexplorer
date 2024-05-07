@@ -509,7 +509,7 @@
         "icon": "$(copy)"
       },
       {
-        "category": "%commands.showObjectOutput%",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
         "title": "%commands.jobLog.showObjectOutput%",
         "icon": "$(note)"
