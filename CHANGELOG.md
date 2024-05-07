@@ -1,6 +1,8 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+## `2.10.1`
+* Fix missing string for translation
 ## `2.10.0`
 * Now requires vscode_ibmi 2.10.1
 * Update types for Code for i 2.10.1 as there has been an API change to getObjectList()
