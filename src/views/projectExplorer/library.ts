@@ -92,14 +92,12 @@ export default class Library extends TreeItem implements ProjectExplorerTreeItem
     const ibmi = getInstance();
     if (ibmi && ibmi.getConnection()) {
       const objectFiles = await ibmi?.getContent().getObjectList({ library: this.libraryInfo.name, }, 'name');
-      const sourcePhysicalFiles = await ibmi?.getContent().getObjectList({ library: this.libraryInfo.name, types: ['*SRCPF'] }, 'name');
       if (objectFiles) {
         for (const objectFile of objectFiles) {
           if (objectFile.type === "*LIB") {
             items.push(new Library(this.workspaceFolder, objectFile, LibraryType.library));
           } else {
-            const sourcePhysicalFile = sourcePhysicalFiles?.find(sourceFile => sourceFile.library === objectFile.library && sourceFile.name === objectFile.name);
-            items.push(new ObjectFile(this.workspaceFolder, objectFile, this.path, sourcePhysicalFile));
+            items.push(new ObjectFile(this.workspaceFolder, objectFile, this.path));
           }
         }
       }
