@@ -1,6 +1,9 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+## `2.10.3`
+* Add getting started walkthrough
+
 ## `2.10.2`
 * Fix incorrect category for job log commands
 * Publish to Open VSX before the Marketplace
