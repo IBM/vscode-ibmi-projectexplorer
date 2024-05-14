@@ -46,6 +46,11 @@
         "id": "projectExplorer.gettingStarted",
         "title": "%walkthroughs.gettingStarted.title%",
         "description": "%walkthroughs.gettingStarted.description%",
+        "featuredFor": [
+          "iproj.json",
+          ".ibmi.json",
+          "joblog.json"
+        ],
         "steps": [
           {
             "id": "createNewProject",
