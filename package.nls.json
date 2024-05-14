@@ -101,5 +101,15 @@
   "viewsWelcome.jobLog.noWorkspace": "No workspace folder opened",
   "viewsWelcome.jobLog.scanning": "Scanning for projects...",
   "viewsWelcome.projectExplorer.noWorkspace": "No workspace folder opened",
-  "viewsWelcome.projectExplorer.scanning": "Scanning for projects..."
+  "viewsWelcome.projectExplorer.scanning": "Scanning for projects...",
+  "walkthroughs.gettingStarted.title": "Get Started with IBM i Project Explorer",
+  "walkthroughs.gettingStarted.description": "Get started with what you need to develop IBM i applications using IBM i Project Explorer",
+  "walkthroughs.createNewProject.title": "Create New Project",
+  "walkthroughs.createNewProject.description": "Create an IBM i project by opening a workspace folder with an iproj.json file or migrate your source from QSYS.",
+  "walkthroughs.connectToARemoteSystem.title": "Connect to a Remote System",
+  "walkthroughs.connectToARemoteSystem.description": "Connect to an IBM i using the Connections browser.",
+  "walkthroughs.sourceAndDeployment.title": "Source and Deployment",
+  "walkthroughs.sourceAndDeployment.description": "Visualize and deploy your local source files to your deploy location in the IFS.",
+  "walkthroughs.runBuildsCompilesAndActions.title": "Run Builds, Compiles, and Actions",
+  "walkthroughs.runBuildsCompilesAndActions.description": "Configure how your project will be built and compiled."
 }

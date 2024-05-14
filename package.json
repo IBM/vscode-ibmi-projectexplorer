@@ -41,6 +41,47 @@
   ],
   "l10n": "./l10n",
   "contributes": {
+    "walkthroughs": [
+      {
+        "id": "projectExplorer.gettingStarted",
+        "title": "%walkthroughs.gettingStarted.title%",
+        "description": "%walkthroughs.gettingStarted.description%",
+        "steps": [
+          {
+            "id": "createNewProject",
+            "title": "%walkthroughs.createNewProject.title%",
+            "description": "%walkthroughs.createNewProject.description%",
+            "media": {
+              "markdown": "docs/pages/projectExplorer/create-new-project.md"
+            }
+          },
+          {
+            "id": "connectToARemoteSystem",
+            "title": "%walkthroughs.connectToARemoteSystem.title%",
+            "description": "%walkthroughs.connectToARemoteSystem.description%",
+            "media": {
+              "markdown": "docs/pages/projectExplorer/connect-to-a-remote-system.md"
+            }
+          },
+          {
+            "id": "sourceAndDeployment",
+            "title": "%walkthroughs.sourceAndDeployment.title%",
+            "description": "%walkthroughs.sourceAndDeployment.description%",
+            "media": {
+              "markdown": "docs/pages/projectExplorer/source-and-deployment.md"
+            }
+          },
+          {
+            "id": "runBuildsCompilesAndActions",
+            "title": "%walkthroughs.runBuildsCompilesAndActions.title%",
+            "description": "%walkthroughs.runBuildsCompilesAndActions.description%",
+            "media": {
+              "markdown": "docs/pages/projectExplorer/run-builds-compiles-and-actions.md"
+            }
+          }
+        ]
+      }
+    ],
     "views": {
       "explorer": [
         {
