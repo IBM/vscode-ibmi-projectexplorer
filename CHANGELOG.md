@@ -2,7 +2,7 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 ## `2.10.3`
-* Add getting started walkthrough
+* Fix context value for source physicals
 
 ## `2.10.2`
 * Fix incorrect category for job log commands
