@@ -74,7 +74,7 @@
               "altText": "%walkthroughs.connectToARemoteSystem.altText%"
             },
             "completionEvents": [
-              "onContext:code-for-ibmi:connected"
+              "onCommand:vscode-ibmi-projectexplorer.openConnectionBrowser"
             ]
           },
           {
@@ -148,7 +148,7 @@
               "altText": "%walkthroughs.connectToARemoteSystem.altText%"
             },
             "completionEvents": [
-              "onContext:code-for-ibmi:connected"
+              "onCommand:vscode-ibmi-projectexplorer.openConnectionBrowser"
             ]
           },
           {
@@ -160,7 +160,7 @@
               "altText": "%walkthroughs.deployProject.altText%"
             },
             "completionEvents": [
-              "onCommand:vscode-ibmi-projectexplorer.deployProject"
+              "onCommand:vscode-ibmi-projectexplorer.projectExplorer.deployProject"
             ]
           },
           {
@@ -172,7 +172,7 @@
               "altText": "%walkthroughs.buildEntireProject.altText%"
             },
             "completionEvents": [
-              "onCommand:vscode-ibmi-projectexplorer.runBuild"
+              "onCommand:vscode-ibmi-projectexplorer.projectExplorer.runBuild"
             ]
           },
           {
@@ -184,7 +184,7 @@
               "altText": "%walkthroughs.compileIndividualFiles.altText%"
             },
             "completionEvents": [
-              "onCommand:vscode-ibmi-projectexplorer.runCompile"
+              "onCommand:vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand"
             ]
           },
           {
@@ -196,7 +196,7 @@
               "altText": "%walkthroughs.runCustomActions.altText%"
             },
             "completionEvents": [
-              "onCommand:vscode-ibmi-projectexplorer.runAction"
+              "onCommand:vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup"
             ]
           },
           {
