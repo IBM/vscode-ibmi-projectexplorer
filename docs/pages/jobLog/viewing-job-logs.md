@@ -4,9 +4,9 @@ Project Explorer provides a view in the `IBM i Job Log` panel to display all of 
 
 ![Job Log panel](../../assets/joblog.png ':size=700')
 
-## Job log tree contents
+## Job log Tree Contents
 
-### Project level
+### Project Level
 The top level of this tree is the project name with the project description as its details.  This allows the job logs of multiple projects to be shown in this view.  Only the latest build is persisted in the project, but the other jobs are kept in memory until the workspace is restarted or the `Clear Previous Job Logs` action on the project is run.
 
 ![Clear Previous Job Logs](../../assets/jl_action_clear.png ':size=450')
@@ -15,7 +15,7 @@ The `Show Job Log` action, which is also available inline, will load the joblog.
 
 ![Show Job Log](../../assets/jl_action_show_joblog_inline.png ':size=650')
 
-### Job log level
+### Job Log Level
 The next level is the timestamp when the build or compile was run and represents all the command run for that particular build.
 The commands can be toggled via the inline action to show all executed commands or only those that failed.
 
@@ -37,7 +37,7 @@ As a result we see all of the information messages being filtered out so we can 
 
 ![High Severity Messages](../../assets/jl_high_sev_messages.png ':size=550')
 
-### Object level
+### Object Level
 The children of a job log are all the ILE objects being built.  The description is the source in the IFS that is being compiled into that object.
 
 ![Copy Command](../../assets/jl_actions_object.png ':size=550')
@@ -45,7 +45,7 @@ The children of a job log are all the ILE objects being built.  The description 
 The actions available on the object, both in the context menu and the inline menu include `Copy` and `Show Object Build Output`.  The `Copy` action copies the command into the clipboard.  This allows you to paste it into the 5250 or PASE where you can run the command in isolation.
 The `Show Object Build Output` will show the equivalent of spool file output including the compile listing and any standard error and output from PASE commands.  Note that the compile errors will also be shown in the `Problems` view but sometimes there are other reasons for a command to fail and they can be seen here.
 
-## Messages level
+## Messages Level
 
 On the next level the first item is unique. It is the compile command being run in QSYS to build the target.   This command can be copied using the `Copy` action.
 
@@ -53,7 +53,7 @@ The remaining items are the messages that were produced in the job log when exec
 
 ![Second Level Message](../../assets/jl_second_level_message.png ':size=550')
 
-## Where does the data come from
+## Where Does The Data Come From
 Build commands such as BOB (https://github.com/IBM/ibmi-bob) and ARCAD generate a file named `.logs/joblog.json`. They also generate text files in the same directory with names like `target_object.splf` that contain the PASE standard out or spool file equivalent for each command, including the compile listing.  These files are copied to the `.logs` directory in the project root.
 
 ![Job Log File](../../assets/joblog_files.png ':size=350')
