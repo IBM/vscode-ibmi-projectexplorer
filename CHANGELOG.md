@@ -1,6 +1,10 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+## `2.10.4`
+* Add "Get Started on a New IBM i Project" walkthrough
+* Add "Development with an Existing IBM i Project" walkthrough
+
 ## `2.10.3`
 * Fix context value for source physicals
 
