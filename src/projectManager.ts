@@ -17,7 +17,7 @@ import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorer
  * - `deployLocation` event is fired when there is a change to a project's deploy location
  * - `build` event is fired when a build is finished
  * - `compile` event is fired when a compile is finished
- * - `includePaths` event is fired when there is a change to the include paths 
+ * - `includePaths` event is fired when there is a change to a project's include paths
  */
 export type ProjectExplorerEventT = 'projects' | 'activeProject' | 'libraryList' | 'deployLocation' | 'build' | 'compile' | 'includePaths';
 export type ProjectExplorerEventCallback = (iProject?: IProject) => void;
@@ -131,9 +131,6 @@ export class ProjectManager {
      * @param event A project explorer event.
      */
     public static fire(event: ProjectExplorerEvent) {
-        if(event.type === 'includePaths'){
-            console.log(event.type);
-        }
         this.emitter?.fire(event);
     }
 
