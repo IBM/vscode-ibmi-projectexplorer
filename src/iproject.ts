@@ -575,7 +575,9 @@ export class IProject {
         unresolvedState.includePath = [directory];
       }
 
-      await this.updateIProj(unresolvedState);
+      if(await this.updateIProj(unresolvedState)){
+        ProjectManager.fire({ type: 'includePaths', iProject: this });
+      }
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
@@ -630,7 +632,9 @@ export class IProject {
         window.showErrorMessage(l10n.t('{0} does not exist in includePath', directory));
       }
 
-      await this.updateIProj(unresolvedState);
+      if(await this.updateIProj(unresolvedState)){
+        ProjectManager.fire({ type: 'includePaths', iProject: this });
+      }
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
@@ -666,7 +670,10 @@ export class IProject {
         window.showErrorMessage(l10n.t('{0} does not exist in includePath', directory));
       }
 
-      await this.updateIProj(unresolvedState);
+      if(await this.updateIProj(unresolvedState)){
+        ProjectManager.fire({ type: 'includePaths', iProject: this });
+      }
+
     } else {
       window.showErrorMessage(l10n.t('No iproj.json found'));
     }
