@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands } from "vscode";
+import { commands, workspace } from "vscode";
 import { EnvironmentManager } from "./environmentManager";
 
 /**
@@ -17,5 +17,8 @@ export namespace ContextValueManager {
         if (isInMerlin) {
             await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:isInMerlin', isInMerlin);
         }
+
+        const clearErrorsBeforeBuild = await workspace.getConfiguration(`code-for-ibmi`).get('clearErrorsBeforeBuild');
+        await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:clearErrorsBeforeBuild', clearErrorsBeforeBuild);
     }
 }

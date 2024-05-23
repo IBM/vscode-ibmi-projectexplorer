@@ -9,7 +9,7 @@
   },
   "publisher": "IBM",
   "license": "Apache-2.0",
-  "version": "2.10.3",
+  "version": "2.10.4",
   "repository": {
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
   },
@@ -713,6 +713,18 @@
         "enablement": "!code-for-ibmi:connected"
       },
       {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.disableClearErrorsBeforeBuild",
+        "title": "%commands.projectExplorer.disableClearErrorsBeforeBuild%",
+        "icon": "$(pass-filled)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.enableClearErrorsBeforeBuild",
+        "title": "%commands.projectExplorer.enableClearErrorsBeforeBuild%",
+        "icon": "$(circle)"
+      },
+      {
         "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
         "title": "%commands.jobLog.refreshJobLog%",
@@ -1076,6 +1088,14 @@
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
           "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.disableClearErrorsBeforeBuild",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.enableClearErrorsBeforeBuild",
+          "when": "never"
         }
       ],
       "explorer/context": [
@@ -1179,6 +1199,16 @@
         {
           "command": "code-for-ibmi.connectToPrevious",
           "when": "view === projectExplorer && workspaceFolderCount > 0 && code-for-ibmi:hasPreviousConnection && !code-for-ibmi:connected && !vscode-ibmi-projectexplorer:isInMerlin",
+          "group": "navigation@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.disableClearErrorsBeforeBuild",
+          "when": "view === workbench.panel.markers.view && vscode-ibmi-projectexplorer:clearErrorsBeforeBuild",
+          "group": "navigation@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.enableClearErrorsBeforeBuild",
+          "when": "view === workbench.panel.markers.view && !vscode-ibmi-projectexplorer:clearErrorsBeforeBuild",
           "group": "navigation@0"
         }
       ],
@@ -1797,8 +1827,8 @@
     "@types/node": "20.x",
     "@types/tar": "^6.1.13",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/parser": "^7.8.0",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.10.0",
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
     "@vscode/l10n-dev": "^0.0.35",
     "esbuild-loader": "^4.1.0",
     "eslint": "^8.57.0",
