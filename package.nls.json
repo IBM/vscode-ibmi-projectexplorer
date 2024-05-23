@@ -88,6 +88,8 @@
   "commands.projectExplorer.setTargetLibraryForCompiles": "Set Target Library for Compiles",
   "commands.projectExplorer.updateMemberText": "Update Member Text",
   "commands.projectExplorer.uploadAndReplace": "Upload and Replace",
+  "commands.projectExplorer.disableClearErrorsBeforeBuild": "Disable Clear Errors Before Build",
+  "commands.projectExplorer.enableClearErrorsBeforeBuild": "Enable Clear Errors Before Build",
   "configuration.title": "IBM i Project Explorer",
   "configuration.IBM i Project Explorer.disableUserLibraryListView": "When disabled, the User Library List view in Code for IBM i will not be visible when an i Project is present in the workspace.",
   "description": "Develop IBM i applications using buildable local projects in VS Code",

@@ -35,6 +35,11 @@ export namespace ConfigurationManager {
                         await commands.executeCommand('setContext', 'code-for-ibmi:libraryListDisabled', false);
                     }
                 }
+
+                if (event.affectsConfiguration(`code-for-ibmi.clearErrorsBeforeBuild`)) {
+                    const clearErrorsBeforeBuild = await workspace.getConfiguration(`code-for-ibmi`).get('clearErrorsBeforeBuild');
+                    await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:clearErrorsBeforeBuild', clearErrorsBeforeBuild);
+                }
             })
         );
     }
