@@ -1,20 +1,44 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+## `2.10.4`
+* Add "Get Started on a New IBM i Project" walkthrough
+* Add "Development with an Existing IBM i Project" walkthrough
+* Add new `includePaths` event in Project Manager
+
+## `2.10.3`
+* Fix context value for source physicals
+
+## `2.10.2`
+* Fix incorrect category for job log commands
+* Publish to Open VSX before the Marketplace
+
+## `2.10.1`
+* Fix missing string for translation
+
+## `2.10.0`
+* Now requires vscode_ibmi 2.10.1
+* Update types for Code for i 2.10.1 as there has been an API change to getObjectList()
+* Disable connect to previous connection in Merlin
+
 ## `2.9.1`
 * Allow debugging multiple programs
+
 ## `2.9.0`
 * Depend on `Code for i` 2.9.0
 * Added debug as Service Entry Point (SEP) to debug menu
 * Disable Download member functionality in Merlin
 * Set LIBL and CURLIB in .env whenever they are updated by project so Code 4 i actions run correctly
+
 ## `2.6.8`
 * Add merlin context value and suppress the upload member action in the cloud context
+
 ## `2.6.7`
 * Make version optional in .ibmi.json to avoid errors on `Migrate source`
 * fix source orbit enablement for Migrate Source
 * Describe deployment methods more clearly 
 * Fix `IBM i Job og` view actions and document thoroughly
+
 ## `2.6.6`
 * Issue 377 support doublequoted libraries
 * Issue 360 When running build current action, active editor path not used
@@ -26,6 +50,7 @@ All notable changes to the "vscode-ibmi-projectexplorer" extension will be docum
 * Bump esbuild-loader from 4.0.3 to 4.1.0
 * Bump typescript from 5.3.3 to 5.4.2
 * Bump @typescript-eslint/eslint-plugin
+
 ## `2.6.5`
 * Update `iproj.json` and `.env` after renaming/deleting library 
 * Identify and filter out PRD libraries as they are side effect of command to query the library list

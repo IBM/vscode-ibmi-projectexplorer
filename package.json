@@ -9,7 +9,7 @@
   },
   "publisher": "IBM",
   "license": "Apache-2.0",
-  "version": "2.9.1",
+  "version": "2.10.4",
   "repository": {
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
   },
@@ -116,14 +116,14 @@
         "label": "%submenus.projectExplorer.run%",
         "icon": "$(tools)"
       },
-			{
-				"id": "projectExplorer.open",
+      {
+        "id": "projectExplorer.open",
         "label": "%submenus.projectExplorer.open%"
-			},
-			{
-				"id": "projectExplorer.debug",
+      },
+      {
+        "id": "projectExplorer.debug",
         "label": "%submenus.projectExplorer.debug%"
-			}
+      }
     ],
     "commands": [
       {
@@ -398,7 +398,8 @@
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.debug.batch",
         "title": "%commands.projectExplorer.debug.batch%"
-      },{
+      },
+      {
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.debug.sep",
         "title": "%commands.projectExplorer.debug.sep%"
@@ -515,25 +516,25 @@
         "icon": "$(copy)"
       },
       {
-        "category": "%commands.showObjectOutput%",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
         "title": "%commands.jobLog.showObjectOutput%",
         "icon": "$(note)"
       },
       {
-        "category": "%commands.showOnlyFailedJobs%",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs",
         "title": "%commands.jobLog.showOnlyFailedJobs%",
         "icon": "$(error-small)"
       },
       {
-        "category": "%commands.showAllJobs%",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.showAllJobs",
         "title": "%commands.jobLog.showAllJobs%",
         "icon": "$(circle)"
       },
       {
-        "category": "%commands.filterMessageSeverity%",
+        "category": "%commands.jobLog%",
         "command": "vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity",
         "title": "%commands.jobLog.filterMessageSeverity%",
         "icon": "$(filter)"
@@ -879,30 +880,30 @@
           "group": "0_run@1"
         }
       ],
-			"projectExplorer.open": [
-				{
-					"command": "vscode-ibmi-projectexplorer.browse",
+      "projectExplorer.open": [
+        {
+          "command": "vscode-ibmi-projectexplorer.browse",
           "when": "view == projectExplorer",
           "group": "0_open@1"
-				},
-				{
-					"command": "vscode-ibmi-projectexplorer.edit",
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.edit",
           "when": "view == projectExplorer",
           "group": "0_open@1"
-				}
-			],
+        }
+      ],
       "projectExplorer.debug": [
-				{
-					"command": "vscode-ibmi-projectexplorer.debug.batch",
+        {
+          "command": "vscode-ibmi-projectexplorer.debug.batch",
           "when": "code-for-ibmi:debug && viewItem =~ /^objectFile.PGM.*/",
           "group": "0_debug@1"
-				},
-				{
-					"command": "vscode-ibmi-projectexplorer.debug.sep",
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.debug.sep",
           "when": "code-for-ibmi:debug.SEP && viewItem =~ /^objectFile.(PGM|SRVPGM).*/",
           "group": "0_debug@2"
-				}
-			],
+        }
+      ],
       "view/title": [
         {
           "submenu": "projectExplorer.goTo",
@@ -1188,12 +1189,12 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.createMember",
-          "when": "view == projectExplorer && viewItem =~ /^objectFile.FILE.PHY.*/",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.FILE.SPF.*/",
           "group": "3_memberActions@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.searchSourceFile",
-          "when": "view == projectExplorer && viewItem =~ /^objectFile.FILE.PHY.*/",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.FILE.SPF.*/",
           "group": "4_search@0"
         },
         {
@@ -1546,16 +1547,16 @@
     "types": "npx -p typescript tsc ./src/extension.ts --excludeDirectories ./src/testing --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node"
   },
   "devDependencies": {
-    "@halcyontech/vscode-ibmi-types": "^2.9.0",
+    "@halcyontech/vscode-ibmi-types": "^2.10.1",
     "@types/node": "20.x",
     "@types/tar": "^6.1.13",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/parser": "^7.7.1",
-    "@typescript-eslint/eslint-plugin": "^7.7.1",
+    "@typescript-eslint/parser": "^7.10.0",
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
     "@vscode/l10n-dev": "^0.0.35",
     "esbuild-loader": "^4.1.0",
     "eslint": "^8.57.0",
-    "tar": "^7.0.1",
+    "tar": "^7.1.0",
     "typescript": "^5.4.5",
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4"
