@@ -1,6 +1,12 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+## `2.10.4`
+* Add "Get Started on a New IBM i Project" walkthrough
+* Add "Development with an Existing IBM i Project" walkthrough
+* Add new `includePaths` event in Project Manager
+* Add action to enable/disable `Clear Errors Before Build` setting in Code4i
+
 ## `2.10.3`
 * Fix context value for source physicals
 
