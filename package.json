@@ -481,15 +481,15 @@
       },
       {
         "category": "%commands.projectExplorer%",
-        "command": "vscode-ibmi-projectexplorer.disabledClearErrorsBeforeBuild",
-        "title": "%commands.projectExplorer.disabledClearErrorsBeforeBuild%",
-        "icon": "$(circle)"
+        "command": "vscode-ibmi-projectexplorer.disableClearErrorsBeforeBuild",
+        "title": "%commands.projectExplorer.disableClearErrorsBeforeBuild%",
+        "icon": "$(pass-filled)"
       },
       {
         "category": "%commands.projectExplorer%",
-        "command": "vscode-ibmi-projectexplorer.enabledClearErrorsBeforeBuild",
-        "title": "%commands.projectExplorer.enabledClearErrorsBeforeBuild%",
-        "icon": "$(pass-filled)"
+        "command": "vscode-ibmi-projectexplorer.enableClearErrorsBeforeBuild",
+        "title": "%commands.projectExplorer.enableClearErrorsBeforeBuild%",
+        "icon": "$(circle)"
       },
       {
         "category": "%commands.jobLog%",
@@ -829,11 +829,11 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.disabledClearErrorsBeforeBuild",
+          "command": "vscode-ibmi-projectexplorer.disableClearErrorsBeforeBuild",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.enabledClearErrorsBeforeBuild",
+          "command": "vscode-ibmi-projectexplorer.enableClearErrorsBeforeBuild",
           "when": "never"
         }
       ],
@@ -941,13 +941,13 @@
           "group": "navigation@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.disabledClearErrorsBeforeBuild",
-          "when": "view === workbench.panel.markers.view && !vscode-ibmi-projectexplorer:clearErrorsBeforeBuild",
+          "command": "vscode-ibmi-projectexplorer.disableClearErrorsBeforeBuild",
+          "when": "view === workbench.panel.markers.view && vscode-ibmi-projectexplorer:clearErrorsBeforeBuild",
           "group": "navigation@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.enabledClearErrorsBeforeBuild",
-          "when": "view === workbench.panel.markers.view && vscode-ibmi-projectexplorer:clearErrorsBeforeBuild",
+          "command": "vscode-ibmi-projectexplorer.enableClearErrorsBeforeBuild",
+          "when": "view === workbench.panel.markers.view && !vscode-ibmi-projectexplorer:clearErrorsBeforeBuild",
           "group": "navigation@0"
         }
       ],

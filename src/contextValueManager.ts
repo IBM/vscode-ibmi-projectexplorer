@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands , workspace} from "vscode";
+import { commands, workspace } from "vscode";
 import { EnvironmentManager } from "./environmentManager";
 
 /**
@@ -19,8 +19,6 @@ export namespace ContextValueManager {
         }
 
         const clearErrorsBeforeBuild = await workspace.getConfiguration(`code-for-ibmi`).get('clearErrorsBeforeBuild');
-        if(clearErrorsBeforeBuild){
-            await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:clearErrorsBeforeBuild', clearErrorsBeforeBuild);
-        }
+        await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:clearErrorsBeforeBuild', clearErrorsBeforeBuild);
     }
 }

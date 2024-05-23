@@ -186,33 +186,15 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
         this.refresh();
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.disabledClearErrorsBeforeBuild`, async () => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.disableClearErrorsBeforeBuild`, async () => {
         let config = workspace.getConfiguration(`code-for-ibmi`);
         const currentVal = await config.get('clearErrorsBeforeBuild');
-        const newValue = !currentVal;
-
-        // Updated in-memory object
-        await config.update('clearErrorsBeforeBuild', newValue, ConfigurationTarget.Workspace);
-        
-        // Update state for view
-        await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:clearErrorsBeforeBuild', newValue);
-
-        // Updates the settings.json
-        config = workspace.getConfiguration(`code-for-ibmi`) ;
+        await config.update('clearErrorsBeforeBuild', !currentVal, ConfigurationTarget.Global);
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.enabledClearErrorsBeforeBuild`, async () => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.enableClearErrorsBeforeBuild`, async () => {
         let config = workspace.getConfiguration(`code-for-ibmi`);
         const currentVal = await config.get('clearErrorsBeforeBuild');
-        const newValue = !currentVal;
-
-        // Updated in-memory object
-        await config.update('clearErrorsBeforeBuild', newValue, ConfigurationTarget.Workspace);
-
-        // Update state for view
-        await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:clearErrorsBeforeBuild', newValue);
-
-        // Updates the settings.json
-        config = workspace.getConfiguration(`code-for-ibmi`) ;
+        await config.update('clearErrorsBeforeBuild', !currentVal, ConfigurationTarget.Global);
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refresh`, async (element: ProjectExplorerTreeItem) => {
         if (element instanceof LibraryList) {
