@@ -196,7 +196,8 @@
               "altText": "%walkthroughs.runCustomActions.altText%"
             },
             "completionEvents": [
-              "onCommand:vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup"
+              "onCommand:vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup",
+              "onCommand:vscode-ibmi-projectexplorer.openCode4iActionsDocs"
             ]
           },
           {
@@ -208,7 +209,8 @@
               "altText": "%walkthroughs.visualizeJobLogs.altText%"
             },
             "completionEvents": [
-              "onCommand:jobLog.focus"
+              "onCommand:jobLog.focus",
+              "onCommand:commands.projectExplorer.openJobLogDocs"
             ]
           },
           {
@@ -339,6 +341,11 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.openJobLogDocs",
+        "title": "%commands.projectExplorer.openJobLogDocs%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.openArcadDocs",
         "title": "%commands.projectExplorer.openArcadDocs%"
       },
@@ -346,6 +353,11 @@
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.openBobDocs",
         "title": "%commands.projectExplorer.openBobDocs%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.openCode4iActionsDocs",
+        "title": "%commands.projectExplorer.openCode4iActionsDocs%"
       },
       {
         "category": "%commands.projectExplorer%",
@@ -770,11 +782,19 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.openJobLogDocs",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.openArcadDocs",
           "when": "never"
         },
         {
           "command": "vscode-ibmi-projectexplorer.openBobDocs",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.openCode4iActionsDocs",
           "when": "never"
         },
         {

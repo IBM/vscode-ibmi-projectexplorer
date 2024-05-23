@@ -83,8 +83,11 @@ export enum ContextValue {
  * An enum that represents relevant links.
  */
 export enum LINKS {
-  projectExplorerDocs = "https://ibm.github.io/vscode-ibmi-projectexplorer",
+  projectExplorerDocs = `https://ibm.github.io/vscode-ibmi-projectexplorer`,
   migrateSourceDocs = `${projectExplorerDocs}/#/pages/projectExplorer/migrate-source`,
-  arcadDocs = "https://arcad-software.github.io/elias-vscode",
-  bobDocs = "https://ibm.github.io/ibmi-bob"
+  jobLogDocs = `${projectExplorerDocs}/#/pages/jobLog/viewing-job-logs`,
+  arcadDocs = `https://arcad-software.github.io/elias-vscode`,
+  bobDocs = `https://ibm.github.io/ibmi-bob`,
+  code4iDocs = `https://codefori.github.io/docs`,
+  actionsDocs = `${code4iDocs}/developing/actions`
 }

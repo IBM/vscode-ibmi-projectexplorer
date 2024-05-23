@@ -77,11 +77,17 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.openMigrateSourceDocs`, async () => {
         env.openExternal(Uri.parse(LINKS.migrateSourceDocs));
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openJobLogDocs`, async () => {
+        env.openExternal(Uri.parse(LINKS.jobLogDocs));
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.openArcadDocs`, async () => {
         env.openExternal(Uri.parse(LINKS.arcadDocs));
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.openBobDocs`, async () => {
         env.openExternal(Uri.parse(LINKS.bobDocs));
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openCode4iActionsDocs`, async () => {
+        env.openExternal(Uri.parse(LINKS.actionsDocs));
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.goToObjectBrowser`, async () => {
         await commands.executeCommand(`objectBrowser.focus`);
