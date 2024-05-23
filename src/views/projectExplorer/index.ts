@@ -186,7 +186,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
         this.refresh();
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.toggleClearErrorsBeforeBuild`, async () => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.disabledClearErrorsBeforeBuild`, async () => {
         let config = workspace.getConfiguration(`code-for-ibmi`);
         const currentVal = await config.get('clearErrorsBeforeBuild');
         const newValue = !currentVal;
@@ -194,6 +194,23 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         // Updated in-memory object
         await config.update('clearErrorsBeforeBuild', newValue, ConfigurationTarget.Workspace);
         
+        // Update state for view
+        await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:clearErrorsBeforeBuild', newValue);
+
+        // Updates the settings.json
+        config = workspace.getConfiguration(`code-for-ibmi`) ;
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.enabledClearErrorsBeforeBuild`, async () => {
+        let config = workspace.getConfiguration(`code-for-ibmi`);
+        const currentVal = await config.get('clearErrorsBeforeBuild');
+        const newValue = !currentVal;
+
+        // Updated in-memory object
+        await config.update('clearErrorsBeforeBuild', newValue, ConfigurationTarget.Workspace);
+
+        // Update state for view
+        await commands.executeCommand('setContext', 'vscode-ibmi-projectexplorer:clearErrorsBeforeBuild', newValue);
+
         // Updates the settings.json
         config = workspace.getConfiguration(`code-for-ibmi`) ;
       }),
