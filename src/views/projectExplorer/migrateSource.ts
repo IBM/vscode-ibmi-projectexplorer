@@ -263,7 +263,7 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
                 .addInput(`srcLib`, l10n.t('Source Library'), l10n.t('The name of the library containing the source files to migrate.'), { default: library, readonly: true })
                 .addInput(`defaultCCSID`, l10n.t('Default CCSID'), l10n.t('The CCSID to be used when the source file is 65535.'), { default: `*JOB`, minlength: 1 })
                 .addSelect(`workspaceFolder`, l10n.t('Workspace folder'), projectSelectItems, l10n.t('The workspace folder to which the files are to be downloaded to.'))
-                .addCheckbox(`importText`, l10n.t('Import Member Text'), l10n.t('Imports member text at top of source as comment.'), true)
+                .addCheckbox(`importText`, l10n.t('Import Member Text'), l10n.t('Imports member text at the top of the source as comments.'), true)
                 .addCheckbox(`lower`, l10n.t('Lowercase Filenames'), l10n.t('The generated source file names will be in lowercase.'), true);
 
             // Source files tab

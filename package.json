@@ -41,6 +41,204 @@
   ],
   "l10n": "./l10n",
   "contributes": {
+    "walkthroughs": [
+      {
+        "id": "projectExplorer.gettingStarted",
+        "title": "%walkthroughs.gettingStarted.title%",
+        "description": "%walkthroughs.gettingStarted.description%",
+        "featuredFor": [
+          "iproj.json",
+          ".ibmi.json",
+          "joblog.json"
+        ],
+        "steps": [
+          {
+            "id": "createNewProject",
+            "title": "%walkthroughs.createNewProject.title%",
+            "description": "%walkthroughs.createNewProject.description%",
+            "media": {
+              "image": "walkthroughs/CreateNewProject.png",
+              "altText": "%walkthroughs.createNewProject.altText%"
+            },
+            "completionEvents": [
+              "onCommand:workbench.action.files.openFolder",
+              "onCommand:projectExplorer.focus"
+            ]
+          },
+          {
+            "id": "connectToARemoteSystem",
+            "title": "%walkthroughs.connectToARemoteSystem.title%",
+            "description": "%walkthroughs.connectToARemoteSystem.description%",
+            "media": {
+              "image": "walkthroughs/ConnectToARemoteSystem.png",
+              "altText": "%walkthroughs.connectToARemoteSystem.altText%"
+            },
+            "completionEvents": [
+              "onCommand:vscode-ibmi-projectexplorer.openConnectionBrowser"
+            ]
+          },
+          {
+            "id": "migrateSourceFromQSYS",
+            "title": "%walkthroughs.migrateSourceFromQSYS.title%",
+            "description": "%walkthroughs.migrateSourceFromQSYS.description%",
+            "media": {
+              "image": "walkthroughs/MigrateSource.png",
+              "altText": "%walkthroughs.migrateSourceFromQSYS.altText%"
+            },
+            "completionEvents": [
+              "onCommand:vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
+              "onCommand:vscode-ibmi-projectexplorer.openMigrateSourceDocs"
+            ]
+          },
+          {
+            "id": "setupGitRepository",
+            "title": "%walkthroughs.setupGitRepository.title%",
+            "description": "%walkthroughs.setupGitRepository.description%",
+            "media": {
+              "image": "walkthroughs/SetupGitRepository.png",
+              "altText": "%walkthroughs.setupGitRepository.altText%"
+            },
+            "completionEvents": [
+              "onCommand:git.init",
+              "onCommand:github.publish"
+            ]
+          },
+          {
+            "id": "ibmiDevelopmentLearn",
+            "title": "%walkthroughs.ibmiDevelopmentLearn.title%",
+            "description": "%walkthroughs.ibmiDevelopmentLearn.description%",
+            "media": {
+              "image": "walkthroughs/IBMiDevelopmentLearn.png",
+              "altText": "%walkthroughs.ibmiDevelopmentLearn.altText%"
+            },
+            "completionEvents": [
+              "onCommand:vscode-ibmi-projectexplorer.openDevelopmentWalkthrough"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "projectExplorer.ibmiDevelopment",
+        "title": "%walkthroughs.ibmiDevelopment.title%",
+        "description": "%walkthroughs.ibmiDevelopment.description%",
+        "featuredFor": [
+          "iproj.json",
+          ".ibmi.json",
+          "joblog.json"
+        ],
+        "steps": [
+          {
+            "id": "cloneRepository",
+            "title": "%walkthroughs.cloneRepository.title%",
+            "description": "%walkthroughs.cloneRepository.description%",
+            "media": {
+              "image": "walkthroughs/CloneRepository.png",
+              "altText": "%walkthroughs.cloneRepository.altText%"
+            },
+            "completionEvents": [
+              "onCommand:git.clone"
+            ]
+          },
+          {
+            "id": "connectToARemoteSystem",
+            "title": "%walkthroughs.connectToARemoteSystem.title%",
+            "description": "%walkthroughs.connectToARemoteSystem.description%",
+            "media": {
+              "image": "walkthroughs/ConnectToARemoteSystem.png",
+              "altText": "%walkthroughs.connectToARemoteSystem.altText%"
+            },
+            "completionEvents": [
+              "onCommand:vscode-ibmi-projectexplorer.openConnectionBrowser"
+            ]
+          },
+          {
+            "id": "deployProject",
+            "title": "%walkthroughs.deployProject.title%",
+            "description": "%walkthroughs.deployProject.description%",
+            "media": {
+              "image": "walkthroughs/DeployProject.png",
+              "altText": "%walkthroughs.deployProject.altText%"
+            },
+            "completionEvents": [
+              "onCommand:vscode-ibmi-projectexplorer.projectExplorer.deployProject"
+            ]
+          },
+          {
+            "id": "buildEntireProject",
+            "title": "%walkthroughs.buildEntireProject.title%",
+            "description": "%walkthroughs.buildEntireProject.description%",
+            "media": {
+              "image": "walkthroughs/BuildEntireProject.png",
+              "altText": "%walkthroughs.buildEntireProject.altText%"
+            },
+            "completionEvents": [
+              "onCommand:vscode-ibmi-projectexplorer.projectExplorer.runBuild"
+            ]
+          },
+          {
+            "id": "compileIndividualFiles",
+            "title": "%walkthroughs.compileIndividualFiles.title%",
+            "description": "%walkthroughs.compileIndividualFiles.description%",
+            "media": {
+              "image": "walkthroughs/CompileIndividualFiles.png",
+              "altText": "%walkthroughs.compileIndividualFiles.altText%"
+            },
+            "completionEvents": [
+              "onCommand:vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand"
+            ]
+          },
+          {
+            "id": "runCustomActions",
+            "title": "%walkthroughs.runCustomActions.title%",
+            "description": "%walkthroughs.runCustomActions.description%",
+            "media": {
+              "image": "walkthroughs/RunCustomActions.png",
+              "altText": "%walkthroughs.runCustomActions.altText%"
+            },
+            "completionEvents": [
+              "onCommand:vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup",
+              "onCommand:vscode-ibmi-projectexplorer.openCode4iActionsDocs"
+            ]
+          },
+          {
+            "id": "visualizeJobLogs",
+            "title": "%walkthroughs.visualizeJobLogs.title%",
+            "description": "%walkthroughs.visualizeJobLogs.description%",
+            "media": {
+              "image": "walkthroughs/VisualizeJobLogs.png",
+              "altText": "%walkthroughs.visualizeJobLogs.altText%"
+            },
+            "completionEvents": [
+              "onCommand:jobLog.focus",
+              "onCommand:commands.projectExplorer.openJobLogDocs"
+            ]
+          },
+          {
+            "id": "debugPrograms",
+            "title": "%walkthroughs.debugPrograms.title%",
+            "description": "%walkthroughs.debugPrograms.description%",
+            "media": {
+              "image": "walkthroughs/DebugPrograms.png",
+              "altText": "%walkthroughs.debugPrograms.altText%"
+            }
+          },
+          {
+            "id": "readDocumentation",
+            "title": "%walkthroughs.readDocumentation.title%",
+            "description": "%walkthroughs.readDocumentation.description%",
+            "media": {
+              "image": "walkthroughs/ReadDocumentation.png",
+              "altText": "%walkthroughs.readDocumentation.altText%"
+            },
+            "completionEvents": [
+              "onCommand:vscode-ibmi-projectexplorer.openProjectExplorerDocs",
+              "onCommand:vscode-ibmi-projectexplorer.openArcadDocs",
+              "onCommand:vscode-ibmi-projectexplorer.openBobDocs"
+            ]
+          }
+        ]
+      }
+    ],
     "views": {
       "explorer": [
         {
@@ -126,6 +324,41 @@
       }
     ],
     "commands": [
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.openDevelopmentWalkthrough",
+        "title": "%commands.projectExplorer.openDevelopmentWalkthrough%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.openProjectExplorerDocs",
+        "title": "%commands.projectExplorer.openDocs%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.openMigrateSourceDocs",
+        "title": "%commands.projectExplorer.openMigrateSourceDocs%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.openJobLogDocs",
+        "title": "%commands.projectExplorer.openJobLogDocs%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.openArcadDocs",
+        "title": "%commands.projectExplorer.openArcadDocs%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.openBobDocs",
+        "title": "%commands.projectExplorer.openBobDocs%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.openCode4iActionsDocs",
+        "title": "%commands.projectExplorer.openCode4iActionsDocs%"
+      },
       {
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.goToObjectBrowser",
@@ -548,6 +781,34 @@
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "vscode-ibmi-projectexplorer.openDevelopmentWalkthrough",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.openProjectExplorerDocs",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.openMigrateSourceDocs",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.openJobLogDocs",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.openArcadDocs",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.openBobDocs",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.openCode4iActionsDocs",
+          "when": "never"
+        },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.refresh",
           "when": "never"

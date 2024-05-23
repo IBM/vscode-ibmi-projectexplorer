@@ -5,7 +5,7 @@
 import { ConnectionData, DeploymentMethod, ObjectItem } from "@halcyontech/vscode-ibmi-types";
 import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
 import * as path from "path";
-import { ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
+import { ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, env, commands, l10n, window, workspace } from "vscode"
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
 import { getDeployTools, getInstance, getTools } from "../../ibmi";
@@ -27,6 +27,7 @@ import Source from "./source";
 import SourceDirectory from "./sourceDirectory";
 import SourceFile from "./sourceFile";
 import Variable from "./variable";
+import { LINKS } from "../../ibmiProjectExplorer";
 
 /**
  * Represents the Project Explorer tree data provider.
@@ -67,6 +68,27 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     const decorationProvider = new DecorationProvider();
     context.subscriptions.push(
       window.registerFileDecorationProvider(decorationProvider),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openDevelopmentWalkthrough`, async () => {
+        await commands.executeCommand(`workbench.action.openWalkthrough`, 'IBM.vscode-ibmi-projectexplorer#projectExplorer.ibmiDevelopment');
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openProjectExplorerDocs`, async () => {
+        env.openExternal(Uri.parse(LINKS.projectExplorerDocs));
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openMigrateSourceDocs`, async () => {
+        env.openExternal(Uri.parse(LINKS.migrateSourceDocs));
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openJobLogDocs`, async () => {
+        env.openExternal(Uri.parse(LINKS.jobLogDocs));
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openArcadDocs`, async () => {
+        env.openExternal(Uri.parse(LINKS.arcadDocs));
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openBobDocs`, async () => {
+        env.openExternal(Uri.parse(LINKS.bobDocs));
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openCode4iActionsDocs`, async () => {
+        env.openExternal(Uri.parse(LINKS.actionsDocs));
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.goToObjectBrowser`, async () => {
         await commands.executeCommand(`objectBrowser.focus`);
       }),
@@ -175,12 +197,20 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup`, async (element: Project) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup`, async (element?: Project) => {
+        let workspaceFolder: WorkspaceFolder | undefined;
         if (element) {
-          await ProjectManager.setActiveProject(element.workspaceFolder);
+          workspaceFolder = element.workspaceFolder;
+        } else {
+          const activeProject = ProjectManager.getActiveProject();
+          workspaceFolder = activeProject?.workspaceFolder;
+        }
+
+        if (workspaceFolder) {
+          await ProjectManager.setActiveProject(workspaceFolder);
 
           const deployTools = getDeployTools();
-          await deployTools?.launchActionsSetup(element.workspaceFolder);
+          await deployTools?.launchActionsSetup(workspaceFolder);
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
@@ -255,47 +285,67 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${element.deploymentParameters.remotePath}`);
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod`, async (element: Source) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod`, async (element?: Source) => {
+        let workspaceFolder: WorkspaceFolder | undefined;
         if (element) {
-          const iProject = ProjectManager.get(element.workspaceFolder);
+          workspaceFolder = element.workspaceFolder;
+        } else {
+          const activeProject = ProjectManager.getActiveProject();
+          workspaceFolder = activeProject?.workspaceFolder;
+        }
+
+        if (workspaceFolder) {
+          const iProject = ProjectManager.get(workspaceFolder);
 
           if (iProject) {
             const ibmi = getInstance();
             const connection = ibmi!.getConnection();
 
-            const methods: { method: DeploymentMethod, label: string, description?: string }[] = [];
-            if (connection.remoteFeatures.md5sum) {
-              methods.push({ method: 'compare', label: l10n.t('Compare'), description: l10n.t('Synchronizes using MD5 hash comparison') });
-            }
-
             const deployTools = getDeployTools();
             const deploymentParameters = await iProject.getDeploymentParameters();
-            const files = await deployTools?.getDeployChangedFiles(deploymentParameters!);
-            const changes = files?.length || 0;
-            methods.push({ method: 'changed', label: l10n.t('Changes'), description: changes > 1 || changes === 0 ? l10n.t('{0} changes detected since last upload', changes) : l10n.t('1 change detected since last upload') });
+            if (deploymentParameters) {
+              const methods: { method: DeploymentMethod, label: string, description?: string }[] = [];
+              if (connection.remoteFeatures.md5sum) {
+                methods.push({ method: 'compare', label: l10n.t('Compare'), description: l10n.t('Synchronizes using MD5 hash comparison') });
+              }
 
-            const tools = getTools();
-            if (tools!.getGitAPI()) {
-              methods.push(
-                { method: 'unstaged', label: l10n.t('Working Changes'), description: l10n.t('Unstaged changes in git') },
-                { method: 'staged', label: l10n.t('Staged Changes') }
-              );
-            }
+              const files = await deployTools?.getDeployChangedFiles(deploymentParameters);
+              const changes = files?.length || 0;
+              methods.push({ method: 'changed', label: l10n.t('Changes'), description: changes > 1 || changes === 0 ? l10n.t('{0} changes detected since last upload', changes) : l10n.t('1 change detected since last upload') });
 
-            methods.push({ method: 'all', label: l10n.t('All'), description: l10n.t('Every file in the local workspace') });
+              const tools = getTools();
+              if (tools!.getGitAPI()) {
+                methods.push(
+                  { method: 'unstaged', label: l10n.t('Working Changes'), description: l10n.t('Unstaged changes in git') },
+                  { method: 'staged', label: l10n.t('Staged Changes') }
+                );
+              }
 
-            const deploymentMethod = await window.showQuickPick(methods, { placeHolder: l10n.t('Select deployment method to {0}', element.deploymentParameters.remotePath) });
-            if (deploymentMethod) {
-              iProject.setDeploymentMethod(deploymentMethod.method);
+              methods.push({ method: 'all', label: l10n.t('All'), description: l10n.t('Every file in the local workspace') });
 
-              this.refresh();
+              const deploymentMethod = await window.showQuickPick(methods, { placeHolder: l10n.t('Select deployment method to {0}', deploymentParameters.remotePath) });
+              if (deploymentMethod) {
+                iProject.setDeploymentMethod(deploymentMethod.method);
+
+                this.refresh();
+              }
+            } else {
+              window.showErrorMessage(l10n.t('Chosen location ({0}) is not configured for deployment.', workspaceFolder.uri.fsPath));
             }
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.deployProject`, async (element: Source) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.deployProject`, async (element?: Source) => {
+        let workspaceFolder: WorkspaceFolder | undefined;
         if (element) {
-          const iProject = ProjectManager.get(element.workspaceFolder);
+          workspaceFolder = element.workspaceFolder;
+        } else {
+          const activeProject = ProjectManager.getActiveProject();
+          workspaceFolder = activeProject?.workspaceFolder;
+        }
+
+        if (workspaceFolder) {
+          const iProject = ProjectManager.get(workspaceFolder);
 
           if (iProject) {
             await iProject.deployProject();
@@ -1185,12 +1235,20 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           await commands.executeCommand(`workbench.action.addRootFolder`);
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.openConnectionBrowser`, async (element?: ErrorItem) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.openConnectionBrowser`, async () => {
         const isInMerlin = EnvironmentManager.isInMerlin();
         await commands.executeCommand(isInMerlin ? `ibmideveloper.connectionBrowser.focus` : `connectionBrowser.focus`);
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.setDeployLocation`, async (element: ErrorItem | WorkspaceFolder) => {
-        const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
+      commands.registerCommand(`vscode-ibmi-projectexplorer.setDeployLocation`, async (element?: ErrorItem | WorkspaceFolder) => {
+        let workspaceFolder: WorkspaceFolder | undefined;
+        if (element instanceof ErrorItem) {
+          workspaceFolder = element.workspaceFolder;
+        } else if (element) {
+          workspaceFolder = element;
+        } else {
+          const activeProject = ProjectManager.getActiveProject();
+          workspaceFolder = activeProject?.workspaceFolder;
+        }
 
         if (workspaceFolder) {
           const iProject = ProjectManager.get(workspaceFolder);
