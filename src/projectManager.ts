@@ -4,10 +4,12 @@
 
 import { Validator } from "jsonschema";
 import { EventEmitter, ExtensionContext, StatusBarAlignment, StatusBarItem, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
+import * as path from "path";
 import { ConfigurationManager, ConfigurationSection } from "./configurationManager";
 import { IProject } from "./iproject";
 import Project from "./views/projectExplorer/project";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
+import { IProjectT } from "./iProjectT";
 
 /**
  * Project explorer events each serve a different purpose:
@@ -71,7 +73,7 @@ export class ProjectManager {
      * An array of events that store an association between an event and a subscriber's
      * call back function.
      */
-    private static events: { event: ProjectExplorerEventT, callback: ProjectExplorerEventCallback}[] = [];
+    private static events: { event: ProjectExplorerEventT, callback: ProjectExplorerEventCallback }[] = [];
 
     /**
      * Initialize the project manager by setting up the JSON schema validator, the 
@@ -143,6 +145,8 @@ export class ProjectManager {
         const iProject = new IProject(workspaceFolder);
         if (!this.loaded[workspaceFolder.index]) {
             this.loaded[workspaceFolder.index] = iProject;
+
+            this.scanAndAddSubIProjects(workspaceFolder);
         }
 
         if (!this.activeProject && await iProject.projectFileExists('iproj.json')) {
@@ -302,5 +306,71 @@ export class ProjectManager {
      */
     public static pushExtensibleChildren(callback: (iProject: IProject) => Promise<ProjectExplorerTreeItem[]>) {
         Project.callBack.push(callback);
+    }
+
+    /**
+     * Scan the workspace folder for projects containing an iproj.json file and prompt
+     * the user to add them to the workspace.
+     *  
+     * @param workspaceFolder The workspace folder to scan.
+     */
+    public static async scanAndAddSubIProjects(workspaceFolder: WorkspaceFolder): Promise<void> {
+        const iProject = new IProject(workspaceFolder);
+        const subIProjectUris = await iProject.getSubIProjectUris();
+        const subIProjectUrisToOpen: { readonly uri: Uri; readonly name?: string }[] = [];
+
+        if (subIProjectUris.length === 1) {
+            const result = await window.showWarningMessage(l10n.t('An iproj.json file was detected in the {0} subdirectory of {1}. Would you like to open this project?', path.parse(subIProjectUris[0].fsPath).name, workspaceFolder.uri.fsPath), l10n.t('Yes'), l10n.t('No'));
+            if (result === l10n.t('Yes')) {
+                subIProjectUrisToOpen.push({ uri: subIProjectUris[0], name: path.parse(subIProjectUris[0].fsPath).name });
+            }
+        } else if (subIProjectUris.length > 1) {
+            const result = await window.showWarningMessage(l10n.t('Several iproj.json files were detected in the subdirectories of {0}. Would you like to open these projects?', workspaceFolder.uri.fsPath), l10n.t('Yes'), l10n.t('No'));
+            if (result === l10n.t('Yes')) {
+                const items = [];
+                for await (const uri of subIProjectUris) {
+                    try {
+                        const iprojUri = Uri.file(path.join(uri.fsPath, 'iproj.json'));
+                        const content = (await workspace.fs.readFile(iprojUri)).toString();
+                        const state: IProjectT | undefined = JSON.parse(content);
+                        if (state) {
+                            items.push({
+                                label: path.parse(uri.fsPath).name,
+                                description: state.description || "",
+                                detail: uri.fsPath,
+                                picked: true,
+                                uri: uri
+                            });
+                        }
+                    } catch {
+                        items.push({
+                            label: path.parse(uri.fsPath).name,
+                            detail: uri.fsPath,
+                            picked: true,
+                            uri: uri
+                        });
+                    }
+                }
+
+                const chosenItems = await window.showQuickPick(items, {
+                    title: l10n.t('Select the projects you would like to open'),
+                    canPickMany: true,
+                    matchOnDescription: true,
+                    matchOnDetail: true,
+                });
+
+                if (chosenItems && chosenItems.length > 0) {
+                    const chosenSubIProjectUris = chosenItems.map(item => {
+                        return { uri: item.uri, name: path.parse(item.uri.fsPath).name };
+                    });
+
+                    subIProjectUrisToOpen.push(...chosenSubIProjectUris);
+                }
+            }
+        }
+
+        if (subIProjectUrisToOpen.length > 0) {
+            workspace.updateWorkspaceFolders(0, workspace.workspaceFolders?.length, ...subIProjectUrisToOpen);
+        }
     }
 }
