@@ -8,7 +8,7 @@ import { isEscapeQuoted, stripEscapeFromQuotes, escapeQuoted, escapeArray } from
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
 import { TextEncoder } from "util";
-import { FileType, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
+import { Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import envUpdater from "./envUpdater";
 import { IProjectT } from "./iProjectT";
 import { getDeployTools, getInstance } from "./ibmi";
@@ -1482,28 +1482,6 @@ export class IProject {
   public async deployProject() {
     const deployTools = getDeployTools();
     await deployTools?.launchDeploy(this.workspaceFolder.index, this.deploymentMethod);
-  }
-
-  /**
-   * Get the URIs for the subdirectories that are 1 level below
-   * the root of the project.
-   * 
-   * @returns The URIs for all sub projects.
-   */
-  public async getSubIProjectUris(): Promise<Uri[]> {
-    const subDirectoryUris = (await workspace.fs.readDirectory(this.workspaceFolder.uri))
-      .filter((folder) => folder[1] === FileType.Directory)
-      .map((folder) => Uri.joinPath(this.workspaceFolder.uri, folder[0]))
-
-    const subIProjectUris: Uri[] = [];
-    for await (const uri of subDirectoryUris) {
-      const metadataExists = await this.projectFileExists("iproj.json", uri);
-      if (metadataExists) {
-        subIProjectUris.push(uri);
-      }
-    }
-
-    return subIProjectUris;
   }
 
   /**

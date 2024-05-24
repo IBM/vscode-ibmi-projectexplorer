@@ -3,7 +3,7 @@
  */
 
 import { Validator } from "jsonschema";
-import { EventEmitter, ExtensionContext, StatusBarAlignment, StatusBarItem, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
+import { EventEmitter, ExtensionContext, FileType, StatusBarAlignment, StatusBarItem, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import * as path from "path";
 import { ConfigurationManager, ConfigurationSection } from "./configurationManager";
 import { IProject } from "./iproject";
@@ -146,7 +146,10 @@ export class ProjectManager {
         if (!this.loaded[workspaceFolder.index]) {
             this.loaded[workspaceFolder.index] = iProject;
 
-            this.scanAndAddSubIProjects(workspaceFolder);
+            const metadataExists = await iProject.projectFileExists('iproj.json');
+            if (!metadataExists) {
+                this.scanAndAddSubIProjects(workspaceFolder.uri, false);
+            }
         }
 
         if (!this.activeProject && await iProject.projectFileExists('iproj.json')) {
@@ -309,23 +312,29 @@ export class ProjectManager {
     }
 
     /**
-     * Scan the workspace folder for projects containing an iproj.json file and prompt
+     * Scan the given uri for projects containing an iproj.json file and prompt
      * the user to add them to the workspace.
      *  
-     * @param workspaceFolder The workspace folder to scan.
+     * @param uri The uri of the location to scan.
+     * @param notifyOnNoProjectsFound True to notify the user if no projects were found and false otherwise.
      */
-    public static async scanAndAddSubIProjects(workspaceFolder: WorkspaceFolder): Promise<void> {
-        const iProject = new IProject(workspaceFolder);
-        const subIProjectUris = await iProject.getSubIProjectUris();
-        const subIProjectUrisToOpen: { readonly uri: Uri; readonly name?: string }[] = [];
+    public static async scanAndAddSubIProjects(uri: Uri, notifyOnNoProjectsFound: boolean): Promise<void> {
+        // Scan for subprojects
+        const projectScanDepth = ConfigurationManager.get(ConfigurationSection.projectScanDepth);
+        const scanDepth = projectScanDepth && typeof projectScanDepth === 'number' ? projectScanDepth : 2;
+        const subIProjectUris = await this.scanSubIProjects(uri, scanDepth);
 
+        // Prompt user to add subprojects
+        const subIProjectUrisToOpen: { readonly uri: Uri; readonly name?: string }[] = [];
         if (subIProjectUris.length === 1) {
-            const result = await window.showWarningMessage(l10n.t('An iproj.json file was detected in the {0} subdirectory of {1}. Would you like to open this project?', path.parse(subIProjectUris[0].fsPath).name, workspaceFolder.uri.fsPath), l10n.t('Yes'), l10n.t('No'));
+            // Single project to open
+            const result = await window.showWarningMessage(l10n.t('An iproj.json file was detected in the {0} subdirectory of {1}. Would you like to open this project?', path.parse(subIProjectUris[0].fsPath).name, uri.fsPath), l10n.t('Yes'), l10n.t('No'));
             if (result === l10n.t('Yes')) {
                 subIProjectUrisToOpen.push({ uri: subIProjectUris[0], name: path.parse(subIProjectUris[0].fsPath).name });
             }
         } else if (subIProjectUris.length > 1) {
-            const result = await window.showWarningMessage(l10n.t('Several iproj.json files were detected in the subdirectories of {0}. Would you like to open these projects?', workspaceFolder.uri.fsPath), l10n.t('Yes'), l10n.t('No'));
+            // Multiple projects to open
+            const result = await window.showWarningMessage(l10n.t('Several iproj.json files were detected in the subdirectories of {0}. Would you like to select some of these projects to open?', uri.fsPath), l10n.t('Yes'), l10n.t('No'));
             if (result === l10n.t('Yes')) {
                 const items = [];
                 for await (const uri of subIProjectUris) {
@@ -367,10 +376,51 @@ export class ProjectManager {
                     subIProjectUrisToOpen.push(...chosenSubIProjectUris);
                 }
             }
+        } else {
+            // No projects to open
+            if (notifyOnNoProjectsFound) {
+                window.showErrorMessage(l10n.t('No subprojects found under the current workspace folder(s)'));
+                return;
+            }
         }
 
         if (subIProjectUrisToOpen.length > 0) {
             workspace.updateWorkspaceFolders(0, workspace.workspaceFolders?.length, ...subIProjectUrisToOpen);
         }
+    }
+
+    /**
+     * Get the URIs for subdirectories that have an iproj.json file.
+     * 
+     * @param uri The uri of the location to scan.
+     * @param scanDepth The depth of directories to scan.
+     * @param currentDepth The current depth of the scan.
+     * @returns The URIs for all sub projects.
+     */
+    public static async scanSubIProjects(uri: Uri, scanDepth: number, currentDepth: number = 0): Promise<Uri[]> {
+        currentDepth = currentDepth + 1;
+
+        // Retrieve subprojects
+        const subIProjectUris: Uri[] = [];
+        const subDirectoryUris = (await workspace.fs.readDirectory(uri))
+            .filter((folder) => folder[1] === FileType.Directory)
+            .map((folder) => Uri.joinPath(uri, folder[0]))
+        for await (const uri of subDirectoryUris) {
+            try {
+                const iprojUri = Uri.file(path.join(uri.fsPath, 'iproj.json'));
+                await workspace.fs.stat(iprojUri);
+
+                // Project found
+                subIProjectUris.push(uri);
+            } catch (e) {
+                // Project not found
+            }
+
+            if (currentDepth != scanDepth) {
+                subIProjectUris.push(...(await this.scanSubIProjects(uri, scanDepth, currentDepth)));
+            }
+        }
+
+        return subIProjectUris;
     }
 }

@@ -701,6 +701,12 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.scanForProjects",
+        "title": "%commands.projectExplorer.scanForProjects%",
+        "icon": "$(repo)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.setDeployLocation",
         "title": "%commands.projectExplorer.setDeployLocation%",
         "icon": "$(arrow-right)"
@@ -1050,6 +1056,10 @@
           "when": "never"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.scanForProjects",
+          "when": "never"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.setDeployLocation",
           "when": "never"
         },
@@ -1184,7 +1194,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer",
           "when": "view == projectExplorer",
-          "group": "navigation@1"
+          "group": "navigation@3"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.refreshJobLog",
@@ -1192,9 +1202,14 @@
           "group": "navigation@0"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.scanForProjects",
+          "when": "view === projectExplorer && workspaceFolderCount > 0",
+          "group": "navigation@2"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.openConnectionBrowser",
           "when": "view === projectExplorer && workspaceFolderCount > 0 && !code-for-ibmi:connected",
-          "group": "navigation@0"
+          "group": "navigation@1"
         },
         {
           "command": "code-for-ibmi.connectToPrevious",
@@ -1612,6 +1627,12 @@
           "type": "boolean",
           "default": true,
           "description": "%configuration.IBM i Project Explorer.disableUserLibraryListView%"
+        },
+        "IBM i Project Explorer.projectScanDepth": {
+          "type": "integer",
+          "default": 2,
+          "minimum": 1,
+          "description": "%configuration.IBM i Project Explorer.projectScanDepth%"
         }
       }
     },
