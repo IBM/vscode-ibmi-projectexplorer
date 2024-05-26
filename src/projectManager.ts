@@ -412,6 +412,7 @@ export class ProjectManager {
 
                 // Project found
                 subIProjectUris.push(uri);
+                continue;
             } catch (e) {
                 // Project not found
             }
