@@ -87,6 +87,7 @@ export enum LINKS {
   migrateSourceDocs = `${projectExplorerDocs}/#/pages/projectExplorer/migrate-source`,
   jobLogDocs = `${projectExplorerDocs}/#/pages/jobLog/viewing-job-logs`,
   arcadDocs = `https://arcad-software.github.io/elias-vscode`,
+  projectModeDocs = `${arcadDocs}/#/pages/project-mode`,
   bobDocs = `https://ibm.github.io/ibmi-bob`,
   code4iDocs = `https://codefori.github.io/docs`,
   actionsDocs = `${code4iDocs}/developing/actions`
