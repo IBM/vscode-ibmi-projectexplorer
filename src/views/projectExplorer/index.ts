@@ -5,10 +5,11 @@
 import { ConnectionData, DeploymentMethod, ObjectItem } from "@halcyontech/vscode-ibmi-types";
 import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
 import * as path from "path";
-import { ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, env, commands, l10n, window, workspace } from "vscode"
+import { ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
 import { getDeployTools, getInstance, getTools } from "../../ibmi";
+import { LINKS } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
 import { DecorationProvider } from "./decorationProvider";
@@ -27,7 +28,6 @@ import Source from "./source";
 import SourceDirectory from "./sourceDirectory";
 import SourceFile from "./sourceFile";
 import Variable from "./variable";
-import { LINKS } from "../../ibmiProjectExplorer";
 
 /**
  * Represents the Project Explorer tree data provider.
@@ -1144,12 +1144,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.debug.batch`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.debug.batch`, toObjectBrowserObject(element));
+          await commands.executeCommand(`code-for-ibmi.debug.batch`, toObjectBrowserObject(element), element.workspaceFolder);
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.debug.sep`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.debug.sep`, toObjectBrowserObject(element));
+          await commands.executeCommand(`code-for-ibmi.debug.sep`, toObjectBrowserObject(element), element.workspaceFolder);
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.browse`, async (element: MemberFile) => {
