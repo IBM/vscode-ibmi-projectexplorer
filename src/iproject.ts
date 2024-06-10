@@ -575,7 +575,7 @@ export class IProject {
         unresolvedState.includePath = [directory];
       }
 
-      if(await this.updateIProj(unresolvedState)){
+      if (await this.updateIProj(unresolvedState)) {
         ProjectManager.fire({ type: 'includePaths', iProject: this });
       }
     } else {
@@ -632,7 +632,7 @@ export class IProject {
         window.showErrorMessage(l10n.t('{0} does not exist in includePath', directory));
       }
 
-      if(await this.updateIProj(unresolvedState)){
+      if (await this.updateIProj(unresolvedState)) {
         ProjectManager.fire({ type: 'includePaths', iProject: this });
       }
     } else {
@@ -670,7 +670,7 @@ export class IProject {
         window.showErrorMessage(l10n.t('{0} does not exist in includePath', directory));
       }
 
-      if(await this.updateIProj(unresolvedState)){
+      if (await this.updateIProj(unresolvedState)) {
         ProjectManager.fire({ type: 'includePaths', iProject: this });
       }
 
@@ -930,7 +930,7 @@ export class IProject {
           for (const library of libraries) {
             const liblPortion = toLiblPortion(library.substring(12));
             // issue 377: PRD library was inserted by command used to query LIBL so skip it
-            if (liblPortion === "PRD") { continue;} 
+            if (liblPortion === "PRD") { continue; }
             libraryList.push({
               name: library.substring(0, 10).trim(),
               libraryType: liblPortion
@@ -1234,7 +1234,7 @@ export class IProject {
       this.environmentValues = dotenv.parse(Buffer.from(content));
       // Quoted libraries had to be escaped inorder to come through the parse line aboue
       // Now those backslashes should be removed
-      for (const key in this.environmentValues){
+      for (const key in this.environmentValues) {
         const value = this.environmentValues[key];
         if (isEscapeQuoted(value)) {
           this.environmentValues[key] = stripEscapeFromQuotes(value);
@@ -1266,7 +1266,7 @@ export class IProject {
       this.libraryList = undefined;
     }
   }
-  
+
   /**
    * Sync the environment variables to the `.env` file with the current project state
    * Specifically, the `CURLIB` and `LIBL` environment variables are updated.
@@ -1278,10 +1278,10 @@ export class IProject {
 
     const curLib = await this.state?.curlib;
     const libl = (await this.getLibraryList())?.filter(lib => lib.libraryListPortion === `USR`).map(lib => lib.libraryInfo.name).join(` `);
-    
+
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    let newEnv: {LIBL?: string, CURLIB?: string} = {};
-    
+    let newEnv: { LIBL?: string, CURLIB?: string } = {};
+
     if (curLib && env.CURLIB !== curLib) {
       newEnv.CURLIB = curLib;
     }
@@ -1306,7 +1306,7 @@ export class IProject {
    * @returns undefined if the variable does not exist
    */
   public async getEnvVar(varName: string) {
-    const env =  await this.getEnv();
+    const env = await this.getEnv();
     return env[varName];
   }
 
@@ -1317,7 +1317,7 @@ export class IProject {
    * Calling this function will have the side effect of turning this state off.
    * @returns 
    */
-  public wasLiblVarsUpdated() : boolean {
+  public wasLiblVarsUpdated(): boolean {
     const returnValue = this.liblVarsUpdated;
     this.liblVarsUpdated = false; // toggle off after it is cheched
     return returnValue;
@@ -1540,7 +1540,7 @@ export class IProject {
 }
 
 function toLiblPortion(location: string): LibraryListPortion {
-  if (location === 'USR' || location === 'SYS'  || location === 'CUR'|| location === 'PRD') {
+  if (location === 'USR' || location === 'SYS' || location === 'CUR' || location === 'PRD') {
     return location;
   }
   else {

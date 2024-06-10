@@ -9,7 +9,8 @@ import { ProjectManager } from "./projectManager";
  * Represents all IBM i Project Explorer configuration sections.
  */
 export enum ConfigurationSection {
-    disableUserLibraryListView = "disableUserLibraryListView"
+    disableUserLibraryListView = "disableUserLibraryListView",
+    projectScanDepth = "projectScanDepth"
 }
 
 /**
