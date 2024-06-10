@@ -1144,12 +1144,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.debug.batch`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.debug.batch`, toObjectBrowserObject(element), element.workspaceFolder);
+          await commands.executeCommand(`code-for-ibmi.debug.batch`, toObjectBrowserObject(element));
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.debug.sep`, async (element: ObjectFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.debug.sep`, toObjectBrowserObject(element), element.workspaceFolder);
+          await commands.executeCommand(`code-for-ibmi.debug.sep`, toObjectBrowserObject(element));
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.browse`, async (element: MemberFile) => {
