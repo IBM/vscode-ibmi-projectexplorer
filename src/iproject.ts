@@ -7,6 +7,7 @@ import * as dotenv from 'dotenv';
 import { isEscapeQuoted, stripEscapeFromQuotes, escapeQuoted, escapeArray } from "./util";
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
+import { parse } from "parse-gitignore";
 import { TextEncoder } from "util";
 import { Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import envUpdater from "./envUpdater";
@@ -30,9 +31,15 @@ export const DEFAULT_CURLIB = '&CURLIB';
 export const DEFAULT_OBJLIB = '&OBJLIB';
 
 /**
+ * Represents the default .gitignore content
+ */
+export const DEFAULT_GITIGNORE = ['.logs', '.evfevent', '.env']
+
+/**
  * Represents a file that stores project information.
  */
-export type ProjectFileType = 'iproj.json' | '.ibmi.json' | 'joblog.json' | 'output.log' | '.env' | `${string}.splf`;
+export type ProjectFileType = 'iproj.json' | '.ibmi.json' | 'joblog.json' | 'output.log' | '.env' | '.gitignore' | `${string}.splf`;
+
 /**
  * Represents a project's library list.
  */
@@ -1151,6 +1158,8 @@ export class IProject {
 
   /**
    * Create an `iproj.json` file for the project with a description.
+   * A `.gitignore` file will also be created if one does not exist
+   * or it will be updated to include relevent entries if it does.
    * 
    * @param description The project description to set.
    * @returns True if the operation was successful and false otherwise.
@@ -1160,7 +1169,25 @@ export class IProject {
       description: description
     };
 
-    return await this.updateIProj(iProject);
+    if (await this.updateIProj(iProject)) {
+      const gitignoreExists = await this.projectFileExists('.gitignore');
+      let newGitignoreContent: string = '';
+      if (gitignoreExists) {
+        // Update existing .gitignore file
+        const originalGitignore = (await workspace.fs.readFile(this.getProjectFileUri('.gitignore'))).toString();
+        const parsedGitignore = parse(originalGitignore);
+        const contentToAppend = DEFAULT_GITIGNORE.filter(entry => !parsedGitignore.patterns.includes(entry));
+        newGitignoreContent = `${originalGitignore}\n${contentToAppend.join('\n')}`;
+      } else {
+        // Create new .gitignore file
+        newGitignoreContent = DEFAULT_GITIGNORE.join('\n');
+      }
+
+      await workspace.fs.writeFile(this.getProjectFileUri('.gitignore'), new TextEncoder().encode(newGitignoreContent));
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**

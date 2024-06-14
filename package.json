@@ -1846,6 +1846,7 @@
   "devDependencies": {
     "@halcyontech/vscode-ibmi-types": "^2.10.1",
     "@types/node": "20.x",
+    "@types/parse-gitignore": "^1.0.2",
     "@types/tar": "^6.1.13",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/parser": "^7.13.0",
@@ -1861,6 +1862,7 @@
   "dependencies": {
     "dotenv": "^16.4.5",
     "ignore": "^5.3.1",
-    "jsonschema": "^1.4.1"
+    "jsonschema": "^1.4.1",
+    "parse-gitignore": "^2.0.0"
   }
 }
