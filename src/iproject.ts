@@ -31,7 +31,7 @@ export const DEFAULT_CURLIB = '&CURLIB';
 export const DEFAULT_OBJLIB = '&OBJLIB';
 
 /**
- * Represents the default .gitignore entries
+ * Represents the default .gitignore entries.
  */
 export const DEFAULT_GITIGNORE = ['.logs', '.evfevent', '.env']
 
