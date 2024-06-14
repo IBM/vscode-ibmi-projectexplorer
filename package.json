@@ -1489,6 +1489,11 @@
           "group": "4_search@0"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.download",
+          "when": "view == projectExplorer && viewItem =~ /^objectFile.FILE.SPF.*/ && !vscode-ibmi-projectexplorer:isInMerlin",
+          "group": "5_transfer@0"
+        },
+        {
           "submenu": "projectExplorer.debug",
           "when": "view == projectExplorer",
           "group": "4_debug@0"
