@@ -1219,9 +1219,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.download`, async (element: MemberFile) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.download`, async (element: ObjectFile | MemberFile) => {
         if (element) {
-          await commands.executeCommand(`code-for-ibmi.downloadMemberAsFile`, toObjectBrowserMember(element));
+          const objectBrowserItem = element instanceof ObjectFile ? toObjectBrowserObject(element) : toObjectBrowserMember(element);
+          await commands.executeCommand(`code-for-ibmi.downloadMemberAsFile`, objectBrowserItem);
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.uploadAndReplace`, async (element: MemberFile) => {
