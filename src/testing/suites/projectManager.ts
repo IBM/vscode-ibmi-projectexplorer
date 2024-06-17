@@ -4,7 +4,7 @@
 
 import * as assert from "assert";
 import { TestSuite } from "..";
-import { ProjectManager } from "../../projectManager";
+import { ProjectExplorerSchemaId, ProjectManager } from "../../projectManager";
 import { commands, window, workspace } from "vscode";
 import { ProjectExplorerTreeItem } from "../../views/projectExplorer/projectExplorerTreeItem";
 import { IProject } from "../../iproject";
@@ -24,12 +24,21 @@ export const projectManagerSuite: TestSuite = {
     tests: [
         {
             name: `Test getValidator`, test: async () => {
+                const validator = ProjectManager.getValidator();
+
+                const schemaIds = Object.entries(ProjectExplorerSchemaId);
+                for await (const [key, value] of schemaIds) {
+                    assert.ok(value in validator.schemas);
+                }
+            }
+        },
+        {
+            name: `Test validateSchema`, test: async () => {
                 const workspaceFolder = workspace.workspaceFolders![0];
                 const iProject = ProjectManager.get(workspaceFolder)!;
-                const validator = ProjectManager.getValidator();
-                const schema = validator.schemas['/iproj'];
-                const fileUri = iProject.getProjectFileUri('iproj.json');
-                await workspace.fs.writeFile(fileUri, new TextEncoder().encode(
+                const iProjFileUri = iProject.getProjectFileUri('iproj.json');
+                const ibmiFileUri = iProject.getProjectFileUri('.ibmi.json');
+                await workspace.fs.writeFile(iProjFileUri, new TextEncoder().encode(
                     JSON.stringify({
                         "version": "0.0.2",
                         "description": ["SAMPLE PROJECT"],
@@ -42,11 +51,22 @@ export const projectManagerSuite: TestSuite = {
                         "extensions": ""
                     }, null, 2)
                 ));
-                const content = (await workspace.fs.readFile(fileUri)).toString();
-                const validatorResult = validator.validate(JSON.parse(content), schema);
+                await workspace.fs.writeFile(ibmiFileUri, new TextEncoder().encode(
+                    JSON.stringify({
+                        "version": ["0.0.1"],
+                        "build": {
+                            "objlib": ["&OBJLIB"],
+                            "tgtCcsid": ["37"],
+                        }
+                    }, null, 2)
+                ));
+                const iProjContent = (await workspace.fs.readFile(iProjFileUri)).toString();
+                const ibmiContent = (await workspace.fs.readFile(ibmiFileUri)).toString();
+                const iProjValidatorResult = ProjectManager.validateSchema(ProjectExplorerSchemaId.iproj, JSON.parse(iProjContent));
+                const ibmiValidatorResult = ProjectManager.validateSchema(ProjectExplorerSchemaId.ibmi, JSON.parse(ibmiContent));
 
-                assert.ok('/iproj' in validator.schemas);
-                assert.strictEqual(validatorResult.errors.length, 8);
+                assert.strictEqual(iProjValidatorResult.errors.length, 8);
+                assert.strictEqual(ibmiValidatorResult.errors.length, 3);
             }
         },
         {
@@ -171,7 +191,7 @@ export const projectManagerSuite: TestSuite = {
                 const projectTreeItem = new Project(workspaceFolder, { description: 'SAMPLE PROJECT' });
                 const children = await projectTreeItem.getChildren();
                 Project.callBack = [];
-                const last = children.length-1;
+                const last = children.length - 1;
 
                 assert.strictEqual(children[last].label, 'Test Tree Item');
             }

@@ -15,7 +15,7 @@ import { IProjectT } from "./iProjectT";
 import { getDeployTools, getInstance } from "./ibmi";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { JobLogInfo } from "./jobLog";
-import { ProjectManager } from "./projectManager";
+import { ProjectExplorerSchemaId, ProjectManager } from "./projectManager";
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { LibraryType } from "./views/projectExplorer/library";
 import Instance from "@halcyontech/vscode-ibmi-types/api/Instance";
@@ -278,19 +278,23 @@ export class IProject {
 
     try {
       const content = (await workspace.fs.readFile(this.getProjectFileUri('iproj.json'))).toString();
-      unresolvedState = JSON.parse(content, (key, value) => {
-        if (key === 'extensions') {
-          return new Map(Object.entries(value));
+
+      try {
+        unresolvedState = JSON.parse(content, (key, value) => {
+          if (key === 'extensions') {
+            return new Map(Object.entries(value));
+          }
+
+          return value;
+        });
+      } catch (e) {
+        if (content.trim() === '') {
+          unresolvedState = {};
         }
+      }
 
-        return value;
-      });
-
-      const validator = ProjectManager.getValidator();
-      const schema = validator.schemas['/iproj'];
-      const validatorResult = validator.validate(unresolvedState || content, schema);
-
-      if (validatorResult && validatorResult.errors.length > 0 && content.trim() !== '') {
+      const validatorResult = ProjectManager.validateSchema(ProjectExplorerSchemaId.iproj, unresolvedState || content);
+      if (validatorResult && validatorResult.errors.length > 0) {
         this.validatorResult = validatorResult;
         return undefined;
       } else {
