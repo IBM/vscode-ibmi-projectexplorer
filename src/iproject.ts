@@ -277,7 +277,7 @@ export class IProject {
     let unresolvedState: IProjectT | undefined;
 
     try {
-      let content = (await workspace.fs.readFile(this.getProjectFileUri('iproj.json'))).toString();
+      const content = (await workspace.fs.readFile(this.getProjectFileUri('iproj.json'))).toString();
 
       try {
         unresolvedState = JSON.parse(content, (key, value) => {
