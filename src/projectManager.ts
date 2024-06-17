@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { Validator } from "jsonschema";
+import { Validator, ValidatorResult } from "jsonschema";
 import { EventEmitter, ExtensionContext, FileType, StatusBarAlignment, StatusBarItem, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import * as path from "path";
 import { ConfigurationManager, ConfigurationSection } from "./configurationManager";
@@ -10,6 +10,16 @@ import { IProject } from "./iproject";
 import Project from "./views/projectExplorer/project";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
 import { IProjectT } from "./iProjectT";
+
+/**
+ * Project explorer schema ids:
+ * - `iproj` - `schema/iproj.schema.json`
+ * - `ibmi` - `schema/ibmi.schema.json`
+ */
+export enum ProjectExplorerSchemaId {
+    iproj = '/iproj',
+    ibmi = '/ibmi'
+};
 
 /**
  * Project explorer events each serve a different purpose:
@@ -23,6 +33,7 @@ import { IProjectT } from "./iProjectT";
  */
 export type ProjectExplorerEventT = 'projects' | 'activeProject' | 'libraryList' | 'deployLocation' | 'build' | 'compile' | 'includePaths';
 export type ProjectExplorerEventCallback = (iProject?: IProject) => void;
+
 /**
  * Project explorer event
  */
@@ -84,10 +95,13 @@ export class ProjectManager {
      */
     public static async initialize(context: ExtensionContext) {
         this.validator = new Validator();
-        const iprojJsonContent = (await workspace.fs.readFile(Uri.file(context.asAbsolutePath('schema/iproj.schema.json')))).toString();
-        const iprojJsonSchema = JSON.parse(iprojJsonContent);
-        iprojJsonSchema.id = '/iproj';
-        this.validator.addSchema(iprojJsonSchema);
+        const schemaIds = Object.entries(ProjectExplorerSchemaId);
+        for await (const [key, value] of schemaIds) {
+            const schemaContent = (await workspace.fs.readFile(Uri.file(context.asAbsolutePath(`schema/${key}.schema.json`)))).toString();
+            const parsedSchema = JSON.parse(schemaContent);
+            parsedSchema.id = value;
+            this.validator.addSchema(parsedSchema);
+        }
 
         this.emitter.event(e => {
             this.events.filter(event => event.event === e.type)
@@ -118,10 +132,22 @@ export class ProjectManager {
     }
 
     /**
+     * Validate an object against a project explorer schema.
+     * @param id The project explorer schema id.
+     * @param instance The object to validate.
+     * @returns A `ValidatorResult` object.
+     */
+    public static validateSchema(id: ProjectExplorerSchemaId, instance: any): ValidatorResult {
+        const validator = this.getValidator();
+        const schema = validator.schemas[id];
+        return validator.validate(instance, schema);
+    }
+
+    /**
      * Subscribe a function to be called when a given project explorer event is fired.
      * 
-     * @param event 
-     * @param func 
+     * @param event A project explorer event.
+     * @param callback The function to subscribe.
      */
     public static onEvent(event: ProjectExplorerEventT, callback: ProjectExplorerEventCallback) {
         this.events.push({ event, callback });
@@ -156,7 +182,7 @@ export class ProjectManager {
             await this.setActiveProject(workspaceFolder);
         }
 
-        ProjectManager.fire({ type: 'projects' });
+        this.fire({ type: 'projects' });
     }
 
     /**
