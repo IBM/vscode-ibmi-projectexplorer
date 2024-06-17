@@ -277,7 +277,10 @@ export class IProject {
     let unresolvedState: IProjectT | undefined;
 
     try {
-      const content = (await workspace.fs.readFile(this.getProjectFileUri('iproj.json'))).toString();
+      let content = (await workspace.fs.readFile(this.getProjectFileUri('iproj.json'))).toString();
+      if (content === '') {
+        content = '{}';
+      }
       unresolvedState = JSON.parse(content, (key, value) => {
         if (key === 'extensions') {
           return new Map(Object.entries(value));
