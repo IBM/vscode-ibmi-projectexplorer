@@ -5,7 +5,7 @@
 import { ConnectionData, DeploymentMethod, ObjectItem } from "@halcyontech/vscode-ibmi-types";
 import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
 import * as path from "path";
-import { ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
+import { CancellationToken, ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, TreeItem, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
 import { getDeployTools, getInstance, getTools } from "../../ibmi";
@@ -1346,6 +1346,14 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
       return items;
     }
+  }
+
+  async resolveTreeItem(item: TreeItem, element: ProjectExplorerTreeItem, token: CancellationToken): Promise<ProjectExplorerTreeItem>  {
+    if (element.getToolTip) {
+      element.tooltip = await element.getToolTip();
+    }
+
+    return element;
   }
 
   /**
