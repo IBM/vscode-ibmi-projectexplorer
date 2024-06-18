@@ -45,7 +45,7 @@ The children of a job log are all the ILE objects being built.  The description 
 The actions available on the object, both in the context menu and the inline menu include `Copy` and `Show Object Build Output`.  The `Copy` action copies the command into the clipboard.  This allows you to paste it into the 5250 or PASE where you can run the command in isolation.
 The `Show Object Build Output` will show the equivalent of spool file output including the compile listing and any standard error and output from PASE commands.  Note that the compile errors will also be shown in the `Problems` view but sometimes there are other reasons for a command to fail and they can be seen here.
 
-## Messages Level
+### Messages Level
 
 On the next level the first item is unique. It is the compile command being run in QSYS to build the target.   This command can be copied using the `Copy` action.
 
