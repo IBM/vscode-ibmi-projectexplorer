@@ -87,6 +87,11 @@ export interface IProjectT {
     compileCommand?: string;
 
     /**
+     * List of mappings from branch name to library name.
+     */
+    branches?: Map<string, string>;
+
+    /**
      * Attributes used by external software vendors to provide additional functionality.
      */
     extensions?: Map<string, object>;

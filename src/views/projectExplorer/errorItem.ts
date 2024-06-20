@@ -88,7 +88,7 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
       }
     );
   }
-  
+
   static initializeNoGitRepositoryError(workspaceFolder: WorkspaceFolder): ErrorItem {
     return new ErrorItem(
       workspaceFolder,
@@ -98,8 +98,23 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
         contextValue: ErrorItem.contextValue + ContextValue.initializeGitRepository,
         command: {
           command: `vscode-ibmi-projectexplorer.initializeGitRepository`,
-          title: l10n.t('Initialize Git Repository'),
-          arguments: [workspaceFolder]
+          arguments: [workspaceFolder],
+          title: l10n.t('Initialize Git Repository')
+        }
+      }
+    );
+  }
+
+  static libraryDoesNotExistError(workspaceFolder: WorkspaceFolder, library: string): ErrorItem {
+    return new ErrorItem(
+      workspaceFolder,
+      l10n.t('Branch library does not exist'),
+      {
+        contextValue: ErrorItem.contextValue + ContextValue.libraryDoesNotExist,
+        command: {
+          command: `vscode-ibmi-projectexplorer.createBranchLibrary`,
+          arguments: [library],
+          title: l10n.t('Create Branch Library')
         }
       }
     );
@@ -114,8 +129,8 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
         contextValue: ErrorItem.contextValue + ContextValue.setDeployLocation,
         command: {
           command: `vscode-ibmi-projectexplorer.setDeployLocation`,
-          title: l10n.t('Set Deploy Location'),
-          arguments: [workspaceFolder]
+          arguments: [workspaceFolder],
+          title: l10n.t('Set Deploy Location')
         }
       }
     );

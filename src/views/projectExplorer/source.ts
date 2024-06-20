@@ -3,7 +3,7 @@
  */
 
 import * as path from "path";
-import { FileStat, FileType, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
+import { FileType, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { DeploymentParameters } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";

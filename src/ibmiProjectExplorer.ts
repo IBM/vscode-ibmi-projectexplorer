@@ -73,6 +73,7 @@ export enum ContextValue {
   addFolderToWorkspace = '_addFolderToWorkspace',
   openConnectionBrowser = '_openConnectionBrowser',
   initializeGitRepository = '_initializeGitRepository',
+  libraryDoesNotExist = '_libraryDoesNotExist',
   setDeployLocation = '_setDeployLocation',
   log = 'log',
   command = 'command',

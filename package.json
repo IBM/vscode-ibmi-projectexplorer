@@ -445,15 +445,16 @@
       },
       {
         "category": "%commands.projectExplorer%",
-        "command": "vscode-ibmi-projectexplorer.overrideLibrary",
-        "title": "%commands.projectExplorer.overrideLibrary%",
+        "command": "vscode-ibmi-projectexplorer.overrideBranchLibrary",
+        "title": "%commands.projectExplorer.overrideBranchLibrary%",
         "icon": "$(edit)"
       },
       {
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.clearBranchLibrary",
         "title": "%commands.projectExplorer.clearBranchLibrary%",
-        "icon": "$(clear-all)"
+        "icon": "$(clear-all)",
+        "enablement": "code-for-ibmi:connected"
       },
       {
         "category": "%commands.projectExplorer%",
@@ -461,6 +462,12 @@
         "title": "%commands.projectExplorer.checkoutToBranch%",
         "icon": "$(arrow-right)",
         "enablement": "viewItem =~ /^branch(?!_active).*/"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.createBranchLibrary",
+        "title": "%commands.projectExplorer.createBranchLibrary%",
+        "icon": "$(add)"
       },
       {
         "category": "%commands.projectExplorer%",
@@ -897,7 +904,7 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.overrideLibrary",
+          "command": "vscode-ibmi-projectexplorer.overrideBranchLibrary",
           "when": "never"
         },
         {
@@ -906,6 +913,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.checkoutToBranch",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createBranchLibrary",
           "when": "never"
         },
         {
@@ -1378,12 +1389,12 @@
           "group": "1_branch@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.overrideLibrary",
+          "command": "vscode-ibmi-projectexplorer.overrideBranchLibrary",
           "when": "view == projectExplorer && viewItem =~ /^branch(?!es).*/",
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.overrideLibrary",
+          "command": "vscode-ibmi-projectexplorer.overrideBranchLibrary",
           "when": "view == projectExplorer && viewItem =~ /^branch(?!es).*/",
           "group": "1_libraryActions@0"
         },
@@ -1406,6 +1417,16 @@
           "command": "vscode-ibmi-projectexplorer.checkoutToBranch",
           "when": "view == projectExplorer && viewItem =~ /^branch(?!es).*/",
           "group": "2_branchActions@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createBranchLibrary",
+          "when": "view == projectExplorer && viewItem =~ /^error_libraryDoesNotExist.*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.createBranchLibrary",
+          "when": "view == projectExplorer && viewItem =~ /^error_libraryDoesNotExist.*/",
+          "group": "1_fix@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",

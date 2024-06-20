@@ -711,7 +711,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.initializeGitRepository`, async (element: WorkspaceFolder) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.initializeGitRepository`, async (element: WorkspaceFolder | ErrorItem) => {
         const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
 
         if (workspaceFolder) {
@@ -768,14 +768,69 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.overrideLibrary`, async (element: Branch) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.overrideBranchLibrary`, async (element: Branch) => {
         if (element) {
+          const iProject = ProjectManager.get(element.workspaceFolder);
 
+          if (iProject) {
+            const library = await window.showInputBox({
+              prompt: l10n.t('Enter library name to set for {0}', element.branch.name!),
+              placeHolder: l10n.t('Library name'),
+              value: element.library
+            });
+
+            if (library) {
+              await iProject.overrideBranchLibrary(element.branch.name!, library);
+            }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.clearBranchLibrary`, async (element: Branch) => {
         if (element) {
+          const library = element.library;
+          const path = `QSYS/${library}`;
+          const type = '*LIB';
+          const result = await window.showWarningMessage(l10n.t('Are you sure you want to clear {0} {1}?', path, type), l10n.t('Yes'), l10n.t('Cancel'));
 
+          if (result === l10n.t('Yes')) {
+            const ibmi = getInstance();
+            const connection = ibmi!.getConnection();
+
+            try {
+              const clearResult = await connection.runCommand({ command: `CLRLIB LIB(${library})` });
+              if (clearResult.code !== 0) {
+                window.showErrorMessage(l10n.t('Error clearing library! {0}', clearResult.stderr));
+                return;
+              }
+
+              window.showInformationMessage(l10n.t('Cleared {0} {1}.', path, type));
+              this.refresh();
+            } catch (e: any) {
+              window.showErrorMessage(l10n.t('Error clearing library! {0}', e));
+            }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createBranchLibrary`, async (element: string | ErrorItem) => {
+        if (element) {
+          element = element instanceof ErrorItem ? element.command?.arguments![0] : element;
+
+          const ibmi = getInstance();
+          const connection = ibmi!.getConnection();
+
+          try {
+            const createResult = await connection.runCommand({ command: `CRTLIB LIB(${element})` });
+            if (createResult.code !== 0) {
+              window.showErrorMessage(l10n.t('Error creating library! {0}', createResult.stderr));
+              return;
+            }
+
+            this.refresh();
+          } catch (e: any) {
+            window.showErrorMessage(l10n.t('Error creating library! {0}', e));
+          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.configureAsVariable`, async (element: Library | LocalIncludePath | RemoteIncludePath) => {

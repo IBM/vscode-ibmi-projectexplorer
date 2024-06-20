@@ -4,7 +4,7 @@
 
 import { Action, CommandResult, DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import * as dotenv from 'dotenv';
-import { isEscapeQuoted, stripEscapeFromQuotes, escapeQuoted, escapeArray } from "./util";
+import { isEscapeQuoted, stripEscapeFromQuotes, escapeQuoted, escapeArray, getBranchLibraryName } from "./util";
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
 import { parse } from "parse-gitignore";
@@ -239,6 +239,14 @@ export class IProject {
         unresolvedState.includePath = unresolvedState.includePath.map(includePath => this.resolveVariable(includePath, values));
       }
 
+      if (unresolvedState.branches) {
+        for (const [branch, library] of unresolvedState.branches) {
+          if (branch && library) {
+            unresolvedState.branches.set(branch, library);
+          }
+        };
+      }
+
       if (unresolvedState.extensions) {
         for (const [vendor, vendorAttributes] of unresolvedState.extensions) {
           if (vendorAttributes) {
@@ -283,7 +291,7 @@ export class IProject {
 
       try {
         unresolvedState = JSON.parse(content, (key, value) => {
-          if (key === 'extensions') {
+          if (['branches', 'extensions'].includes(key)) {
             return new Map(Object.entries(value));
           }
 
@@ -1205,7 +1213,7 @@ export class IProject {
   public async updateIProj(iProject: IProjectT): Promise<boolean> {
     try {
       const content = JSON.stringify(iProject, (key, value) => {
-        if (key === 'extensions') {
+        if (['branches', 'extensions'].includes(key)) {
           return Object.fromEntries(value);
         }
 
@@ -1381,6 +1389,58 @@ export class IProject {
     }
 
     return false;
+  }
+
+  /**
+   * Get the deterministic library name for a given branch name.
+   * If the deterministic library name is overwritten in the
+   * `iproj.json`, it will be returned.
+   * 
+   * @param branch The branch to convert to a library name.
+   * @returns The deterministic library name.
+   */
+  public async getBranchLibraryName(branch: string): Promise<string> {
+    const unresolvedState = await this.getUnresolvedState();
+    const defaultBranch = getBranchLibraryName(branch);
+
+    if (unresolvedState && unresolvedState.branches) {
+      const customBranchLibrary = unresolvedState.branches.get(branch);
+
+      if (customBranchLibrary) {
+        return customBranchLibrary;
+      }
+    }
+
+    return defaultBranch;
+  }
+
+  /**
+   * Add a custom branch to library mapping to the `branches` attribute
+   * of the project's `iproj.json` file.
+   * 
+   * @param branch The branch name.
+   * @param library The library name.
+   */
+  public async overrideBranchLibrary(branch: string, library: string) {
+    const unresolvedState = await this.getUnresolvedState();
+
+    if (unresolvedState) {
+      if (unresolvedState.branches && unresolvedState.branches.size >= 0) {
+        if (unresolvedState.branches.get(branch) === library) {
+          window.showErrorMessage(l10n.t('{0} already mapped to {1}', branch, library));
+          return;
+
+        } else {
+          unresolvedState.branches.set(branch, library);
+        }
+      } else {
+        unresolvedState.branches = new Map<string, string>([[branch, library]]);
+      }
+
+      await this.updateIProj(unresolvedState);
+    } else {
+      window.showErrorMessage(l10n.t('No iproj.json found'));
+    }
   }
 
   /**

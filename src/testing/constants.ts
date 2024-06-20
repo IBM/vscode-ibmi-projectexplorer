@@ -16,6 +16,7 @@ export const iProjectMock: IProjectT = {
     "preUsrlibl": ["&lib1", "&lib2"],
     "postUsrlibl": ["&lib3", "&lib4"],
     "setIBMiEnvCmd": [],
+    "branches": new Map<string, string>([["master", "VS22C9A7A6"],["fix/issue-123", "VSAEB069F9"],["feature/issue-321", "VSF14A607D"]]),
     "extensions": new Map<string, object>([["vendor1", { "keyA": "&valueA" }], ["vendor2", { "keyB": "VALUEB" }]])
 };
 
