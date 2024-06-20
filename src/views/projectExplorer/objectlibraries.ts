@@ -7,7 +7,7 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ProjectManager } from "../../projectManager";
 import Library, { LibraryType } from "./library";
 import { ContextValue } from "../../ibmiProjectExplorer";
-import { getInstance } from "../../extensions/ibmi";
+import { getInstance } from "../../ibmi";
 import ErrorItem from "./errorItem";
 
 /**

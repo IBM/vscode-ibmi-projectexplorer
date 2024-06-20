@@ -4,7 +4,7 @@
 
 import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { IProjectT } from "../../iProjectT";
-import { getInstance } from "../../extensions/ibmi";
+import { getInstance } from "../../ibmi";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
@@ -16,7 +16,7 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import Source from "./source";
 import Variables from "./variables";
 import Branches from "./branches";
-import { getGitApi } from "../../extensions/git";
+import { GitManager } from "../../gitManager";
 
 /**
  * Tree item for a project.
@@ -86,8 +86,7 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
       this.children.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Object Libraries')));
     }
 
-    const gitApi = getGitApi();
-    if (gitApi && gitApi?.state === 'initialized') {
+    if (GitManager.isGitApiInitialized()) {
       const repository = iProject?.getGitRepository();
       if (repository) {
         this.children.push(new Branches(this.workspaceFolder, true, repository));

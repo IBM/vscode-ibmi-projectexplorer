@@ -1,9 +1,6 @@
 /*
  * (c) Copyright IBM Corp. 2024
  */
-
-import { str } from "crc-32/crc32c";
-
 /**
  * The escQuoted function takes in a string as an argument and 
  * returns a new string with any leading and trailing 
@@ -67,7 +64,3 @@ export function escapeArray(oldArray: string[]): string[] {
         return value;
     }
   } 
-
-export function getBranchLibraryName(currentBranch: string) {
-  return `VS${(str(currentBranch, 0) >>> 0).toString(16).toUpperCase()}`;
-}

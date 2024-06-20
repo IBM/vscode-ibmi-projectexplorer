@@ -4,7 +4,7 @@
 
 import { Action, CommandResult, DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import * as dotenv from 'dotenv';
-import { isEscapeQuoted, stripEscapeFromQuotes, escapeQuoted, escapeArray, getBranchLibraryName } from "./util";
+import { isEscapeQuoted, stripEscapeFromQuotes, escapeQuoted, escapeArray } from "./util";
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
 import { parse } from "parse-gitignore";
@@ -12,15 +12,15 @@ import { TextEncoder } from "util";
 import { Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import envUpdater from "./envUpdater";
 import { IProjectT } from "./iProjectT";
-import { getDeployTools, getInstance } from "./extensions/ibmi";
+import { getDeployTools, getInstance } from "./ibmi";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { JobLogInfo } from "./jobLog";
 import { ProjectExplorerSchemaId, ProjectManager } from "./projectManager";
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { LibraryType } from "./views/projectExplorer/library";
 import Instance from "@halcyontech/vscode-ibmi-types/api/Instance";
-import { getGitApi } from "./extensions/git";
 import { Repository } from "./import/git";
+import { GitManager } from "./gitManager";
 
 /**
  * Represents the default variable for a project's current library.
@@ -1370,10 +1370,7 @@ export class IProject {
    * @returns The `Repository` if the project is a git repository or `undefined`.
    */
   public getGitRepository(): Repository | null | undefined {
-    const gitApi = getGitApi();
-    if (gitApi) {
-      return gitApi?.getRepository(this.workspaceFolder.uri);
-    }
+    return GitManager.getRepository(this.workspaceFolder);
   }
 
   /**
@@ -1382,13 +1379,7 @@ export class IProject {
    * @returns True if the Git repository is initialized and false otherwise.
    */
   public async initializeGitRepository(): Promise<boolean> {
-    const gitApi = getGitApi();
-    if (gitApi) {
-      await gitApi?.init(this.workspaceFolder.uri);
-      return true;
-    }
-
-    return false;
+    return GitManager.initializeGitRepository(this.workspaceFolder);
   }
 
   /**
@@ -1401,7 +1392,7 @@ export class IProject {
    */
   public async getBranchLibraryName(branch: string): Promise<string> {
     const unresolvedState = await this.getUnresolvedState();
-    const defaultBranch = getBranchLibraryName(branch);
+    const defaultBranch = GitManager.getBranchLibraryName(branch);
 
     if (unresolvedState && unresolvedState.branches) {
       const customBranchLibrary = unresolvedState.branches.get(branch);

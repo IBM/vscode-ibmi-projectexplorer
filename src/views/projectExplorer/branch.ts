@@ -6,7 +6,7 @@ import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFol
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { Ref, Repository } from "../../import/git";
-import { getInstance } from "../../extensions/ibmi";
+import { getInstance } from "../../ibmi";
 import Library, { LibraryType } from "./library";
 import ObjectFile from "./objectFile";
 import ErrorItem from "./errorItem";
@@ -42,8 +42,10 @@ export default class Branch extends TreeItem implements ProjectExplorerTreeItem 
     const ibmi = getInstance();
     if (ibmi && ibmi.getConnection()) {
       const libraryExists = await ibmi.getContent().checkObject({ library: `QSYS`, name: this.library, type: `*LIB` })
+
       if (libraryExists) {
         const objectFiles = await ibmi?.getContent().getObjectList({ library: this.library, }, 'name');
+
         if (objectFiles) {
           for (const objectFile of objectFiles) {
             if (objectFile.type === "*LIB") {
@@ -54,10 +56,10 @@ export default class Branch extends TreeItem implements ProjectExplorerTreeItem 
           }
         }
       } else {
-        items.push(ErrorItem.libraryDoesNotExistError(this.workspaceFolder, this.library));
+        items.push(ErrorItem.libraryDoesNotExistError(this.workspaceFolder, this.branch.name!, this.library));
       }
     } else {
-      window.showErrorMessage(l10n.t('Please connect to an IBM i'));
+      items.push(ErrorItem.createNoConnectionError(this.workspaceFolder));
     }
 
     return items;

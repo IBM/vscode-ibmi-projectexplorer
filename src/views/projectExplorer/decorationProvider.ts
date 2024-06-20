@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { CancellationToken, Event, FileDecoration, FileDecorationProvider, ProviderResult, ThemeColor, Uri } from "vscode";
+import { CancellationToken, Event, FileDecoration, FileDecorationProvider, ProviderResult, ThemeColor, Uri, l10n } from "vscode";
 
 /**
  * Decoration provider for the variable heading and variable tree items.
@@ -21,6 +21,12 @@ export class DecorationProvider implements FileDecorationProvider {
             return {
                 badge: '?',
                 color: new ThemeColor('errorForeground')
+            };
+        } else if (uri.scheme === 'branches') {
+            return {
+                badge: '⚠',
+                color: new ThemeColor('errorForeground'),
+                tooltip: l10n.t('CURLIB must be set to &BRANCH')
             };
         }
     }

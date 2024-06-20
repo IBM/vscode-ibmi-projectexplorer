@@ -5,7 +5,7 @@
 import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, window } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import MemberFile from "./memberFile";
-import { getInstance } from "../../extensions/ibmi";
+import { getInstance } from "../../ibmi";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 

@@ -8,7 +8,7 @@ import * as path from "path";
 import { ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
-import { getDeployTools, getInstance, getTools } from "../../extensions/ibmi";
+import { getDeployTools, getInstance } from "../../ibmi";
 import { LINKS } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
@@ -30,6 +30,7 @@ import SourceFile from "./sourceFile";
 import Variable from "./variable";
 import Branch from "./branch";
 import Branches from "./branches";
+import { GitManager } from "../../gitManager";
 
 /**
  * Represents the Project Explorer tree data provider.
@@ -315,8 +316,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               const changes = files?.length || 0;
               methods.push({ method: 'changed', label: l10n.t('Changes'), description: changes > 1 || changes === 0 ? l10n.t('{0} changes detected since last upload', changes) : l10n.t('1 change detected since last upload') });
 
-              const tools = getTools();
-              if (tools!.getGitAPI()) {
+              if (GitManager.getGitApi()) {
                 methods.push(
                   { method: 'unstaged', label: l10n.t('Working Changes'), description: l10n.t('Unstaged changes in git') },
                   { method: 'staged', label: l10n.t('Staged Changes') }
@@ -748,21 +748,13 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           });
 
           if (newBranch) {
-            const checkoutToBranch = await window.showQuickPick([
-              l10n.t('Yes'),
-              l10n.t('No')], {
-              placeHolder: l10n.t('Would you like to checkout to this new branch?'),
-            });
-
-            if (checkoutToBranch) {
-              try {
-                await element.repository?.createBranch(newBranch, checkoutToBranch === l10n.t('Yes'))
-              } catch (error: any) {
-                if (error && error.stderr) {
-                  window.showErrorMessage(`${error.stderr}`.substring(7));
-                } else {
-                  window.showErrorMessage(l10n.t('Failed to create branch {0}', newBranch));
-                }
+            try {
+              await element.repository?.createBranch(newBranch, true)
+            } catch (error: any) {
+              if (error && error.stderr) {
+                window.showErrorMessage(`${error.stderr}`.substring(7));
+              } else {
+                window.showErrorMessage(l10n.t('Failed to create branch {0}', newBranch));
               }
             }
           }
@@ -799,7 +791,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const connection = ibmi!.getConnection();
 
             try {
-              const clearResult = await connection.runCommand({ command: `CLRLIB LIB(${library})` });
+              const clearResult = await connection.runCommand({ command: `CLRLIB LIB(${library})`, noLibList: true });
               if (clearResult.code !== 0) {
                 window.showErrorMessage(l10n.t('Error clearing library! {0}', clearResult.stderr));
                 return;
@@ -813,24 +805,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.createBranchLibrary`, async (element: string | ErrorItem) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createBranchLibrary`, (element: string | ErrorItem) => {
         if (element) {
-          element = element instanceof ErrorItem ? element.command?.arguments![0] : element;
+          const branch = element instanceof ErrorItem ? element.command?.arguments![0] : element[0];
+          const library = element instanceof ErrorItem ? element.command?.arguments![1] : element[1];
 
-          const ibmi = getInstance();
-          const connection = ibmi!.getConnection();
-
-          try {
-            const createResult = await connection.runCommand({ command: `CRTLIB LIB(${element})` });
-            if (createResult.code !== 0) {
-              window.showErrorMessage(l10n.t('Error creating library! {0}', createResult.stderr));
-              return;
-            }
-
-            this.refresh();
-          } catch (e: any) {
-            window.showErrorMessage(l10n.t('Error creating library! {0}', e));
-          }
+          GitManager.setupBranchLibrary(branch, true, library);
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.configureAsVariable`, async (element: Library | LocalIncludePath | RemoteIncludePath) => {
@@ -1102,7 +1082,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const connection = ibmi!.getConnection();
 
             try {
-              await connection.runCommand({ command: `CLRLIB LIB(${library})` });
+              await connection.runCommand({ command: `CLRLIB LIB(${library})`, noLibList: true });
 
               window.showInformationMessage(l10n.t('Cleared {0} *{1}.', path, type));
               this.refresh();

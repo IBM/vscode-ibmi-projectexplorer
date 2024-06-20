@@ -72,14 +72,15 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
     );
   }
 
-  static createNoConnectionError(workspaceFolder: WorkspaceFolder, label: string): ErrorItem {
+  static createNoConnectionError(workspaceFolder: WorkspaceFolder, label?: string): ErrorItem {
     const isInMerlin = EnvironmentManager.isInMerlin();
+    const defaultText = l10n.t('Please connect to an IBM i');
 
     return new ErrorItem(
       workspaceFolder,
-      label,
+      label ? label : defaultText,
       {
-        description: l10n.t('Please connect to an IBM i'),
+        description: label ? l10n.t('Please connect to an IBM i') : '',
         contextValue: ErrorItem.contextValue + ContextValue.openConnectionBrowser,
         command: {
           command: isInMerlin ? `ibmideveloper.connectionBrowser.focus` : `connectionBrowser.focus`,
@@ -105,7 +106,7 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
     );
   }
 
-  static libraryDoesNotExistError(workspaceFolder: WorkspaceFolder, library: string): ErrorItem {
+  static libraryDoesNotExistError(workspaceFolder: WorkspaceFolder, branch: string, library: string): ErrorItem {
     return new ErrorItem(
       workspaceFolder,
       l10n.t('Branch library does not exist'),
@@ -113,7 +114,7 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
         contextValue: ErrorItem.contextValue + ContextValue.libraryDoesNotExist,
         command: {
           command: `vscode-ibmi-projectexplorer.createBranchLibrary`,
-          arguments: [library],
+          arguments: [branch, library],
           title: l10n.t('Create Branch Library')
         }
       }

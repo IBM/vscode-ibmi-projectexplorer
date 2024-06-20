@@ -8,6 +8,7 @@ import JobLog from "./views/jobLog";
 import ProjectExplorer from "./views/projectExplorer";
 import { ProjectExplorerTreeItem } from './views/projectExplorer/projectExplorerTreeItem';
 import Source from './views/projectExplorer/source';
+import Branches from './views/projectExplorer/branches';
 
 /**
  * Represents a project file watcher.
@@ -72,10 +73,17 @@ export namespace ProjectFileWatcher {
 
                 iProject.setState(undefined);
                 iProject.setLibraryList(undefined);
+            } else if (uri.path.endsWith('.git/HEAD')) {
+                const projectTreeItem = projectExplorer.getProjectTreeItem(iProject);
+
+                if (projectTreeItem && projectTreeItem.children &&
+                    projectTreeItem.children.length > 0 && projectTreeItem.children[4] instanceof Branches) {
+                    elementToRefresh = projectTreeItem.children[4];
+                }
             } else {
                 const projectTreeItem = projectExplorer.getProjectTreeItem(iProject);
 
-                if (projectTreeItem && projectTreeItem.children && 
+                if (projectTreeItem && projectTreeItem.children &&
                     projectTreeItem.children.length > 0 && projectTreeItem.children[0] instanceof Source) {
                     elementToRefresh = projectTreeItem.children[0];
                 }

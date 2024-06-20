@@ -5,7 +5,7 @@
 import { ExtensionContext, commands, window } from "vscode";
 import { env } from "process";
 import { TestSuitesTreeProvider } from "./testCasesTree";
-import { getInstance } from "../extensions/ibmi";
+import { getInstance } from "../ibmi";
 import { iProjectSuite } from "./suites/iProject";
 import { projectManagerSuite } from "./suites/projectManager";
 import { jobLogSuite } from "./suites/jobLog";
@@ -53,7 +53,7 @@ const testingEnabled = env.testing === `true`;
 const individualTesting = env.individual === `true`;
 
 let testSuitesTreeProvider: TestSuitesTreeProvider;
-export async function initialise(context: ExtensionContext) {
+export async function initialize(context: ExtensionContext) {
   if (testingEnabled) {
     await commands.executeCommand(`setContext`, `projectExplorer:testing`, true);
     const ibmi = getInstance()!;

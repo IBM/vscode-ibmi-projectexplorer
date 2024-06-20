@@ -2,18 +2,17 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { loadBase } from './extensions/ibmi';
+import { loadBase } from './ibmi';
 import { ProjectManager } from './projectManager';
 import JobLog from './views/jobLog';
 import ProjectExplorer from './views/projectExplorer';
 import { ExtensionContext, l10n, window, workspace } from 'vscode';
 import { IBMiProjectExplorer } from './ibmiProjectExplorer';
-import { initialise } from './testing';
+import { initialize } from './testing';
 import { ProjectFileWatcher } from './fileWatcher';
 import { ConfigurationManager } from './configurationManager';
 import { ContextValueManager } from './contextValueManager';
-import { getGitApi } from './extensions/git';
-import { APIState } from './import/git';
+import { GitManager } from './gitManager';
 
 export async function activate(context: ExtensionContext): Promise<IBMiProjectExplorer> {
 	console.log(l10n.t('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!'));
@@ -36,13 +35,8 @@ export async function activate(context: ExtensionContext): Promise<IBMiProjectEx
 	const jobLog = new JobLog(context);
 	const jobLogTreeView = window.createTreeView(`jobLog`, { treeDataProvider: jobLog, showCollapseAll: true });
 
-	// Setup Git API listener
-	const gitApi = getGitApi();
-	if (gitApi) {
-		gitApi.onDidChangeState((state: APIState) => {
-			projectExplorer.refresh();
-		});
-	}
+	// Initialize Git manager
+	GitManager.initialize(context, projectExplorer);
 
 	// Initialize file watcher
 	ProjectFileWatcher.initialize(projectExplorer, jobLog);
@@ -86,7 +80,7 @@ export async function activate(context: ExtensionContext): Promise<IBMiProjectEx
 	console.log(`Developer environment: ${process.env.DEV}`);
 	if (process.env.DEV) {
 		// Run tests if not in production build
-		await initialise(context);
+		await initialize(context);
 	}
 
 	return { projectManager: ProjectManager, projectExplorer: projectExplorer, jobLog: jobLog };
