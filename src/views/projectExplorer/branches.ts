@@ -30,7 +30,7 @@ export default class Branches extends TreeItem implements ProjectExplorerTreeIte
     if (this.repository) {
       const branches = await this.repository.getBranches({ remote: true });
       for (const branch of branches) {
-        items.push(new Branch(this.workspaceFolder, branch));
+        items.push(new Branch(this.workspaceFolder, this.repository, branch));
       }
     }
 

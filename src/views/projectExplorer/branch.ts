@@ -5,7 +5,7 @@
 import { TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../ibmiProjectExplorer";
-import { Ref } from "../../import/git";
+import { Ref, Repository } from "../../import/git";
 import { str } from "crc-32/crc32c";
 
 /**
@@ -13,12 +13,14 @@ import { str } from "crc-32/crc32c";
  */
 export default class Branch extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.branch;
+  repository: Repository;
   branch: Ref;
   library: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, branch: Ref) {
+  constructor(public workspaceFolder: WorkspaceFolder, repository: Repository, branch: Ref) {
     super(branch.name!, TreeItemCollapsibleState.Collapsed);
 
+    this.repository = repository;
     this.branch = branch;
     this.library = getBranchLibraryName(branch.name!);
     this.contextValue = Branch.contextValue;

@@ -28,6 +28,7 @@ import Source from "./source";
 import SourceDirectory from "./sourceDirectory";
 import SourceFile from "./sourceFile";
 import Variable from "./variable";
+import Branch from "./branch";
 
 /**
  * Represents the Project Explorer tree data provider.
@@ -722,6 +723,19 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             }
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.checkoutToBranch`, async (element: Branch) => {
+        if (element) {
+          try {
+            await element.repository.checkout(element.branch.name!);
+          } catch (error: any) {
+            if (error && error.stderr) {
+              window.showErrorMessage(`${error.stderr}`.substring(7));
+            } else {
+              window.showErrorMessage(l10n.t('Failed to checkout to {0}', element.branch.name!));
+            }
           }
         }
       }),
