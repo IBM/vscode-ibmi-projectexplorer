@@ -20,7 +20,7 @@ export default class Branches extends TreeItem implements ProjectExplorerTreeIte
 
     this.repository = repository;
     this.contextValue = Branches.contextValue;
-    this.iconPath = new ThemeIcon(isGitStateInitialized ? `repo` : `sync~spin`);
+    this.iconPath = new ThemeIcon(isGitStateInitialized ? `repo` : `loading~spin`);
     this.tooltip = l10n.t('Branches');
   }
 

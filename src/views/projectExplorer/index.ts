@@ -29,6 +29,7 @@ import SourceDirectory from "./sourceDirectory";
 import SourceFile from "./sourceFile";
 import Variable from "./variable";
 import Branch from "./branch";
+import Branches from "./branches";
 
 /**
  * Represents the Project Explorer tree data provider.
@@ -737,6 +738,44 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               window.showErrorMessage(l10n.t('Failed to checkout to {0}', element.branch.name!));
             }
           }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.createBranch`, async (element: Branches) => {
+        if (element) {
+          const newBranch = await window.showInputBox({
+            prompt: l10n.t('Enter new branch name'),
+            placeHolder: l10n.t('Branch name')
+          });
+
+          if (newBranch) {
+            const checkoutToBranch = await window.showQuickPick([
+              l10n.t('Yes'),
+              l10n.t('No')], {
+              placeHolder: l10n.t('Would you like to checkout to this new branch?'),
+            });
+
+            if (checkoutToBranch) {
+              try {
+                await element.repository?.createBranch(newBranch, checkoutToBranch === l10n.t('Yes'))
+              } catch (error: any) {
+                if (error && error.stderr) {
+                  window.showErrorMessage(`${error.stderr}`.substring(7));
+                } else {
+                  window.showErrorMessage(l10n.t('Failed to create branch {0}', newBranch));
+                }
+              }
+            }
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.overrideLibrary`, async (element: Branch) => {
+        if (element) {
+
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.clearBranchLibrary`, async (element: Branch) => {
+        if (element) {
+
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.configureAsVariable`, async (element: Library | LocalIncludePath | RemoteIncludePath) => {
