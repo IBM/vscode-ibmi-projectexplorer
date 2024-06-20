@@ -62,6 +62,25 @@
             "type": "string",
             "description": "PASE command line used to compile a specific source file in this project. The following substitution variables are supported:\n {filename} resolves to the base file name being edited.\n {files} resolves to the list of files being selected or the active editor.\n {path} resolves to the full IFS path corresponding to the source in the editor.\n {host} resolves to the IBM i hostname.\n {usrprf} the user profile that the command will be executed under.\n {branch} resolves to the name of the current git branch if this project is managed by git."
         },
+        "branches": {
+            "type": "object",
+            "description": "List of mappings from branch name to library name.",
+            "patternProperties": {
+                "^.*$": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "defaultSnippets": [
+                {
+                    "label": "branches",
+                    "description": "List of mappings from branch name to library name.",
+                    "body": {
+                        "$1": "$2"
+                    }
+                }
+            ]
+        },
         "extensions": {
             "type": "object",
             "description": "Attributes used by external software vendors to provide additional functionality",
