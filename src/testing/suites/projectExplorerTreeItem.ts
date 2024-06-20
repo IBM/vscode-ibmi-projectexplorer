@@ -6,7 +6,7 @@ import * as assert from "assert";
 import * as path from "path";
 import { TreeItem, Uri, extensions, workspace } from "vscode";
 import { TestSuite } from "..";
-import { getInstance } from "../../ibmi";
+import { getInstance } from "../../extensions/ibmi";
 import { IBMiProjectExplorer } from "../../ibmiProjectExplorer";
 import { ProjectManager } from "../../projectManager";
 import ProjectExplorer from "../../views/projectExplorer";

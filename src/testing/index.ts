@@ -5,7 +5,7 @@
 import { ExtensionContext, commands, window } from "vscode";
 import { env } from "process";
 import { TestSuitesTreeProvider } from "./testCasesTree";
-import { getInstance } from "../ibmi";
+import { getInstance } from "../extensions/ibmi";
 import { iProjectSuite } from "./suites/iProject";
 import { projectManagerSuite } from "./suites/projectManager";
 import { jobLogSuite } from "./suites/jobLog";

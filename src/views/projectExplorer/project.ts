@@ -4,7 +4,7 @@
 
 import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n } from "vscode";
 import { IProjectT } from "../../iProjectT";
-import { getInstance } from "../../ibmi";
+import { getInstance } from "../../extensions/ibmi";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import { ProjectManager } from "../../projectManager";

@@ -12,7 +12,7 @@ import { TextEncoder } from "util";
 import { Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import envUpdater from "./envUpdater";
 import { IProjectT } from "./iProjectT";
-import { getDeployTools, getInstance } from "./ibmi";
+import { getDeployTools, getInstance } from "./extensions/ibmi";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { JobLogInfo } from "./jobLog";
 import { ProjectExplorerSchemaId, ProjectManager } from "./projectManager";

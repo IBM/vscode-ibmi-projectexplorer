@@ -7,7 +7,7 @@ import { FileStat, FileType, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri,
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { DeploymentParameters } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
-import { getDeployTools } from "../../ibmi";
+import { getDeployTools } from "../../extensions/ibmi";
 import SourceDirectory from "./sourceDirectory";
 import SourceFile from "./sourceFile";
 import DeletedFile from "./deletedFile";

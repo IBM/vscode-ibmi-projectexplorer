@@ -8,7 +8,7 @@ import * as path from "path";
 import { ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
-import { getDeployTools, getInstance, getTools } from "../../ibmi";
+import { getDeployTools, getInstance, getTools } from "../../extensions/ibmi";
 import { LINKS } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import { ProjectManager } from "../../projectManager";

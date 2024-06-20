@@ -8,7 +8,7 @@ import * as path from "path";
 import { TextEncoder } from "util";
 import { workspace } from "vscode";
 import { TestSuite } from "..";
-import { getDeployTools, getInstance } from "../../ibmi";
+import { getDeployTools, getInstance } from "../../extensions/ibmi";
 import { IProject, ProjectFileType } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
 import { LibraryType } from "../../views/projectExplorer/library";

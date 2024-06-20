@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { getCustomUI, getInstance } from "../../ibmi";
+import { getCustomUI, getInstance } from "../../extensions/ibmi";
 import { ProgressLocation, Uri, commands, extensions, l10n, window, workspace } from "vscode";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import { ProjectManager } from "../../projectManager";
@@ -11,7 +11,7 @@ import { IProject } from "../../iproject";
 import * as path from "path";
 import * as tar from "tar";
 import * as fs from 'fs';
-import { sourceOrbitEnabled } from "../../sourceOrbit";
+import { sourceOrbitEnabled } from "../../extensions/sourceOrbit";
 
 /**
  * Represents the configuration for a migration.
