@@ -152,7 +152,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
                 if (migrationConfig.automaticRename) {
                     progress.report({ message: l10n.t('Renaming file extensions to be more precise...'), increment: increment });
                     await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'renames');
-    
+
                     // Fix file extensions with the format FILE.pgm.CLLE to FILE.PGM.CLLE
                     if (!migrationConfig.lower) {
                         fixExtensions(migrationConfig.workspaceFolderUri!.fsPath);
@@ -163,7 +163,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
                     progress.report({ message: l10n.t('Adjusting include statements to IFS syntax...'), increment: increment });
                     await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'includes');
                 }
-    
+
                 if (migrationConfig.generateBob) {
                     progress.report({ message: l10n.t('Generating Rules.mk for Better Object Builder...'), increment: increment });
                     await commands.executeCommand('vscode-sourceorbit.generateBuildFile', workspaceFolder, 'bob');

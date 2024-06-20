@@ -709,6 +709,22 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           }
         }
       }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.initializeGitRepository`, async (element: WorkspaceFolder) => {
+        const workspaceFolder = element instanceof ErrorItem ? element.workspaceFolder : element;
+
+        if (workspaceFolder) {
+          const iProject = ProjectManager.get(workspaceFolder);
+          if (iProject) {
+            const isInitialized = await iProject.initializeGitRepository();
+
+            if (!isInitialized) {
+              window.showErrorMessage(l10n.t('Failed to initialize Git repository'));
+            }
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
+        }
+      }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.configureAsVariable`, async (element: Library | LocalIncludePath | RemoteIncludePath) => {
         if (element) {
           const iProject = ProjectManager.get(element.workspaceFolder);

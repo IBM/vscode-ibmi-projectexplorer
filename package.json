@@ -37,7 +37,8 @@
   ],
   "main": "./dist/extension.js",
   "extensionDependencies": [
-    "HalcyonTechLtd.code-for-ibmi"
+    "HalcyonTechLtd.code-for-ibmi",
+    "vscode.git"
   ],
   "l10n": "./l10n",
   "contributes": {
@@ -428,6 +429,12 @@
         "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.createEnv",
         "title": "%commands.projectExplorer.createEnv%",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.initializeGitRepository",
+        "title": "%commands.projectExplorer.initializeGitRepository%",
         "icon": "$(arrow-right)"
       },
       {
@@ -854,6 +861,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.createEnv",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.initializeGitRepository",
           "when": "never"
         },
         {
@@ -1303,6 +1314,16 @@
         {
           "command": "vscode-ibmi-projectexplorer.createEnv",
           "when": "view == projectExplorer && viewItem =~ /^error_createEnv*/",
+          "group": "1_fix@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.initializeGitRepository",
+          "when": "view == projectExplorer && viewItem =~ /^error_initializeGitRepository*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.initializeGitRepository",
+          "when": "view == projectExplorer && viewItem =~ /^error_initializeGitRepository*/",
           "group": "1_fix@0"
         },
         {

@@ -12,6 +12,8 @@ import { initialise } from './testing';
 import { ProjectFileWatcher } from './fileWatcher';
 import { ConfigurationManager } from './configurationManager';
 import { ContextValueManager } from './contextValueManager';
+import { getGitApi } from './extensions/git';
+import { APIState } from './import/git';
 
 export async function activate(context: ExtensionContext): Promise<IBMiProjectExplorer> {
 	console.log(l10n.t('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!'));
@@ -33,6 +35,14 @@ export async function activate(context: ExtensionContext): Promise<IBMiProjectEx
 	const projectExplorerTreeView = window.createTreeView(`projectExplorer`, { treeDataProvider: projectExplorer, showCollapseAll: true });
 	const jobLog = new JobLog(context);
 	const jobLogTreeView = window.createTreeView(`jobLog`, { treeDataProvider: jobLog, showCollapseAll: true });
+
+	// Setup Git API listener
+	const gitApi = getGitApi();
+	if (gitApi) {
+		gitApi.onDidChangeState((state: APIState) => {
+			projectExplorer.refresh();
+		});
+	}
 
 	// Initialize file watcher
 	ProjectFileWatcher.initialize(projectExplorer, jobLog);

@@ -88,6 +88,22 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
       }
     );
   }
+  
+  static initializeNoGitRepositoryError(workspaceFolder: WorkspaceFolder): ErrorItem {
+    return new ErrorItem(
+      workspaceFolder,
+      l10n.t('Branches'),
+      {
+        description: l10n.t('Please initialize git repository'),
+        contextValue: ErrorItem.contextValue + ContextValue.initializeGitRepository,
+        command: {
+          command: `vscode-ibmi-projectexplorer.initializeGitRepository`,
+          title: l10n.t('Initialize Git Repository'),
+          arguments: [workspaceFolder]
+        }
+      }
+    );
+  }
 
   static createNoDeployLocationError(workspaceFolder: WorkspaceFolder): ErrorItem {
     return new ErrorItem(

@@ -15,6 +15,8 @@ import ObjectLibraries from "./objectlibraries";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import Source from "./source";
 import Variables from "./variables";
+import Branches from "./branches";
+import { getGitApi } from "../../extensions/git";
 
 /**
  * Tree item for a project.
@@ -44,7 +46,7 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
   async getChildren(): Promise<ProjectExplorerTreeItem[]> {
     this.children.splice(0, this.children.length);
     this.extensibleChildren.splice(0, this.extensibleChildren.length);
-    
+
     const ibmi = getInstance();
     const iProject = ProjectManager.get(this.workspaceFolder);
 
@@ -82,6 +84,17 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
     } else {
       this.children.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Library List')));
       this.children.push(ErrorItem.createNoConnectionError(this.workspaceFolder, l10n.t('Object Libraries')));
+    }
+
+    const gitApi = getGitApi();
+    if (gitApi && gitApi?.state === 'initialized') {
+      if (iProject?.isGitRepository()) {
+        this.children.push(new Branches(this.workspaceFolder, true));
+      } else {
+        this.children.push(ErrorItem.initializeNoGitRepositoryError(this.workspaceFolder));
+      }
+    } else {
+      this.children.push(new Branches(this.workspaceFolder, false));
     }
 
     this.children.push(new IncludePaths(this.workspaceFolder));
