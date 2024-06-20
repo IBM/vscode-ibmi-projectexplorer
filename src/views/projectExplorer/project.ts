@@ -88,8 +88,9 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
 
     const gitApi = getGitApi();
     if (gitApi && gitApi?.state === 'initialized') {
-      if (iProject?.isGitRepository()) {
-        this.children.push(new Branches(this.workspaceFolder, true));
+      const repository = iProject?.getGitRepository();
+      if (repository) {
+        this.children.push(new Branches(this.workspaceFolder, true, repository));
       } else {
         this.children.push(ErrorItem.initializeNoGitRepositoryError(this.workspaceFolder));
       }

@@ -56,6 +56,7 @@ export enum ContextValue {
   memberFile = 'memberFile',
   objectLibraries = 'objectLibraries',
   branches = 'branches',
+  branch = 'branch',
   includePaths = 'includePaths',
   includePath = 'includePath',
   ifsDirectory = 'ifsDirectory',

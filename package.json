@@ -439,6 +439,12 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.checkoutToBranch",
+        "title": "%commands.projectExplorer.checkoutToBranch%",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
         "title": "%commands.projectExplorer.migrateSource%"
       },
@@ -865,6 +871,10 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.initializeGitRepository",
+          "when": "never"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.checkoutToBranch",
           "when": "never"
         },
         {
@@ -1298,33 +1308,43 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.createIProj",
-          "when": "view == projectExplorer && viewItem =~ /^error_createIProj*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_createIProj.*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.createIProj",
-          "when": "view == projectExplorer && viewItem =~ /^error_createIProj*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_createIProj.*/",
           "group": "1_fix@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.createEnv",
-          "when": "view == projectExplorer && viewItem =~ /^error_createEnv*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_createEnv.*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.createEnv",
-          "when": "view == projectExplorer && viewItem =~ /^error_createEnv*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_createEnv.*/",
           "group": "1_fix@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.initializeGitRepository",
-          "when": "view == projectExplorer && viewItem =~ /^error_initializeGitRepository*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_initializeGitRepository.*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.initializeGitRepository",
-          "when": "view == projectExplorer && viewItem =~ /^error_initializeGitRepository*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_initializeGitRepository.*/",
           "group": "1_fix@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.checkoutToBranch",
+          "when": "view == projectExplorer && viewItem =~ /^branch(?!es).*/",
+          "group": "inline@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.checkoutToBranch",
+          "when": "view == projectExplorer && viewItem =~ /^branch(?!es).*/",
+          "group": "1_checkout@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.migrateSource",
@@ -1678,32 +1698,32 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.addFolderToWorkspace",
-          "when": "view == projectExplorer && viewItem =~ /^error_addFolderToWorkspace*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_addFolderToWorkspace.*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.addFolderToWorkspace",
-          "when": "view == projectExplorer && viewItem =~ /^error_addFolderToWorkspace*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_addFolderToWorkspace.*/",
           "group": "1_fix@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.openConnectionBrowser",
-          "when": "view == projectExplorer && viewItem =~ /^error_openConnectionBrowser*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_openConnectionBrowser.*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.openConnectionBrowser",
-          "when": "view == projectExplorer && viewItem =~ /^error_openConnectionBrowser*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_openConnectionBrowser.*/",
           "group": "1_fix@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.setDeployLocation",
-          "when": "view == projectExplorer && viewItem =~ /^error_setDeployLocation*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_setDeployLocation.*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.setDeployLocation",
-          "when": "view == projectExplorer && viewItem =~ /^error_setDeployLocation*/",
+          "when": "view == projectExplorer && viewItem =~ /^error_setDeployLocation.*/",
           "group": "1_fix@0"
         },
         {
@@ -2012,8 +2032,8 @@
     "@types/parse-gitignore": "^1.0.2",
     "@types/tar": "^6.1.13",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/parser": "^7.13.1",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
     "@vscode/l10n-dev": "^0.0.35",
     "esbuild-loader": "^4.1.0",
     "eslint": "^8.57.0",
@@ -2023,6 +2043,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "crc-32": "^1.2.2",
     "dotenv": "^16.4.5",
     "ignore": "^5.3.1",
     "jsonschema": "^1.4.1",

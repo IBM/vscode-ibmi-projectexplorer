@@ -207,6 +207,8 @@
   "Unable to retrieve environment variables": "Unable to retrieve environment variables",
   "Not specified": "Not specified",
   "Delete Upon Deploy\n": "Delete Upon Deploy\n",
+  "Branch: {0}\n": "Branch: {0}\n",
+  "Library: {0}": "Library: {0}",
   "License: {0}": "License: {0}",
   "No job log found": "No job log found",
   "Failed to copy command": "Failed to copy command",

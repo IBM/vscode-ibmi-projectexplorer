@@ -38,6 +38,7 @@
   "commands.projectExplorer.browse": "Browse",
   "commands.projectExplorer.changeLibraryDescription": "Change Library Description",
   "commands.projectExplorer.changeObjectDescription": "Change Object Description",
+  "commands.projectExplorer.checkoutToBranch": "Checkout to Branch",
   "commands.projectExplorer.clearLibrary": "Clear Library",
   "commands.projectExplorer.compareWithRemote": "Compare with Remote",
   "commands.projectExplorer.compareWithSelected": "Compare with Selected",

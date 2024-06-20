@@ -20,6 +20,7 @@ import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { LibraryType } from "./views/projectExplorer/library";
 import Instance from "@halcyontech/vscode-ibmi-types/api/Instance";
 import { getGitApi } from "./extensions/git";
+import { Repository } from "./import/git";
 
 /**
  * Represents the default variable for a project's current library.
@@ -1356,23 +1357,21 @@ export class IProject {
   }
 
   /**
-   * Check if the project is a git repository
+   * Get the Git repository for the project.
    * 
-   * @returns True if the project is a git repository and false otherwise.
+   * @returns The `Repository` if the project is a git repository or `undefined`.
    */
-  public isGitRepository(): boolean {
+  public getGitRepository(): Repository | null | undefined {
     const gitApi = getGitApi();
     if (gitApi) {
-      return gitApi?.getRepository(this.workspaceFolder.uri) ? true : false;
+      return gitApi?.getRepository(this.workspaceFolder.uri);
     }
-
-    return false;
   }
 
   /**
-   * Initialize project as a git repository.
+   * Initialize project as a Git repository.
    * 
-   * @returns True if the git repository is initialized and false otherwise.
+   * @returns True if the Git repository is initialized and false otherwise.
    */
   public async initializeGitRepository(): Promise<boolean> {
     const gitApi = getGitApi();
