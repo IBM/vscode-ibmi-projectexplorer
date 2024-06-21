@@ -109,7 +109,11 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
           severities.push({ severityLevel: 40, label: l10n.t('40'), description: l10n.t('Severity 40 or more') });
           severities.push({ severityLevel: 50, label: l10n.t('50'), description: l10n.t('Severity 50 or more') });
 
-          const severityFilter = await window.showQuickPick(severities, { placeHolder: l10n.t('Select Severity Level'), canPickMany: false });
+          const severityFilter = await window.showQuickPick(severities, {
+            placeHolder: l10n.t('Select Severity Level'),
+            canPickMany: false
+          });
+
           if (severityFilter) {
             element.setSeverityLevel(severityFilter.severityLevel);
             this.refresh(element);

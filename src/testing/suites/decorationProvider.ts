@@ -4,8 +4,8 @@
 
 import * as assert from "assert";
 import { TestSuite } from "..";
-import { CancellationTokenSource, ThemeColor, Uri, window, workspace } from "vscode";
-import { DecorationProvider } from "../../views/projectExplorer/decorationProvider";
+import { CancellationTokenSource, ThemeColor, Uri, l10n, window, workspace } from "vscode";
+import { DecorationProvider } from "../../decorationProvider";
 import { ProjectManager } from "../../projectManager";
 
 let decorationProvider: DecorationProvider;
@@ -28,7 +28,8 @@ export const decorationProviderSuite: TestSuite = {
                 assert.strictEqual(decoration1, undefined);
                 assert.deepStrictEqual(decoration2, {
                     badge: uri2.path,
-                    color: new ThemeColor('errorForeground')
+                    color: new ThemeColor('errorForeground'),
+                    tooltip: l10n.t('{0} Unresolved Variable(s)', 1)
                 });
             }
         },
@@ -42,7 +43,22 @@ export const decorationProviderSuite: TestSuite = {
                 assert.strictEqual(decoration1, undefined);
                 assert.deepStrictEqual(decoration2, {
                     badge: '?',
-                    color: new ThemeColor('errorForeground')
+                    color: new ThemeColor('errorForeground'),
+                    tooltip: l10n.t('Unresolved Variable')
+                });
+            }
+        },
+        {
+            name: `Test log decoration`, test: async () => {
+                const uri1 = Uri.parse(`log:0`, true);
+                const uri2 = Uri.parse(`log:10`, true);
+                const decoration1 = decorationProvider.provideFileDecoration(uri1, cancellationTokenSource.token);
+                const decoration2 = decorationProvider.provideFileDecoration(uri2, cancellationTokenSource.token);
+
+                assert.strictEqual(decoration1, undefined);
+                assert.deepStrictEqual(decoration2, {
+                    badge: uri2.path,
+                    tooltip: l10n.t('Message Severity Filter: {0}', 10)
                 });
             }
         },

@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
 import { JobLogInfo } from "../../jobLog";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
 import IleObject from "./ileObject";
@@ -15,7 +15,7 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.log;
   jobLogInfo: JobLogInfo;
   onlyShowFailedCommands: boolean;
-  showSeverityLevels: number;
+  severityLevel: number;
 
   constructor(public workspaceFolder: WorkspaceFolder, jobLogInfo: JobLogInfo, isLocal: boolean = false) {
     super(jobLogInfo.createdTime.toLocaleString(), TreeItemCollapsibleState.Collapsed);
@@ -24,7 +24,9 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
     this.iconPath = new ThemeIcon('archive', isLocal ? new ThemeColor('joblog.local') : undefined);
     this.contextValue = Log.contextValue + ContextValue.showFailedJobsAction;
     this.onlyShowFailedCommands = false;
-    this.showSeverityLevels = 0;
+    this.severityLevel = 0;
+    this.resourceUri = Uri.parse(`log:${this.severityLevel}`, true);
+    this.tooltip = jobLogInfo.createdTime.toLocaleString();
   }
 
   toggleShowFailed(): void {
@@ -35,7 +37,8 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
   }
 
   setSeverityLevel(severityLevel: number): void {
-    this.showSeverityLevels = severityLevel;
+    this.severityLevel = severityLevel;
+    this.resourceUri = Uri.parse(`log:${this.severityLevel}`, true);
   }
 
   getChildren(): ProjectExplorerTreeItem[] {
@@ -43,11 +46,11 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
 
     if (this.onlyShowFailedCommands) {
       items.push(...this.jobLogInfo.objects?.filter(object => object.failed).map(
-        object => new IleObject(this.workspaceFolder, object, this.showSeverityLevels)
+        object => new IleObject(this.workspaceFolder, object, this.severityLevel)
       ));
     } else {
       items.push(...this.jobLogInfo.objects?.map(
-        object => new IleObject(this.workspaceFolder, object, this.showSeverityLevels)
+        object => new IleObject(this.workspaceFolder, object, this.severityLevel)
       ));
     }
     return items;

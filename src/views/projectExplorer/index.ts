@@ -12,7 +12,7 @@ import { getDeployTools, getInstance, getTools } from "../../ibmi";
 import { LINKS } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
-import { DecorationProvider } from "./decorationProvider";
+import { DecorationProvider } from "../../decorationProvider";
 import ErrorItem from "./errorItem";
 import IncludePaths from "./includePaths";
 import Library, { LibraryType } from "./library";
