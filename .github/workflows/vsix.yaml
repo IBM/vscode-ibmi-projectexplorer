@@ -1,0 +1,53 @@
+name: Build VSIX
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: Build and Upload
+
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'build')
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install NPM Dependencies
+        run: |
+          npm install
+          npm install -g vsce
+
+      - name: Package
+        run: vsce package
+
+      - name: Upload VSIX
+        uses: actions/upload-artifact@v4
+        with:
+          name: vscode-ibmi-projectexplorer-pr-build
+          path: ./*.vsix
+          if-no-files-found: error
+
+      - name: Post Comment
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '👋  A new build is available for this PR based on ${{ github.event.pull_request.head.sha }}. Click [here](https://github.com/IBM/vscode-ibmi-projectexplorer/actions/runs/${{ github.run_id }}) to download.'
+            })

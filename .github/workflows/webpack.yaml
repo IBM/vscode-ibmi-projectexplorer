@@ -11,6 +11,8 @@ on:
 
 jobs:
   build:
+    name: Build and Package
+
     runs-on: ubuntu-latest
 
     strategy:
