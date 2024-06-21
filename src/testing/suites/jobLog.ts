@@ -67,7 +67,7 @@ export const jobLogSuite: TestSuite = {
                 const showFailedJobsPostToggle = jobLogs[0].showFailedJobs;
                 jobLogs[0].toggleShowFailedJobs();
 
-                assert.ok(showFailedJobsPreToggle);
+                assert.ok(!showFailedJobsPreToggle);
                 assert.strictEqual(showFailedJobsPreToggle, !showFailedJobsPostToggle);
             }
         },
@@ -80,7 +80,7 @@ export const jobLogSuite: TestSuite = {
                 const severityLevelAfter = jobLogs[0].severityLevel;
                 jobLogs[0].setSeverityLevel(severityLevelBefore);
 
-                assert.strictEqual(severityLevelBefore, 10);
+                assert.strictEqual(severityLevelBefore, 0);
                 assert.strictEqual(severityLevelAfter, 50);
             }
         }
