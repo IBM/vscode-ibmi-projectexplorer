@@ -5,7 +5,7 @@
 import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
 import { JobLogInfo } from "../../jobLog";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
-import Command from "./command";
+import IleObject from "./ileObject";
 import { ContextValue } from "../../ibmiProjectExplorer";
 
 /**
@@ -14,7 +14,7 @@ import { ContextValue } from "../../ibmiProjectExplorer";
 export default class Log extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.log;
   jobLogInfo: JobLogInfo;
-  onlyShowFailedCommands : boolean;
+  onlyShowFailedCommands: boolean;
   showSeverityLevels: number;
 
   constructor(public workspaceFolder: WorkspaceFolder, jobLogInfo: JobLogInfo, isLocal: boolean = false) {
@@ -29,10 +29,9 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
 
   toggleShowFailed(): void {
     this.onlyShowFailedCommands = this.onlyShowFailedCommands === false ? true : false;
-    
-    this.contextValue = Log.contextValue;
-    this.contextValue += this.onlyShowFailedCommands ? 
-                             ContextValue.showAllJobsAction : ContextValue.showFailedJobsAction;
+
+    this.contextValue = Log.contextValue +
+      (this.onlyShowFailedCommands ? ContextValue.showAllJobsAction : ContextValue.showFailedJobsAction);
   }
 
   setSeverityLevel(severityLevel: number): void {
@@ -42,17 +41,13 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
   getChildren(): ProjectExplorerTreeItem[] {
     let items: ProjectExplorerTreeItem[] = [];
 
-    const jobLogInfo = this.jobLogInfo;
-
     if (this.onlyShowFailedCommands) {
-      items.push(...jobLogInfo.commands?.filter(
-        command => command.failed
-      ).map(
-        command => new Command(this.workspaceFolder, command, this.showSeverityLevels)
+      items.push(...this.jobLogInfo.objects?.filter(object => object.failed).map(
+        object => new IleObject(this.workspaceFolder, object, this.showSeverityLevels)
       ));
-    }else{
-      items.push(...jobLogInfo.commands?.map(
-        command => new Command(this.workspaceFolder, command, this.showSeverityLevels)
+    } else {
+      items.push(...this.jobLogInfo.objects?.map(
+        object => new IleObject(this.workspaceFolder, object, this.showSeverityLevels)
       ));
     }
     return items;

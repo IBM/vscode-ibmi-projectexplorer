@@ -1542,7 +1542,7 @@ export class IProject {
       if (jobLog) {
         if (!this.jobLogs.isEmpty()) {
           const latestJobLog = this.jobLogs.get(-1);
-          if (latestJobLog && latestJobLog.commands[0].cmd_time !== jobLog.commands[0].cmd_time) {
+          if (latestJobLog && latestJobLog.objects[0].cmd_time !== jobLog.objects[0].cmd_time) {
             this.jobLogs.add(jobLog);
           }
         } else {

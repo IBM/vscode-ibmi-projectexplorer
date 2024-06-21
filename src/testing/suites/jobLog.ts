@@ -53,7 +53,7 @@ export const jobLogSuite: TestSuite = {
             name: `Test createFromToTextForMsgEntity`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 const jobLogs = iProject.getJobLogs();
-                const fromToText = JobLogInfo.createFromToTextForMsgEntity(jobLogs[0].commands[0].msgs![0]);
+                const fromToText = JobLogInfo.createFromToTextForMsgEntity(jobLogs[0].objects[0].msgs![0]);
 
                 assert.strictEqual(fromToText, 'From: QSYS/QWTPIIPP:04CC\nTo: CRTFRMSTMF/CRTFRMSTMF/*EXT/CRTFRMSTMF:*N');
             }

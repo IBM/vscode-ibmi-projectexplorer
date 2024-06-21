@@ -5,10 +5,9 @@
 import { commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, window, workspace } from "vscode";
 import { ProjectManager } from "../../projectManager";
 import Project from "./project";
+import IleObject from "./ileObject";
 import Command from "./command";
-import CommandRepresentation from "./commandRepresentation";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
-import { ContextValue } from "../../ibmiProjectExplorer";
 import { IProjectT } from "../../iProjectT";
 import ErrorItem from "./errorItem";
 import Log from "./log";
@@ -51,24 +50,24 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
           this.refresh();
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.copy`, async (element: Command | CommandRepresentation) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.copy`, async (element: IleObject | Command) => {
         try {
           var commandString = '';
-          if (element instanceof CommandRepresentation) {
-            commandString = element.commandInfo;
-          } else if (element instanceof Command) {
-            commandString = element.commandInfo.cmd;
+          if (element instanceof Command) {
+            commandString = element.cmd;
+          } else if (element instanceof IleObject) {
+            commandString = element.objectInfo.cmd;
           }
           await env.clipboard.writeText(commandString);
         } catch (error) {
           window.showErrorMessage(l10n.t('Failed to copy command'));
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showObjectOutput`, async (element: Command) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showObjectOutput`, async (element: IleObject) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
         if (iProject) {
 
-          const fileName = path.basename(element.commandInfo.output);
+          const fileName = path.basename(element.objectInfo.output);
           const buildOutputExists = await iProject.projectFileExists(fileName);
 
           if (buildOutputExists) {

@@ -5,9 +5,9 @@
 import { l10n } from "vscode";
 
 /**
- * Represents a command in a `joblog.json` file.
+ * Represents an object in a `joblog.json` file.
  */
-export interface CommandInfo {
+export interface ObjectInfo {
     cmd: string;
     cmd_time: string;
     object: string;
@@ -41,12 +41,12 @@ export interface MessageInfo {
  * Represents the content of a single `joblog.json` file.
  */
 export class JobLogInfo {
-    commands: CommandInfo[];
+    objects: ObjectInfo[];
     createdTime: Date;
 
-    constructor(commands: CommandInfo[]) {
-        this.commands = commands;
-        this.createdTime = parseDateTime(commands[0].cmd_time); // Use the first cmd's run time as the created time.
+    constructor(objects: ObjectInfo[]) {
+        this.objects = objects;
+        this.createdTime = parseDateTime(objects[0].cmd_time); // Use the first object's run time as the created time.
     }
 
     public static createFromToTextForMsgEntity(msg: MessageInfo) {
