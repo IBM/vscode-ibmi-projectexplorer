@@ -43,16 +43,28 @@ export interface MessageInfo {
 export class JobLogInfo {
     objects: ObjectInfo[];
     createdTime: Date;
+    showFailedJobs: boolean;
+    severityLevel: number;
 
     constructor(objects: ObjectInfo[]) {
         this.objects = objects;
         this.createdTime = parseDateTime(objects[0].cmd_time); // Use the first object's run time as the created time.
+        this.showFailedJobs = false;
+        this.severityLevel = 0;
     }
 
     public static createFromToTextForMsgEntity(msg: MessageInfo) {
         const fromText = l10n.t('From: {0}/{1}:{2}', msg.from_library, msg.from_program, msg.from_instruction);
         const toText = l10n.t('To: {0}/{1}/{2}/{3}:{4}', msg.to_library, msg.to_module, msg.to_program, msg.to_procedure, msg.to_instruction);
         return `${fromText}\n${toText}`;
+    }
+
+    toggleShowFailedJobs() {
+        this.showFailedJobs = this.showFailedJobs === false ? true : false;
+    }
+
+    setSeverityLevel(severityLevel: number) {
+        this.severityLevel = severityLevel;
     }
 }
 
@@ -80,7 +92,7 @@ export function parseDateTime(dateTime: string): Date {
         assert(split2.length >= 3);
         const hour = Number(split2[0]);
         const min = Number(split2[1]);
-        const sec = split2.length === 3 ? Number(split2[2]) : Number(split2[2]) +  Number(`0.${split2[3]}`);
+        const sec = split2.length === 3 ? Number(split2[2]) : Number(split2[2]) + Number(`0.${split2[3]}`);
 
         return new Date(year, month, day, hour, min, sec);
     } catch {

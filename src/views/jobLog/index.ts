@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, window, workspace } from "vscode";
+import { commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, TreeView, window, workspace } from "vscode";
 import { ProjectManager } from "../../projectManager";
 import Project from "./project";
 import IleObject from "./ileObject";
@@ -20,8 +20,11 @@ const path = require('path');
 export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+  private treeView: TreeView<ProjectExplorerTreeItem> | undefined;
 
   constructor(context: ExtensionContext) {
+    this.loadJobLogs();
+
     context.subscriptions.push(
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.refreshJobLog`, () => {
         this.refresh();
@@ -84,16 +87,16 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
         const iProject = ProjectManager.get(element.workspaceFolder);
 
         if (iProject) {
-          element.toggleShowFailed();
-          this.refresh(element);
+          element.jobLogInfo.toggleShowFailedJobs();
+          this.refresh();
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showAllJobs`, async (element: Log) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
 
         if (iProject) {
-          element.toggleShowFailed();
-          this.refresh(element);
+          element.jobLogInfo.toggleShowFailedJobs();
+          this.refresh();
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity`, async (element: Log) => {
@@ -115,12 +118,16 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
           });
 
           if (severityFilter) {
-            element.setSeverityLevel(severityFilter.severityLevel);
-            this.refresh(element);
+            element.jobLogInfo.setSeverityLevel(severityFilter.severityLevel);
+            this.refresh();
           }
         }
       })
     );
+  }
+
+  setTreeView(treeView: TreeView<ProjectExplorerTreeItem>) {
+    this.treeView = treeView;
   }
 
   /**
@@ -128,8 +135,14 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
    * 
    * @param element The tree item to refresh.
    */
-  refresh(element?: ProjectExplorerTreeItem) {
-    this._onDidChangeTreeData.fire(element);
+  async refresh(element?: ProjectExplorerTreeItem) {
+    if (!element) {
+      await this.loadJobLogs().then(() => {
+        this._onDidChangeTreeData.fire();
+      });
+    } else {
+      this._onDidChangeTreeData.fire(element);
+    }
   }
 
   getTreeItem(element: ProjectExplorerTreeItem): ProjectExplorerTreeItem | Thenable<ProjectExplorerTreeItem> {
@@ -166,6 +179,32 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
       }
 
       return items;
+    }
+  }
+
+  async loadJobLogs() {
+    for (const iProject of ProjectManager.getProjects()) {
+      await iProject?.readJobLog();
+
+      const jobLogs = iProject?.getJobLogs().slice().reverse();
+      const jobLogExists = await iProject?.projectFileExists('joblog.json');
+      if (jobLogExists && jobLogs[0]) {
+        const numFailedObjects = jobLogs[0].objects.filter(object => object.failed).length
+        this.updateBadge(numFailedObjects);
+      } else {
+        this.updateBadge(0);
+      }
+    }
+  }
+
+  updateBadge(numFailedObjects: number) {
+    if (numFailedObjects > 0) {
+      this.treeView!.badge = {
+        tooltip: l10n.t('{0} Failed Object(s)', numFailedObjects),
+        value: numFailedObjects
+      }
+    } else {
+      this.treeView!.badge = undefined;
     }
   }
 }
