@@ -1187,7 +1187,12 @@ export class IProject {
         const originalGitignore = (await workspace.fs.readFile(this.getProjectFileUri('.gitignore'))).toString();
         const parsedGitignore = parse(originalGitignore);
         const contentToAppend = DEFAULT_GITIGNORE.filter(entry => !parsedGitignore.patterns.includes(entry));
-        newGitignoreContent = `${originalGitignore}\n${contentToAppend.join('\n')}`;
+
+        if (contentToAppend.length > 0) {
+          newGitignoreContent = `${originalGitignore}\n${contentToAppend.join('\n')}`;
+        } else {
+          return true;
+        }
       } else {
         // Create new .gitignore file
         newGitignoreContent = DEFAULT_GITIGNORE.join('\n');
@@ -1547,7 +1552,7 @@ export class IProject {
       if (jobLog) {
         if (!this.jobLogs.isEmpty()) {
           const latestJobLog = this.jobLogs.get(-1);
-          if (latestJobLog && latestJobLog.commands[0].cmd_time !== jobLog.commands[0].cmd_time) {
+          if (latestJobLog && latestJobLog.objects[0].cmd_time !== jobLog.objects[0].cmd_time) {
             this.jobLogs.add(jobLog);
           }
         } else {

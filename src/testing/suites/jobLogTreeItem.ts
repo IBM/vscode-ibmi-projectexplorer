@@ -64,11 +64,11 @@ export const jobLogTreeItemSuite: TestSuite = {
             }
         },
         {
-            name: `Test command`, test: async () => {
+            name: `Test object`, test: async () => {
                 const projectTreeItem = (await jobLog!.getChildren())[0];
                 const logTreeItem = (await jobLog?.getChildren(projectTreeItem)!)[0];
-                const commandTreeItem = (await jobLog?.getChildren(logTreeItem)!)[0];
-                const children = await jobLog?.getChildren(commandTreeItem)!;
+                const objectTreeItem = (await jobLog?.getChildren(logTreeItem)!)[0];
+                const children = await jobLog?.getChildren(objectTreeItem)!;
 
                 assertTreeItem(children[0], {
                     label: "CRTCLMOD MODULE(bobtest/PAR201) SRCFILE(QTEMP/QSOURCE) SRCMBR(PAR201) AUT() DBGVIEW(*ALL) OPTIMIZE() OPTION(*EVENTF) TEXT(' ') TGTRLS() INCDIR('/bob-recursive-example/includes' '/bob-recursive-example/QPROTOSRC')",

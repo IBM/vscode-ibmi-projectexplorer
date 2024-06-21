@@ -1687,7 +1687,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
-          "when": "view == jobLog && viewItem =~ /^(?!message).*/",
+          "when": "view == jobLog && viewItem =~ /^(?!(message|command)).*/",
           "group": "0_refresh@0"
         },
         {
@@ -1712,22 +1712,22 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
-          "when": "view == jobLog && viewItem =~ /^(command|commandRepresentation).*/",
+          "when": "view == jobLog && viewItem =~ /^(ileObject|command).*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
-          "when": "view == jobLog && viewItem =~ /^(command|commandRepresentation).*/",
+          "when": "view == jobLog && viewItem =~ /^(ileObject|command).*/",
           "group": "1_copy@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
-          "when": "view == jobLog && viewItem =~ /^command(?!Representation).*/",
+          "when": "view == jobLog && viewItem =~ /^ileObject.*/",
           "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
-          "when": "view == jobLog && viewItem =~ /^command(?!Representation).*/",
+          "when": "view == jobLog && viewItem =~ /^ileObject.*/",
           "group": "2_output@0"
         },
         {

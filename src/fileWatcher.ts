@@ -3,6 +3,7 @@
  */
 
 import { Uri, workspace } from 'vscode';
+import * as path from "path";
 import { ProjectManager } from './projectManager';
 import JobLog from "./views/jobLog";
 import ProjectExplorer from "./views/projectExplorer";
@@ -80,7 +81,7 @@ export namespace ProjectFileWatcher {
                     elementToRefresh = projectTreeItem.children[0];
                 }
 
-                if (uri.path.endsWith('.logs/joblog.json')) {
+                if (uri.path.endsWith('.logs/joblog.json') || uri.path.endsWith(path.posix.join(iProject.workspaceFolder.uri.path, '.logs'))) {
                     jobLog.refresh();
                 }
             }

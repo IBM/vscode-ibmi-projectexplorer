@@ -2,13 +2,12 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, window, workspace } from "vscode";
+import { commands, env, EventEmitter, ExtensionContext, l10n, TreeDataProvider, TreeView, window, workspace } from "vscode";
 import { ProjectManager } from "../../projectManager";
 import Project from "./project";
+import IleObject from "./ileObject";
 import Command from "./command";
-import CommandRepresentation from "./commandRepresentation";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
-import { ContextValue } from "../../ibmiProjectExplorer";
 import { IProjectT } from "../../iProjectT";
 import ErrorItem from "./errorItem";
 import Log from "./log";
@@ -21,8 +20,11 @@ const path = require('path');
 export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+  private treeView: TreeView<ProjectExplorerTreeItem> | undefined;
 
   constructor(context: ExtensionContext) {
+    this.loadAllJobLogs();
+
     context.subscriptions.push(
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.refreshJobLog`, () => {
         this.refresh();
@@ -51,24 +53,24 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
           this.refresh();
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.copy`, async (element: Command | CommandRepresentation) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.copy`, async (element: IleObject | Command) => {
         try {
           var commandString = '';
-          if (element instanceof CommandRepresentation) {
-            commandString = element.commandInfo;
-          } else if (element instanceof Command) {
-            commandString = element.commandInfo.cmd;
+          if (element instanceof Command) {
+            commandString = element.cmd;
+          } else if (element instanceof IleObject) {
+            commandString = element.objectInfo.cmd;
           }
           await env.clipboard.writeText(commandString);
         } catch (error) {
           window.showErrorMessage(l10n.t('Failed to copy command'));
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showObjectOutput`, async (element: Command) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showObjectOutput`, async (element: IleObject) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
         if (iProject) {
 
-          const fileName = path.basename(element.commandInfo.output);
+          const fileName = path.basename(element.objectInfo.output);
           const buildOutputExists = await iProject.projectFileExists(fileName);
 
           if (buildOutputExists) {
@@ -85,16 +87,16 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
         const iProject = ProjectManager.get(element.workspaceFolder);
 
         if (iProject) {
-          element.toggleShowFailed();
-          this.refresh(element);
+          element.jobLogInfo.toggleShowFailedJobs();
+          this.refresh();
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showAllJobs`, async (element: Log) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
 
         if (iProject) {
-          element.toggleShowFailed();
-          this.refresh(element);
+          element.jobLogInfo.toggleShowFailedJobs();
+          this.refresh();
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.filterMessageSeverity`, async (element: Log) => {
@@ -110,14 +112,22 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
           severities.push({ severityLevel: 40, label: l10n.t('40'), description: l10n.t('Severity 40 or more') });
           severities.push({ severityLevel: 50, label: l10n.t('50'), description: l10n.t('Severity 50 or more') });
 
-          const severityFilter = await window.showQuickPick(severities, { placeHolder: l10n.t('Select Severity Level'), canPickMany: false });
+          const severityFilter = await window.showQuickPick(severities, {
+            placeHolder: l10n.t('Select Severity Level'),
+            canPickMany: false
+          });
+
           if (severityFilter) {
-            element.setSeverityLevel(severityFilter.severityLevel);
-            this.refresh(element);
+            element.jobLogInfo.setSeverityLevel(severityFilter.severityLevel);
+            this.refresh();
           }
         }
       })
     );
+  }
+
+  setTreeView(treeView: TreeView<ProjectExplorerTreeItem>) {
+    this.treeView = treeView;
   }
 
   /**
@@ -125,8 +135,14 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
    * 
    * @param element The tree item to refresh.
    */
-  refresh(element?: ProjectExplorerTreeItem) {
-    this._onDidChangeTreeData.fire(element);
+  async refresh(element?: ProjectExplorerTreeItem) {
+    if (!element) {
+      await this.loadAllJobLogs().then(() => {
+        this._onDidChangeTreeData.fire();
+      });
+    } else {
+      this._onDidChangeTreeData.fire(element);
+    }
   }
 
   getTreeItem(element: ProjectExplorerTreeItem): ProjectExplorerTreeItem | Thenable<ProjectExplorerTreeItem> {
@@ -163,6 +179,38 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
       }
 
       return items;
+    }
+  }
+
+  async loadAllJobLogs() {
+    // Load all job logs
+    for (const iProject of ProjectManager.getProjects()) {
+      await iProject?.readJobLog();
+    }
+
+    // Update view badge
+    const activeProject = ProjectManager.getActiveProject();
+    if (activeProject) {
+      const jobLogs = activeProject?.getJobLogs().slice().reverse();
+      const jobLogExists = await activeProject?.projectFileExists('joblog.json');
+
+      if (jobLogExists && jobLogs[0]) {
+        const numFailedObjects = jobLogs[0].objects.filter(object => object.failed).length
+        this.updateBadge(numFailedObjects);
+      } else {
+        this.updateBadge(0);
+      }
+    }
+  }
+
+  updateBadge(numFailedObjects: number) {
+    if (numFailedObjects > 0) {
+      this.treeView!.badge = {
+        tooltip: l10n.t('{0} Failed Object(s)', numFailedObjects),
+        value: numFailedObjects
+      }
+    } else {
+      this.treeView!.badge = undefined;
     }
   }
 }

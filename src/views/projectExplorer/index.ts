@@ -5,14 +5,14 @@
 import { ConnectionData, DeploymentMethod, ObjectItem } from "@halcyontech/vscode-ibmi-types";
 import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
 import * as path from "path";
-import { ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
+import { ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, TreeView, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
 import { getDeployTools, getInstance, getTools } from "../../ibmi";
 import { LINKS } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
-import { DecorationProvider } from "./decorationProvider";
+import { DecorationProvider } from "../../decorationProvider";
 import ErrorItem from "./errorItem";
 import IncludePaths from "./includePaths";
 import Library, { LibraryType } from "./library";
@@ -35,6 +35,7 @@ import Variable from "./variable";
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+  private treeView: TreeView<ProjectExplorerTreeItem> | undefined;
   private projectTreeItems: Project[] = [];
 
   constructor(context: ExtensionContext) {
@@ -1286,6 +1287,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
       })
     );
+  }
+
+
+  setTreeView(treeView: TreeView<ProjectExplorerTreeItem>) {
+    this.treeView = treeView;
   }
 
   /**

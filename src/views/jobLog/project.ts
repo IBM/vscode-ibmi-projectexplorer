@@ -35,7 +35,6 @@ export default class Project extends TreeItem implements ProjectExplorerTreeItem
 
     const iProject = ProjectManager.get(this.workspaceFolder);
 
-    await iProject?.readJobLog();
     const jobLogs = iProject?.getJobLogs().slice().reverse();
     const jobLogExists = await iProject?.projectFileExists('joblog.json');
 
