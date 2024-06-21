@@ -36,6 +36,7 @@ jobs:
 
       - name: Upload VSIX
         uses: actions/upload-artifact@v4
+        id: artifact-upload
         with:
           name: vscode-ibmi-projectexplorer-pr-build
           path: ./*.vsix
@@ -49,5 +50,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: '👋  A new build is available for this PR based on ${{ github.event.pull_request.head.sha }}. Click [here](https://github.com/IBM/vscode-ibmi-projectexplorer/actions/runs/${{ github.run_id }}) to download.'
+              body: '👋  A new build is available for this PR based on ${{ github.event.pull_request.head.sha }}. Click [here](${{ steps.artifact-upload.outputs.artifact-url }}) to download.'
             })
