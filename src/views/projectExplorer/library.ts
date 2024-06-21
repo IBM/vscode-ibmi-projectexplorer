@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n, window } from "vscode";
+import { MarkdownString, ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n, window } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { getInstance } from "../../ibmi";
 import ObjectFile from "./objectFile";
@@ -47,11 +47,8 @@ export default class Library extends TreeItem implements ProjectExplorerTreeItem
     this.description = (variable ? `${variable} - ` : ``) +
       (libraryInfo.text.trim() !== '' ? `${libraryInfo.text} ` : ``) +
       (libraryInfo.attribute?.trim() !== '' ? `(${libraryInfo.attribute})` : ``);
-    this.tooltip = l10n.t('Name: {0}\n', libraryInfo.name) +
-      l10n.t('Path: {0}\n', this.path) +
-      (libraryInfo.text.trim() !== '' ? l10n.t('Text: {0}\n', libraryInfo.text) : ``) +
-      (libraryInfo.attribute ? l10n.t('Attribute: {0}\n', libraryInfo.attribute) : ``) +
-      l10n.t('Type: {0}', libraryInfo.type);
+    const ibmi = getInstance();
+    this.tooltip = ibmi?.getContent().objectToToolTip([libraryInfo.library, libraryInfo.name].join(`/`), libraryInfo);
     let iconColor: ThemeColor | undefined;
     switch (this.libraryType) {
       case LibraryType.systemLibrary:

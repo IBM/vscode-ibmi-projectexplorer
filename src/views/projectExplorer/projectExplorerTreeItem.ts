@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { TreeItem, WorkspaceFolder } from "vscode";
+import { MarkdownString, TreeItem, WorkspaceFolder } from "vscode";
 
 /**
  * Represents a tree item in the Project Explorer view.
@@ -19,5 +19,10 @@ export interface ProjectExplorerTreeItem extends TreeItem {
      *
      * @return Children of this tree item.
      */
-    getChildren(): ProjectExplorerTreeItem[] | Promise<ProjectExplorerTreeItem[]>;
+    getChildren: () => ProjectExplorerTreeItem[] | Promise<ProjectExplorerTreeItem[]>;
+
+    /**
+     * Get the markdown tooltip of this tree item.
+     */
+    getToolTip?: () => Promise<MarkdownString | undefined>;
 }

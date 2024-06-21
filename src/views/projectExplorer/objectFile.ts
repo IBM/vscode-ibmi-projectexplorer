@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, window } from "vscode";
+import { MarkdownString, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, window } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import MemberFile from "./memberFile";
 import { getInstance } from "../../ibmi";
@@ -31,11 +31,6 @@ export default class ObjectFile extends TreeItem implements ProjectExplorerTreeI
     this.iconPath = new ThemeIcon(icon);
     this.description = (objectFileInfo.text.trim() !== '' ? `${objectFileInfo.text} ` : ``) +
       (objectFileInfo.attribute?.trim() !== '' ? `(${objectFileInfo.attribute})` : '');
-    this.tooltip = l10n.t('Name: {0}\n', objectFileInfo.name) +
-      l10n.t('Path: {0}\n', this.path) +
-      (objectFileInfo.text.trim() !== '' ? l10n.t('Text: {0}\n', objectFileInfo.text) : ``) +
-      (objectFileInfo.attribute ? l10n.t('Attribute: {0}\n', objectFileInfo.attribute) : ``) +
-      l10n.t('Type: {0}', objectFileInfo.type);
     this.resourceUri = this.getObjectResourceUri();
   }
 
@@ -55,6 +50,16 @@ export default class ObjectFile extends TreeItem implements ProjectExplorerTreeI
     }
 
     return items;
+  }
+
+  async getToolTip() {
+    const ibmi = getInstance();
+    const path = [this.objectFileInfo.library, this.objectFileInfo.name].join(`/`);
+    if (this.objectFileInfo.sourceFile) {
+      return await ibmi?.getContent().sourcePhysicalFileToToolTip(path, this.objectFileInfo);
+    } else {
+      return ibmi?.getContent().objectToToolTip(path, this.objectFileInfo);
+    }
   }
 
   getObjectResourceUri() {
