@@ -3,6 +3,7 @@
  */
 
 import { Uri, workspace } from 'vscode';
+import * as path from "path";
 import { ProjectManager } from './projectManager';
 import JobLog from "./views/jobLog";
 import ProjectExplorer from "./views/projectExplorer";
@@ -75,12 +76,12 @@ export namespace ProjectFileWatcher {
             } else {
                 const projectTreeItem = projectExplorer.getProjectTreeItem(iProject);
 
-                if (projectTreeItem && projectTreeItem.children && 
+                if (projectTreeItem && projectTreeItem.children &&
                     projectTreeItem.children.length > 0 && projectTreeItem.children[0] instanceof Source) {
                     elementToRefresh = projectTreeItem.children[0];
                 }
 
-                if (uri.path.endsWith('.logs/joblog.json')) {
+                if (uri.path.endsWith('.logs/joblog.json') || uri.path.endsWith(path.posix.join(iProject.workspaceFolder.uri.path, '.logs'))) {
                     jobLog.refresh();
                 }
             }
