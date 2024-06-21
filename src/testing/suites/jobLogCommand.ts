@@ -113,7 +113,7 @@ export const jobLogCommandSuite: TestSuite = {
                 const logTreeItem = (await projectTreeItem!.getChildren())[0];
                 const objectTreeItemPreFilter = (await logTreeItem!.getChildren())[0];
                 const numMessagesPreFilter = (await objectTreeItemPreFilter.getChildren()).length;
-                (logTreeItem as Log).setSeverityLevel(10);
+                (logTreeItem as Log).jobLogInfo.setSeverityLevel(10);
                 const objectTreeItemPostFilter = (await logTreeItem!.getChildren())[0];
                 const numMessagesPostFilter = (await objectTreeItemPostFilter.getChildren()).length;
 
