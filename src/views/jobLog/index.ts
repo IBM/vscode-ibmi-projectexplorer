@@ -23,7 +23,7 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
   private treeView: TreeView<ProjectExplorerTreeItem> | undefined;
 
   constructor(context: ExtensionContext) {
-    this.loadJobLogs();
+    this.loadAllJobLogs();
 
     context.subscriptions.push(
       commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.refreshJobLog`, () => {
@@ -137,7 +137,7 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
    */
   async refresh(element?: ProjectExplorerTreeItem) {
     if (!element) {
-      await this.loadJobLogs().then(() => {
+      await this.loadAllJobLogs().then(() => {
         this._onDidChangeTreeData.fire();
       });
     } else {
@@ -182,12 +182,18 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
     }
   }
 
-  async loadJobLogs() {
+  async loadAllJobLogs() {
+    // Load all job logs
     for (const iProject of ProjectManager.getProjects()) {
       await iProject?.readJobLog();
+    }
 
-      const jobLogs = iProject?.getJobLogs().slice().reverse();
-      const jobLogExists = await iProject?.projectFileExists('joblog.json');
+    // Update view badge
+    const activeProject = ProjectManager.getActiveProject();
+    if (activeProject) {
+      const jobLogs = activeProject?.getJobLogs().slice().reverse();
+      const jobLogExists = await activeProject?.projectFileExists('joblog.json');
+
       if (jobLogExists && jobLogs[0]) {
         const numFailedObjects = jobLogs[0].objects.filter(object => object.failed).length
         this.updateBadge(numFailedObjects);
