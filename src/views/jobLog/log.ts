@@ -21,7 +21,7 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
     this.jobLogInfo = jobLogInfo;
     this.iconPath = new ThemeIcon('archive', isLocal ? new ThemeColor('joblog.local') : undefined);
     this.contextValue = Log.contextValue +
-      (this.jobLogInfo.showFailedJobs ? ContextValue.showAllJobsAction : ContextValue.showFailedJobsAction);
+      (this.jobLogInfo.showFailedObjects ? ContextValue.showAllObjectsAction : ContextValue.showFailedObjectsAction);
     this.resourceUri = Uri.parse(`log:${this.jobLogInfo.severityLevel}`, true);
     this.tooltip = jobLogInfo.createdTime.toLocaleString();
   }
@@ -29,7 +29,7 @@ export default class Log extends TreeItem implements ProjectExplorerTreeItem {
   getChildren(): ProjectExplorerTreeItem[] {
     let items: ProjectExplorerTreeItem[] = [];
 
-    if (this.jobLogInfo.showFailedJobs) {
+    if (this.jobLogInfo.showFailedObjects) {
       items.push(...this.jobLogInfo.objects?.filter(object => object.failed).map(
         object => new IleObject(this.workspaceFolder, object, this.jobLogInfo.severityLevel)
       ));

@@ -82,25 +82,25 @@ export const jobLogCommandSuite: TestSuite = {
             }
         },
         {
-            name: `Test showOnlyFailedJobs`, test: async () => {
+            name: `Test showOnlyFailedObjects`, test: async () => {
                 const projectTreeItem = (await jobLog!.getChildren())[0];
                 const logTreeItem = (await projectTreeItem!.getChildren())[0];
                 const numObjectsPreFilter = (await logTreeItem.getChildren()).length;
-                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs', logTreeItem);
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showOnlyFailedObjects', logTreeItem);
                 const numObjectsPostFilter = (await logTreeItem.getChildren()).length;
-                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showAllJobs', logTreeItem);
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showAllObjects', logTreeItem);
 
                 assert.equal(numObjectsPreFilter, 1);
                 assert.equal(numObjectsPostFilter, 0);
             }
         },
         {
-            name: `Test showAllJobs`, test: async () => {
+            name: `Test showAllObjects`, test: async () => {
                 const projectTreeItem = (await jobLog!.getChildren())[0];
                 const logTreeItem = (await projectTreeItem!.getChildren())[0];
-                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs', logTreeItem);
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showOnlyFailedObjects', logTreeItem);
                 const numObjectsPreFilter = (await logTreeItem.getChildren()).length;
-                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showAllJobs', logTreeItem);
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showAllObjects', logTreeItem);
                 const numObjectsPostFilter = (await logTreeItem.getChildren()).length;
 
                 assert.equal(numObjectsPreFilter, 0);

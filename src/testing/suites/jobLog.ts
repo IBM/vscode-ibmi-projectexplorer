@@ -59,16 +59,16 @@ export const jobLogSuite: TestSuite = {
             }
         },
         {
-            name: `Test toggleShowFailedJobs`, test: async () => {
+            name: `Test toggleShowFailedObjects`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 const jobLogs = iProject.getJobLogs();
-                const showFailedJobsPreToggle = jobLogs[0].showFailedJobs;
-                jobLogs[0].toggleShowFailedJobs();
-                const showFailedJobsPostToggle = jobLogs[0].showFailedJobs;
-                jobLogs[0].toggleShowFailedJobs();
+                const showFailedObjectsPreToggle = jobLogs[0].showFailedObjects;
+                jobLogs[0].toggleShowFailedObjects();
+                const showFailedObjectsPostToggle = jobLogs[0].showFailedObjects;
+                jobLogs[0].toggleShowFailedObjects();
 
-                assert.ok(!showFailedJobsPreToggle);
-                assert.strictEqual(showFailedJobsPreToggle, !showFailedJobsPostToggle);
+                assert.ok(!showFailedObjectsPreToggle);
+                assert.strictEqual(showFailedObjectsPreToggle, !showFailedObjectsPostToggle);
             }
         },
         {
