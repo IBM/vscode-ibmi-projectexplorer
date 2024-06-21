@@ -40,10 +40,14 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
   constructor(context: ExtensionContext) {
     const ibmi = getInstance();
     let currentDeploymentStorage: DeploymentPath;
-    ibmi?.onEvent(`connected`, () => {
+    ibmi?.onEvent(`connected`, async () => {
       this.refresh();
 
       currentDeploymentStorage = JSON.parse(JSON.stringify(ibmi?.getStorage().getDeployment()));
+
+      for await (const iProject of ProjectManager.getProjects()) {
+        await iProject.syncLiblVars();
+      }
     });
     ibmi?.onEvent(`deploy`, () => {
       this.refresh();
@@ -63,6 +67,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     });
     ibmi?.onEvent(`disconnected`, () => {
       this.refresh();
+
+      for (const iProject of ProjectManager.getProjects()) {
+        iProject.setState(undefined);
+        iProject.setLibraryList(undefined);
+      }
     });
 
     const decorationProvider = new DecorationProvider();

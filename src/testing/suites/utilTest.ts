@@ -4,70 +4,72 @@
 
 import * as assert from "assert";
 import { TestSuite } from "..";
-import { escapeArray, isEscapeQuoted, stripEscapeFromQuotes, isQuoted, escapeQuoted } from "../../util";
-
+import { util } from "../../util";
 
 export const utilSuite: TestSuite = {
     name: `Util Tests`,
     tests: [
         {
-            name: `Test escQuotes and escArray`, test: async () => {
-                assert.strictEqual(escapeQuoted('"abc"'), '\\"abc\\"');
-                assert.strictEqual(escapeQuoted('a"b'),   'a"b');
-                assert.strictEqual(escapeQuoted('a"'),    'a"');
-                assert.strictEqual(escapeQuoted('"b'),    '"b');
-                assert.strictEqual(escapeQuoted(''),      '');
-                // Now test escArray()
-                const arrayStr   = ['abc', '\"def\"', '', 'ghi', '\"@#$\"'];
+            name: `Test escapeQuoted`, test: async () => {
+                assert.strictEqual(util.escapeQuoted('"abc"'), '\\"abc\\"');
+                assert.strictEqual(util.escapeQuoted('a"b'), 'a"b');
+                assert.strictEqual(util.escapeQuoted('a"'), 'a"');
+                assert.strictEqual(util.escapeQuoted('"b'), '"b');
+                assert.strictEqual(util.escapeQuoted(''), '');
+            },
+        },
+        {
+            name: `Test escapeArray`, test: async () => {
+                const arrayStr = ['abc', '\"def\"', '', 'ghi', '\"@#$\"'];
                 const escapedArr = ['abc', '\\"def\\"', '', 'ghi', '\\"@#$\\"'];
-                assert.deepEqual(escapeArray(arrayStr), escapedArr);
+                assert.deepEqual(util.escapeArray(arrayStr), escapedArr);
             },
         },
         {
             name: `Test isQuoted`, test: async () => {
-                assert.equal(isQuoted('\"abc\"'),  true);
-                assert.equal(isQuoted('"abc"'),    true);
-                assert.equal(isQuoted('abc'),      false);
-                assert.equal(isQuoted(''),         false);
-                assert.equal(isQuoted('"abc'),     false);
-                assert.equal(isQuoted('abc"'),     false);
-                assert.equal(isQuoted('\\"abc\\"'),false);
+                assert.equal(util.isQuoted('\"abc\"'), true);
+                assert.equal(util.isQuoted('"abc"'), true);
+                assert.equal(util.isQuoted('abc'), false);
+                assert.equal(util.isQuoted(''), false);
+                assert.equal(util.isQuoted('"abc'), false);
+                assert.equal(util.isQuoted('abc"'), false);
+                assert.equal(util.isQuoted('\\"abc\\"'), false);
             },
         },
         {
             name: `Test stripEscapeFromQuotes`, test: async () => {
-                assert.equal('\"abc\"', stripEscapeFromQuotes('\"abc\"'));
-                assert.equal('"abc"', stripEscapeFromQuotes('"abc"'));
-                assert.equal('abc', stripEscapeFromQuotes('abc'));
-                assert.equal('\\"abc"', stripEscapeFromQuotes('\\"abc"'));
-                assert.equal('abc\\"', stripEscapeFromQuotes('abc\\"'));
-                assert.equal('"abc"', stripEscapeFromQuotes('\\"abc\\"'));
-                assert.equal('\\"', stripEscapeFromQuotes('\\"'));
-                assert.equal('""', stripEscapeFromQuotes('\\"\\"'));
-                assert.equal('', stripEscapeFromQuotes(''));
+                assert.equal('\"abc\"', util.stripEscapeFromQuotes('\"abc\"'));
+                assert.equal('"abc"', util.stripEscapeFromQuotes('"abc"'));
+                assert.equal('abc', util.stripEscapeFromQuotes('abc'));
+                assert.equal('\\"abc"', util.stripEscapeFromQuotes('\\"abc"'));
+                assert.equal('abc\\"', util.stripEscapeFromQuotes('abc\\"'));
+                assert.equal('"abc"', util.stripEscapeFromQuotes('\\"abc\\"'));
+                assert.equal('\\"', util.stripEscapeFromQuotes('\\"'));
+                assert.equal('""', util.stripEscapeFromQuotes('\\"\\"'));
+                assert.equal('', util.stripEscapeFromQuotes(''));
             },
         },
         {
             name: `Test escapeQuoted`, test: async () => {
-                assert.equal(escapeQuoted('\"abc\"'),       '\\"abc\\"');
-                assert.equal(escapeQuoted('"abc"'),         '\\"abc\\"');
-                assert.equal(escapeQuoted('abc'),           'abc');
-                assert.equal(escapeQuoted(''),              '');
-                assert.equal(escapeQuoted('\\"abc'),        '\\"abc');
-                assert.equal(escapeQuoted('abc\\"'),        'abc\\"');
-                assert.equal(escapeQuoted('\\"abc\\"'),     '\\"abc\\"');
+                assert.equal(util.escapeQuoted('\"abc\"'), '\\"abc\\"');
+                assert.equal(util.escapeQuoted('"abc"'), '\\"abc\\"');
+                assert.equal(util.escapeQuoted('abc'), 'abc');
+                assert.equal(util.escapeQuoted(''), '');
+                assert.equal(util.escapeQuoted('\\"abc'), '\\"abc');
+                assert.equal(util.escapeQuoted('abc\\"'), 'abc\\"');
+                assert.equal(util.escapeQuoted('\\"abc\\"'), '\\"abc\\"');
             },
         },
         {
             name: `Test isEscapeQuoted`, test: async () => {
-                assert.equal(false, isEscapeQuoted('\"abc\"'));
-                assert.equal(false, isEscapeQuoted('"abc"'));
-                assert.equal(false, isEscapeQuoted('abc'));
-                assert.equal(false, isEscapeQuoted('\\"abc'));
-                assert.equal(false, isEscapeQuoted('abc\\"'));
-                assert.equal(true, isEscapeQuoted('\\"abc\\"'));
+                assert.equal(false, util.isEscapeQuoted('\"abc\"'));
+                assert.equal(false, util.isEscapeQuoted('"abc"'));
+                assert.equal(false, util.isEscapeQuoted('abc'));
+                assert.equal(false, util.isEscapeQuoted('\\"abc'));
+                assert.equal(false, util.isEscapeQuoted('abc\\"'));
+                assert.equal(true, util.isEscapeQuoted('\\"abc\\"'));
             },
         }
-        
+
     ]
 };
