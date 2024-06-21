@@ -79,8 +79,6 @@ export async function activate(context: ExtensionContext): Promise<IBMiProjectEx
 		await initialise(context);
 	}
 
-	window.showInformationMessage('Workflow Worked!');
-
 	return { projectManager: ProjectManager, projectExplorer: projectExplorer, jobLog: jobLog };
 }
 
