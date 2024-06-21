@@ -82,11 +82,11 @@ export const jobLogCommandSuite: TestSuite = {
             }
         },
         {
-            name: `Test showOnlyFailedObjects`, test: async () => {
+            name: `Test showFailedObjects`, test: async () => {
                 const projectTreeItem = (await jobLog!.getChildren())[0];
                 const logTreeItem = (await projectTreeItem!.getChildren())[0];
                 const numObjectsPreFilter = (await logTreeItem.getChildren()).length;
-                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showOnlyFailedObjects', logTreeItem);
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showFailedObjects', logTreeItem);
                 const numObjectsPostFilter = (await logTreeItem.getChildren()).length;
                 await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showAllObjects', logTreeItem);
 
@@ -98,7 +98,7 @@ export const jobLogCommandSuite: TestSuite = {
             name: `Test showAllObjects`, test: async () => {
                 const projectTreeItem = (await jobLog!.getChildren())[0];
                 const logTreeItem = (await projectTreeItem!.getChildren())[0];
-                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showOnlyFailedObjects', logTreeItem);
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showFailedObjects', logTreeItem);
                 const numObjectsPreFilter = (await logTreeItem.getChildren()).length;
                 await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showAllObjects', logTreeItem);
                 const numObjectsPostFilter = (await logTreeItem.getChildren()).length;

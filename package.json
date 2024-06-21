@@ -773,8 +773,8 @@
       },
       {
         "category": "%commands.jobLog%",
-        "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedObjects",
-        "title": "%commands.jobLog.showOnlyFailedObjects%",
+        "command": "vscode-ibmi-projectexplorer.jobLog.showFailedObjects",
+        "title": "%commands.jobLog.showFailedObjects%",
         "icon": "$(error-small)"
       },
       {
@@ -1093,7 +1093,7 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedObjects",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showFailedObjects",
           "when": "never"
         },
         {
@@ -1741,12 +1741,12 @@
           "group": "1_filter@1"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedObjects",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showFailedObjects",
           "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showFailedObjects.*/",
           "group": "inline@1"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedObjects",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showFailedObjects",
           "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showFailedObjects.*/",
           "group": "1_filter@0"
         },

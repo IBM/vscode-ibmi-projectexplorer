@@ -19,7 +19,7 @@
   "commands.jobLog.refreshJobLog": "Refresh Job Log",
   "commands.jobLog.showJobLog": "Show Job Log",
   "commands.jobLog.showObjectOutput": "Show Object Build Output",
-  "commands.jobLog.showOnlyFailedObjects": "Show Failed Objects",
+  "commands.jobLog.showFailedObjects": "Show Failed Objects",
   "commands.jobLog.showAllObjects": "Show All Objects",
   "commands.jobLog.filterMessageSeverity": "Filter by Message Severity",
   "commands.projectExplorer": "Project Explorer",
