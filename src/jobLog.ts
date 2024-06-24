@@ -43,13 +43,13 @@ export interface MessageInfo {
 export class JobLogInfo {
     objects: ObjectInfo[];
     createdTime: Date;
-    showFailedJobs: boolean;
+    showFailedObjects: boolean;
     severityLevel: number;
 
     constructor(objects: ObjectInfo[]) {
         this.objects = objects;
         this.createdTime = parseDateTime(objects[0].cmd_time); // Use the first object's run time as the created time.
-        this.showFailedJobs = false;
+        this.showFailedObjects = false;
         this.severityLevel = 0;
     }
 
@@ -59,8 +59,8 @@ export class JobLogInfo {
         return `${fromText}\n${toText}`;
     }
 
-    toggleShowFailedJobs() {
-        this.showFailedJobs = this.showFailedJobs === false ? true : false;
+    toggleShowFailedObjects() {
+        this.showFailedObjects = this.showFailedObjects === false ? true : false;
     }
 
     setSeverityLevel(severityLevel: number) {

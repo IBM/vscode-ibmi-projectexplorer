@@ -83,19 +83,19 @@ export default class JobLog implements TreeDataProvider<ProjectExplorerTreeItem>
           }
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs`, async (element: Log) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showFailedObjects`, async (element: Log) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
 
         if (iProject) {
-          element.jobLogInfo.toggleShowFailedJobs();
+          element.jobLogInfo.toggleShowFailedObjects();
           this.refresh();
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showAllJobs`, async (element: Log) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.jobLog.showAllObjects`, async (element: Log) => {
         const iProject = ProjectManager.get(element.workspaceFolder);
 
         if (iProject) {
-          element.jobLogInfo.toggleShowFailedJobs();
+          element.jobLogInfo.toggleShowFailedObjects();
           this.refresh();
         }
       }),

@@ -75,8 +75,8 @@ export enum ContextValue {
   ileObject = 'ileObject',
   command = 'command',
   message = 'message',
-  showFailedJobsAction = "_showFailedJobs",
-  showAllJobsAction = "_showAllJobs"
+  showFailedObjectsAction = "_showFailedObjects",
+  showAllObjectsAction = "_showAllObjects"
 }
 
 /**
