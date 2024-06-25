@@ -1,7 +1,7 @@
 {
   "name": "@ibm/vscode-ibmi-projectexplorer-types",
   "description": "Type definitions for the IBM i Project Explorer API",
-  "version": "2.10.5",
+  "version": "2.11.0",
   "author": {
     "name": "IBM",
     "url": "https://github.com/IBM"
