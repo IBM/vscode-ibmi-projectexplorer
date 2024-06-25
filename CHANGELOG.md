@@ -1,6 +1,29 @@
 # Change Log
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
+
+## `2.11.0`
+* Add scanning for sub projects
+* Create `.gitignore` file when creating a new project
+* Add all inline actions to right-click menu
+* Fix error handling of invalid `iproj.json` file
+* Fix syncing of `LIBL` and `CURLIB`
+* Fix minor job log issues, update decorations, add new tree view badge
+* Update wording from failed jobs to failed objects
+* Add Code4i tooltips for libraries, objects, members, and ifs files 
+* Add event for `buildMap` changes
+### Housekeeping
+* Bump @typescript-eslint/eslint-plugin from 7.10.0 to 7.14.1
+* Bump tar from 7.1.0 to 7.4.0
+* Bump @typescript-eslint/parser from 7.10.0 to 7.14.1
+* Bump @types/node from 20.12.12 to 20.14.8
+* Bump braces from 3.0.2 to 3.0.3
+* Bump webpack from 5.91.0 to 5.92.1
+* Bump @halcyontech/vscode-ibmi-types from 2.10.1 to 2.11.0
+* Bump actions/github-script from 5 to 7
+* Bump esbuild-loader from 4.1.0 to 4.2.0
+* Bump typescript from 5.4.5 to 5.5.2
+
 ## `2.10.5`
 * Update ARCAD link to project mode page
 * Fix debug to use the project's library list and current library
