@@ -64,6 +64,8 @@ export namespace ProjectFileWatcher {
                 }
             } else if (uri.fsPath.endsWith('.ibmi.json')) {
                 iProject.setBuildMap(undefined);
+
+                ProjectManager.fire({ type: 'buildMap', iProject });
             } else if (uri.fsPath.endsWith('.env')) {
                 // If the .env was updated only for keeping track of the LIBL state for other
                 // extensions, then we don't want to refresh the UI and state
