@@ -41,7 +41,7 @@ export type ProjectExplorerEventT =
     'build' |
     'compile' |
     'includePaths';
-export type ProjectExplorerEventCallback = (iProject?: IProject) => void;
+export type ProjectExplorerEventCallback = (iProject?: IProject, uri?: Uri) => void;
 
 /**
  * Project explorer event
@@ -56,6 +56,11 @@ export interface ProjectExplorerEvent {
      * Project associated with event
      */
     iProject?: IProject
+
+    /**
+     * A uri associated with the event
+     */
+    uri?: Uri
 }
 
 /**
@@ -114,7 +119,7 @@ export class ProjectManager {
 
         this.emitter.event(e => {
             this.events.filter(event => event.event === e.type)
-                .forEach(event => event.callback(e.iProject));
+                .forEach(event => event.callback(e?.iProject, e?.uri));
         });
 
         this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
