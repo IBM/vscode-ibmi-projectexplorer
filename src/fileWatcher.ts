@@ -56,6 +56,7 @@ export namespace ProjectFileWatcher {
                 iProject.setLibraryList(undefined);
 
                 ProjectManager.fire({ type: 'projects', iProject });
+                ProjectManager.fire({ type: 'buildMap', iProject, uri });
             } else if (uri.path.endsWith('iproj.json') && (type === 'delete')) {
                 const activeProject = ProjectManager.getActiveProject();
 

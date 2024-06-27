@@ -184,6 +184,7 @@ export class ProjectManager {
     public static async load(workspaceFolder: WorkspaceFolder) {
         const iProject = new IProject(workspaceFolder);
         if (!this.loaded[workspaceFolder.index]) {
+            await iProject.load();
             this.loaded[workspaceFolder.index] = iProject;
 
             const metadataExists = await iProject.projectFileExists('iproj.json');
