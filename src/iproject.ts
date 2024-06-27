@@ -127,6 +127,14 @@ export class IProject {
   }
 
   /**
+   * Load the project's `iproj.json` and all `.ibmi.json` files.
+   */
+  public async load() {
+    await this.getState();
+    await this.getBuildMap();
+  }
+
+  /**
    * Get the project's name. *Note* that the project's name and associated
    * workspace folder name are the same.
    * 
@@ -362,6 +370,10 @@ export class IProject {
    */
   public setBuildMap(buildMap: Map<string, IBMiJsonT> | undefined) {
     this.buildMap = buildMap;
+
+    if (!this.buildMap) {
+      this.updateBuildMap();
+    }
   }
 
   /**
