@@ -127,7 +127,7 @@ export class IProject {
   }
 
   /**
-   * Load a project `iproj.json` and all `.ibmi.json` files.
+   * Load the project's `iproj.json` and all `.ibmi.json` files.
    */
   public async load() {
     await this.getState();
