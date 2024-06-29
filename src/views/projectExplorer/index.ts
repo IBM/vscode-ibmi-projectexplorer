@@ -480,7 +480,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.getActiveProject();
 
           if (iProject) {
-            const library = element.name;
+            const library = element.library;
 
             if (library) {
               const selectedPosition = await window.showQuickPick([
@@ -503,7 +503,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setAsCurrentLibrary`, async (element: any) => {
         if (element) {
-          const library = element.name;
+          const library = element.library;
 
           if (library) {
             const iProject = ProjectManager.getActiveProject();
@@ -521,7 +521,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setAsTargetLibraryForCompiles`, async (element: any) => {
         if (element) {
-          const library = element.name;
+          const library = element.library;
 
           if (library) {
             const iProject = ProjectManager.getActiveProject();
@@ -768,7 +768,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             value = element.label!.toString();
           } else {
             // Invoked from library in Object Browser or directory in IFS Browser
-            value = element.name ? element.name : element.path;
+            value = element.path;
           }
 
           if (value) {
