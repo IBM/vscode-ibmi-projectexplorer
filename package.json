@@ -1992,7 +1992,7 @@
     "@types/tar": "^6.1.13",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/parser": "^7.14.1",
-    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
     "@vscode/l10n-dev": "^0.0.35",
     "esbuild-loader": "^4.2.0",
     "eslint": "^8.57.0",
