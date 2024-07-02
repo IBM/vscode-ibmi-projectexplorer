@@ -1997,7 +1997,7 @@
     "esbuild-loader": "^4.2.0",
     "eslint": "^8.57.0",
     "tar": "^7.4.0",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "webpack": "^5.92.1",
     "webpack-cli": "^5.1.4"
   },
