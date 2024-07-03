@@ -1017,8 +1017,12 @@ export class IProject {
 
     if (unresolvedState && state) {
       if (unresolvedState[position] && state[position]) {
-        if (state[position]!.includes(library)) {
-          window.showErrorMessage(l10n.t('{0} already exists in {1}', library, position));
+        if (state['preUsrlibl']!.includes(library)) {
+          window.showErrorMessage(l10n.t('{0} already exists in {1}', library, 'preUsrlibl'));
+          return;
+
+        } else if (state['postUsrlibl']!.includes(library)) {
+          window.showErrorMessage(l10n.t('{0} already exists in {1}', library, 'postUsrlibl'));
           return;
 
         } else {
