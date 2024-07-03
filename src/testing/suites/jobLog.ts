@@ -53,9 +53,35 @@ export const jobLogSuite: TestSuite = {
             name: `Test createFromToTextForMsgEntity`, test: async () => {
                 const iProject = ProjectManager.getProjects()[0];
                 const jobLogs = iProject.getJobLogs();
-                const fromToText = JobLogInfo.createFromToTextForMsgEntity(jobLogs[0].commands[0].msgs![0]);
+                const fromToText = JobLogInfo.createFromToTextForMsgEntity(jobLogs[0].objects[0].msgs![0]);
 
                 assert.strictEqual(fromToText, 'From: QSYS/QWTPIIPP:04CC\nTo: CRTFRMSTMF/CRTFRMSTMF/*EXT/CRTFRMSTMF:*N');
+            }
+        },
+        {
+            name: `Test toggleShowFailedObjects`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                const jobLogs = iProject.getJobLogs();
+                const showFailedObjectsPreToggle = jobLogs[0].showFailedObjects;
+                jobLogs[0].toggleShowFailedObjects();
+                const showFailedObjectsPostToggle = jobLogs[0].showFailedObjects;
+                jobLogs[0].toggleShowFailedObjects();
+
+                assert.ok(!showFailedObjectsPreToggle);
+                assert.strictEqual(showFailedObjectsPreToggle, !showFailedObjectsPostToggle);
+            }
+        },
+        {
+            name: `Test setSeverityLevel`, test: async () => {
+                const iProject = ProjectManager.getProjects()[0];
+                const jobLogs = iProject.getJobLogs();
+                const severityLevelBefore = jobLogs[0].severityLevel;
+                jobLogs[0].setSeverityLevel(50);
+                const severityLevelAfter = jobLogs[0].severityLevel;
+                jobLogs[0].setSeverityLevel(severityLevelBefore);
+
+                assert.strictEqual(severityLevelBefore, 0);
+                assert.strictEqual(severityLevelAfter, 50);
             }
         }
     ]

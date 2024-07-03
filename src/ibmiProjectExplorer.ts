@@ -72,11 +72,11 @@ export enum ContextValue {
   openConnectionBrowser = '_openConnectionBrowser',
   setDeployLocation = '_setDeployLocation',
   log = 'log',
+  ileObject = 'ileObject',
   command = 'command',
-  commandRepresentation = 'commandRepresentation',
   message = 'message',
-  showFailedJobsAction = "_showFailedJobs",
-  showAllJobsAction = "_showAllJobs"
+  showFailedObjectsAction = "_showFailedObjects",
+  showAllObjectsAction = "_showAllObjects"
 }
 
 /**

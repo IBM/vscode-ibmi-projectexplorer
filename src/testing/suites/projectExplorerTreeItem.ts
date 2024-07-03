@@ -14,6 +14,8 @@ import MemberFile from "../../views/projectExplorer/memberFile";
 import { ProjectExplorerTreeItem } from "../../views/projectExplorer/projectExplorerTreeItem";
 import SourceDirectory from "../../views/projectExplorer/sourceDirectory";
 import { iProjectMock } from "../constants";
+import { testUtil } from "../testUtil";
+import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 
 class File {
     readonly name: string;
@@ -439,19 +441,11 @@ export const projectExplorerTreeItemSuite: TestSuite = {
 
 function assertTreeItem(treeItem: ProjectExplorerTreeItem, attributes: { [key: string]: any }) {
     for (const [key, value] of (Object.entries(attributes))) {
-        if (key === 'libraryInfo' ||
-            key === 'objectFileInfo') {
-            assertIBMiObject(treeItem[key as keyof TreeItem] as { [key: string]: any }, value);
+        if (key === 'libraryInfo' || key === 'objectFileInfo') {
+            testUtil.assertIBMiObject(treeItem[key as keyof TreeItem] as any as IBMiObject, value);
         } else {
             assert.deepStrictEqual(treeItem[key as keyof TreeItem], value);
         }
-    }
-}
- // Test IBMiObject but ignore timesctamps and size that will vary           
-function assertIBMiObject(actual: { [key: string]: any }, expected: { [key: string]: any }) {
-      for (const [key, value] of (Object.entries(expected))) {
-        if (key in ['changed', 'created', 'size']) {continue;}
-        assert.deepStrictEqual(actual[key], value);
     }
 }
 

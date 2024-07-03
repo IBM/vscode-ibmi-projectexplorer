@@ -2,10 +2,10 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder } from "vscode";
 import { JobLogInfo } from "../../jobLog";
 import { ProjectExplorerTreeItem } from "../projectExplorer/projectExplorerTreeItem";
-import Command from "./command";
+import IleObject from "./ileObject";
 import { ContextValue } from "../../ibmiProjectExplorer";
 
 /**
@@ -14,45 +14,28 @@ import { ContextValue } from "../../ibmiProjectExplorer";
 export default class Log extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.log;
   jobLogInfo: JobLogInfo;
-  onlyShowFailedCommands : boolean;
-  showSeverityLevels: number;
 
   constructor(public workspaceFolder: WorkspaceFolder, jobLogInfo: JobLogInfo, isLocal: boolean = false) {
     super(jobLogInfo.createdTime.toLocaleString(), TreeItemCollapsibleState.Collapsed);
 
     this.jobLogInfo = jobLogInfo;
     this.iconPath = new ThemeIcon('archive', isLocal ? new ThemeColor('joblog.local') : undefined);
-    this.contextValue = Log.contextValue + ContextValue.showFailedJobsAction;
-    this.onlyShowFailedCommands = false;
-    this.showSeverityLevels = 0;
-  }
-
-  toggleShowFailed(): void {
-    this.onlyShowFailedCommands = this.onlyShowFailedCommands === false ? true : false;
-    
-    this.contextValue = Log.contextValue;
-    this.contextValue += this.onlyShowFailedCommands ? 
-                             ContextValue.showAllJobsAction : ContextValue.showFailedJobsAction;
-  }
-
-  setSeverityLevel(severityLevel: number): void {
-    this.showSeverityLevels = severityLevel;
+    this.contextValue = Log.contextValue +
+      (this.jobLogInfo.showFailedObjects ? ContextValue.showAllObjectsAction : ContextValue.showFailedObjectsAction);
+    this.resourceUri = Uri.parse(`log:${this.jobLogInfo.severityLevel}`, true);
+    this.tooltip = jobLogInfo.createdTime.toLocaleString();
   }
 
   getChildren(): ProjectExplorerTreeItem[] {
     let items: ProjectExplorerTreeItem[] = [];
 
-    const jobLogInfo = this.jobLogInfo;
-
-    if (this.onlyShowFailedCommands) {
-      items.push(...jobLogInfo.commands?.filter(
-        command => command.failed
-      ).map(
-        command => new Command(this.workspaceFolder, command, this.showSeverityLevels)
+    if (this.jobLogInfo.showFailedObjects) {
+      items.push(...this.jobLogInfo.objects?.filter(object => object.failed).map(
+        object => new IleObject(this.workspaceFolder, object, this.jobLogInfo.severityLevel)
       ));
-    }else{
-      items.push(...jobLogInfo.commands?.map(
-        command => new Command(this.workspaceFolder, command, this.showSeverityLevels)
+    } else {
+      items.push(...this.jobLogInfo.objects?.map(
+        object => new IleObject(this.workspaceFolder, object, this.jobLogInfo.severityLevel)
       ));
     }
     return items;

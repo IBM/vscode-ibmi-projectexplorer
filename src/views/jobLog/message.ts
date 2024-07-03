@@ -23,7 +23,7 @@ export default class Message extends TreeItem implements ProjectExplorerTreeItem
     this.description = msg.type + ' (' + msgTime + ')';
 
     const fromToText = JobLogInfo.createFromToTextForMsgEntity(msg);
-    let msgHover = msg.second_level !== null ? msg.second_level.replace(/&N\s/, '').replace(/\s&N\s/g, '\n\n').replace(/\s&P\s/g, '\n\t') : '';
+    const msgHover = msg.second_level !== null ? msg.second_level.replace(/&N\s/, '').replace(/\s&N\s/g, '\n\n').replace(/\s&P\s/g, '\n\t') : '';
     this.tooltip = msgHover === '' ? fromToText : `${msgHover}\n\n${fromToText}`;
 
     let msgIcon: ThemeIcon;

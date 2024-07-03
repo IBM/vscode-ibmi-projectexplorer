@@ -16,7 +16,7 @@ To then launch a build, use the **Run Build** action on the project heading or t
 
 Similar to the build command, the project's compile command must be first set using the **Set Compile Compile** action on the project.
 
-![Set Build Command](../../assets/ProjectExplorer_13.png)
+![Set Compile Command](../../assets/ProjectExplorer_13.png)
 
 To compile a directory or file, this can be achieved from several locations:
 

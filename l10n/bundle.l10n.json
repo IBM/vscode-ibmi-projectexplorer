@@ -37,6 +37,9 @@
   "Failed to update .ibmi.json": "Failed to update .ibmi.json",
   "Congratulations, your extension \"vscode-ibmi-projectexplorer\" is now active!": "Congratulations, your extension \"vscode-ibmi-projectexplorer\" is now active!",
   "Failed to update .env": "Failed to update .env",
+  "{0} Unresolved Variable(s)": "{0} Unresolved Variable(s)",
+  "Unresolved Variable": "Unresolved Variable",
+  "Message Severity Filter: {0}": "Message Severity Filter: {0}",
   "Variables": "Variables",
   "No value": "No value",
   "Name: {0}\n": "Name: {0}\n",
@@ -201,5 +204,6 @@
   "Severity 30 or more": "Severity 30 or more",
   "Severity 40 or more": "Severity 40 or more",
   "Severity 50 or more": "Severity 50 or more",
-  "Select Severity Level": "Select Severity Level"
+  "Select Severity Level": "Select Severity Level",
+  "{0} Failed Object(s)": "{0} Failed Object(s)"
 }
