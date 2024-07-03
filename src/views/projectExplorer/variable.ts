@@ -10,14 +10,14 @@ import { ContextValue } from "../../ibmiProjectExplorer";
  * Tree item for a variable.
  */
 export default class Variable extends TreeItem implements ProjectExplorerTreeItem {
-  static contextValue = ContextValue.variable;
+  static contextValue = ContextValue.variableItem;
   value?: string;
 
   constructor(public workspaceFolder: WorkspaceFolder, name: string, value?: string) {
     super(name, TreeItemCollapsibleState.None);
 
     this.value = value;
-    this.resourceUri = Uri.parse(`variable:${value ? 'resolved' : 'unresolved'}`, true);
+    this.resourceUri = Uri.parse(`variableItem:${value ? 'resolved' : 'unresolved'}`, true);
     this.contextValue = Variable.contextValue;
     this.description = value || l10n.t('No value');
     this.iconPath = new ThemeIcon(`pencil`);

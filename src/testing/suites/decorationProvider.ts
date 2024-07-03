@@ -35,8 +35,8 @@ export const decorationProviderSuite: TestSuite = {
         },
         {
             name: `Test variable decoration`, test: async () => {
-                const uri1 = Uri.parse(`variable:resolved`, true);
-                const uri2 = Uri.parse(`variable:unresolved`, true);
+                const uri1 = Uri.parse(`variableItem:resolved`, true);
+                const uri2 = Uri.parse(`variableItem:unresolved`, true);
                 const decoration1 = decorationProvider.provideFileDecoration(uri1, cancellationTokenSource.token);
                 const decoration2 = decorationProvider.provideFileDecoration(uri2, cancellationTokenSource.token);
 
