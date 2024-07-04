@@ -11,6 +11,7 @@ import RemoteIncludePath from "./remoteIncludePath";
 import * as path from "path";
 import ErrorItem from "./errorItem";
 import { Position } from "../../iproject";
+import { getInstance } from "../../ibmi";
 
 /**
  * Tree item for Include Paths heading.
@@ -46,7 +47,7 @@ export default class IncludePaths extends TreeItem implements ProjectExplorerTre
         }
 
         if (includePath.startsWith('&')) {
-          items.push(ErrorItem.createIncludePathNotSpecifiedError(this.workspaceFolder, includePath, position));
+          items.push(ErrorItem.createIncludePathError(this.workspaceFolder, includePath, position, l10n.t('Not specified')));
           continue;
         }
 
@@ -65,14 +66,29 @@ export default class IncludePaths extends TreeItem implements ProjectExplorerTre
             // Relative local include path
             items.push(new LocalIncludePath(this.workspaceFolder, includePath, includePathUri, position, variable));
           } catch (e) {
+            const ibmi = getInstance();
+            const connection = ibmi!.getConnection();
             const deployLocation = iProject!.getDeployLocation();
+
             if (includePath.startsWith('/') || !deployLocation) {
-              // Absolute remote include path
-              items.push(new RemoteIncludePath(this.workspaceFolder, includePath, position, variable));
+              const directoryExists = (await connection?.sendCommand({ command: `test -d ${includePath}` }));
+
+              if (directoryExists && directoryExists.code === 0) {
+                // Absolute remote include path
+                items.push(new RemoteIncludePath(this.workspaceFolder, includePath, position, variable));
+              } else {
+                items.push(ErrorItem.createIncludePathError(this.workspaceFolder, includePath, position, l10n.t('Not found')));
+              }
             } else {
-              // Relative remote include path
               const absoluteIncludePath = path.posix.join(deployLocation, includePath);
-              items.push(new RemoteIncludePath(this.workspaceFolder, absoluteIncludePath, position, variable, { label: includePath }));
+              const directoryExists = (await connection?.sendCommand({ command: `test -d ${absoluteIncludePath}` }));
+
+              if (directoryExists && directoryExists.code === 0) {
+                // Relative remote include path
+                items.push(new RemoteIncludePath(this.workspaceFolder, absoluteIncludePath, position, variable, { label: includePath }));
+              } else {
+                items.push(ErrorItem.createIncludePathError(this.workspaceFolder, includePath, position, l10n.t('Not found')));
+              }
             }
           }
         }
