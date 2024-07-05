@@ -26,13 +26,22 @@ export enum ProjectExplorerSchemaId {
  * - `projects` event is fired when there is a change to some project (create, update, or delete)
  * - `activeProject` event is fired when there is a change to the active project
  * - `libraryList` event is fired when there is a change to a project's library list
+ * - `buildMap` event is fired when there is a change to a project's `.ibmi.json` file
  * - `deployLocation` event is fired when there is a change to a project's deploy location
  * - `build` event is fired when a build is finished
  * - `compile` event is fired when a compile is finished
  * - `includePaths` event is fired when there is a change to a project's include paths
  */
-export type ProjectExplorerEventT = 'projects' | 'activeProject' | 'libraryList' | 'deployLocation' | 'build' | 'compile' | 'includePaths';
-export type ProjectExplorerEventCallback = (iProject?: IProject) => void;
+export type ProjectExplorerEventT =
+    'projects' |
+    'activeProject' |
+    'libraryList' |
+    'buildMap' |
+    'deployLocation' |
+    'build' |
+    'compile' |
+    'includePaths';
+export type ProjectExplorerEventCallback = (iProject?: IProject, uri?: Uri) => void;
 
 /**
  * Project explorer event
@@ -47,6 +56,11 @@ export interface ProjectExplorerEvent {
      * Project associated with event
      */
     iProject?: IProject
+
+    /**
+     * A uri associated with the event
+     */
+    uri?: Uri
 }
 
 /**
@@ -105,7 +119,7 @@ export class ProjectManager {
 
         this.emitter.event(e => {
             this.events.filter(event => event.event === e.type)
-                .forEach(event => event.callback(e.iProject));
+                .forEach(event => event.callback(e?.iProject, e?.uri));
         });
 
         this.activeProjectStatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left, 9);
@@ -170,6 +184,7 @@ export class ProjectManager {
     public static async load(workspaceFolder: WorkspaceFolder) {
         const iProject = new IProject(workspaceFolder);
         if (!this.loaded[workspaceFolder.index]) {
+            await iProject.load();
             this.loaded[workspaceFolder.index] = iProject;
 
             const metadataExists = await iProject.projectFileExists('iproj.json');
