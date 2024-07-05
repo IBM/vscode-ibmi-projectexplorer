@@ -1247,7 +1247,7 @@
       "view/item/context": [
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.refresh",
-          "when": "view == projectExplorer && viewItem =~ /^(?!(objectFile(PHY|PF)|memberFile|sourceFile|ifsFile|variable(?!s)|includePath_local|error)).*/",
+          "when": "view == projectExplorer && viewItem =~ /^(?!(objectFile(PHY|PF)|memberFile|sourceFile|ifsFile|variableItem|includePath_local|error)).*/",
           "group": "0_refresh@0"
         },
         {
@@ -1362,12 +1362,12 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editVariable",
-          "when": "view == projectExplorer && viewItem =~ /^variable(?!s).*/",
+          "when": "view == projectExplorer && viewItem =~ /^variableItem.*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editVariable",
-          "when": "view == projectExplorer && viewItem =~ /^variable(?!s).*/",
+          "when": "view == projectExplorer && viewItem =~ /^variableItem.*/",
           "group": "1_edit@0"
         },
         {

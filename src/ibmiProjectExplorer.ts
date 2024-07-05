@@ -43,7 +43,7 @@ export enum ContextValue {
   deleted = '_deleted',
   sourceDirectory = 'sourceDirectory',
   variables = 'variables',
-  variable = 'variable',
+  variableItem = 'variableItem',
   libraryList = 'libraryList',
   library = 'library',
   system = '_system',

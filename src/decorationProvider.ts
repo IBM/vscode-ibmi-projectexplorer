@@ -19,7 +19,7 @@ export class DecorationProvider implements FileDecorationProvider {
                     tooltip: l10n.t('{0} Unresolved Variable(s)', uri.path)
                 };
             }
-        } else if (uri.scheme === 'variable' && uri.path === 'unresolved') {
+        } else if (uri.scheme === 'variableItem' && uri.path === 'unresolved') {
             // Variable tree item in project explorer
             return {
                 badge: '?',
