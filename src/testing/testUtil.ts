@@ -15,8 +15,8 @@ export namespace testUtil {
      */
     export function assertIBMiObject(actual: IBMiObject, expected: IBMiObject) {
         for (const [key, value] of (Object.entries(expected))) {
-            // Ignore timestamps and size which will vary
-            if (key in ['changed', 'created', 'size']) {
+            // Ignore fields which will vary
+            if (['changed', 'created', 'size', 'created_by'].includes(key)) {
                 continue;
             }
 
