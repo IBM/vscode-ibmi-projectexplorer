@@ -16,10 +16,10 @@ All notable changes to the "vscode-ibmi-projectexplorer" extension will be docum
 * Fix Db2i commands being contributed to variable tree items
 * Check `preUsrlibl` and `postUsrlibl` before adding to library list
 ### Housekeeping
-* Bump @typescript-eslint/eslint-plugin from 7.10.0 to 7.15.0
-* Bump @typescript-eslint/parser from 7.10.0 to 7.15.0
+* Bump @typescript-eslint/eslint-plugin from 7.10.0 to 7.16.0
+* Bump @typescript-eslint/parser from 7.10.0 to 7.16.0
 * Bump tar from 7.1.0 to 7.4.0
-* Bump @types/node from 20.12.12 to 20.14.9
+* Bump @types/node from 20.12.12 to 20.14.10
 * Bump braces from 3.0.2 to 3.0.3
 * Bump webpack from 5.91.0 to 5.92.1
 * Bump @halcyontech/vscode-ibmi-types from 2.10.1 to 2.11.0
