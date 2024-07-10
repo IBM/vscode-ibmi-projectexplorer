@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+## `2.11.1`
+* Fix Code4i type definition dependency
+
 ## `2.11.0`
 * Add scanning for sub projects
 * Create `.gitignore` file when creating a new project
