@@ -32,8 +32,10 @@ export async function activate(context: ExtensionContext): Promise<IBMiProjectEx
 	// Setup tree views
 	const projectExplorer = new ProjectExplorer(context);
 	const projectExplorerTreeView = window.createTreeView(`projectExplorer`, { treeDataProvider: projectExplorer, showCollapseAll: true });
+	projectExplorer.setTreeView(projectExplorerTreeView);
 	const jobLog = new JobLog(context);
 	const jobLogTreeView = window.createTreeView(`jobLog`, { treeDataProvider: jobLog, showCollapseAll: true });
+	jobLog.setTreeView(jobLogTreeView);
 
 	// Initialize Git manager
 	GitManager.initialize(context, projectExplorer);

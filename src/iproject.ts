@@ -4,7 +4,6 @@
 
 import { Action, CommandResult, DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import * as dotenv from 'dotenv';
-import { isEscapeQuoted, stripEscapeFromQuotes, escapeQuoted, escapeArray } from "./util";
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
 import { parse } from "parse-gitignore";
@@ -21,6 +20,7 @@ import { LibraryType } from "./views/projectExplorer/library";
 import Instance from "@halcyontech/vscode-ibmi-types/api/Instance";
 import { Repository } from "./import/git";
 import { GitManager } from "./gitManager";
+import { util } from "./util";
 
 /**
  * Represents the default variable for a project's current library.
@@ -126,6 +126,14 @@ export class IProject {
     this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
     this.deploymentMethod = 'compare';
+  }
+
+  /**
+   * Load the project's `iproj.json` and all `.ibmi.json` files.
+   */
+  public async load() {
+    await this.getState();
+    await this.getBuildMap();
   }
 
   /**
@@ -270,7 +278,7 @@ export class IProject {
    * represents the current state is invalid and will be automatically updated
    * whenever it is retrieved again.
    * 
-   * @param state The project state to set or `undefined`.
+   * @param state The resolved project state to set or `undefined`.
    */
   public setState(state: IProjectT | undefined) {
     this.state = state;
@@ -372,6 +380,10 @@ export class IProject {
    */
   public setBuildMap(buildMap: Map<string, IBMiJsonT> | undefined) {
     this.buildMap = buildMap;
+
+    if (!this.buildMap) {
+      this.updateBuildMap();
+    }
   }
 
   /**
@@ -877,9 +889,14 @@ export class IProject {
     }
     return this.libraryList;
   }
-  /*
-   * Generate the commands to update the library list using pase 'liblist' commmands and execute them
-   * Return the result of those commands
+
+  /**
+   * Generate the commands to update the library list using pase `liblist` commands,
+   * execute them and return the result of those commands.
+   * 
+   * @param ibmi The Code for IBM i `Instance`.
+   * @param state The resolved project state.
+   * @returns The liblist command result.
    */
   public async updateLibraryListOnIbmi(ibmi: Instance, state: IProjectT): Promise<CommandResult> {
     let buildLibraryListCommand = await this.calcUpdateLibraryListCommand(ibmi, state);
@@ -891,10 +908,11 @@ export class IProject {
   }
 
   /**
-   * Calculate the commands to replace USRLIBL and set CURLIB within library list
-   * @param ibmi connection
-   * @param state resolved iproj.json state
-   * @returns command
+   * Calculate the commands to replace `USRLIBL` and set `CURLIB` within library list.
+   * 
+   * @param ibmi The Code for IBM i `Instance`.
+   * @param state The resolved project state.
+   * @returns The liblist command.
    */
   public async calcUpdateLibraryListCommand(ibmi: Instance, state: IProjectT): Promise<string> {
     const defaultUserLibraries = ibmi.getConnection().defaultUserLibraries;
@@ -919,11 +937,11 @@ export class IProject {
     }
 
     // Retrieve library list
-    // Note quoted library names need to be escaped in order for the comman shell not tointerpret them but pass alon to theliblist command
+    // Note quoted library names need to be escaped in order for the command shell not to interpret them but pass along to the liblist command
     let buildLibraryListCommand = [
       defaultUserLibraries ? `liblist -d ${defaultUserLibraries.join(` `)}` : ``,
-      state.curlib && state.curlib !== '' ? `liblist -c ${escapeQuoted(state.curlib)}` : ``,
-      userLibrariesToAdd && userLibrariesToAdd.length > 0 ? `liblist -a ${escapeArray(userLibrariesToAdd).join(` `)}` : ``,
+      state.curlib && state.curlib !== '' ? `liblist -c ${util.escapeQuoted(state.curlib)}` : ``,
+      userLibrariesToAdd && userLibrariesToAdd.length > 0 ? `liblist -a ${util.escapeArray(userLibrariesToAdd).join(` `)}` : ``,
       `liblist`
     ].filter(cmd => cmd !== ``).join(` ; `);
     return buildLibraryListCommand;
@@ -1021,8 +1039,12 @@ export class IProject {
 
     if (unresolvedState && state) {
       if (unresolvedState[position] && state[position]) {
-        if (state[position]!.includes(library)) {
-          window.showErrorMessage(l10n.t('{0} already exists in {1}', library, position));
+        if (state['preUsrlibl']!.includes(library)) {
+          window.showErrorMessage(l10n.t('{0} already exists in {1}', library, 'preUsrlibl'));
+          return;
+
+        } else if (state['postUsrlibl']!.includes(library)) {
+          window.showErrorMessage(l10n.t('{0} already exists in {1}', library, 'postUsrlibl'));
           return;
 
         } else {
@@ -1191,7 +1213,12 @@ export class IProject {
         const originalGitignore = (await workspace.fs.readFile(this.getProjectFileUri('.gitignore'))).toString();
         const parsedGitignore = parse(originalGitignore);
         const contentToAppend = DEFAULT_GITIGNORE.filter(entry => !parsedGitignore.patterns.includes(entry));
-        newGitignoreContent = `${originalGitignore}\n${contentToAppend.join('\n')}`;
+
+        if (contentToAppend.length > 0) {
+          newGitignoreContent = `${originalGitignore}\n${contentToAppend.join('\n')}`;
+        } else {
+          return true;
+        }
       } else {
         // Create new .gitignore file
         newGitignoreContent = DEFAULT_GITIGNORE.join('\n');
@@ -1277,8 +1304,8 @@ export class IProject {
       // Now those backslashes should be removed
       for (const key in this.environmentValues) {
         const value = this.environmentValues[key];
-        if (isEscapeQuoted(value)) {
-          this.environmentValues[key] = stripEscapeFromQuotes(value);
+        if (util.isEscapeQuoted(value)) {
+          this.environmentValues[key] = util.stripEscapeFromQuotes(value);
         }
       }
     } catch (e) {
@@ -1299,7 +1326,7 @@ export class IProject {
    */
   public async updateEnvVar(variable: string, value: string) {
     const envUri = this.getProjectFileUri('.env');
-    value = escapeQuoted(value);
+    value = util.escapeQuoted(value);
     const isEnvVarUpdated = await envUpdater(envUri, { [variable]: value });
 
     if (isEnvVarUpdated) {
@@ -1317,13 +1344,12 @@ export class IProject {
   public async syncLiblVars(): Promise<boolean> {
     const env = await this.getEnv();
 
-    const curLib = await this.state?.curlib;
+    const curLib = this.state?.curlib;
     const libl = (await this.getLibraryList())?.filter(lib => lib.libraryListPortion === `USR`).map(lib => lib.libraryInfo.name).join(` `);
 
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     let newEnv: { LIBL?: string, CURLIB?: string } = {};
 
-    if (curLib && env.CURLIB !== curLib) {
+    if (curLib && env.CURLIB !== curLib && !curLib.startsWith('&')) {
       newEnv.CURLIB = curLib;
     }
 
@@ -1623,7 +1649,7 @@ export class IProject {
       if (jobLog) {
         if (!this.jobLogs.isEmpty()) {
           const latestJobLog = this.jobLogs.get(-1);
-          if (latestJobLog && latestJobLog.commands[0].cmd_time !== jobLog.commands[0].cmd_time) {
+          if (latestJobLog && latestJobLog.objects[0].cmd_time !== jobLog.objects[0].cmd_time) {
             this.jobLogs.add(jobLog);
           }
         } else {

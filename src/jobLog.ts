@@ -5,9 +5,9 @@
 import { l10n } from "vscode";
 
 /**
- * Represents a command in a `joblog.json` file.
+ * Represents an object in a `joblog.json` file.
  */
-export interface CommandInfo {
+export interface ObjectInfo {
     cmd: string;
     cmd_time: string;
     object: string;
@@ -41,18 +41,30 @@ export interface MessageInfo {
  * Represents the content of a single `joblog.json` file.
  */
 export class JobLogInfo {
-    commands: CommandInfo[];
+    objects: ObjectInfo[];
     createdTime: Date;
+    showFailedObjects: boolean;
+    severityLevel: number;
 
-    constructor(commands: CommandInfo[]) {
-        this.commands = commands;
-        this.createdTime = parseDateTime(commands[0].cmd_time); // Use the first cmd's run time as the created time.
+    constructor(objects: ObjectInfo[]) {
+        this.objects = objects;
+        this.createdTime = parseDateTime(objects[0].cmd_time); // Use the first object's run time as the created time.
+        this.showFailedObjects = false;
+        this.severityLevel = 0;
     }
 
     public static createFromToTextForMsgEntity(msg: MessageInfo) {
         const fromText = l10n.t('From: {0}/{1}:{2}', msg.from_library, msg.from_program, msg.from_instruction);
         const toText = l10n.t('To: {0}/{1}/{2}/{3}:{4}', msg.to_library, msg.to_module, msg.to_program, msg.to_procedure, msg.to_instruction);
         return `${fromText}\n${toText}`;
+    }
+
+    toggleShowFailedObjects() {
+        this.showFailedObjects = this.showFailedObjects === false ? true : false;
+    }
+
+    setSeverityLevel(severityLevel: number) {
+        this.severityLevel = severityLevel;
     }
 }
 
@@ -80,7 +92,7 @@ export function parseDateTime(dateTime: string): Date {
         assert(split2.length >= 3);
         const hour = Number(split2[0]);
         const min = Number(split2[1]);
-        const sec = split2.length === 3 ? Number(split2[2]) : Number(split2[2]) +  Number(`0.${split2[3]}`);
+        const sec = split2.length === 3 ? Number(split2[2]) : Number(split2[2]) + Number(`0.${split2[3]}`);
 
         return new Date(year, month, day, hour, min, sec);
     } catch {

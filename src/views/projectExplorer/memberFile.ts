@@ -2,10 +2,11 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
+import { MarkdownString, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n } from "vscode";
 import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../ibmiProjectExplorer";
+import { getInstance } from "../../ibmi";
 
 /**
  * Tree item for a member file.
@@ -23,16 +24,9 @@ export default class MemberFile extends TreeItem implements ProjectExplorerTreeI
     this.contextValue = MemberFile.contextValue;
     this.iconPath = new ThemeIcon(`file`);
     this.description = memberFileInfo.text;
-    this.tooltip = l10n.t('Name: {0}\n', memberFileInfo.name) +
-      l10n.t('Path: {0}\n', this.path) +
-      (memberFileInfo.text && memberFileInfo.text.trim() !== '' ? l10n.t('Text: {0}\n', memberFileInfo.text) : ``) +
-      l10n.t('Extension: {0}\n', extension) +
-      (memberFileInfo.asp ? l10n.t('ASP: {0}\n', memberFileInfo.asp) : ``) +
-      (memberFileInfo.recordLength ? l10n.t('Record Length: {0}\n', memberFileInfo.recordLength) : ``) +
-      (memberFileInfo.lines ? l10n.t('Lines: {0}\n', memberFileInfo.lines) : ``) +
-      (memberFileInfo.created ? l10n.t('Created: {0}\n', memberFileInfo.created.toLocaleString()) : ``) +
-      (memberFileInfo.changed ? l10n.t('Changed: {0}', memberFileInfo.changed.toLocaleString()) : ``);
     this.resourceUri = this.getMemberResourceUri();
+    const ibmi = getInstance();
+    this.tooltip = ibmi?.getContent().memberToToolTip([memberFileInfo.library, memberFileInfo.file, `${memberFileInfo.name}.${extension}`].join(`/`), memberFileInfo);
     this.command = {
       command: `vscode.open`,
       title: `Open Member`,

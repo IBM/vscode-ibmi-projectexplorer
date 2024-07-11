@@ -43,7 +43,7 @@ export enum ContextValue {
   deleted = '_deleted',
   sourceDirectory = 'sourceDirectory',
   variables = 'variables',
-  variable = 'variable',
+  variableItem = 'variableItem',
   libraryList = 'libraryList',
   library = 'library',
   system = '_system',
@@ -76,11 +76,11 @@ export enum ContextValue {
   libraryDoesNotExist = '_libraryDoesNotExist',
   setDeployLocation = '_setDeployLocation',
   log = 'log',
+  ileObject = 'ileObject',
   command = 'command',
-  commandRepresentation = 'commandRepresentation',
   message = 'message',
-  showFailedJobsAction = "_showFailedJobs",
-  showAllJobsAction = "_showAllJobs"
+  showFailedObjectsAction = "_showFailedObjects",
+  showAllObjectsAction = "_showAllObjects"
 }
 
 /**

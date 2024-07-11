@@ -5,14 +5,14 @@
 import { ConnectionData, DeploymentMethod, ObjectItem } from "@halcyontech/vscode-ibmi-types";
 import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
 import * as path from "path";
-import { ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
+import { CancellationToken, ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, TreeItem, TreeView, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
 import { getDeployTools, getInstance } from "../../ibmi";
 import { LINKS } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
-import { DecorationProvider } from "./decorationProvider";
+import { DecorationProvider } from "../../decorationProvider";
 import ErrorItem from "./errorItem";
 import IncludePaths from "./includePaths";
 import Library, { LibraryType } from "./library";
@@ -38,15 +38,20 @@ import { GitManager } from "../../gitManager";
 export default class ProjectExplorer implements TreeDataProvider<ProjectExplorerTreeItem> {
   private _onDidChangeTreeData = new EventEmitter<ProjectExplorerTreeItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
+  private treeView: TreeView<ProjectExplorerTreeItem> | undefined;
   private projectTreeItems: Project[] = [];
 
   constructor(context: ExtensionContext) {
     const ibmi = getInstance();
     let currentDeploymentStorage: DeploymentPath;
-    ibmi?.onEvent(`connected`, () => {
+    ibmi?.onEvent(`connected`, async () => {
       this.refresh();
 
       currentDeploymentStorage = JSON.parse(JSON.stringify(ibmi?.getStorage().getDeployment()));
+
+      for await (const iProject of ProjectManager.getProjects()) {
+        await iProject.syncLiblVars();
+      }
     });
     ibmi?.onEvent(`deploy`, () => {
       this.refresh();
@@ -66,6 +71,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     });
     ibmi?.onEvent(`disconnected`, () => {
       this.refresh();
+
+      for (const iProject of ProjectManager.getProjects()) {
+        iProject.setState(undefined);
+        iProject.setLibraryList(undefined);
+      }
     });
 
     const decorationProvider = new DecorationProvider();
@@ -472,7 +482,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = ProjectManager.getActiveProject();
 
           if (iProject) {
-            const library = element.name;
+            const library = element.library;
 
             if (library) {
               const selectedPosition = await window.showQuickPick([
@@ -495,7 +505,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setAsCurrentLibrary`, async (element: any) => {
         if (element) {
-          const library = element.name;
+          const library = element.library;
 
           if (library) {
             const iProject = ProjectManager.getActiveProject();
@@ -513,7 +523,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setAsTargetLibraryForCompiles`, async (element: any) => {
         if (element) {
-          const library = element.name;
+          const library = element.library;
 
           if (library) {
             const iProject = ProjectManager.getActiveProject();
@@ -862,7 +872,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             value = element.label!.toString();
           } else {
             // Invoked from library in Object Browser or directory in IFS Browser
-            value = element.name ? element.name : element.path;
+            value = element.path;
           }
 
           if (value) {
@@ -1383,6 +1393,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     );
   }
 
+  setTreeView(treeView: TreeView<ProjectExplorerTreeItem>) {
+    this.treeView = treeView;
+  }
+
   /**
    * Refresh the entire tree view or a specific tree item.
    * 
@@ -1450,6 +1464,14 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
       return items;
     }
+  }
+
+  async resolveTreeItem(item: TreeItem, element: ProjectExplorerTreeItem, token: CancellationToken): Promise<ProjectExplorerTreeItem>  {
+    if (element.getToolTip) {
+      element.tooltip = await element.getToolTip();
+    }
+
+    return element;
   }
 
   /**

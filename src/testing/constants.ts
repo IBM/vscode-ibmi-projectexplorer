@@ -5,7 +5,7 @@
 
 import { IProjectT } from "../iProjectT";
 import { IBMiJsonT } from "../ibmiJsonT";
-import { CommandInfo } from "../jobLog";
+import { ObjectInfo } from "../jobLog";
 
 export const iProjectMock: IProjectT = {
     "version": "0.0.1",
@@ -28,7 +28,7 @@ export const ibmiJsonMock: IBMiJsonT = {
     }
 };
 
-export const jobLogMock: CommandInfo[] = [
+export const jobLogMock: ObjectInfo[] = [
     {
         "cmd": "CRTCLMOD MODULE(bobtest/PAR201) SRCFILE(QTEMP/QSOURCE) SRCMBR(PAR201) AUT() DBGVIEW(*ALL) OPTIMIZE() OPTION(*EVENTF) TEXT(' ') TGTRLS() INCDIR('/bob-recursive-example/includes' '/bob-recursive-example/QPROTOSRC')",
         "cmd_time": "2023-09-22-10.30.27.709187",

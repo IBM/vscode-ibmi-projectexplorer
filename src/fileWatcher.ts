@@ -3,6 +3,7 @@
  */
 
 import { Uri, workspace } from 'vscode';
+import * as path from "path";
 import { ProjectManager } from './projectManager';
 import JobLog from "./views/jobLog";
 import ProjectExplorer from "./views/projectExplorer";
@@ -56,6 +57,7 @@ export namespace ProjectFileWatcher {
                 iProject.setLibraryList(undefined);
 
                 ProjectManager.fire({ type: 'projects', iProject });
+                ProjectManager.fire({ type: 'buildMap', iProject, uri });
             } else if (uri.path.endsWith('iproj.json') && (type === 'delete')) {
                 const activeProject = ProjectManager.getActiveProject();
 
@@ -64,8 +66,10 @@ export namespace ProjectFileWatcher {
                 }
             } else if (uri.fsPath.endsWith('.ibmi.json')) {
                 iProject.setBuildMap(undefined);
+
+                ProjectManager.fire({ type: 'buildMap', iProject, uri });
             } else if (uri.fsPath.endsWith('.env')) {
-                // IF the .env was updated only for keeping track of the LIBL state for other
+                // If the .env was updated only for keeping track of the LIBL state for other
                 // extensions, then we don't want to refresh the UI and state
                 if (iProject.wasLiblVarsUpdated()) {
                     return;
@@ -88,7 +92,7 @@ export namespace ProjectFileWatcher {
                     elementToRefresh = projectTreeItem.children[0];
                 }
 
-                if (uri.path.endsWith('.logs/joblog.json')) {
+                if (uri.path.endsWith('.logs/joblog.json') || uri.path.endsWith(path.posix.join(iProject.workspaceFolder.uri.path, '.logs'))) {
                     jobLog.refresh();
                 }
             }

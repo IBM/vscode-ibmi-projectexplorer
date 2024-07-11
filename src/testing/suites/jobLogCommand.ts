@@ -10,8 +10,7 @@ import { ProjectManager } from "../../projectManager";
 import { TextEncoder } from "util";
 import JobLog from "../../views/jobLog";
 import { IBMiProjectExplorer } from "../../ibmiProjectExplorer";
-import { jobLogMock, outputMock, splfMock} from "../constants";
-import Command from "../../views/jobLog/command";
+import { jobLogMock, outputMock, splfMock } from "../constants";
 import Log from "../../views/jobLog/log";
 
 let jobLog: JobLog | undefined;
@@ -74,9 +73,8 @@ export const jobLogCommandSuite: TestSuite = {
                 const iProject = ProjectManager.getProjects()[0];
                 const projectTreeItem = (await jobLog!.getChildren())[0];
                 const logTreeItem = (await projectTreeItem!.getChildren())[0];
-                const commandTreeItem = (await logTreeItem!.getChildren())[0];
-
-                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showObjectOutput', commandTreeItem);
+                const objectTreeItem = (await logTreeItem!.getChildren())[0];
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showObjectOutput', objectTreeItem);
                 const activeFileUri = window.activeTextEditor?.document.uri;
                 await commands.executeCommand("workbench.action.closeActiveEditor");
 
@@ -84,33 +82,44 @@ export const jobLogCommandSuite: TestSuite = {
             }
         },
         {
-            name: `Test toggleFailed`, test: async () => {
+            name: `Test showFailedObjects`, test: async () => {
                 const projectTreeItem = (await jobLog!.getChildren())[0];
                 const logTreeItem = (await projectTreeItem!.getChildren())[0];
+                const numObjectsPreFilter = (await logTreeItem.getChildren()).length;
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showFailedObjects', logTreeItem);
+                const numObjectsPostFilter = (await logTreeItem.getChildren()).length;
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showAllObjects', logTreeItem);
 
-                const commandsLengthPreFilter = (await logTreeItem.getChildren()).length;
-                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs', logTreeItem);
-                const commandsLengthPostFilter = (await logTreeItem.getChildren()).length;
+                assert.equal(numObjectsPreFilter, 1);
+                assert.equal(numObjectsPostFilter, 0);
+            }
+        },
+        {
+            name: `Test showAllObjects`, test: async () => {
+                const projectTreeItem = (await jobLog!.getChildren())[0];
+                const logTreeItem = (await projectTreeItem!.getChildren())[0];
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showFailedObjects', logTreeItem);
+                const numObjectsPreFilter = (await logTreeItem.getChildren()).length;
+                await commands.executeCommand('vscode-ibmi-projectexplorer.jobLog.showAllObjects', logTreeItem);
+                const numObjectsPostFilter = (await logTreeItem.getChildren()).length;
 
-                assert.equal(commandsLengthPreFilter, 1);
-                assert.equal(commandsLengthPostFilter, 0);
+                assert.equal(numObjectsPreFilter, 0);
+                assert.equal(numObjectsPostFilter, 1);
             }
         },
         {
             name: `Test filterMessageSeverity`, test: async () => {
                 const projectTreeItem = (await jobLog!.getChildren())[0];
                 const logTreeItem = (await projectTreeItem!.getChildren())[0];
+                const objectTreeItemPreFilter = (await logTreeItem!.getChildren())[0];
+                const numMessagesPreFilter = (await objectTreeItemPreFilter.getChildren()).length;
+                (logTreeItem as Log).jobLogInfo.setSeverityLevel(10);
+                const objectTreeItemPostFilter = (await logTreeItem!.getChildren())[0];
+                const numMessagesPostFilter = (await objectTreeItemPostFilter.getChildren()).length;
+                (logTreeItem as Log).jobLogInfo.setSeverityLevel(0);
 
-                const commandTreeItemPreFilter = (await logTreeItem!.getChildren())[0];
-                const msgsLengthPreFilter =  (await commandTreeItemPreFilter.getChildren()).length;
-                
-                (logTreeItem as Log).setSeverityLevel(10);
-                
-                const commandTreeItemPostFilter = (await logTreeItem!.getChildren())[0];
-                const msgsLengthPostFilter = (await commandTreeItemPostFilter.getChildren()).length;
-
-                assert.equal(msgsLengthPreFilter, 3);
-                assert.equal(msgsLengthPostFilter, 2);
+                assert.equal(numMessagesPreFilter, 3);
+                assert.equal(numMessagesPostFilter, 2);
             }
         }
     ]

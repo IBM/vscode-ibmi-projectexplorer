@@ -183,12 +183,12 @@ export default class ErrorItem extends TreeItem implements ProjectExplorerTreeIt
     );
   }
 
-  static createIncludePathNotSpecifiedError(workspaceFolder: WorkspaceFolder, includePath: string, position: Position | undefined): ErrorItem {
+  static createIncludePathError(workspaceFolder: WorkspaceFolder, includePath: string, position: Position | undefined, description: string): ErrorItem {
     return new ErrorItem(
       workspaceFolder,
       includePath,
       {
-        description: l10n.t('Not specified'),
+        description: description,
         contextValue: ContextValue.includePath +
           (position === 'first' ? ContextValue.first : '') +
           (position === 'last' ? ContextValue.last : '') +

@@ -9,7 +9,7 @@
   },
   "publisher": "IBM",
   "license": "Apache-2.0",
-  "version": "2.10.5",
+  "version": "2.11.0",
   "repository": {
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
   },
@@ -812,14 +812,14 @@
       },
       {
         "category": "%commands.jobLog%",
-        "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs",
-        "title": "%commands.jobLog.showOnlyFailedJobs%",
+        "command": "vscode-ibmi-projectexplorer.jobLog.showFailedObjects",
+        "title": "%commands.jobLog.showFailedObjects%",
         "icon": "$(error-small)"
       },
       {
         "category": "%commands.jobLog%",
-        "command": "vscode-ibmi-projectexplorer.jobLog.showAllJobs",
-        "title": "%commands.jobLog.showAllJobs%",
+        "command": "vscode-ibmi-projectexplorer.jobLog.showAllObjects",
+        "title": "%commands.jobLog.showAllObjects%",
         "icon": "$(circle)"
       },
       {
@@ -1156,11 +1156,11 @@
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showFailedObjects",
           "when": "never"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showAllJobs",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showAllObjects",
           "when": "never"
         },
         {
@@ -1310,7 +1310,7 @@
       "view/item/context": [
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.refresh",
-          "when": "view == projectExplorer && viewItem =~ /^(?!(objectFile(PHY|PF)|memberFile|sourceFile|ifsFile|variable(?!s)|includePath_local|error)).*/",
+          "when": "view == projectExplorer && viewItem =~ /^(?!(objectFile(PHY|PF)|memberFile|sourceFile|ifsFile|variableItem|includePath_local|error)).*/",
           "group": "0_refresh@0"
         },
         {
@@ -1485,12 +1485,12 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editVariable",
-          "when": "view == projectExplorer && viewItem =~ /^variable(?!s).*/",
+          "when": "view == projectExplorer && viewItem =~ /^variableItem.*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editVariable",
-          "when": "view == projectExplorer && viewItem =~ /^variable(?!s).*/",
+          "when": "view == projectExplorer && viewItem =~ /^variableItem.*/",
           "group": "1_edit@0"
         },
         {
@@ -1810,7 +1810,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.refresh",
-          "when": "view == jobLog && viewItem =~ /^(?!message).*/",
+          "when": "view == jobLog && viewItem =~ /^(?!(message|command)).*/",
           "group": "0_refresh@0"
         },
         {
@@ -1835,22 +1835,22 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
-          "when": "view == jobLog && viewItem =~ /^(command|commandRepresentation).*/",
+          "when": "view == jobLog && viewItem =~ /^(ileObject|command).*/",
           "group": "inline@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.copy",
-          "when": "view == jobLog && viewItem =~ /^(command|commandRepresentation).*/",
+          "when": "view == jobLog && viewItem =~ /^(ileObject|command).*/",
           "group": "1_copy@0"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
-          "when": "view == jobLog && viewItem =~ /^command(?!Representation).*/",
+          "when": "view == jobLog && viewItem =~ /^ileObject.*/",
           "group": "inline@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.jobLog.showObjectOutput",
-          "when": "view == jobLog && viewItem =~ /^command(?!Representation).*/",
+          "when": "view == jobLog && viewItem =~ /^ileObject.*/",
           "group": "2_output@0"
         },
         {
@@ -1864,23 +1864,23 @@
           "group": "1_filter@1"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs",
-          "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showFailedJobs.*/",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showFailedObjects",
+          "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showFailedObjects.*/",
           "group": "inline@1"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showOnlyFailedJobs",
-          "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showFailedJobs.*/",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showFailedObjects",
+          "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showFailedObjects.*/",
           "group": "1_filter@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showAllJobs",
-          "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showAllJobs.*/",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showAllObjects",
+          "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showAllObjects.*/",
           "group": "inline@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.jobLog.showAllJobs",
-          "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showAllJobs.*/",
+          "command": "vscode-ibmi-projectexplorer.jobLog.showAllObjects",
+          "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showAllObjects.*/",
           "group": "1_filter@0"
         }
       ]
@@ -2122,14 +2122,14 @@
     "@types/parse-gitignore": "^1.0.2",
     "@types/tar": "^6.1.13",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/eslint-plugin": "^7.13.1",
-    "@typescript-eslint/parser": "^7.13.1",
+    "@typescript-eslint/parser": "^7.16.0",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@vscode/l10n-dev": "^0.0.35",
-    "esbuild-loader": "^4.1.0",
+    "esbuild-loader": "^4.2.0",
     "eslint": "^8.57.0",
-    "tar": "^7.2.0",
-    "typescript": "^5.4.5",
-    "webpack": "^5.92.0",
+    "tar": "^7.4.0",
+    "typescript": "^5.5.3",
+    "webpack": "^5.92.1",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
