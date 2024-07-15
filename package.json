@@ -1994,7 +1994,7 @@
     "@typescript-eslint/parser": "^7.16.0",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@vscode/l10n-dev": "^0.0.35",
-    "esbuild-loader": "^4.2.0",
+    "esbuild-loader": "^4.2.1",
     "eslint": "^8.57.0",
     "tar": "^7.4.0",
     "typescript": "^5.5.3",
