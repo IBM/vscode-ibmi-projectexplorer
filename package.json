@@ -798,7 +798,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.openProjectExplorerDocs",
-          "when": "never"
+          "when": "true"
         },
         {
           "command": "vscode-ibmi-projectexplorer.openMigrateSourceDocs",
@@ -834,19 +834,27 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.runBuild",
-          "when": "code-for-ibmi:connected"
+          "when": "code-for-ibmi:connected && vscode-ibmi-projectexplorer:hasActiveProject"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand",
+          "when": "vscode-ibmi-projectexplorer:hasActiveProject"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
-          "when": "code-for-ibmi:connected"
+          "when": "code-for-ibmi:connected && vscode-ibmi-projectexplorer:hasActiveProject"
         },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand",
+          "when": "vscode-ibmi-projectexplorer:hasActiveProject"
+        },        
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup",
           "when": "never"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
-          "when": "never"
+          "when": "vscode-ibmi-projectexplorer:hasActiveProject"
         },
         {
           "command": "vscode-ibmi-projectexplorer.createIProj",
