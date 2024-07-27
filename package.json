@@ -834,12 +834,20 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.runBuild",
-          "when": "code-for-ibmi:connected"
+          "when": "code-for-ibmi:connected && vscode-ibmi-projectexplorer:hasActiveProject"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand",
+          "when": "vscode-ibmi-projectexplorer:hasActiveProject"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
-          "when": "code-for-ibmi:connected"
+          "when": "code-for-ibmi:connected && vscode-ibmi-projectexplorer:hasActiveProject"
         },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand",
+          "when": "vscode-ibmi-projectexplorer:hasActiveProject"
+        },        
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup",
           "when": "never"
