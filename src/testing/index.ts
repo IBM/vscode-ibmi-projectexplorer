@@ -3,7 +3,7 @@
  */
 
 import { env } from "process";
-import { ExtensionContext, commands, window } from "vscode";
+import { ExtensionContext, commands, l10n, window } from "vscode";
 import { getInstance } from "../ibmi";
 import { buildMapSuite } from "./suites/buildMap";
 import { decorationProviderSuite } from "./suites/decorationProvider";
@@ -58,9 +58,9 @@ export async function initialise(context: ExtensionContext) {
     await commands.executeCommand(`setContext`, `projectExplorer:testing`, true);
     const ibmi = getInstance()!;
     if (!individualTesting) {
-      ibmi.subscribe(context, `connected`, "Run IBM i Project Explorer tests", runTests);
+      ibmi.subscribe(context, `connected`, l10n.t("Run IBM i Project Explorer tests"), runTests);
     }
-    ibmi.subscribe(context, `disconnected`, "Reset IBM i Project Explorer tests", resetTests);
+    ibmi.subscribe(context, `disconnected`, l10n.t("Reset IBM i Project Explorer tests"), resetTests);
     testSuitesTreeProvider = new TestSuitesTreeProvider(suites);
     const testSuitesTreeView = window.createTreeView(`testing`, { treeDataProvider: testSuitesTreeProvider, showCollapseAll: true });
 

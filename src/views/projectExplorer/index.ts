@@ -41,7 +41,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
   constructor(context: ExtensionContext) {
     const ibmi = getInstance();
     let currentDeploymentStorage: DeploymentPath;
-    ibmi?.subscribe(context, `connected`, "Load IBM i Project Explorer", async () => {
+    ibmi?.subscribe(context, `connected`, l10n.t("Load IBM i Project Explorer"), async () => {
       this.refresh();
 
       currentDeploymentStorage = JSON.parse(JSON.stringify(ibmi?.getStorage().getDeployment()));
@@ -50,10 +50,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         await iProject.syncLiblVars();
       }
     });
-    ibmi?.subscribe(context, `deploy`, "Refresh IBM i Project Explorer after deploy", () => {
+    ibmi?.subscribe(context, `deploy`, l10n.t("Refresh IBM i Project Explorer after deploy"), () => {
       this.refresh();
     });
-    ibmi?.subscribe(context, `deployLocation`, "Refresh IBM i Project Explorer after deploy location changes", () => {
+    ibmi?.subscribe(context, `deployLocation`, l10n.t("Refresh IBM i Project Explorer after deploy location changes"), () => {
       this.refresh();
 
       const newDeploymentStorage = ibmi?.getStorage().getDeployment();
@@ -66,7 +66,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
       currentDeploymentStorage = JSON.parse(JSON.stringify(newDeploymentStorage));
     });
-    ibmi?.subscribe(context, `disconnected`, "Disconnect IBM i Projects", () => {
+    ibmi?.subscribe(context, `disconnected`, l10n.t("Disconnect IBM i Projects"), () => {
       this.refresh();
 
       for (const iProject of ProjectManager.getProjects()) {
