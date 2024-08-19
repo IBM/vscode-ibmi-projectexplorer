@@ -2,20 +2,20 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ExtensionContext, commands, window } from "vscode";
 import { env } from "process";
-import { TestSuitesTreeProvider } from "./testCasesTree";
+import { ExtensionContext, commands, window } from "vscode";
 import { getInstance } from "../ibmi";
-import { iProjectSuite } from "./suites/iProject";
-import { projectManagerSuite } from "./suites/projectManager";
-import { jobLogSuite } from "./suites/jobLog";
-import { projectExplorerTreeItemSuite } from "./suites/projectExplorerTreeItem";
+import { buildMapSuite } from "./suites/buildMap";
 import { decorationProviderSuite } from "./suites/decorationProvider";
+import { iProjectSuite } from "./suites/iProject";
+import { jobLogSuite } from "./suites/jobLog";
 import { jobLogCommandSuite } from "./suites/jobLogCommand";
 import { jobLogTreeItemSuite } from "./suites/jobLogTreeItem";
+import { projectExplorerTreeItemSuite } from "./suites/projectExplorerTreeItem";
+import { projectManagerSuite } from "./suites/projectManager";
 import { ringBufferSuite } from "./suites/ringBuffer";
-import { buildMapSuite } from "./suites/buildMap";
 import { utilSuite } from "./suites/utilTest";
+import { TestSuitesTreeProvider } from "./testCasesTree";
 
 const suites: TestSuite[] = [
   buildMapSuite,
@@ -58,9 +58,9 @@ export async function initialise(context: ExtensionContext) {
     await commands.executeCommand(`setContext`, `projectExplorer:testing`, true);
     const ibmi = getInstance()!;
     if (!individualTesting) {
-      ibmi.onEvent(`connected`, runTests);
+      ibmi.subscribe(context, `connected`, "Run IBM i Project Explorer tests", runTests);
     }
-    ibmi.onEvent(`disconnected`, resetTests);
+    ibmi.subscribe(context, `disconnected`, "Reset IBM i Project Explorer tests", resetTests);
     testSuitesTreeProvider = new TestSuitesTreeProvider(suites);
     const testSuitesTreeView = window.createTreeView(`testing`, { treeDataProvider: testSuitesTreeProvider, showCollapseAll: true });
 

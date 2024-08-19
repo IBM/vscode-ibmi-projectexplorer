@@ -6,13 +6,13 @@ import { ConnectionData, DeploymentMethod, ObjectItem } from "@halcyontech/vscod
 import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
 import * as path from "path";
 import { CancellationToken, ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, TreeItem, TreeView, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
+import { DecorationProvider } from "../../decorationProvider";
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
 import { getDeployTools, getInstance, getTools } from "../../ibmi";
 import { LINKS } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
-import { DecorationProvider } from "../../decorationProvider";
 import ErrorItem from "./errorItem";
 import IncludePaths from "./includePaths";
 import Library, { LibraryType } from "./library";
@@ -41,7 +41,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
   constructor(context: ExtensionContext) {
     const ibmi = getInstance();
     let currentDeploymentStorage: DeploymentPath;
-    ibmi?.onEvent(`connected`, async () => {
+    ibmi?.subscribe(context, `connected`, "Load IBM i Project Explorer", async () => {
       this.refresh();
 
       currentDeploymentStorage = JSON.parse(JSON.stringify(ibmi?.getStorage().getDeployment()));
@@ -50,10 +50,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         await iProject.syncLiblVars();
       }
     });
-    ibmi?.onEvent(`deploy`, () => {
+    ibmi?.subscribe(context, `deploy`, "Refresh IBM i Project Explorer after deploy", () => {
       this.refresh();
     });
-    ibmi?.onEvent(`deployLocation`, () => {
+    ibmi?.subscribe(context, `deployLocation`, "Refresh IBM i Project Explorer after deploy location changes", () => {
       this.refresh();
 
       const newDeploymentStorage = ibmi?.getStorage().getDeployment();
@@ -66,7 +66,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
       currentDeploymentStorage = JSON.parse(JSON.stringify(newDeploymentStorage));
     });
-    ibmi?.onEvent(`disconnected`, () => {
+    ibmi?.subscribe(context, `disconnected`, "Disconnect IBM i Projects", () => {
       this.refresh();
 
       for (const iProject of ProjectManager.getProjects()) {
