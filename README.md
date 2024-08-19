@@ -11,6 +11,9 @@ The IBM i Project Explorer supports developing IBM i applications using buildabl
 - 🔎 [See releases](https://github.com/IBM/vscode-ibmi-projectexplorer/releases)
 - 🛠 [Use our Project Explorer API](https://ibm.github.io/vscode-ibmi-projectexplorer/#/pages/developing/api)
 
+[![Version](https://img.shields.io/visual-studio-marketplace/v/IBM.vscode-ibmi-projectexplorer)](https://marketplace.visualstudio.com/items?itemName=IBM.vscode-ibmi-projectexplorer)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/IBM.vscode-ibmi-projectexplorer)](https://marketplace.visualstudio.com/items?itemName=IBM.vscode-ibmi-projectexplorer)
+
 ---
 
 ### Running the Extension
