@@ -3,13 +3,13 @@
  */
 
 import { Validator, ValidatorResult } from "jsonschema";
-import { EventEmitter, ExtensionContext, FileType, StatusBarAlignment, StatusBarItem, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import * as path from "path";
+import { EventEmitter, ExtensionContext, FileType, StatusBarAlignment, StatusBarItem, Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import { ConfigurationManager, ConfigurationSection } from "./configurationManager";
 import { IProject } from "./iproject";
+import { IProjectT } from "./iProjectT";
 import Project from "./views/projectExplorer/project";
 import { ProjectExplorerTreeItem } from "./views/projectExplorer/projectExplorerTreeItem";
-import { IProjectT } from "./iProjectT";
 
 /**
  * Project explorer schema ids:
@@ -445,7 +445,7 @@ export class ProjectManager {
         const subIProjectUris: Uri[] = [];
         const subDirectoryUris = (await workspace.fs.readDirectory(uri))
             .filter((folder) => folder[1] === FileType.Directory)
-            .map((folder) => Uri.joinPath(uri, folder[0]))
+            .map((folder) => Uri.joinPath(uri, folder[0]));
         for await (const uri of subDirectoryUris) {
             try {
                 const iprojUri = Uri.file(path.join(uri.fsPath, 'iproj.json'));
@@ -458,7 +458,7 @@ export class ProjectManager {
                 // Project not found
             }
 
-            if (currentDepth != scanDepth) {
+            if (currentDepth !== scanDepth) {
                 subIProjectUris.push(...(await this.scanSubIProjects(uri, scanDepth, currentDepth)));
             }
         }
