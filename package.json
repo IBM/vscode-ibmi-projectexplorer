@@ -1994,7 +1994,7 @@
     "types": "npx -p typescript tsc ./src/extension.ts --excludeDirectories ./src/testing --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node"
   },
   "devDependencies": {
-    "@halcyontech/vscode-ibmi-types": "^2.11.0",
+    "@halcyontech/vscode-ibmi-types": "^2.12",
     "@types/node": "20.x",
     "@types/parse-gitignore": "^1.0.2",
     "@types/tar": "^6.1.13",

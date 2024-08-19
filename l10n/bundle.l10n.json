@@ -109,6 +109,10 @@
   "Workspace folder not specified": "Workspace folder not specified",
   "No source files selected to be migrated": "No source files selected to be migrated",
   "Reveal in Explorer": "Reveal in Explorer",
+  "Load IBM i Project Explorer": "Load IBM i Project Explorer",
+  "Refresh IBM i Project Explorer after deploy": "Refresh IBM i Project Explorer after deploy",
+  "Refresh IBM i Project Explorer after deploy location changes": "Refresh IBM i Project Explorer after deploy location changes",
+  "Disconnect IBM i Projects": "Disconnect IBM i Projects",
   "Failed to retrieve project": "Failed to retrieve project",
   "Enter build command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by git.)": "Enter build command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by git.)",
   "Build command": "Build command",
@@ -206,5 +210,7 @@
   "Severity 40 or more": "Severity 40 or more",
   "Severity 50 or more": "Severity 50 or more",
   "Select Severity Level": "Select Severity Level",
-  "{0} Failed Object(s)": "{0} Failed Object(s)"
+  "{0} Failed Object(s)": "{0} Failed Object(s)",
+  "Run IBM i Project Explorer tests": "Run IBM i Project Explorer tests",
+  "Reset IBM i Project Explorer tests": "Reset IBM i Project Explorer tests"
 }
