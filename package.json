@@ -847,7 +847,7 @@
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand",
           "when": "vscode-ibmi-projectexplorer:hasActiveProject"
-        },        
+        },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup",
           "when": "never"
