@@ -2,6 +2,16 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+## `2.11.1`
+* Fix action enablement when no project
+* Specify NPM registry URL
+* Replace Code for IBM i `onEvent` by `subscribe`
+* Specify registry in .npmrc file
+* Add version and install badges to README
+* Create dependency-review.yml
+* Document to create `iproj.json` before source migration
+* Remove unnecessary export of PATH variable
+
 ## `2.11.0`
 * Add scanning for sub projects
 * Create `.gitignore` file when creating a new project
