@@ -1780,8 +1780,8 @@
         },
         "IBM i Project Explorer.projectScanDepth": {
           "type": "integer",
-          "default": 2,
-          "minimum": 1,
+          "default": 0,
+          "minimum": 0,
           "description": "%configuration.IBM i Project Explorer.projectScanDepth%"
         }
       }

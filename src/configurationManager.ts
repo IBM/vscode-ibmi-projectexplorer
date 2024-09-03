@@ -18,6 +18,11 @@ export enum ConfigurationSection {
  */
 export namespace ConfigurationManager {
     /**
+     * Represents the configuration group.
+     */
+    export const group: string = "IBM i Project Explorer";
+
+    /**
      * Initialize the configuration manager by setting up the listener for configurations
      * changes.
      * 
@@ -26,7 +31,7 @@ export namespace ConfigurationManager {
     export function initialize(context: ExtensionContext) {
         context.subscriptions.push(
             workspace.onDidChangeConfiguration(async event => {
-                if (event.affectsConfiguration(`IBM i Project Explorer.${ConfigurationSection.disableUserLibraryListView}`)) {
+                if (event.affectsConfiguration(`${ConfigurationManager.group}.${ConfigurationSection.disableUserLibraryListView}`)) {
                     const disableUserLibraryListView = ConfigurationManager.get(ConfigurationSection.disableUserLibraryListView);
 
                     if (disableUserLibraryListView) {
@@ -52,6 +57,6 @@ export namespace ConfigurationManager {
      * @return The value of the section or `undefined`.
      */
     export function get(section: ConfigurationSection) {
-        return workspace.getConfiguration(`IBM i Project Explorer`).get(section);
+        return workspace.getConfiguration(ConfigurationManager.group).get(section);
     }
 }
