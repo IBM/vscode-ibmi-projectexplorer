@@ -1066,9 +1066,10 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.runAction`, async (element: Project | ObjectFile | MemberFile) => {
         if (element) {
+          let workspaceFolder;
           let chosenUri = element.resourceUri;
 
-          // if project, get the uri of the active editor file if appropriate
+          // If project, get the uri of the active editor file if appropriate
           if (element instanceof Project) {
             await ProjectManager.setActiveProject(element.workspaceFolder);
 
@@ -1082,9 +1083,12 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
                 chosenUri = activeEditor.document.uri;
               }
             }
+          } else {
+            // Set workspace folder for objects and members so the project's LIBL and CURLIB are used
+            workspaceFolder = element.workspaceFolder;
           }
 
-          await commands.executeCommand(`code-for-ibmi.runAction`, chosenUri);
+          await commands.executeCommand(`code-for-ibmi.runAction`, chosenUri, undefined, undefined, undefined, workspaceFolder);
 
           this.refresh();
         }
