@@ -37,7 +37,7 @@
   ],
   "main": "./dist/extension.js",
   "extensionDependencies": [
-    "HalcyonTechLtd.code-for-ibmi"
+    "halcyontechltd.code-for-ibmi"
   ],
   "l10n": "./l10n",
   "contributes": {
