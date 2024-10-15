@@ -105,7 +105,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
 
                 // Run CVTSRCPF
                 const cvtsrcpfResult = await connection.sendCommand({
-                    command: `export PATH="/QOpenSys/pkgs/bin:$PATH:" && /QOpenSys/pkgs/bin/makei cvtsrcpf ${migrationConfig.defaultCCSID ? `-c ${migrationConfig.defaultCCSID}` : ``} ${migrationConfig.importText ? `-t` : ``} ${migrationConfig.lower ? `-l` : ``} ${sourceFile} ${library}`,
+                    command: `/QOpenSys/pkgs/bin/makei cvtsrcpf ${migrationConfig.defaultCCSID ? `-c ${migrationConfig.defaultCCSID}` : ``} ${migrationConfig.importText ? `-t` : ``} ${migrationConfig.lower ? `-l` : ``} ${sourceFile} ${library}`,
                     directory: directoryPath
                 });
 

@@ -9,7 +9,7 @@
   },
   "publisher": "IBM",
   "license": "Apache-2.0",
-  "version": "2.11.0",
+  "version": "2.11.1",
   "repository": {
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
   },
@@ -837,7 +837,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.openProjectExplorerDocs",
-          "when": "never"
+          "when": "true"
         },
         {
           "command": "vscode-ibmi-projectexplorer.openMigrateSourceDocs",
@@ -873,11 +873,19 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.runBuild",
-          "when": "code-for-ibmi:connected"
+          "when": "code-for-ibmi:connected && vscode-ibmi-projectexplorer:hasActiveProject"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand",
+          "when": "vscode-ibmi-projectexplorer:hasActiveProject"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
-          "when": "code-for-ibmi:connected"
+          "when": "code-for-ibmi:connected && vscode-ibmi-projectexplorer:hasActiveProject"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand",
+          "when": "vscode-ibmi-projectexplorer:hasActiveProject"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup",
@@ -885,7 +893,7 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
-          "when": "never"
+          "when": "vscode-ibmi-projectexplorer:hasActiveProject"
         },
         {
           "command": "vscode-ibmi-projectexplorer.createIProj",
@@ -2117,19 +2125,19 @@
     "types": "npx -p typescript tsc ./src/extension.ts --excludeDirectories ./src/testing --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node"
   },
   "devDependencies": {
-    "@halcyontech/vscode-ibmi-types": "^2.11.0",
+    "@halcyontech/vscode-ibmi-types": "^2.12",
     "@types/node": "20.x",
     "@types/parse-gitignore": "^1.0.2",
     "@types/tar": "^6.1.13",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/parser": "^7.16.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@vscode/l10n-dev": "^0.0.35",
-    "esbuild-loader": "^4.2.0",
+    "esbuild-loader": "^4.2.2",
     "eslint": "^8.57.0",
-    "tar": "^7.4.0",
+    "tar": "^7.4.3",
     "typescript": "^5.5.3",
-    "webpack": "^5.92.1",
+    "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
