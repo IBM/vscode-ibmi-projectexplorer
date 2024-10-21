@@ -1995,7 +1995,7 @@
   },
   "devDependencies": {
     "@halcyontech/vscode-ibmi-types": "^2.12",
-    "@types/node": "20.x",
+    "@types/node": "22.x",
     "@types/parse-gitignore": "^1.0.2",
     "@types/tar": "^6.1.13",
     "@types/vscode": "^1.75.0",
