@@ -2,6 +2,7 @@
    - [IBM i Project Explorer](./README.md)
    - [Code for IBM i](pages/welcome/code-for-ibm-i.md)
    - [Installation](pages/welcome/installation.md)
+   - [Tutorials](pages/welcome/tutorials.md)
 - Project Explorer
    - [Create New Project](pages/projectExplorer/create-new-project.md)
    - [Connect to a Remote System](pages/projectExplorer/connect-to-a-remote-system.md)
