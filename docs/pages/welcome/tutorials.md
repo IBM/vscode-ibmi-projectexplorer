@@ -10,7 +10,7 @@ Learn about the challenges with build on IBM i, how local development overcomes 
 
 <div style="text-align: center; margin: 20px;">
     <a href="https://github.com/SanjulaGanepola/ibmi-talks/blob/main/Modern%20Buildable%20Projects%20with%20IBM%20i%20Project%20Explorer%20and%20Bob/Modern-Buildable-Projects-with-IBM-i-Project-Explorer-and-Bob.pdf" target="_blank">
-        <img src="../../assets/Tutorials_01.png" alt="Google Pub/Sub 1" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 8px; max-width: 100%; display: block; margin-bottom: 20px;">
+        <img src="https://github.com/IBM/vscode-ibmi-projectexplorer/blob/main/docs/assets/Tutorials_01.png?raw=true" alt="Modern Buildable Projects with IBM i Project Explorer and Bob" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); border-radius: 8px; max-width: 100%; display: block; margin-bottom: 20px;">
     </a>
 </div>
 
