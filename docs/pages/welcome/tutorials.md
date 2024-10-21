@@ -6,7 +6,7 @@
 
 Learn about the challenges with build on IBM i, how local development overcomes these problems, how Bob and IBM i Projects tie into local development, and lastly the ins and outs of IBM i Project Explorer. Click [here](https://github.com/SanjulaGanepola/ibmi-talks/blob/main/Modern%20Buildable%20Projects%20with%20IBM%20i%20Project%20Explorer%20and%20Bob/Modern-Buildable-Projects-with-IBM-i-Project-Explorer-and-Bob.pdf) to view the full presentation.
 
-✨ Courtesy of [Sanjula Ganepola](https://www.linkedin.com/in/sanjulaganepola/) & [Edmund Reinhardt](https://www.linkedin.com/in/edmundreinhardt/)!
+✨ Courtesy of [Edmund Reinhardt](https://www.linkedin.com/in/edmundreinhardt/) and [Sanjula Ganepola](https://www.linkedin.com/in/sanjulaganepola/)!
 
 <div style="text-align: center; margin: 20px;">
     <a href="https://github.com/SanjulaGanepola/ibmi-talks/blob/main/Modern%20Buildable%20Projects%20with%20IBM%20i%20Project%20Explorer%20and%20Bob/Modern-Buildable-Projects-with-IBM-i-Project-Explorer-and-Bob.pdf" target="_blank">
