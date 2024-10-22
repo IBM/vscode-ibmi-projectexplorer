@@ -1002,7 +1002,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         if (element) {
           const objectBrowseObject = toObjectBrowserObject(element);
 
-          let result = await window.showWarningMessage(l10n.t('Are you sure you want to delete {0} {1}?', objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase()), l10n.t(`Yes`), l10n.t(`Cancel`));
+          const library = element.label!.toString();
+          let result = await window.showWarningMessage(l10n.t('This option will delete library {0} (and all of its contents) from the IBM i system. Are you sure you want to do this (this action cannot be undone)?', library), l10n.t(`Yes`), l10n.t(`Cancel`));
 
           if (result === l10n.t(`Yes`)) {
             const ibmi = getInstance();
@@ -1366,7 +1367,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     }
   }
 
-  async resolveTreeItem(item: TreeItem, element: ProjectExplorerTreeItem, token: CancellationToken): Promise<ProjectExplorerTreeItem>  {
+  async resolveTreeItem(item: TreeItem, element: ProjectExplorerTreeItem, token: CancellationToken): Promise<ProjectExplorerTreeItem> {
     if (element.getToolTip) {
       element.tooltip = await element.getToolTip();
     }
