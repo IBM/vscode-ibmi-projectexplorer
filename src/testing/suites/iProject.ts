@@ -438,7 +438,7 @@ export const iProjectSuite: TestSuite = {
 
                 await iProject.syncLiblVars();
                 const libl = await iProject.getEnvVar('LIBL');
-                assert.equal(true, libl.startsWith('SYSTOOLS '));
+                assert.equal(true, libl.startsWith('MYLIB1 '));
                 assert.equal(true, libl.endsWith(' QSYSINC'));
             }
         },
