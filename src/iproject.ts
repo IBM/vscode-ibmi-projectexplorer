@@ -1471,6 +1471,20 @@ export class IProject {
         }
       }
 
+      const buildMap = await this.getBuildMap();
+      if (buildMap) {
+        buildMap.forEach((ibmiJsonContent, path) => {
+          const objLib = ibmiJsonContent.build?.objlib;
+          if (objLib) {
+            const libraryType = objLibs.get(objLib);
+            objLibs.set(objLib, [
+              LibraryType.objectLibrary,
+              ...(libraryType ? libraryType : [])
+            ]);
+          }
+        });
+      }
+
       return objLibs;
     }
   }
