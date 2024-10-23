@@ -223,7 +223,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           await deployTools?.launchActionsSetup(workspaceFolder);
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, async () => {
+        for await (const iProject of ProjectManager.getProjects()) {
+          await iProject?.forceResetLibraryList();
+        }
+
         this.refresh();
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.disableClearErrorsBeforeBuild`, async () => {
@@ -1366,7 +1370,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
     }
   }
 
-  async resolveTreeItem(item: TreeItem, element: ProjectExplorerTreeItem, token: CancellationToken): Promise<ProjectExplorerTreeItem>  {
+  async resolveTreeItem(item: TreeItem, element: ProjectExplorerTreeItem, token: CancellationToken): Promise<ProjectExplorerTreeItem> {
     if (element.getToolTip) {
       element.tooltip = await element.getToolTip();
     }
