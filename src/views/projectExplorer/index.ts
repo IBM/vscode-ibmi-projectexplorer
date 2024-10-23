@@ -1263,7 +1263,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         const projects = ProjectManager.getProjects();
         const uris = projects.map(project => project.workspaceFolder.uri);
         for (const uri of uris) {
-          ProjectManager.scanAndAddSubIProjects(uri, true);
+          ProjectManager.scanAndAddSubIProjects(uri);
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.setDeployLocation`, async (element?: ErrorItem | WorkspaceFolder) => {
