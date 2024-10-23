@@ -714,17 +714,17 @@ export class IProject {
     if (unresolvedState) {
       // Remove library from all iproj attributes
       for (const [key, value] of Object.entries(unresolvedState)) {
-        if (value === library) {
+        if (typeof value === 'string' && value.toUpperCase() === library) {
           delete (unresolvedState as any)[key];
-        } else if (Array.isArray(value) && value.includes(library)) {
-          (unresolvedState as any)[key] = (unresolvedState as any)[key].filter((item: string) => item !== library);
+        } else if (Array.isArray(value) && value.map(value => value.toUpperCase()).includes(library)) {
+          (unresolvedState as any)[key] = (unresolvedState as any)[key].filter((item: string) => item.toUpperCase() !== library);
         }
       }
 
       // Remove library from all environment variables
       const env = await this.getEnv();
       for await (const [variable, value] of Object.entries(env)) {
-        if (value === library) {
+        if (value.toUpperCase() === library) {
           await this.updateEnvVar(variable, "");
         }
       }
@@ -748,17 +748,17 @@ export class IProject {
     if (unresolvedState) {
       // Rename library in all iproj attributes
       for (const [key, value] of Object.entries(unresolvedState)) {
-        if (value === library) {
+        if (typeof value === 'string' && value.toUpperCase() === library) {
           (unresolvedState as any)[key] = newLibrary;
-        } else if (Array.isArray(value) && value.includes(library)) {
-          (unresolvedState as any)[key] = (unresolvedState as any)[key].map((item: string) => item === library ? newLibrary : item);
+        } else if (Array.isArray(value) && value.map(value => value.toUpperCase()).includes(library)) {
+          (unresolvedState as any)[key] = (unresolvedState as any)[key].map((item: string) => item.toUpperCase() === library ? newLibrary : item);
         }
       }
 
       // Rename library in all environment variables
       const env = await this.getEnv();
       for await (const [variable, value] of Object.entries(env)) {
-        if (value === library) {
+        if (value.toUpperCase() === library) {
           await this.updateEnvVar(variable, newLibrary);
         }
       }

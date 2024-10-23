@@ -223,7 +223,11 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           await deployTools?.launchActionsSetup(workspaceFolder);
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, () => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.refreshProjectExplorer`, async () => {
+        for await (const iProject of ProjectManager.getProjects()) {
+          await iProject?.forceResetLibraryList();
+        }
+
         this.refresh();
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.disableClearErrorsBeforeBuild`, async () => {
