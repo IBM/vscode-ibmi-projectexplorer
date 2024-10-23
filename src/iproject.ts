@@ -1426,7 +1426,7 @@ export class IProject {
   /**
    * Get the project's object libraries which includes all libraries defined
    * in the `objlib`, `curlib`, `preUsrlibl`, and `postUsrlibl` attributes
-   * of the `iproj.json` file.
+   * of the `iproj.json` file as well as in `objlib` of all .ibmi.json files.
    * 
    * @returns The project's object libraries.
    */
@@ -1469,6 +1469,22 @@ export class IProject {
             ...(libraryType ? libraryType : [])
           ]);
         }
+      }
+
+      const buildMap = await this.getBuildMap();
+      if (buildMap) {
+        buildMap.forEach(ibmiJsonContent => {
+          const objLib = ibmiJsonContent.build?.objlib;
+          if (objLib) {
+            const libraryType = objLibs.get(objLib);
+            if (!libraryType || !libraryType.includes(LibraryType.objectLibrary)) {
+              objLibs.set(objLib, [
+                LibraryType.objectLibrary,
+                ...(libraryType ? libraryType : [])
+              ]);
+            }
+          }
+        });
       }
 
       return objLibs;
