@@ -474,18 +474,21 @@ export class IProject {
       const command = isBuild ? unresolvedState.buildCommand : unresolvedState.compileCommand;
 
       if (command) {
-        // Delete existing directories
         const directoryUris = ['.logs', '.evfevent'].map(dir => Uri.file(path.join(this.workspaceFolder.uri.fsPath, dir)));
         for await (const uri of directoryUris) {
           try {
             await workspace.fs.stat(uri);
-            await workspace.fs.delete(uri, { recursive: true });
-          } catch { }
-        }
 
-        // Create directories
-        for await (const uri of directoryUris) {
-          await workspace.fs.createDirectory(uri);
+            // Clear directory if it does exist
+            const files = await workspace.fs.readDirectory(uri);
+            for (const [fileName] of files) {
+              const fileUri = Uri.joinPath(uri, fileName);
+              await workspace.fs.delete(fileUri, { recursive: true });
+            }
+          } catch {
+            // Create directory if it does not exist
+            await workspace.fs.createDirectory(uri);
+          }
         }
 
         const action: Action = {
