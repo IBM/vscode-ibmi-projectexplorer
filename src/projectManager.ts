@@ -186,11 +186,6 @@ export class ProjectManager {
         if (!this.loaded[workspaceFolder.index]) {
             await iProject.load();
             this.loaded[workspaceFolder.index] = iProject;
-
-            const metadataExists = await iProject.projectFileExists('iproj.json');
-            if (!metadataExists) {
-                this.scanAndAddSubIProjects(workspaceFolder.uri, true);
-            }
         }
 
         if (!this.activeProject && await iProject.projectFileExists('iproj.json')) {
@@ -359,18 +354,16 @@ export class ProjectManager {
      * @param uri The uri of the location to scan.
      * @param notifyOnNoProjectsFound True to notify the user if no projects were found and false otherwise.
      */
-    public static async scanAndAddSubIProjects(uri: Uri, onLoad: boolean): Promise<void> {
+    public static async scanAndAddSubIProjects(uri: Uri): Promise<void> {
         // Scan for subprojects
         const projectScanDepth = ConfigurationManager.get(ConfigurationSection.projectScanDepth);
         const scanDepth = projectScanDepth && typeof projectScanDepth === 'number' ? projectScanDepth : 0;
-        if (onLoad && scanDepth === 0) {
-            return;
-        } else if (!onLoad && scanDepth === 0) {
+        if (scanDepth === 0) {
             window.showErrorMessage(l10n.t('The depth of directories to scan for projects in a workspace folders is set to 0. Configure the scan depth in the VS Code Settings.'), l10n.t('Open Settings'), l10n.t('Try Again')).then(async value => {
                 if (value === l10n.t('Open Settings')) {
                     await commands.executeCommand('workbench.action.openSettings', `${ConfigurationManager.group}.${ConfigurationSection.projectScanDepth}`);
                 } else if (value === l10n.t('Try Again')) {
-                    return ProjectManager.scanAndAddSubIProjects(uri, onLoad);
+                    return ProjectManager.scanAndAddSubIProjects(uri);
                 }
             });
             return;
@@ -431,14 +424,14 @@ export class ProjectManager {
             }
         } else {
             // No projects to open
-            if (!onLoad) {
-                window.showErrorMessage(l10n.t('No subprojects found under the current workspace folder(s). Consider configuring the scan depth in the VS Code Settings.'), l10n.t('Open Settings')).then(async value => {
-                    if (value === l10n.t('Open Settings')) {
-                        await commands.executeCommand('workbench.action.openSettings', `${ConfigurationManager.group}.${ConfigurationSection.projectScanDepth}`);
-                    }
-                });
-                return;
-            }
+            window.showErrorMessage(l10n.t('No subprojects found under the current workspace folder(s). Consider configuring the scan depth in the VS Code Settings.'), l10n.t('Open Settings'), l10n.t('Try Again')).then(async value => {
+                if (value === l10n.t('Open Settings')) {
+                    await commands.executeCommand('workbench.action.openSettings', `${ConfigurationManager.group}.${ConfigurationSection.projectScanDepth}`);
+                } else if (value === l10n.t('Try Again')) {
+                    return ProjectManager.scanAndAddSubIProjects(uri);
+                }
+            });
+            return;
         }
 
         if (subIProjectUrisToOpen.length > 0) {
