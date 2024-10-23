@@ -2,6 +2,27 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+# `2.12.0`
+* Use local `LIBL` and `CURLIB` for running actions on objects and members
+* Update LICENSE
+* Fix OVSX publishing issues
+* Add tutorials doc page
+* Update configuration for deleting a library
+* Add `objlibs` from `.ibmi.json` to Object Libraries
+* Fix delete and rename actions when library is lowercase in iproj.json
+* Make sub project scanning to be user invoked
+* Remove `/QOpenSys/pkgs/bin/` from default makei commands
+* Bump to v2.12.0
+* Clear `.logs` and `.evfevent` directory instead of deleting
+### Housekeeping
+* Bump webpack from 5.92.1 to 5.95.0
+* Bump @typescript-eslint/parser from 7.16.0 to 7.18.0
+* Bump tar from 7.4.0 to 7.4.3
+* Bump esbuild-loader from 4.2.0 to 4.2.2
+* Bump @types/node from 20.14.10 to 22.7.7
+* Bump @halcyontech/vscode-ibmi-types from 2.12.1 to 2.13.5
+* Bump typescript from 5.5.3 to 5.6.3
+
 ## `2.11.1`
 * Fix action enablement when no project
 * Specify NPM registry URL
