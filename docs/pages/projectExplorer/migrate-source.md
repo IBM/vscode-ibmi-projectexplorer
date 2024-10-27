@@ -14,21 +14,21 @@ Now that your workspace folder is recognized as an IBM i project, browse for the
 
 ## Configure Settings
 
-This action will pop up a form in the editor for you to configure the migration process. Under the **Settings** tab, you can specify an optional CCSID value to be used when source physical file is 65535. If not specified, the `*JOB` CCSID will be used. You can also adjust the workspace folder to which the files are to be downloaded to.
+This action will pop up a form in the editor for you to configure the migration process. Under the **Settings** tab, you can specify an optional CCSID value to be used when the source physical file is 65535. If not specified, the `*JOB` CCSID will be used. You can also adjust the workspace folder to which the files are to be downloaded to. Lastly, you will also have options to import member text at the top of the source as comments as well as generate source file names in lowercase.
 
 ![Configure Settings for Migrate Source](../../assets/ProjectExplorer_38.png)
 
 ## Enable Clean Up
 
-As part of this source migration process, you can enable the use of another extension called **Source Orbit** to assist with cleaning up the migrated code. This extension offers the ability to automatically have the migrated source extensions corrected and include/copy directives fixed to use Unix style paths.
+As part of this source migration process, you can enable the use of another extension called [Source Orbit](https://marketplace.visualstudio.com/items?itemName=IBM.vscode-sourceorbit) to assist with cleaning up the migrated code. This extension offers the ability to automatically rename the migrated source to have the correct extensions required for most build tools, fix all include/copy directives to use Unix style paths instead of member styled paths, and generate the Rules.mk files used by [Bob](https://ibm.github.io/ibmi-bob/#/).
 
 ![Clean Up for Migrate Source](../../assets/ProjectExplorer_39.png)
 
 > [!NOTE]
 >
-> The use of these two clean up features requires the **Source Orbit** extension to be installed which can be done from the Visual Studio Code Marketplace: [Source Orbit]().
+> The use of these features requires the **Source Orbit** extension to be installed which can be done from the Visual Studio Code Marketplace: [Source Orbit](https://marketplace.visualstudio.com/items?itemName=IBM.vscode-sourceorbit).
 
-?> To learn more about this clean up process, check out the documentation on [Source Orbit](https://ibm.github.io/sourceorbit/#/).
+?> To learn more about this clean up process, check out the documentation on [Source Orbit](https://ibm.github.io/sourceorbit/#/./pages/cli/index?id=cleanup-capabilities).
 
 ## Select Source Files
 
