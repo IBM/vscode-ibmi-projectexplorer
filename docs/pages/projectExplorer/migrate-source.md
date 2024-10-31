@@ -14,7 +14,11 @@ Now that your workspace folder is recognized as an IBM i project, browse for the
 
 ## Configure Settings
 
-This action will pop up a form in the editor for you to configure the migration process. Under the **Settings** tab, you can specify an optional CCSID value to be used when the source physical file is 65535. If not specified, the `*JOB` CCSID will be used. You can also adjust the workspace folder to which the files are to be downloaded to. Lastly, you will also have options to import member text at the top of the source as comments as well as generate source file names in lowercase.
+This action will pop up a form in the editor for you to configure the migration process. The source library will be prefilled along with the workspace folder to which the files are to be downloaded to. By default, this will be the workspace folder associated with the active project, but this can be changed if you wish to download the files to a different project.
+
+Besides moving the content of the members into stream files, it is important to represent other metadata associated with a SRC-PF. This can be configured under the Settings tab. The migrated streamfiles will be encoded as UTF-8 which can handle all national characters. However the appropriate EBCDIC CCSID is required by the compiler when creating the target object. The SRC-PF CCSID is typically remembered in the `.ibmi.json` file. An optional CCSID value can be used when the source physical file is 65535, since that is ambiguous and not a valid `TGTCCSID` parameter value. If not specified, the `*JOB` CCSID will be used. 
+
+The other piece of metadata associated with the member is the 50 character member text, which is used by the compiler as the object text description. The options is given to import member text as a comment at the top of the source code. Build frameworks such as BOB or ARCAD know how to retrieve the member text from there and use it in the compile command's `TEXT` parameter. Finally, there is an option to generate source file names in lowercase.
 
 ![Configure Settings for Migrate Source](../../assets/ProjectExplorer_38.png)
 
