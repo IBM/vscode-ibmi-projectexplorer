@@ -7,7 +7,7 @@
 > - The project will be referred to by its relative path
 > - This metadata is stored in a `iproj.json` file in the root directory of the project
 > - Even an empty `iproj.json` file will mark a directory as a project
-> - Projects cannot be nested, only the ancestor directory containing the iproj.json will be considered a project
+> - Projects cannot be nested, only the ancestor directory containing the `iproj.json` will be considered a project
 
 ## Configuration Options
 
@@ -17,7 +17,11 @@ Descriptive application name.
 
 ### version
 
-Version of this file format, used for migration purposes.
+Version of this file format (used for migration purposes).
+
+> [!NOTE]
+>
+> **Current Version:** `1.0.0`
 
 ### repository
 
@@ -80,13 +84,24 @@ PASE command line used to compile a specific source file in this project. The sa
 
 Attributes used by external software vendors to provide additional functionality.
 
+### uses
+
+> [!ATTENTION]
+> Not yet in use.
+
+Prerequisite projects in the format `project-name$tag:tag-value` (ie. `acme/core$tag:1.53`). Large companies may have multiple versions of the project at different levels (core, regional, country district). These versions can be at distinct levels (tags in git). Note that 2 projects might use each other and infinite loops need to be avoided. 
+
+> The following actions will take place when a prerequisite project is specified:
+> * Include paths will be appended to
+> * Library list will be adjusted
+
 ## Example
 
 In the example below, we have a project with the description `Payroll application for ACME`. This project has a variable named `&accounting` whose value is used not only for the object library and current library, but also in the beginning of the user library list followed by `ACMEUTIL`. To initialize the environment, this value is also used in the initial CL command where the `SETUP` program is called. A variable named `&tax` is used in the end of the user library list. Include files are searched for in the the prototypes sub-directory. Include files are searched for in the `prototypes` sub-directory. ARCAD tooling is also storing an additional attribute for the `libraryPrefix` which their tooling uses.
 
 ```json
  {
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Payroll application for ACME",
     "objlib": "&accounting",
     "curlib": "&accounting",

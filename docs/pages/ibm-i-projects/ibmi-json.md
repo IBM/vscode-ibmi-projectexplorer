@@ -12,6 +12,12 @@
 
 ### version
 
+Version of this file format (used for migration purposes).
+
+> [!NOTE]
+>
+> **Current Version:** `1.0.0`
+
 ### build
 
 Build options
@@ -40,7 +46,7 @@ The EBCDIC CCSID that the source will be compiled in will be the CCSID of the cu
 
 ```json
 {
-    "version":"0.0.1",
+    "version":"1.0.0",
     "build": {
         "objlib":"&L01",
         "tgtCcsid":"*JOB"
