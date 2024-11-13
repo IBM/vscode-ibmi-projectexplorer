@@ -21,6 +21,11 @@ import Instance from "@halcyontech/vscode-ibmi-types/api/Instance";
 import { util } from "./util";
 
 /**
+ * Represents the current `iproj.json` and `.ibmi.json` schema versions.
+ */
+export const DEFAULT_SCHEMA_VERSION = '1.0.0';
+
+/**
  * Represents the default variable for a project's current library.
  */
 export const DEFAULT_CURLIB = '&CURLIB';
@@ -830,6 +835,7 @@ export class IProject {
     } else {
       await this.updateEnvVar(variable, library);
       unresolvedIBMiJson = {
+        version: DEFAULT_SCHEMA_VERSION,
         build: {
           objlib: `&${variable}`
         }
@@ -862,6 +868,7 @@ export class IProject {
       }
     } else {
       unresolvedIBMiJson = {
+        version: DEFAULT_SCHEMA_VERSION,
         build: {
           tgtCcsid: tgtCcsid
         }
@@ -1195,6 +1202,7 @@ export class IProject {
    */
   public async createIProj(description: string): Promise<boolean> {
     const iProject: IProjectT = {
+      version: DEFAULT_SCHEMA_VERSION,
       description: description
     };
 

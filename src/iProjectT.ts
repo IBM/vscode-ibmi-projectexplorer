@@ -14,7 +14,7 @@ export interface IProjectT {
     description?: string;
 
     /**
-     * Version of this file format, used for migration purposes.
+     * Version of this file format (used for migration purposes).
      */
     version?: string;
 

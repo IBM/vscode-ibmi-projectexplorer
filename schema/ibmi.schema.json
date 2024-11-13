@@ -3,7 +3,9 @@
     "type": "object",
     "properties": {
         "version": {
-            "type": "string"
+            "type": "string",
+            "description": "Version of this file format (used for migration purposes)",
+            "default": "1.0.0"
         },
         "build": {
             "type": "object",
