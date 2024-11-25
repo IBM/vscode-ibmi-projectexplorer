@@ -2000,7 +2000,7 @@
     "@types/tar": "^6.1.13",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/parser": "^7.18.0",
-    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
     "@vscode/l10n-dev": "^0.0.35",
     "esbuild-loader": "^4.2.2",
     "eslint": "^8.57.0",
