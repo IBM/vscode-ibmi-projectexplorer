@@ -66,23 +66,40 @@ export interface IProjectT {
     setIBMiEnvCmd?: string[];
 
     /**
-     * PASE command line used to build this entire project. The following substitution
-     * variables are supported:\n {filename} resolves to the base file name being edited.\n
-     * {path} resolves to the full IFS path corresponding to the source in the editor.\n
-     * {host} resolves to the IBM i hostname.\n {usrprf} the user profile that the command
-     * will be executed under.\n {branch} resolves to the name of the current git branch if
-     * this project is managed by git.
+     * PASE command line used to build this entire project.
+     * 
+     * The following substitution variables are supported:
+     * * `{filename}` resolves to the base file name being edited.
+     * * `{path}` resolves to the full IFS path corresponding to the source in the editor.
+     * * `{host}` resolves to the IBM i hostname.
+     * * `{usrprf}` the user profile that the command will be executed under.
+     * * `{branch}` resolves to the name of the current git branch if this project is managed by Git.
      */
     buildCommand?: string;
 
     /**
-     * PASE command line used to compile a specific source file in this project. The
-     * following substitution variables are supported:\n {filename} resolves to the base
-     * file name being edited.\n {files} resolves to the list of files being selected or
-     * the active editor.\n {path} resolves to the full IFS path corresponding to the
-     * source in the editor.\n {host} resolves to the IBM i hostname.\n {usrprf} the user
-     * profile that the command will be executed under.\n {branch} resolves to the name of
-     * the current git branch if this project is managed by git.
+     * PASE command line used to build a specific object.
+     * 
+     * The following substitution variables are supported:
+     * * `{object}` resolves to the base object name.
+     * * `{filename}` resolves to the base file name being edited.
+     * * `{path}` resolves to the full IFS path corresponding to the source in the editor.
+     * * `{host}` resolves to the IBM i hostname.
+     * * `{usrprf}` the user profile that the command will be executed under.
+     * * `{branch}` resolves to the name of the current git branch if this project is managed by Git.
+     */
+    buildObjectCommand?: string;
+
+    /**
+     * PASE command line used to compile a specific source file in this project.
+     * 
+     * The following substitution variables are supported:
+     * * `{filename}` resolves to the base file name being edited.
+     * * `{files}` resolves to the list of files being selected or the active editor.
+     * * `{path}` resolves to the full IFS path corresponding to the source in the editor.
+     * * `{host}` resolves to the IBM i hostname.
+     * * `{usrprf}` the user profile that the command will be executed under.
+     * * `{branch}` resolves to the name of the current git branch if this project is managed by Git.
      */
     compileCommand?: string;
 

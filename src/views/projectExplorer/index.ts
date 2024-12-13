@@ -119,7 +119,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, async (element: Project) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, async (element: Project | IProject) => {
         let iProject: IProject | undefined;
         if (element) {
           iProject = ProjectManager.get(element.workspaceFolder);
@@ -135,13 +135,53 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               defaultCommand = unresolvedState.buildCommand;
             }
             const command = await window.showInputBox({
-              prompt: l10n.t('Enter build command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by git.)', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
+              prompt: l10n.t('Enter build command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by Git.)', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
               placeHolder: l10n.t('Build command'),
               value: defaultCommand,
             });
 
             if (command) {
               await iProject.setBuildOrCompileCommand(command, true);
+            }
+          }
+        } else {
+          window.showErrorMessage(l10n.t('Failed to retrieve project'));
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runBuildObject`, async (element: ObjectFile | ProjectExplorerTreeItem) => {
+        if (element) {
+          const iProject = element.workspaceFolder ? ProjectManager.get(element.workspaceFolder) : undefined;
+
+          if (iProject) {
+            iProject.runBuildOrCompileCommandWithPrompt(true, undefined, element.label?.toString());
+          } else {
+            window.showErrorMessage(l10n.t('Failed to retrieve project'));
+          }
+        }
+      }),
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildObjectCommand`, async (element: Project | IProject) => {
+        let iProject: IProject | undefined;
+        if (element) {
+          iProject = ProjectManager.get(element.workspaceFolder);
+        } else {
+          iProject = ProjectManager.getActiveProject();
+        }
+
+        if (iProject) {
+          const unresolvedState = await iProject.getUnresolvedState();
+          if (unresolvedState) {
+            let defaultCommand = 'makei b -t {object}';
+            if (unresolvedState.buildObjectCommand) {
+              defaultCommand = unresolvedState.buildObjectCommand;
+            }
+            const command = await window.showInputBox({
+              prompt: l10n.t('Enter build object command ({0} resolves to the base object name. {1} resolves to the base file name being edited. {2} resolves to the full IFS path corresponding to the source in the editor. {3} resolves to the IBM i hostname. {4} resolves to the user profile that the command will be executed under. {5} resolves to the name of the current git branch if this project is managed by Git.)', '{object}', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
+              placeHolder: l10n.t('Build object command'),
+              value: defaultCommand,
+            });
+
+            if (command) {
+              await iProject.setBuildOrCompileCommand(command, true, true);
             }
           }
         } else {
@@ -177,7 +217,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`, async (element: Project) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`, async (element: Project | IProject) => {
         let iProject: IProject | undefined;
         if (element) {
           iProject = ProjectManager.get(element.workspaceFolder);
@@ -194,7 +234,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               defaultCommand = unresolvedState.compileCommand;
             }
             const command = await window.showInputBox({
-              prompt: l10n.t('Enter compile command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by git.)', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
+              prompt: l10n.t('Enter compile command ({0} resolves to the base file name being edited. {1} resolves to the full IFS path corresponding to the source in the editor. {2} resolves to the IBM i hostname. {3} resolves to the user profile that the command will be executed under. {4} resolves to the name of the current git branch if this project is managed by Git.)', '{filename}', '{path}', '{host}', '{usrprf}', '{branch}'),
               placeHolder: l10n.t('Compile command'),
               value: defaultCommand,
             });

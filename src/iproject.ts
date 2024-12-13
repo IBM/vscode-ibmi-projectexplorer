@@ -462,18 +462,32 @@ export class IProject {
   }
 
   /**
-   * Run the project's build or compile command.
+   * Run the project's build, build object, or compile command.
    * 
    * @param isBuild True for build command and false for compile command.
    * @param fileUri The file uri to compile or `undefined` for builds.
+   * @param object The specific object to build.
    */
-  public async runBuildOrCompileCommand(isBuild: boolean, fileUri?: Uri) {
+  public async runBuildOrCompileCommand(isBuild: boolean, fileUri?: Uri, object?: string) {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
-      const command = isBuild ? unresolvedState.buildCommand : unresolvedState.compileCommand;
+      let rawCommand: string | undefined;
+      let commandWithVariableSubstitution: string | undefined;
+      if (isBuild) {
+        if (object) {
+          rawCommand = unresolvedState.buildObjectCommand;
 
-      if (command) {
+          // Handle special case for build object command where {object} should be replaced by object name
+          commandWithVariableSubstitution = rawCommand?.replace(new RegExp('{object}', `g`), object);
+        } else {
+          rawCommand = unresolvedState.buildCommand;
+        }
+      } else {
+        rawCommand = unresolvedState.compileCommand;
+      }
+
+      if (rawCommand) {
         const directoryUris = ['.logs', '.evfevent'].map(dir => Uri.file(path.join(this.workspaceFolder.uri.fsPath, dir)));
         for await (const uri of directoryUris) {
           try {
@@ -492,8 +506,8 @@ export class IProject {
         }
 
         const action: Action = {
-          name: command,
-          command: command,
+          name: rawCommand,
+          command: commandWithVariableSubstitution || rawCommand,
           environment: `pase`,
           extensions: [`GLOBAL`],
           deployFirst: true,
@@ -509,52 +523,85 @@ export class IProject {
     }
   }
   /**
-   * Run the project's build or compile command.
-   * If no command is specified prompt for it and then run the provided command
+   * Run the project's build, build object, or compile command. If no command
+   * is specified, prompt for it and then run the provided command.
    * 
    * @param isBuild True for build command and false for compile command.
    * @param fileUri The file uri to compile or `undefined` for builds.
+   * @param object The specific object to build.
    */
-  public async runBuildOrCompileCommandWithPrompt(isBuild: boolean, fileUri?: Uri) {
+  public async runBuildOrCompileCommandWithPrompt(isBuild: boolean, fileUri?: Uri, object?: string) {
     let unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
-      let command = isBuild ? unresolvedState.buildCommand : unresolvedState.compileCommand;
-      if (!command) {
-        if (isBuild) {
-          const selection = await window.showErrorMessage(l10n.t('Project\'s build command not set'), l10n.t('Set Build Command'));
-          if (selection === l10n.t('Set Build Command')) {
-            await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`, this);
-            this.runBuildOrCompileCommand(isBuild, fileUri);
-          }
+      let command: string | undefined;
+      let unsetCommandParams: { errorMessage: string, option: string, setCommand: string };
+      if (isBuild) {
+        if (object) {
+          command = unresolvedState.buildObjectCommand;
+          unsetCommandParams = {
+            errorMessage: l10n.t('Project\'s build object command not set'),
+            option: l10n.t('Set Build Object Command'),
+            setCommand: `vscode-ibmi-projectexplorer.projectExplorer.setBuildObjectCommand`,
+          };
         } else {
-          const selection = await window.showErrorMessage(l10n.t('Project\'s compile command not set'), l10n.t('Set Compile Command'));
-          if (selection === l10n.t('Set Compile Command')) {
-            await commands.executeCommand(`vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`, this);
-            this.runBuildOrCompileCommand(isBuild, fileUri);
-          }
+          command = unresolvedState.buildCommand;
+          unsetCommandParams = {
+            errorMessage: l10n.t('Project\'s build command not set'),
+            option: l10n.t('Set Build Command'),
+            setCommand: `vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`
+          };
         }
       } else {
-        this.runBuildOrCompileCommand(isBuild, fileUri);
+        command = unresolvedState.compileCommand;
+        unsetCommandParams = {
+          errorMessage: l10n.t('Project\'s compile command not set'),
+          option: l10n.t('Set Compile Command'),
+          setCommand: `vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`
+        };
+      }
+
+      if (!command) {
+        const selection = await window.showErrorMessage(unsetCommandParams.errorMessage, unsetCommandParams.option);
+        if (selection === unsetCommandParams.option) {
+          await commands.executeCommand(unsetCommandParams.setCommand, this);
+          this.runBuildOrCompileCommand(isBuild, fileUri, object);
+        }
+      } else {
+        this.runBuildOrCompileCommand(isBuild, fileUri, object);
       }
     }
   }
 
   /**
-   * Set the `buildCommand` or `compileCommand` attribute of the project's
-   * `iproj.json.
+   * Set the `buildCommand`, `buildObjectCommand`, or `compileCommand`
+   * attribute of the project's `iproj.json`.
    * 
    * @param command The command to set.
    * @param isBuild True for build command and false for compile command.
+   * @param isBuildObject True for build object command and false otherwise.
    */
-  public async setBuildOrCompileCommand(command: string, isBuild: boolean) {
+  public async setBuildOrCompileCommand(command: string, isBuild: boolean, isBuildObject: boolean = false) {
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
-      const attribute = isBuild ? 'buildCommand' : 'compileCommand';
+      let attribute: keyof IProjectT;
+      let errorMessage: string;
+      if (isBuild) {
+        if (isBuildObject) {
+          attribute = 'buildObjectCommand';
+          errorMessage = l10n.t('Build object command already set to {0}', command);
+        } else {
+          attribute = 'buildCommand';
+          errorMessage = l10n.t('Build command already set to {0}', command);
+        }
+      } else {
+        attribute = 'compileCommand';
+        errorMessage = l10n.t('Compile command already set to {0}', command);
+      }
 
       if (unresolvedState[attribute] === command) {
-        window.showErrorMessage(isBuild ? l10n.t('Build command already set to {0}', command) : l10n.t('Compile command already set to {0}', command));
+        window.showErrorMessage(errorMessage);
         return;
       } else {
         unresolvedState[attribute] = command;
