@@ -78,7 +78,7 @@ export interface IProjectT {
     buildCommand?: string;
 
     /**
-     * PASE command line used to build a specific object.
+     * PASE command line used to build a specific object in this project.
      * 
      * The following substitution variables are supported:
      * * `{object}` resolves to the base object name.

@@ -60,7 +60,7 @@
         },
         "buildObjectCommand": {
             "type": "string",
-            "markdownDescription": "PASE command line used to build a specific object.\n\nThe following substitution variables are supported:\n * `{object}` resolves to the base object name.\n * `{filename}` resolves to the base file name being edited.\n * `{path}` resolves to the full IFS path corresponding to the source in the editor.\n * `{host}` resolves to the IBM i hostname.\n * `{usrprf}` the user profile that the command will be executed under.\n * `{branch}` resolves to the name of the current git branch if this project is managed by Git."
+            "markdownDescription": "PASE command line used to build a specific object in this project.\n\nThe following substitution variables are supported:\n * `{object}` resolves to the base object name.\n * `{filename}` resolves to the base file name being edited.\n * `{path}` resolves to the full IFS path corresponding to the source in the editor.\n * `{host}` resolves to the IBM i hostname.\n * `{usrprf}` the user profile that the command will be executed under.\n * `{branch}` resolves to the name of the current git branch if this project is managed by Git."
         },
         "compileCommand": {
             "type": "string",
