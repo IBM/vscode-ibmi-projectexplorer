@@ -148,7 +148,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
       }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.runBuildObject`, async (element: ObjectFile | ProjectExplorerTreeItem) => {
+      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.buildObject`, async (element: ObjectFile | ProjectExplorerTreeItem) => {
         if (element) {
           const iProject = element.workspaceFolder ? ProjectManager.get(element.workspaceFolder) : undefined;
 

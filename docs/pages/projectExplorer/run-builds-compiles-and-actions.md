@@ -16,13 +16,13 @@ In the case you want to simply build a specific object in your project, you can 
 
 ![Set Build Object Command](../../assets/ProjectExplorer_41.png ':size=500')
 
-To then build a target object, locate the object under the **Library List** or **Object Libraries** and use the right-click **Run Build Object** action.
+To then build a target object, locate the object under the **Library List** or **Object Libraries** and use the right-click **Build Object** action.
 
 > [!NOTE]
 >
 > This action can also be performed on objects under the [Source Orbit heading](https://ibm.github.io/sourceorbit/#/./pages/extension/index?id=ibm-i-project-explorer-integration) in **Project Explorer** as well as on objects in both [impacted object views](https://ibm.github.io/sourceorbit/#/./pages/extension/index?id=view-impacted-objects) provided by Source Orbit (**Source Impacts** and **Change Impacts**).
 
-![Run Build Object](../../assets/ProjectExplorer_42.png ':size=500')
+![Build Object](../../assets/ProjectExplorer_42.png ':size=500')
 
 ## Run a Compile
 
