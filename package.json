@@ -2049,7 +2049,7 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "ignore": "^5.3.1",
+    "ignore": "^7.0.3",
     "jsonschema": "^1.4.1",
     "parse-gitignore": "^2.0.0"
   }
