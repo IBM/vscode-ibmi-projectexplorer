@@ -386,6 +386,16 @@
       },
       {
         "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.buildObject",
+        "title": "%commands.projectExplorer.buildObject%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
+        "command": "vscode-ibmi-projectexplorer.projectExplorer.setBuildObjectCommand",
+        "title": "%commands.projectExplorer.setBuildObjectCommand%"
+      },
+      {
+        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
         "title": "%commands.projectExplorer.runCompile%",
         "icon": "$(tools)"
@@ -841,6 +851,14 @@
           "when": "vscode-ibmi-projectexplorer:hasActiveProject"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.buildObject",
+          "when": "vscode-ibmi-projectexplorer:hasActiveProject"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setBuildObjectCommand",
+          "when": "vscode-ibmi-projectexplorer:hasActiveProject"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
           "when": "code-for-ibmi:connected && vscode-ibmi-projectexplorer:hasActiveProject"
         },
@@ -1274,14 +1292,19 @@
           "group": "0_setup@0"
         },
         {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand",
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setBuildObjectCommand",
           "when": "view == projectExplorer && viewItem =~ /^project.*/",
           "group": "0_setup@1"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand",
+          "when": "view == projectExplorer && viewItem =~ /^project.*/",
+          "group": "0_setup@2"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.launchActionsSetup",
           "when": "view == projectExplorer && viewItem =~ /^project.*/ && code-for-ibmi:connected",
-          "group": "0_setup@2"
+          "group": "0_setup@3"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.setActiveProject",
@@ -1564,9 +1587,14 @@
           "group": "2_objectActions@0"
         },
         {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.buildObject",
+          "when": "view == projectExplorer && code-for-ibmi:connected && viewItem =~ /^(objectFile|ileObject).*/",
+          "group": "1_actions@0"
+        },
+        {
           "command": "vscode-ibmi-projectexplorer.runAction",
           "when": "view == projectExplorer && viewItem =~ /^objectFile.*/",
-          "group": "1_actions@0"
+          "group": "1_actions@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.changeObjectDescription",
@@ -1767,6 +1795,16 @@
           "command": "vscode-ibmi-projectexplorer.jobLog.showAllObjects",
           "when": "view == jobLog && viewItem =~ /^log.*/ && viewItem =~ /^.*_showAllObjects.*/",
           "group": "1_filter@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.buildObject",
+          "when": "view == activeImpactView && code-for-ibmi:connected && viewItem =~ /^ileObject.*/",
+          "group": "1_actions@0"
+        },
+        {
+          "command": "vscode-ibmi-projectexplorer.projectExplorer.buildObject",
+          "when": "view == gitImpactView && code-for-ibmi:connected && viewItem =~ /^ileObject.*/",
+          "group": "1_actions@0"
         }
       ]
     },
