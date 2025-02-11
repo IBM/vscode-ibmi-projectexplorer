@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+# `2.12.1`
+* Add action to build objects in project explorer and source orbit
+
 # `2.12.0`
 * Use local `LIBL` and `CURLIB` for running actions on objects and members
 * Update LICENSE
