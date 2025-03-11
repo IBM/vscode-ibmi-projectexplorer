@@ -9,7 +9,7 @@
   },
   "publisher": "IBM",
   "license": "Apache-2.0",
-  "version": "2.12.2",
+  "version": "2.12.3",
   "repository": {
     "url": "https://github.com/IBM/vscode-ibmi-projectexplorer"
   },
@@ -249,7 +249,8 @@
         {
           "id": "testing",
           "name": "Test Cases",
-          "when": "code-for-ibmi:connected && projectExplorer:testing"
+          "when": "code-for-ibmi:connected && projectExplorer:testing",
+          "icon": "$(beaker)"
         }
       ],
       "ibmi": [
@@ -2032,7 +2033,7 @@
     "types": "npx -p typescript tsc ./src/extension.ts --excludeDirectories ./src/testing --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node"
   },
   "devDependencies": {
-    "@halcyontech/vscode-ibmi-types": "^2.13",
+    "@halcyontech/vscode-ibmi-types": "^2.15",
     "@types/node": "22.x",
     "@types/parse-gitignore": "^1.0.2",
     "@types/tar": "^6.1.13",

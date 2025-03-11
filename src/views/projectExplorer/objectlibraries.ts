@@ -39,14 +39,15 @@ export default class ObjectLibraries extends TreeItem implements ProjectExplorer
         }
 
         if (!library || // empty strings end up returning all libraries - so flag as invalid
-            library.startsWith('&')) {
+          library.startsWith('&')) {
           items.push(ErrorItem.createLibraryNotSpecifiedError(this.workspaceFolder, library));
           continue;
         }
 
         try {
           if (ibmi && ibmi.getConnection()) {
-            const libraryInfo = await ibmi?.getContent().getObjectList({ library: 'QSYS', object: library, types: ['*LIB'] }, 'name');
+            const connection = ibmi?.getConnection();
+            const libraryInfo = await connection?.getContent().getObjectList({ library: 'QSYS', object: library, types: ['*LIB'] }, 'name');
             if (libraryInfo) {
               const libTreeItem = new Library(this.workspaceFolder, libraryInfo[0], LibraryType.library, undefined, variable, libraryTypes);
               items.push(libTreeItem);

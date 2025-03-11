@@ -3,10 +3,10 @@
  */
 
 import { getCustomUI, getInstance } from "../../ibmi";
-import { ProgressLocation, Uri, commands, extensions, l10n, window, workspace } from "vscode";
+import { ProgressLocation, Uri, commands, l10n, window, workspace } from "vscode";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import { ProjectManager } from "../../projectManager";
-import { ComplexTab, SelectItem } from "@halcyontech/vscode-ibmi-types/api/CustomUI";
+import { ComplexTab, SelectItem } from "@halcyontech/vscode-ibmi-types/webviews/CustomUI";
 import { IProject } from "../../iproject";
 import * as path from "path";
 import * as tar from "tar";
@@ -128,7 +128,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
 
                 progress.report({ message: l10n.t('Downloading tarball to workspace...'), increment: increment });
                 try {
-                    await connection.downloadFile(localTarball, remoteTarball);
+                    await connection.getContent().downloadFile(localTarball, remoteTarball);
                     await connection.sendCommand({ command: `rm -rf ${tempDirectory}` });
                 } catch (error) {
                     window.showErrorMessage(l10n.t('Failed to download tarball to workspace'));
@@ -190,7 +190,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
                 (migrationResult.numFiles - migrationResult.numSuccess), migrationResult.numFiles, library), l10n.t('View log'))
                 .then(async choice => {
                     if (choice === l10n.t('View log')) {
-                        connection.outputChannel?.show();
+                        ibmi?.focusOutput();
                     }
                 });
         }
@@ -239,7 +239,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
         title: l10n.t('Migrating Source'),
     }, async () => {
         const ibmi = getInstance();
-        sourceFiles = await ibmi?.getContent().getObjectList({ library: library, types: ['*SRCPF'] });
+        const connection = ibmi?.getConnection();
+        sourceFiles = await connection?.getContent().getObjectList({ library: library, types: ['*SRCPF'] });
     });
 
     const soEnabled = await sourceOrbitEnabled();

@@ -2,10 +2,10 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { MarkdownString, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, window } from "vscode";
+import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, window } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import MemberFile from "./memberFile";
-import { getInstance } from "../../ibmi";
+import { getInstance, getVSCodeTools } from "../../ibmi";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 
@@ -38,8 +38,9 @@ export default class ObjectFile extends TreeItem implements ProjectExplorerTreeI
     let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
-    if (ibmi && ibmi.getConnection()) {
-      const members = await ibmi?.getContent().getMemberList({ library: this.objectFileInfo.library, sourceFile: this.objectFileInfo.name, sort: { order: 'name' } });
+    const connection = ibmi?.getConnection();
+    if (ibmi && connection) {
+      const members = await connection.getContent().getMemberList({ library: this.objectFileInfo.library, sourceFile: this.objectFileInfo.name, sort: { order: 'name' } });
       if (members) {
         for (const member of members) {
           items.push(new MemberFile(this.workspaceFolder, member, this.path));
@@ -55,10 +56,14 @@ export default class ObjectFile extends TreeItem implements ProjectExplorerTreeI
   async getToolTip() {
     const ibmi = getInstance();
     const path = [this.objectFileInfo.library, this.objectFileInfo.name].join(`/`);
+    const vsCodeTools = getVSCodeTools();
     if (this.objectFileInfo.sourceFile) {
-      return await ibmi?.getContent().sourcePhysicalFileToToolTip(path, this.objectFileInfo);
+      const connection = ibmi?.getConnection();
+      if (connection) {
+        return await vsCodeTools?.sourcePhysicalFileToToolTip(connection, path, this.objectFileInfo);
+      }
     } else {
-      return ibmi?.getContent().objectToToolTip(path, this.objectFileInfo);
+      return vsCodeTools?.objectToToolTip(path, this.objectFileInfo);
     }
   }
 

@@ -3,13 +3,13 @@
  */
 
 import { ConnectionData, DeploymentMethod, ObjectItem } from "@halcyontech/vscode-ibmi-types";
-import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/Storage";
+import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/configuration/storage/CodeForIStorage";
 import * as path from "path";
 import { CancellationToken, ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, TreeItem, TreeView, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
 import { DecorationProvider } from "../../decorationProvider";
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
-import { getDeployTools, getInstance, getTools } from "../../ibmi";
+import { getDeployTools, getInstance, getVSCodeTools } from "../../ibmi";
 import { LINKS } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
@@ -367,8 +367,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               const changes = files?.length || 0;
               methods.push({ method: 'changed', label: l10n.t('Changes'), description: changes > 1 || changes === 0 ? l10n.t('{0} changes detected since last upload', changes) : l10n.t('1 change detected since last upload') });
 
-              const tools = getTools();
-              if (tools!.getGitAPI()) {
+              const vsCodeTools = getVSCodeTools();
+              if (vsCodeTools!.getGitAPI()) {
                 methods.push(
                   { method: 'unstaged', label: l10n.t('Working Changes'), description: l10n.t('Unstaged changes in git') },
                   { method: 'staged', label: l10n.t('Staged Changes') }
@@ -412,7 +412,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         if (element) {
           const remoteFile = path.parse(element.sourceInfo.remoteUri.path);
           const ibmi = getInstance();
-          const remoteFileExists = await ibmi?.getContent().streamfileResolve([remoteFile.base], [remoteFile.dir]);
+          const connection = ibmi?.getConnection();
+          const remoteFileExists = await connection?.getContent().streamfileResolve([remoteFile.base], [remoteFile.dir]);
 
           if (remoteFileExists) {
             await commands.executeCommand(`vscode.diff`, element.sourceInfo.remoteUri, element.sourceInfo.localUri);

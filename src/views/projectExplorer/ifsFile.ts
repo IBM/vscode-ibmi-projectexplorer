@@ -6,7 +6,7 @@ import { ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l1
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import * as vscodeIbmiTypes from "@halcyontech/vscode-ibmi-types";
-import { getInstance } from "../../ibmi";
+import { getInstance, getVSCodeTools } from "../../ibmi";
 
 /**
  * Tree item for an IFS file.
@@ -21,8 +21,8 @@ export default class IFSFile extends TreeItem implements ProjectExplorerTreeItem
     this.ifsFileInfo = ifsFileInfo;
     this.contextValue = IFSFile.contextValue;
     this.iconPath = new ThemeIcon(`file`);
-    const ibmi = getInstance();
-    this.tooltip = ibmi?.getContent().ifsFileToToolTip(ifsFileInfo.path, ifsFileInfo);
+    const vsCodeTools = getVSCodeTools();
+    this.tooltip = vsCodeTools?.ifsFileToToolTip(ifsFileInfo.path, ifsFileInfo);
     this.resourceUri = this.getIFSFileResourceUri();
     this.command = {
       command: `vscode.open`,

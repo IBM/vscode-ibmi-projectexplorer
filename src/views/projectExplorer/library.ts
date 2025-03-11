@@ -2,9 +2,9 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { MarkdownString, ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n, window } from "vscode";
+import { ThemeColor, ThemeIcon, TreeItem, TreeItemCollapsibleState, WorkspaceFolder, l10n, window } from "vscode";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
-import { getInstance } from "../../ibmi";
+import { getInstance, getVSCodeTools } from "../../ibmi";
 import ObjectFile from "./objectFile";
 import { ContextValue } from "../../ibmiProjectExplorer";
 import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
@@ -47,8 +47,8 @@ export default class Library extends TreeItem implements ProjectExplorerTreeItem
     this.description = (variable ? `${variable} - ` : ``) +
       (libraryInfo.text.trim() !== '' ? `${libraryInfo.text} ` : ``) +
       (libraryInfo.attribute?.trim() !== '' ? `(${libraryInfo.attribute})` : ``);
-    const ibmi = getInstance();
-    this.tooltip = ibmi?.getContent().objectToToolTip([libraryInfo.library, libraryInfo.name].join(`/`), libraryInfo);
+    const vsCodeTools = getVSCodeTools();
+    this.tooltip = vsCodeTools?.objectToToolTip([libraryInfo.library, libraryInfo.name].join(`/`), libraryInfo);
     let iconColor: ThemeColor | undefined;
     switch (this.libraryType) {
       case LibraryType.systemLibrary:
@@ -87,8 +87,9 @@ export default class Library extends TreeItem implements ProjectExplorerTreeItem
     let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
-    if (ibmi && ibmi.getConnection()) {
-      const objectFiles = await ibmi?.getContent().getObjectList({ library: this.libraryInfo.name, }, 'name');
+    const connection = ibmi?.getConnection();
+    if (ibmi && connection) {
+      const objectFiles = await connection.getContent().getObjectList({ library: this.libraryInfo.name, }, 'name');
       if (objectFiles) {
         for (const objectFile of objectFiles) {
           if (objectFile.type === "*LIB") {
