@@ -17,7 +17,7 @@ import { JobLogInfo } from "./jobLog";
 import { ProjectExplorerSchemaId, ProjectManager } from "./projectManager";
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { LibraryType } from "./views/projectExplorer/library";
-import Instance from "@halcyontech/vscode-ibmi-types/api/Instance";
+import Instance from "@halcyontech/vscode-ibmi-types/Instance";
 import { util } from "./util";
 
 /**

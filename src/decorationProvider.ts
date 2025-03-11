@@ -32,7 +32,7 @@ export class DecorationProvider implements FileDecorationProvider {
                 return {
                     badge: uri.path,
                     tooltip: l10n.t('Message Severity Filter: {0}', uri.path)
-                }
+                };
             }
         }
     }
