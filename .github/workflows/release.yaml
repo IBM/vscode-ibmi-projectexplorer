@@ -2,6 +2,22 @@ name: Release and Publish to the Marketplace and Open VSX
 
 on:
   workflow_dispatch:
+    inputs:
+      publish_openvsx:
+        description: 'Publish to Open VSX'
+        type: boolean
+        required: true
+        default: true
+      publish_marketplace:
+        description: 'Publish to Marketplace'
+        type: boolean
+        required: true
+        default: true
+      publish_npm:
+        description: 'Publish Types to NPM'
+        type: boolean
+        required: true
+        default: true
 
   release:
     types: [created]
@@ -34,23 +50,28 @@ jobs:
           npm install -g vsce ovsx
 
       - name: Publish to Open VSX
+        if: github.event_name == 'release' || inputs.publish_openvsx == true
         run: npx ovsx publish -p $OPENVSX_TOKEN
         env:
           OPENVSX_TOKEN: ${{ secrets.OPENVSX_TOKEN }}
 
       - name: Publish to Marketplace
+        if: github.event_name == 'release' || inputs.publish_marketplace == true
         run: vsce publish -p $PUBLISHER_TOKEN
         env:
           PUBLISHER_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}
 
       - name: Generate Types
+        if: github.event_name == 'release' || inputs.publish_npm == true
         continue-on-error: true
         run: npm run types
 
       - name: Cleanup Types
+        if: github.event_name == 'release' || inputs.publish_npm == true
         run: cd types && npm run prepublish
 
       - name: Publish Types to NPM
+        if: github.event_name == 'release' || inputs.publish_npm == true
         run: cd types && npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
