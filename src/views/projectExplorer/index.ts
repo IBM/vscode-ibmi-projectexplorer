@@ -367,8 +367,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               const changes = files?.length || 0;
               methods.push({ method: 'changed', label: l10n.t('Changes'), description: changes > 1 || changes === 0 ? l10n.t('{0} changes detected since last upload', changes) : l10n.t('1 change detected since last upload') });
 
-              const tools = getVSCodeTools();
-              if (tools!.getGitAPI()) {
+              const vsCodeTools = getVSCodeTools();
+              if (vsCodeTools!.getGitAPI()) {
                 methods.push(
                   { method: 'unstaged', label: l10n.t('Working Changes'), description: l10n.t('Unstaged changes in git') },
                   { method: 'staged', label: l10n.t('Staged Changes') }
@@ -412,7 +412,8 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         if (element) {
           const remoteFile = path.parse(element.sourceInfo.remoteUri.path);
           const ibmi = getInstance();
-          const remoteFileExists = await ibmi?.getContent().streamfileResolve([remoteFile.base], [remoteFile.dir]);
+          const connection = ibmi?.getConnection();
+          const remoteFileExists = await connection?.getContent().streamfileResolve([remoteFile.base], [remoteFile.dir]);
 
           if (remoteFileExists) {
             await commands.executeCommand(`vscode.diff`, element.sourceInfo.remoteUri, element.sourceInfo.localUri);

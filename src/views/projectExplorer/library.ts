@@ -87,8 +87,9 @@ export default class Library extends TreeItem implements ProjectExplorerTreeItem
     let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
-    if (ibmi && ibmi.getConnection()) {
-      const objectFiles = await ibmi?.getContent().getObjectList({ library: this.libraryInfo.name, }, 'name');
+    const connection = ibmi?.getConnection();
+    if (ibmi && connection) {
+      const objectFiles = await connection.getContent().getObjectList({ library: this.libraryInfo.name, }, 'name');
       if (objectFiles) {
         for (const objectFile of objectFiles) {
           if (objectFile.type === "*LIB") {

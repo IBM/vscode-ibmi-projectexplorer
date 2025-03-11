@@ -6,7 +6,7 @@ import { MarkdownString, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, Wor
 import { IBMiMember } from "@halcyontech/vscode-ibmi-types";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
 import { ContextValue } from "../../ibmiProjectExplorer";
-import { getInstance } from "../../ibmi";
+import { getInstance, getVSCodeTools } from "../../ibmi";
 
 /**
  * Tree item for a member file.
@@ -25,8 +25,8 @@ export default class MemberFile extends TreeItem implements ProjectExplorerTreeI
     this.iconPath = new ThemeIcon(`file`);
     this.description = memberFileInfo.text;
     this.resourceUri = this.getMemberResourceUri();
-    const ibmi = getInstance();
-    this.tooltip = ibmi?.getContent().memberToToolTip([memberFileInfo.library, memberFileInfo.file, `${memberFileInfo.name}.${extension}`].join(`/`), memberFileInfo);
+    const vsCodeTools = getVSCodeTools();
+    this.tooltip = vsCodeTools?.memberToToolTip([memberFileInfo.library, memberFileInfo.file, `${memberFileInfo.name}.${extension}`].join(`/`), memberFileInfo);
     this.command = {
       command: `vscode.open`,
       title: `Open Member`,

@@ -31,8 +31,9 @@ export default class IFSDirectory extends TreeItem implements ProjectExplorerTre
     let items: ProjectExplorerTreeItem[] = [];
 
     const ibmi = getInstance();
-    if (ibmi && ibmi.getConnection()) {
-      const files = await ibmi?.getContent().getFileList(this.ifsDirectoryInfo.path, { order: 'name' });
+    const connection = ibmi?.getConnection();
+    if (ibmi && connection) {
+      const files = await connection.getContent().getFileList(this.ifsDirectoryInfo.path, { order: 'name' });
       if (files) {
         for (const file of files) {
           if (file.type === 'directory') {

@@ -955,7 +955,8 @@ export class IProject {
    * @returns The liblist command.
    */
   public async calcUpdateLibraryListCommand(ibmi: Instance, state: IProjectT): Promise<string> {
-    const defaultUserLibraries = ibmi.getConnection().defaultUserLibraries;
+    const connection = ibmi.getConnection();
+    const defaultUserLibraries = connection.defaultUserLibraries;
     let userLibrariesToAdd: string[] = [
       ...(state.preUsrlibl ? state.preUsrlibl : []),
       ...(defaultUserLibraries ? defaultUserLibraries : []),
@@ -968,7 +969,7 @@ export class IProject {
 
     // Validate libraries
     let librariesToValidate = curlib && !userLibrariesToAdd.includes(curlib) ? userLibrariesToAdd.concat(curlib) : userLibrariesToAdd;
-    const badLibs = await ibmi.getContent().validateLibraryList(librariesToValidate);
+    const badLibs = await connection.getContent().validateLibraryList(librariesToValidate);
     if (curlib && badLibs?.includes(curlib)) {
       curlib = undefined;
     }
@@ -994,10 +995,11 @@ export class IProject {
    */
   public async updateLibraryList() {
     const ibmi = getInstance();
+    const connection = ibmi?.getConnection();
     // Get user libraries with variables resolved
     const state = await this.getState();
 
-    if (ibmi && ibmi.getConnection() && state) {
+    if (ibmi && connection && state) {
       const liblResult = await this.updateLibraryListOnIbmi(ibmi, state);
       if (liblResult && liblResult.code === 0) {
         const libraryListString = liblResult.stdout;
@@ -1015,7 +1017,7 @@ export class IProject {
               libraryType: liblPortion
             });
           }
-          const libraryListInfo = await ibmi.getContent().getLibraryList(libraryList.map(lib => lib.name));
+          const libraryListInfo = await connection.getContent().getLibraryList(libraryList.map(lib => lib.name));
           if (libraryListInfo) {
             let libl = [];
             for (const [index, library] of libraryList.entries()) {

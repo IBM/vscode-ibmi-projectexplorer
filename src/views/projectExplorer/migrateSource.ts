@@ -128,7 +128,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
 
                 progress.report({ message: l10n.t('Downloading tarball to workspace...'), increment: increment });
                 try {
-                    await connection.downloadFile(localTarball, remoteTarball);
+                    await connection.getContent().downloadFile(localTarball, remoteTarball);
                     await connection.sendCommand({ command: `rm -rf ${tempDirectory}` });
                 } catch (error) {
                     window.showErrorMessage(l10n.t('Failed to download tarball to workspace'));
@@ -239,7 +239,8 @@ export async function getMigrationConfig(iProject: IProject, library: string): P
         title: l10n.t('Migrating Source'),
     }, async () => {
         const ibmi = getInstance();
-        sourceFiles = await ibmi?.getContent().getObjectList({ library: library, types: ['*SRCPF'] });
+        const connection = ibmi?.getConnection();
+        sourceFiles = await connection?.getContent().getObjectList({ library: library, types: ['*SRCPF'] });
     });
 
     const soEnabled = await sourceOrbitEnabled();
