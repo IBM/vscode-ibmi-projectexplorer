@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+# `2.12.3`
+* Upgrade Code4i types to `v2.15` and remove upcoming deprecated APIs
+
 # `2.12.2`
 * Fix issues with project explorer types
 
