@@ -2049,7 +2049,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.5.0",
     "ignore": "^7.0.3",
     "jsonschema": "^1.4.1",
     "parse-gitignore": "^2.0.0"
