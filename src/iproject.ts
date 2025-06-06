@@ -489,7 +489,7 @@ export class IProject {
 
       if (rawCommand) {
         if (rawCommand.startsWith('ext:')) {
-          await commands.executeCommand(rawCommand, { fileUri, object });
+          await commands.executeCommand(rawCommand.substring(4), { fileUri, object });
         } else {
           const directoryUris = ['.logs', '.evfevent'].map(dir => Uri.file(path.join(this.workspaceFolder.uri.fsPath, dir)));
           for await (const uri of directoryUris) {
