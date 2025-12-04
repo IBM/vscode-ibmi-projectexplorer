@@ -114,7 +114,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
 
         if (iProject) {
-          iProject.runBuildOrCompileCommandWithPrompt(true);
+          return await iProject.runBuildOrCompileCommandWithPrompt(true);
         } else {
           window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
@@ -153,7 +153,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
           const iProject = element.workspaceFolder ? ProjectManager.get(element.workspaceFolder) : undefined;
 
           if (iProject) {
-            iProject.runBuildOrCompileCommandWithPrompt(true, undefined, element.label?.toString());
+            return await iProject.runBuildOrCompileCommandWithPrompt(true, undefined, element.label?.toString());
           } else {
             window.showErrorMessage(l10n.t('Failed to retrieve project'));
           }
@@ -212,7 +212,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
         }
 
         if (iProject) {
-          iProject.runBuildOrCompileCommandWithPrompt(false, element);
+          return await iProject.runBuildOrCompileCommandWithPrompt(false, element);
         } else {
           window.showErrorMessage(l10n.t('Failed to retrieve project'));
         }
