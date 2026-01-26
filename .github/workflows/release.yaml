@@ -22,6 +22,10 @@ on:
   release:
     types: [created]
 
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
 jobs:
   release:
     name: Release and Publish
@@ -73,5 +77,3 @@ jobs:
       - name: Publish Types to NPM
         if: github.event_name == 'release' || inputs.publish_npm == true
         run: cd types && npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
