@@ -1165,7 +1165,7 @@
       "editor/title": [
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.runCompile",
-          "when": "code-for-ibmi:connected",
+          "when": "code-for-ibmi:connected && (resourceScheme == file || resourceScheme == streamfile || resourceScheme == member)",
           "group": "navigation@0"
         }
       ],
