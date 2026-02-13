@@ -5,7 +5,7 @@
 import { ProjectManager } from "./projectManager";
 import JobLog from "./views/jobLog";
 import ProjectExplorer from "./views/projectExplorer";
-
+import { migrateSource } from "./views/projectExplorer/migrateSource";
 /**
  * The IBM i Project Explorer API to be used by other extensions.
  */
@@ -23,7 +23,13 @@ export interface IBMiProjectExplorer {
   /**
    * The set of APIs associated with managing the Job Log view.
    */
-  jobLog: JobLog
+  jobLog: JobLog,
+  /**
+   * The set of APIs associated with migrating source code.
+   */
+  migrationSource: typeof migrateSource
+
+
 }
 
 /**
