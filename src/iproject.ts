@@ -463,113 +463,134 @@ export class IProject {
 
   /**
    * Run the project's build, build object, or compile command.
+   * Return type includes success, output, and error to ensure callers can handle failures properly (e.g., external tools)
    * 
    * @param isBuild True for build command and false for compile command.
    * @param fileUri The file uri to compile or `undefined` for builds.
    * @param object The specific object to build.
    */
-  public async runBuildOrCompileCommand(isBuild: boolean, fileUri?: Uri, object?: string) {
+  public async runBuildOrCompileCommand(isBuild: boolean, fileUri?: Uri, object?: string): Promise<{ success: boolean, output: string[], error?: string } | undefined> {
     const unresolvedState = await this.getUnresolvedState();
 
-    if (unresolvedState) {
-      let rawCommand: string | undefined;
-      let commandWithVariableSubstitution: string | undefined;
-      if (isBuild) {
-        if (object) {
-          rawCommand = unresolvedState.buildObjectCommand;
+    if (!unresolvedState) {
+      return { success: false, output: [], error: 'No iproj.json found' }; // Return error details for proper error reporting
+    }
 
-          // Handle special case for build object command where {object} should be replaced by object name
-          commandWithVariableSubstitution = rawCommand?.replace(new RegExp('{object}', `g`), object);
-        } else {
-          rawCommand = unresolvedState.buildCommand;
-        }
+    let rawCommand: string | undefined;
+    let commandWithVariableSubstitution: string | undefined;
+    if (isBuild) {
+      if (object) {
+        rawCommand = unresolvedState.buildObjectCommand;
+
+        // Handle special case for build object command where {object} should be replaced by object name
+        commandWithVariableSubstitution = rawCommand?.replace(new RegExp('{object}', `g`), object);
       } else {
-        rawCommand = unresolvedState.compileCommand;
+        rawCommand = unresolvedState.buildCommand;
       }
+    } else {
+      rawCommand = unresolvedState.compileCommand;
+    }
 
-      if (rawCommand) {
-        const directoryUris = ['.logs', '.evfevent'].map(dir => Uri.file(path.join(this.workspaceFolder.uri.fsPath, dir)));
-        for await (const uri of directoryUris) {
-          try {
-            await workspace.fs.stat(uri);
+    if (!rawCommand) {
+      const commandType = isBuild ? (object ? 'build object command' : 'build command') : 'compile command';
+      return { success: false, output: [], error: `${commandType} not set` }; // Return error details for proper error reporting
+    }
 
-            // Clear directory if it does exist
-            const files = await workspace.fs.readDirectory(uri);
-            for (const [fileName] of files) {
-              const fileUri = Uri.joinPath(uri, fileName);
-              await workspace.fs.delete(fileUri, { recursive: true });
-            }
-          } catch {
-            // Create directory if it does not exist
-            await workspace.fs.createDirectory(uri);
-          }
+    const directoryUris = ['.logs', '.evfevent'].map(dir => Uri.file(path.join(this.workspaceFolder.uri.fsPath, dir)));
+    for await (const uri of directoryUris) {
+      try {
+        await workspace.fs.stat(uri);
+
+        // Clear directory if it does exist
+        const files = await workspace.fs.readDirectory(uri);
+        for (const [fileName] of files) {
+          const fileUri = Uri.joinPath(uri, fileName);
+          await workspace.fs.delete(fileUri, { recursive: true });
         }
-
-        const action: Action = {
-          name: rawCommand,
-          command: commandWithVariableSubstitution || rawCommand,
-          environment: `pase`,
-          extensions: [`GLOBAL`],
-          deployFirst: true,
-          type: `file`,
-          postDownload: [
-            ".logs",
-            ".evfevent"
-          ]
-        };
-        await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
-        ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
+      } catch {
+        // Create directory if it does not exist
+        await workspace.fs.createDirectory(uri);
       }
     }
+
+    const action: Action = {
+      name: rawCommand,
+      command: commandWithVariableSubstitution || rawCommand,
+      environment: `pase`,
+      extensions: [`GLOBAL`],
+      deployFirst: true,
+      type: `file`,
+      postDownload: [
+        ".logs",
+        ".evfevent"
+      ]
+    };
+    const result = await commands.executeCommand<{ success: boolean, output: string[], error?: string }>(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
+    ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
+    
+    if (!result) {
+      return { success: false, output: [], error: 'Action execution failed' }; // Return error details for proper error reporting
+    }
+
+    // Return structured result with success status, output, and error message for proper error handling
+    return {
+      success: result.success,
+      output: result.output,
+      error: result.success ? undefined : (result.error || `${isBuild ? 'Build' : 'Compile'} failed`)
+    };
   }
   /**
    * Run the project's build, build object, or compile command. If no command
    * is specified, prompt for it and then run the provided command.
+   * Return type includes success, output, and error to ensure callers can handle failures properly (e.g., external tools)
    * 
    * @param isBuild True for build command and false for compile command.
    * @param fileUri The file uri to compile or `undefined` for builds.
    * @param object The specific object to build.
    */
-  public async runBuildOrCompileCommandWithPrompt(isBuild: boolean, fileUri?: Uri, object?: string) {
+  public async runBuildOrCompileCommandWithPrompt(isBuild: boolean, fileUri?: Uri, object?: string): Promise<{ success: boolean, output: string[], error?: string } | undefined> {
     let unresolvedState = await this.getUnresolvedState();
 
-    if (unresolvedState) {
-      let command: string | undefined;
-      let unsetCommandParams: { errorMessage: string, option: string, setCommand: string };
-      if (isBuild) {
-        if (object) {
-          command = unresolvedState.buildObjectCommand;
-          unsetCommandParams = {
-            errorMessage: l10n.t('Project\'s build object command not set'),
-            option: l10n.t('Set Build Object Command'),
-            setCommand: `vscode-ibmi-projectexplorer.projectExplorer.setBuildObjectCommand`,
-          };
-        } else {
-          command = unresolvedState.buildCommand;
-          unsetCommandParams = {
-            errorMessage: l10n.t('Project\'s build command not set'),
-            option: l10n.t('Set Build Command'),
-            setCommand: `vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`
-          };
-        }
-      } else {
-        command = unresolvedState.compileCommand;
+    if (!unresolvedState) {
+      return { success: false, output: [], error: 'No iproj.json found' }; // Return error details for proper error reporting
+    }
+
+    let command: string | undefined;
+    let unsetCommandParams: { errorMessage: string, option: string, setCommand: string };
+    if (isBuild) {
+      if (object) {
+        command = unresolvedState.buildObjectCommand;
         unsetCommandParams = {
-          errorMessage: l10n.t('Project\'s compile command not set'),
-          option: l10n.t('Set Compile Command'),
-          setCommand: `vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`
+          errorMessage: l10n.t('Project\'s build object command not set'),
+          option: l10n.t('Set Build Object Command'),
+          setCommand: `vscode-ibmi-projectexplorer.projectExplorer.setBuildObjectCommand`,
+        };
+      } else {
+        command = unresolvedState.buildCommand;
+        unsetCommandParams = {
+          errorMessage: l10n.t('Project\'s build command not set'),
+          option: l10n.t('Set Build Command'),
+          setCommand: `vscode-ibmi-projectexplorer.projectExplorer.setBuildCommand`
         };
       }
+    } else {
+      command = unresolvedState.compileCommand;
+      unsetCommandParams = {
+        errorMessage: l10n.t('Project\'s compile command not set'),
+        option: l10n.t('Set Compile Command'),
+        setCommand: `vscode-ibmi-projectexplorer.projectExplorer.setCompileCommand`
+      };
+    }
 
-      if (!command) {
-        const selection = await window.showErrorMessage(unsetCommandParams.errorMessage, unsetCommandParams.option);
-        if (selection === unsetCommandParams.option) {
-          await commands.executeCommand(unsetCommandParams.setCommand, this);
-          this.runBuildOrCompileCommand(isBuild, fileUri, object);
-        }
-      } else {
-        this.runBuildOrCompileCommand(isBuild, fileUri, object);
+    if (!command) {
+      const selection = await window.showErrorMessage(unsetCommandParams.errorMessage, unsetCommandParams.option);
+      if (selection === unsetCommandParams.option) {
+        await commands.executeCommand(unsetCommandParams.setCommand, this);
+        return await this.runBuildOrCompileCommand(isBuild, fileUri, object);
       }
+      return { success: false, output: [], error: unsetCommandParams.errorMessage }; // Return error details for proper error reporting
+    } else {
+      return await this.runBuildOrCompileCommand(isBuild, fileUri, object);
     }
   }
 
