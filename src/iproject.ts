@@ -33,7 +33,7 @@ export const DEFAULT_OBJLIB = '&OBJLIB';
 /**
  * Represents the default .gitignore entries.
  */
-export const DEFAULT_GITIGNORE = ['.logs', '.evfevent', '.env']
+export const DEFAULT_GITIGNORE = ['.logs', '.evfevent', '.itest', '.env'];
 
 /**
  * Represents a file that stores project information.
