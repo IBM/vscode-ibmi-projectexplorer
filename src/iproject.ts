@@ -2,7 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { Action, CommandResult, DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { Action, ActionResult, CommandResult, DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import * as dotenv from 'dotenv';
 import { ValidatorResult } from "jsonschema";
 import * as path from "path";
@@ -60,6 +60,15 @@ export type Direction = 'up' | 'down';
  * Represents the position of an entry.
  */
 export type Position = 'first' | 'last' | 'middle';
+
+/**
+ * Represents a build or compile result.
+ */
+export type BuildOrCompileResult = {
+  success: boolean,
+  output: string[],
+  message: string
+};
 
 /**
  * Represents an IBM i Project.
@@ -468,7 +477,13 @@ export class IProject {
    * @param fileUri The file uri to compile or `undefined` for builds.
    * @param object The specific object to build.
    */
-  public async runBuildOrCompileCommand(isBuild: boolean, fileUri?: Uri, object?: string) {
+  public async runBuildOrCompileCommand(isBuild: boolean, fileUri?: Uri, object?: string): Promise<BuildOrCompileResult> {
+    let buildOrCompileResult: BuildOrCompileResult = {
+      success: false,
+      output: [],
+      message: ''
+    };
+
     const unresolvedState = await this.getUnresolvedState();
 
     if (unresolvedState) {
@@ -517,10 +532,25 @@ export class IProject {
             ".evfevent"
           ]
         };
-        await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
+        const actionResult: ActionResult = await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
         ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
+
+        buildOrCompileResult.success = actionResult.success;
+        buildOrCompileResult.message = actionResult.message;
+        if (actionResult.output.length > 0 && actionResult.output[0].output.length > 0) {
+          buildOrCompileResult.output = actionResult.output[0].output;
+        }
+      } else {
+        const commandField = isBuild ?
+          (object ? 'buildObjectCommand' : 'buildCommand') :
+          'compileCommand';
+        buildOrCompileResult.message = l10n.t('{0} not set', commandField);
       }
+    } else {
+      buildOrCompileResult.message = l10n.t('No iproj.json found');
     }
+
+    return buildOrCompileResult;
   }
   /**
    * Run the project's build, build object, or compile command. If no command
@@ -1431,6 +1461,7 @@ export class IProject {
     this.liblVarsUpdated = false; // toggle off after it is cheched
     return returnValue;
   }
+
   /**
    * Get the validation result of the project against the `iproj.json` schema.
    * 
