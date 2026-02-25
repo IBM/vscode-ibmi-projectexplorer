@@ -488,36 +488,41 @@ export class IProject {
       }
 
       if (rawCommand) {
-        const directoryUris = ['.logs', '.evfevent'].map(dir => Uri.file(path.join(this.workspaceFolder.uri.fsPath, dir)));
-        for await (const uri of directoryUris) {
-          try {
-            await workspace.fs.stat(uri);
+        if (rawCommand.startsWith('ext:')) {
+          await commands.executeCommand(rawCommand.substring(4), { fileUri, object });
+        } else {
+          const directoryUris = ['.logs', '.evfevent'].map(dir => Uri.file(path.join(this.workspaceFolder.uri.fsPath, dir)));
+          for await (const uri of directoryUris) {
+            try {
+              await workspace.fs.stat(uri);
 
-            // Clear directory if it does exist
-            const files = await workspace.fs.readDirectory(uri);
-            for (const [fileName] of files) {
-              const fileUri = Uri.joinPath(uri, fileName);
-              await workspace.fs.delete(fileUri, { recursive: true });
+              // Clear directory if it does exist
+              const files = await workspace.fs.readDirectory(uri);
+              for (const [fileName] of files) {
+                const fileUri = Uri.joinPath(uri, fileName);
+                await workspace.fs.delete(fileUri, { recursive: true });
+              }
+            } catch {
+              // Create directory if it does not exist
+              await workspace.fs.createDirectory(uri);
             }
-          } catch {
-            // Create directory if it does not exist
-            await workspace.fs.createDirectory(uri);
           }
+
+          const action: Action = {
+            name: rawCommand,
+            command: commandWithVariableSubstitution || rawCommand,
+            environment: `pase`,
+            extensions: [`GLOBAL`],
+            deployFirst: true,
+            type: `file`,
+            postDownload: [
+              ".logs",
+              ".evfevent"
+            ]
+          };
+          await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
         }
 
-        const action: Action = {
-          name: rawCommand,
-          command: commandWithVariableSubstitution || rawCommand,
-          environment: `pase`,
-          extensions: [`GLOBAL`],
-          deployFirst: true,
-          type: `file`,
-          postDownload: [
-            ".logs",
-            ".evfevent"
-          ]
-        };
-        await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
         ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
       }
     }
