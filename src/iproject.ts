@@ -535,10 +535,12 @@ export class IProject {
         const actionResult: ActionResult = await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
         ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
 
-        buildOrCompileResult.success = actionResult.success;
-        buildOrCompileResult.message = actionResult.message;
-        if (actionResult.output.length > 0 && actionResult.output[0].output.length > 0) {
-          buildOrCompileResult.output = actionResult.output[0].output;
+        if (actionResult) {
+          buildOrCompileResult.success = actionResult.success;
+          buildOrCompileResult.message = actionResult.message;
+          if (actionResult.output.length > 0 && actionResult.output[0].output.length > 0) {
+            buildOrCompileResult.output = actionResult.output[0].output;
+          }
         }
       } else {
         const commandField = isBuild ?
