@@ -33,7 +33,16 @@ interface MigrationConfig {
 interface MigrationResult {
     numFiles: number,
     numSuccess: number,
-    error: boolean
+    error: boolean,
+    errorMessage?: string
+}
+
+/**
+ * Represents options for migrating source files.
+ */
+interface MigrateSourceOptions {
+    headless?: boolean;
+    migrationConfig?: MigrationConfig;
 }
 
 /**
@@ -45,158 +54,201 @@ interface MigrationResult {
  * @returns True if the operation was successful, false if the operation failed, 
  * or `undefined` if the migration was aborted.
  */
-export async function migrateSource(iProject: IProject, library: string): Promise<boolean | undefined> {
-    const migrationConfig = await getMigrationConfig(iProject, library);
-    if (migrationConfig) {
-        // Verify migration settings and source files
-        const isMigrationConfigValid = verifyMigrationConfig(migrationConfig);
-        if (!isMigrationConfigValid) {
-            return;
+export async function migrateSource(iProject: IProject, library: string, options?: MigrateSourceOptions): Promise<boolean | undefined> {
+    let migrationConfig: MigrationConfig | undefined;
+    // Get migration configuration
+    // If headless, use provided config else prompt user for config 
+    if (options?.headless) {
+        migrationConfig = options.migrationConfig;
+
+        if (!migrationConfig) {
+            throw new Error(
+                "migrationConfig must be provided when headless is true"
+            );
         }
-
-        const ibmi = getInstance();
-        const connection = ibmi?.getConnection()!;
-
-        const migrationResult: MigrationResult = await window.withProgress({
-            location: ProgressLocation.Notification,
-            title: l10n.t('Migrating Source'),
-        }, async (progress) => {
-            let migrationResult: MigrationResult = {
-                numFiles: migrationConfig.sourceFiles.length,
-                numSuccess: 0,
-                error: true
-            };
-            const numSteps = 5 + (migrationConfig.automaticRename ? 1 : 0) + (migrationConfig.fixIncludes ? 1 : 0);
-            const increment = (1 / (migrationResult.numFiles + numSteps)) * 100;
-
-            // Verify makei is installed
-            progress.report({ message: l10n.t('Verifying makei is installed...'), increment: increment });
-            const isMakeiInstalled = await connection.sendCommand({
-                command: `ls -p /QOpenSys/pkgs/bin/makei`
-            });
-            if (isMakeiInstalled?.code !== 0 || isMakeiInstalled.stdout !== '/QOpenSys/pkgs/bin/makei') {
-                window.showErrorMessage(l10n.t('Required component ({0}) to migrate source not installed on host IBM i. Run {1} to get it.', 'bob', '\'yum install bob\''));
-                return migrationResult;
-            }
-
-            // Create temporary remote directory
-            progress.report({ message: l10n.t('Creating temporary remote directory...'), increment: increment });
-            const tempDirectory = connection.getTempRemote(`migrate_${library}`);
-            const createTempDirResult = await connection.sendCommand({
-                command: `rm -rf ${tempDirectory}; mkdir -p ${tempDirectory}`
-            });
-            if (createTempDirResult?.code !== 0) {
-                window.showErrorMessage(createTempDirResult.stderr);
-                return migrationResult;
-            }
-
-            // Run cvtsrcpf on each source file
-            for await (const file of migrationConfig.sourceFiles) {
-                progress.report({ message: file, increment: increment });
-                // Create directory
-                const sourceFile = path.parse(file).name;
-                const directoryPath = path.posix.join(tempDirectory, sourceFile);
-                const mkdirResult = await connection.sendCommand({
-                    command: `mkdir -p ${directoryPath}`
-                });
-                if (mkdirResult?.code !== 0) {
-                    continue;
-                }
-
-                // Run CVTSRCPF
-                const cvtsrcpfResult = await connection.sendCommand({
-                    command: `makei cvtsrcpf ${migrationConfig.defaultCCSID ? `-c ${migrationConfig.defaultCCSID}` : ``} ${migrationConfig.importText ? `-t` : ``} ${migrationConfig.lower ? `-l` : ``} ${sourceFile} ${library}`,
-                    directory: directoryPath
-                });
-
-                if (cvtsrcpfResult?.code === 0) {
-                    migrationResult.numSuccess++;
-                }
-            }
-
-            // Download directory to workspace folder
-            if (migrationResult.numSuccess > 0) {
-                const remoteTarball = path.posix.join(tempDirectory, 'out.tar');
-                const localTarball = path.join(migrationConfig.workspaceFolderUri!.fsPath, 'out.tar');
-
-                progress.report({ message: l10n.t('Creating remote tarball...'), increment: increment });
-                const remoteTarballResult = await connection.sendCommand({ command: `${connection.remoteFeatures.tar} -cvf out.tar .`, directory: tempDirectory });
-                if (remoteTarballResult.code !== 0) {
-                    window.showErrorMessage(l10n.t('Failed to create remote tarball'));
-                    return migrationResult;
-                }
-
-                progress.report({ message: l10n.t('Downloading tarball to workspace...'), increment: increment });
-                try {
-                    await connection.getContent().downloadFile(localTarball, remoteTarball);
-                    await connection.sendCommand({ command: `rm -rf ${tempDirectory}` });
-                } catch (error) {
-                    window.showErrorMessage(l10n.t('Failed to download tarball to workspace'));
-                    return migrationResult;
-                }
-
-                progress.report({ message: l10n.t('Extracting tarball to workspace...'), increment: increment });
-                try {
-                    await tar.extract({ cwd: migrationConfig.workspaceFolderUri!.fsPath, file: localTarball });
-                    await workspace.fs.delete(Uri.file(localTarball), { recursive: true });
-                } catch (error) {
-                    window.showErrorMessage(l10n.t('Failed to extract tarball to workspace'));
-                    return migrationResult;
-                }
-            }
-
-            const soEnabled = await sourceOrbitEnabled();
-            const workspaceFolder = workspace.getWorkspaceFolder(migrationConfig.workspaceFolderUri!);
-
-            if (soEnabled) {
-                if (migrationConfig.automaticRename) {
-                    progress.report({ message: l10n.t('Renaming file extensions to be more precise...'), increment: increment });
-                    await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'renames');
-    
-                    // Fix file extensions with the format FILE.pgm.CLLE to FILE.PGM.CLLE
-                    if (!migrationConfig.lower) {
-                        fixExtensions(migrationConfig.workspaceFolderUri!.fsPath);
-                    }
-                }
-
-                if (migrationConfig.fixIncludes) {
-                    progress.report({ message: l10n.t('Adjusting include statements to IFS syntax...'), increment: increment });
-                    await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'includes');
-                }
-    
-                if (migrationConfig.generateBob) {
-                    progress.report({ message: l10n.t('Generating Rules.mk for Better Object Builder...'), increment: increment });
-                    await commands.executeCommand('vscode-sourceorbit.generateBuildFile', workspaceFolder, 'bob');
-                }
-
-            } else if (migrationConfig.fixIncludes || migrationConfig.generateBob || migrationConfig.automaticRename) {
-                // If any of those options are chosen, but SO is not available, show an error message
-                window.showErrorMessage(l10n.t('Failed to run clean up as Source Orbit extension is not activated'));
-                return migrationResult;
-            }
-
-
-
-            migrationResult.error = false;
-            return migrationResult;
-        });
-
-        // Output migration result
-        if (migrationResult.numSuccess === migrationResult.numFiles && !migrationResult.error) {
-            window.showInformationMessage(l10n.t('Successfully migrated {0}/{1} source file(s) from {2}',
-                migrationResult.numSuccess, migrationResult.numFiles, library));
-        } else if (!migrationResult.error) {
-            window.showErrorMessage(l10n.t('Failed to migrate {0}/{1} source file(s) from {2}',
-                (migrationResult.numFiles - migrationResult.numSuccess), migrationResult.numFiles, library), l10n.t('View log'))
-                .then(async choice => {
-                    if (choice === l10n.t('View log')) {
-                        ibmi?.focusOutput();
-                    }
-                });
-        }
-
-        return migrationResult.numSuccess > 0 && !migrationResult.error;
+    } else {
+        migrationConfig = await getMigrationConfig(iProject, library);
     }
+    if (!migrationConfig) {
+        return undefined;
+    }
+    // Verify migration settings and source files
+    const isMigrationConfigValid = verifyMigrationConfig(migrationConfig);
+    if (!isMigrationConfigValid) {
+        return;
+    }
+
+    const ibmi = getInstance();
+    const connection = ibmi?.getConnection()!;
+
+    const migrationResult: MigrationResult = await window.withProgress({
+        location: ProgressLocation.Notification,
+        title: l10n.t('Migrating Source'),
+    }, async (progress) => {
+        let migrationResult: MigrationResult = {
+            numFiles: migrationConfig.sourceFiles.length,
+            numSuccess: 0,
+            error: true
+        };
+        const numSteps = 5 + (migrationConfig.automaticRename ? 1 : 0) + (migrationConfig.fixIncludes ? 1 : 0);
+        const increment = (1 / (migrationResult.numFiles + numSteps)) * 100;
+
+        // Verify makei is installed
+        progress.report({ message: l10n.t('Verifying makei is installed...'), increment: increment });
+        const isMakeiInstalled = await connection.sendCommand({
+            command: `ls -p /QOpenSys/pkgs/bin/makei`
+        });
+        if (isMakeiInstalled?.code !== 0 || isMakeiInstalled.stdout !== '/QOpenSys/pkgs/bin/makei') {
+            window.showErrorMessage(l10n.t('Required component ({0}) to migrate source not installed on host IBM i. Run {1} to get it.', 'bob', '\'yum install bob\''));
+            return migrationResult;
+        }
+
+        // Create temporary remote directory
+        progress.report({ message: l10n.t('Creating temporary remote directory...'), increment: increment });
+        const tempDirectory = connection.getTempRemote(`migrate_${library}`);
+        const createTempDirResult = await connection.sendCommand({
+            command: `rm -rf ${tempDirectory}; mkdir -p ${tempDirectory}`
+        });
+        if (createTempDirResult?.code !== 0) {
+            const msg = l10n.t(createTempDirResult.stderr);
+
+                window.showErrorMessage(msg);
+
+                migrationResult.error = true;
+                migrationResult.errorMessage = msg; // capture for MCP
+
+                return migrationResult;
+        }
+
+        // Run cvtsrcpf on each source file
+        for await (const file of migrationConfig.sourceFiles) {
+            progress.report({ message: file, increment: increment });
+            // Create directory
+            const sourceFile = path.parse(file).name;
+            const directoryPath = path.posix.join(tempDirectory, sourceFile);
+            const mkdirResult = await connection.sendCommand({
+                command: `mkdir -p ${directoryPath}`
+            });
+            if (mkdirResult?.code !== 0) {
+                continue;
+            }
+
+            // Run CVTSRCPF
+            const cvtsrcpfResult = await connection.sendCommand({
+                command: `makei cvtsrcpf ${migrationConfig.defaultCCSID ? `-c ${migrationConfig.defaultCCSID}` : ``} ${migrationConfig.importText ? `-t` : ``} ${migrationConfig.lower ? `-l` : ``} ${sourceFile} ${library}`,
+                directory: directoryPath
+            });
+
+            if (cvtsrcpfResult?.code === 0) {
+                migrationResult.numSuccess++;
+            }
+        }
+
+        // Download directory to workspace folder
+        if (migrationResult.numSuccess > 0) {
+            const remoteTarball = path.posix.join(tempDirectory, 'out.tar');
+            const localTarball = path.join(migrationConfig.workspaceFolderUri!.fsPath, 'out.tar');
+
+            progress.report({ message: l10n.t('Creating remote tarball...'), increment: increment });
+            const remoteTarballResult = await connection.sendCommand({ command: `${connection.remoteFeatures.tar} -cvf out.tar .`, directory: tempDirectory });
+            if (remoteTarballResult.code !== 0) {
+                const msg = l10n.t('Failed to create remote tarball');
+
+                window.showErrorMessage(msg);
+
+                migrationResult.error = true;
+                migrationResult.errorMessage = msg; // capture for MCP
+
+                return migrationResult;
+            }
+
+            progress.report({ message: l10n.t('Downloading tarball to workspace...'), increment: increment });
+            try {
+                await connection.getContent().downloadFile(localTarball, remoteTarball);
+                await connection.sendCommand({ command: `rm -rf ${tempDirectory}` });
+            } catch (error: any) {
+                const msg = l10n.t('Failed to download tarball to workspace');
+
+                window.showErrorMessage(msg);
+
+                migrationResult.error = true;
+                migrationResult.errorMessage = msg; // capture for MCP
+
+                return migrationResult;
+            }
+
+
+            progress.report({ message: l10n.t('Extracting tarball to workspace...'), increment: increment });
+            try {
+                await tar.extract({ cwd: migrationConfig.workspaceFolderUri!.fsPath, file: localTarball });
+                await workspace.fs.delete(Uri.file(localTarball), { recursive: true });
+            } catch (error) {
+                const msg = l10n.t('Failed to extract tarball to workspace');
+
+                window.showErrorMessage(msg);
+
+                migrationResult.error = true;
+                migrationResult.errorMessage = msg; // capture for MCP
+
+                return migrationResult;
+            }
+        }
+
+        const soEnabled = await sourceOrbitEnabled();
+        const workspaceFolder = workspace.getWorkspaceFolder(migrationConfig.workspaceFolderUri!);
+
+        if (soEnabled) {
+            if (migrationConfig.automaticRename) {
+                progress.report({ message: l10n.t('Renaming file extensions to be more precise...'), increment: increment });
+                await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'renames');
+
+                // Fix file extensions with the format FILE.pgm.CLLE to FILE.PGM.CLLE
+                if (!migrationConfig.lower) {
+                    fixExtensions(migrationConfig.workspaceFolderUri!.fsPath);
+                }
+            }
+
+            if (migrationConfig.fixIncludes) {
+                progress.report({ message: l10n.t('Adjusting include statements to IFS syntax...'), increment: increment });
+                await commands.executeCommand('vscode-sourceorbit.autoFix', workspaceFolder, 'includes');
+            }
+
+            if (migrationConfig.generateBob) {
+                progress.report({ message: l10n.t('Generating Rules.mk for Better Object Builder...'), increment: increment });
+                await commands.executeCommand('vscode-sourceorbit.generateBuildFile', workspaceFolder, 'bob');
+            }
+
+        } else if (migrationConfig.fixIncludes || migrationConfig.generateBob || migrationConfig.automaticRename) {
+            // If any of those options are chosen, but SO is not available, show an error message
+            const msg = l10n.t('Failed to run clean up as Source Orbit extension is not activated');
+            window.showErrorMessage(msg);
+            migrationResult.error = true;
+            migrationResult.errorMessage = msg; // capture for MCP
+
+            return migrationResult;
+        }
+
+
+
+        migrationResult.error = false;
+        return migrationResult;
+    });
+
+    // Output migration result
+    if (migrationResult.numSuccess === migrationResult.numFiles && !migrationResult.error) {
+        window.showInformationMessage(l10n.t('Successfully migrated {0}/{1} source file(s) from {2}',
+            migrationResult.numSuccess, migrationResult.numFiles, library));
+    } else if (!migrationResult.error) {
+        window.showErrorMessage(l10n.t('Failed to migrate {0}/{1} source file(s) from {2}',
+            (migrationResult.numFiles - migrationResult.numSuccess), migrationResult.numFiles, library), l10n.t('View log'))
+            .then(async choice => {
+                if (choice === l10n.t('View log')) {
+                    ibmi?.focusOutput();
+                }
+            });
+    }
+
+    return migrationResult.numSuccess > 0 && !migrationResult.error;
 }
 
 function fixExtensions(workspaceFolder: string): void {

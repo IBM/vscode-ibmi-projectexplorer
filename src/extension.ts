@@ -12,6 +12,7 @@ import { initialise } from './testing';
 import { ProjectFileWatcher } from './fileWatcher';
 import { ConfigurationManager } from './configurationManager';
 import { ContextValueManager } from './contextValueManager';
+import { migrateSource } from './views/projectExplorer/migrateSource';
 
 export async function activate(context: ExtensionContext): Promise<IBMiProjectExplorer> {
 	console.log(l10n.t('Congratulations, your extension "vscode-ibmi-projectexplorer" is now active!'));
@@ -81,7 +82,7 @@ export async function activate(context: ExtensionContext): Promise<IBMiProjectEx
 		await initialise(context);
 	}
 
-	return { projectManager: ProjectManager, projectExplorer: projectExplorer, jobLog: jobLog };
+	return { projectManager: ProjectManager, projectExplorer: projectExplorer, jobLog: jobLog, migrationSource: migrateSource };
 }
 
 export function deactivate() { }
