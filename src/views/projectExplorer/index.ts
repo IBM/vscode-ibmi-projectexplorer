@@ -953,7 +953,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 
           if (libraryName) {
             try {
-              const result = await ibmi!.getConnection().runCommand({ command: `CPYLIB FROMLIB(${element.libraryInfo.name}) TOLIB(${libraryName})` });
+              const result = await ibmi!.getConnection().runCommand({ command: `QSYS/CPYLIB FROMLIB(${element.libraryInfo.name}) TOLIB(${libraryName})` });
               if (!result.code) {
                 if (await window.showInformationMessage(l10n.t('{0} successfully copied to {1}.', element.libraryInfo.name, libraryName), l10n.t("Add to library list"))) {
                   await commands.executeCommand("vscode-ibmi-projectexplorer.projectExplorer.addToLibraryList", { name: libraryName });
@@ -995,7 +995,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               newObjectOK = await window.withProgress({ location: ProgressLocation.Notification, title: l10n.t('Renaming object {0} {1} to {2}...', objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase(), escapedObject.toString()) }
                 , async (progress) => {
                   const renameResult = await connection.runCommand({
-                    command: `RNMOBJ OBJ(${objectBrowseObject.path}) OBJTYPE(${objectBrowseObject.object.type}) NEWOBJ(${escapedObject})`,
+                    command: `QSYS/RNMOBJ OBJ(${objectBrowseObject.path}) OBJTYPE(${objectBrowseObject.object.type}) NEWOBJ(${escapedObject})`,
                     noLibList: true
                   });
 
@@ -1033,7 +1033,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             const connection = ibmi!.getConnection();
 
             try {
-              await connection.runCommand({ command: `CLRLIB LIB(${library})` });
+              await connection.runCommand({ command: `QSYS/CLRLIB LIB(${library})` });
 
               window.showInformationMessage(l10n.t('Cleared {0} *{1}.', path, type));
               this.refresh();
@@ -1057,7 +1057,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await window.withProgress({ location: ProgressLocation.Notification, title: l10n.t('Deleting object {0} {1}...', objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase()) }
               , async (progress) => {
                 const deleteResult = await connection.runCommand({
-                  command: `DLTOBJ OBJ(${objectBrowseObject.path}) OBJTYPE(${objectBrowseObject.object.type})`,
+                  command: `QSYS/DLTOBJ OBJ(${objectBrowseObject.path}) OBJTYPE(${objectBrowseObject.object.type})`,
                   noLibList: true
                 });
 
@@ -1101,7 +1101,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
               const path = `${library}/${sourceFileName.toUpperCase()}`;
 
               window.showInformationMessage(l10n.t('Creating source file {0}.', path));
-              await connection.runCommand({ command: `CRTSRCPF FILE(${path}) RCDLEN(112)` });
+              await connection.runCommand({ command: `QSYS/CRTSRCPF FILE(${path}) RCDLEN(112)` });
 
               this.refresh();
             } catch (e: any) {
@@ -1170,7 +1170,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await window.withProgress({ location: ProgressLocation.Notification, title: l10n.t('Deleting object {0} {1}...', objectBrowseObject.path, objectBrowseObject.object.type.toUpperCase()) }
               , async (progress) => {
                 const deleteResult = await connection.runCommand({
-                  command: `DLTOBJ OBJ(${objectBrowseObject.path}) OBJTYPE(${objectBrowseObject.object.type})`,
+                  command: `QSYS/DLTOBJ OBJ(${objectBrowseObject.path}) OBJTYPE(${objectBrowseObject.object.type})`,
                   noLibList: true
                 });
 
@@ -1263,7 +1263,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
             await window.withProgress({ location: ProgressLocation.Notification, title: l10n.t('Deleting member {0}...', objectBrowseMember.path!) }
               , async (progress) => {
                 const deleteResult = await connection.runCommand({
-                  command: `RMVM FILE(${objectBrowseMember.member.library}/${objectBrowseMember.member.file}) MBR(${objectBrowseMember.member.name})`,
+                  command: `QSYS/RMVM FILE(${objectBrowseMember.member.library}/${objectBrowseMember.member.file}) MBR(${objectBrowseMember.member.name})`,
                   noLibList: true
                 });
 
