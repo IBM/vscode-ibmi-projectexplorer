@@ -40,7 +40,14 @@ export default class ObjectFile extends TreeItem implements ProjectExplorerTreeI
     const ibmi = getInstance();
     const connection = ibmi?.getConnection();
     if (ibmi && connection) {
-      const members = await connection.getContent().getMemberList({ library: this.objectFileInfo.library, sourceFile: this.objectFileInfo.name, sort: { order: 'name' } });
+      const content = connection.getContent();
+      const members = await content.getMemberList({
+        library: this.objectFileInfo.library,
+        sourceFile: this.objectFileInfo.name,
+        members: `*`,
+        extensions: `*`,
+        sort: { order: 'name' }
+      });
       if (members) {
         for (const member of members) {
           items.push(new MemberFile(this.workspaceFolder, member, this.path));
