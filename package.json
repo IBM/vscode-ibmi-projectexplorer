@@ -2033,25 +2033,24 @@
     "types": "npx -p typescript tsc ./src/extension.ts --excludeDirectories ./src/testing --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node"
   },
   "devDependencies": {
-    "@halcyontech/vscode-ibmi-types": "^2.15",
+    "@halcyontech/vscode-ibmi-types": "^2.18",
     "@types/node": "22.x",
     "@types/parse-gitignore": "^1.0.2",
-    "@types/tar": "^6.1.13",
     "@types/vscode": "^1.75.0",
-    "@typescript-eslint/parser": "^7.18.0",
-    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^8.59.3",
+    "@typescript-eslint/eslint-plugin": "^8.59.3",
     "@vscode/l10n-dev": "^0.0.35",
-    "esbuild-loader": "^4.3.0",
-    "eslint": "^8.57.0",
-    "tar": "^7.4.3",
-    "typescript": "^5.7.3",
-    "webpack": "^5.97.1",
-    "webpack-cli": "^5.1.4"
+    "esbuild-loader": "^4.4.3",
+    "eslint": "^10.4.0",
+    "tar": "^7.5.15",
+    "typescript": "^6.0.3",
+    "webpack": "^5.106.2",
+    "webpack-cli": "^7.0.2"
   },
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "ignore": "^7.0.3",
-    "jsonschema": "^1.4.1",
+    "dotenv": "^17.4.2",
+    "ignore": "^7.0.5",
+    "jsonschema": "^1.5.0",
     "parse-gitignore": "^2.0.0"
   }
 }
