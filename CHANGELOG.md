@@ -2,6 +2,17 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+# `2.12.4`
+* Remove run compile action from arbitrary editors
+* Add .itest log directory to default .gitignore
+* Support VS Code commands in build/compile prop
+* Qualify CL commands with `QSYS/`
+* Fix fetching of members
+### Housekeeping
+* Add parameters to release workflow to configure manual execution
+* Switch to use Trusted publishing on NPM
+* Bump package dependencies
+
 # `2.12.3`
 * Upgrade Code4i types to `v2.15` and remove upcoming deprecated APIs
 
