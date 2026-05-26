@@ -2034,7 +2034,7 @@
   },
   "devDependencies": {
     "@halcyontech/vscode-ibmi-types": "^2.18",
-    "@types/node": "22.x",
+    "@types/node": "25.x",
     "@types/parse-gitignore": "^1.0.2",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/parser": "^8.59.3",
