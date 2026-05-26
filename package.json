@@ -2038,7 +2038,7 @@
     "@types/parse-gitignore": "^1.0.2",
     "@types/vscode": "^1.75.0",
     "@typescript-eslint/parser": "^8.59.3",
-    "@typescript-eslint/eslint-plugin": "^8.59.3",
+    "@typescript-eslint/eslint-plugin": "^8.60.0",
     "@vscode/l10n-dev": "^0.0.35",
     "esbuild-loader": "^4.4.3",
     "eslint": "^10.4.0",
