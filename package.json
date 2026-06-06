@@ -2044,7 +2044,7 @@
     "eslint": "^10.4.0",
     "tar": "^7.5.15",
     "typescript": "^6.0.3",
-    "webpack": "^5.106.2",
+    "webpack": "^5.107.2",
     "webpack-cli": "^7.0.2"
   },
   "dependencies": {
