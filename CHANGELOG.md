@@ -2,6 +2,10 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+# `2.12.5`
+### Housekeeping
+* Fix API types generation
+
 # `2.12.4`
 * Remove run compile action from arbitrary editors
 * Add .itest log directory to default .gitignore
