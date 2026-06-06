@@ -67,7 +67,6 @@ jobs:
 
       - name: Generate Types
         if: github.event_name == 'release' || inputs.publish_npm == true
-        continue-on-error: true
         run: npm run types
 
       - name: Cleanup Types

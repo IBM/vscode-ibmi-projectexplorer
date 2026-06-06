@@ -2030,7 +2030,7 @@
     "docs": "docsify serve docs",
     "nls": "npx @vscode/l10n-dev export --outDir ./l10n ./src",
     "pseudo-nls": "npx @vscode/l10n-dev generate-pseudo -o ./l10n/ ./l10n/bundle.l10n.json ./package.nls.json",
-    "types": "npx -p typescript tsc ./src/extension.ts --excludeDirectories ./src/testing --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node"
+    "types": "npx -p typescript tsc ./src/extension.ts --ignoreConfig --skipLibCheck --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node10 --ignoreDeprecations 6.0"
   },
   "devDependencies": {
     "@halcyontech/vscode-ibmi-types": "^2.18",
