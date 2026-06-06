@@ -70,7 +70,7 @@ export const jobLogMock: ObjectInfo[] = [
         "output": "/bob-recursive-example/.logs/PAR201.splf",
         "failed": false
     }
-];
+] as any;
 
 export const outputMock = '';
 

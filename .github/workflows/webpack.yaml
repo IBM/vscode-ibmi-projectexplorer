@@ -48,3 +48,6 @@ jobs:
           name: VSIX
           path: ./*.vsix
           if-no-files-found: error
+
+      - name: Generate Types
+        run: npm run types
