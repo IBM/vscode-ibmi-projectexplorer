@@ -14,23 +14,22 @@ import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
  */
 export default class ObjectFile extends TreeItem implements ProjectExplorerTreeItem {
   static contextValue = ContextValue.objectFile;
-  object: IBMiObject;
   path: string;
 
-  constructor(public workspaceFolder: WorkspaceFolder, objectFileInfo: IBMiObject, pathToLibrary: string) {
-    const type = objectFileInfo.type.startsWith(`*`) ? objectFileInfo.type.substring(1) : objectFileInfo.type;
-    super(`${objectFileInfo.name}.${type}`);
+  constructor(public workspaceFolder: WorkspaceFolder, public readonly object: IBMiObject, pathToLibrary: string) {
+    const type = object.type.startsWith(`*`) ? object.type.substring(1) : object.type;
+    super(`${object.name}.${type}`);
 
-    this.object = objectFileInfo;
-    this.path = `${pathToLibrary}/${objectFileInfo.name}.${type}`;
-    this.collapsibleState = objectFileInfo.attribute === 'PF' ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None;
+    this.object = object;
+    this.path = `${pathToLibrary}/${object.name}.${type}`;
+    this.collapsibleState = object.attribute === 'PF' ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None;
     this.contextValue = ObjectFile.contextValue +
       (type ? `.${type}` : ``) +
-      (objectFileInfo.sourceFile ? `.SPF` : ``);
+      (object.sourceFile ? `.SPF` : ``);
     const icon = objectFileIcons.get(type.toLowerCase()) || `file`;
     this.iconPath = new ThemeIcon(icon);
-    this.description = (objectFileInfo.text.trim() !== '' ? `${objectFileInfo.text} ` : ``) +
-      (objectFileInfo.attribute?.trim() !== '' ? `(${objectFileInfo.attribute})` : '');
+    this.description = (object.text.trim() !== '' ? `${object.text} ` : ``) +
+      (object.attribute?.trim() !== '' ? `(${object.attribute})` : '');
     this.resourceUri = this.getObjectResourceUri();
   }
 
