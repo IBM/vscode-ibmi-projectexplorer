@@ -1436,7 +1436,7 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
 }
 
 function toObjectBrowserObject(objectFile: Library | ObjectFile) {
-  const object = Object.assign({}, "objectFileInfo" in objectFile ? objectFile.objectFileInfo : objectFile.libraryInfo);
+  const object = Object.assign({}, "object" in objectFile ? objectFile.object : objectFile.libraryInfo);
   return {
     path: `${object.library}/${object.name}`,
     object,
