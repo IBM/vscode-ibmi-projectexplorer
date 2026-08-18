@@ -2040,7 +2040,7 @@
     "@typescript-eslint/parser": "^8.59.3",
     "@typescript-eslint/eslint-plugin": "^8.59.3",
     "@vscode/l10n-dev": "^0.0.35",
-    "esbuild-loader": "^4.4.3",
+    "esbuild-loader": "^4.5.0",
     "eslint": "^10.4.0",
     "tar": "^7.5.15",
     "typescript": "^6.0.3",
