@@ -51,3 +51,9 @@ jobs:
 
       - name: Generate Types
         run: npm run types
+
+      - name: Cleanup Types
+        run: cd types && npm run prepublish
+
+      - name: Dry Run Publish Types
+        run: cd types && npm publish --dry-run
