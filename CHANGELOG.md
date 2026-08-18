@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+# `2.12.6`
+* Fix "Additional Info" command contributed from the FS extension
+
 # `2.12.5`
 ### Housekeeping
 * Fix API types generation
