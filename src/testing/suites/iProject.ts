@@ -8,8 +8,8 @@ import * as path from "path";
 import { TextEncoder } from "util";
 import { workspace } from "vscode";
 import { TestSuite } from "..";
-import { getDeployTools, getInstance } from "../../ibmi";
-import { IProject, ProjectFileType } from "../../iproject";
+import { getInstance } from "../../ibmi";
+import { ProjectFileType } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
 import { LibraryType } from "../../views/projectExplorer/library";
 import { iProjectMock, ibmiJsonMock } from "../constants";
@@ -670,30 +670,6 @@ export const iProjectSuite: TestSuite = {
                 const deployLocation = iProject.getDeployLocation();
 
                 assert.strictEqual(deployLocation, deployLocation);
-            }
-        },
-        {
-            name: `Test getDeploymentParameters`, test: async () => {
-                const iProject = ProjectManager.getProjects()[0];
-                iProject.setDeploymentMethod('compare');
-                const deploymentParameters = await iProject.getDeploymentParameters();
-                const deployTools = getDeployTools();
-
-                assert.deepStrictEqual(deploymentParameters, {
-                    method: 'compare',
-                    workspaceFolder: iProject.workspaceFolder,
-                    remotePath: deployLocation,
-                    ignoreRules: await deployTools!.getDefaultIgnoreRules(iProject.workspaceFolder)
-                });
-            }
-        },
-        {
-            name: `Test setDeploymentMethod`, test: async () => {
-                const iProject = ProjectManager.getProjects()[0];
-                iProject.setDeploymentMethod('all');
-                const deploymentParameters = await iProject.getDeploymentParameters();
-
-                assert.strictEqual(deploymentParameters?.method, 'all');
             }
         },
         {

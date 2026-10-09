@@ -93,7 +93,6 @@
   "commands.projectExplorer.setCompileCommand": "Set Compile Command",
   "commands.projectExplorer.setCurrentLibrary": "Set Current Library",
   "commands.projectExplorer.setDeployLocation": "Set Deploy Location",
-  "commands.projectExplorer.setDeploymentMethod": "Set Deployment Method",
   "commands.projectExplorer.setTargetCCSIDForCompiles": "Set Target CCSID for Compiles",
   "commands.projectExplorer.setTargetLibraryForCompiles": "Set Target Library for Compiles",
   "commands.projectExplorer.updateMemberText": "Update Member Text",

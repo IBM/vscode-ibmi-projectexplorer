@@ -2,6 +2,7 @@
  * (c) Copyright IBM Corp. 2023
  */
 
+import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 import * as assert from "assert";
 import * as path from "path";
 import { TreeItem, Uri, extensions, workspace } from "vscode";
@@ -15,7 +16,6 @@ import { ProjectExplorerTreeItem } from "../../views/projectExplorer/projectExpl
 import SourceDirectory from "../../views/projectExplorer/sourceDirectory";
 import { iProjectMock } from "../constants";
 import { testUtil } from "../testUtil";
-import { IBMiObject } from "@halcyontech/vscode-ibmi-types";
 
 class File {
     readonly name: string;
@@ -78,7 +78,6 @@ export const projectExplorerTreeItemSuite: TestSuite = {
         deployLocation = ibmi!.getConnection().getTempRemote(iProject.getName());
         existingPaths[iProject.workspaceFolder.uri.fsPath] = deployLocation;
         await storage.setDeployment(existingPaths);
-        iProject.setDeploymentMethod('all');
         await iProject.deployProject();
     },
     afterAll: async () => {

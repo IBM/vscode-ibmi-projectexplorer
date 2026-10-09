@@ -2,14 +2,14 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { ConnectionData, DeploymentMethod, ObjectItem } from "@halcyontech/vscode-ibmi-types";
+import { ConnectionData, ObjectItem } from "@halcyontech/vscode-ibmi-types";
 import { DeploymentPath } from "@halcyontech/vscode-ibmi-types/api/configuration/storage/CodeForIStorage";
 import * as path from "path";
 import { CancellationToken, ConfigurationTarget, EventEmitter, ExtensionContext, ProgressLocation, QuickPickItem, TreeDataProvider, TreeItem, TreeView, Uri, WorkspaceFolder, commands, env, l10n, window, workspace } from "vscode";
 import { DecorationProvider } from "../../decorationProvider";
 import { EnvironmentManager } from "../../environmentManager";
 import { IProjectT } from "../../iProjectT";
-import { getDeployTools, getInstance, getVSCodeTools } from "../../ibmi";
+import { getDeployTools, getInstance } from "../../ibmi";
 import { LINKS } from "../../ibmiProjectExplorer";
 import { IProject } from "../../iproject";
 import { ProjectManager } from "../../projectManager";
@@ -337,56 +337,6 @@ export default class ProjectExplorer implements TreeDataProvider<ProjectExplorer
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation`, async (element: Source) => {
         if (element) {
           await commands.executeCommand(`code-for-ibmi.setDeployLocation`, undefined, element.workspaceFolder, `${element.deploymentParameters.remotePath}`);
-        }
-      }),
-      commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod`, async (element?: Source) => {
-        let workspaceFolder: WorkspaceFolder | undefined;
-        if (element) {
-          workspaceFolder = element.workspaceFolder;
-        } else {
-          const activeProject = ProjectManager.getActiveProject();
-          workspaceFolder = activeProject?.workspaceFolder;
-        }
-
-        if (workspaceFolder) {
-          const iProject = ProjectManager.get(workspaceFolder);
-
-          if (iProject) {
-            const ibmi = getInstance();
-            const connection = ibmi!.getConnection();
-
-            const deployTools = getDeployTools();
-            const deploymentParameters = await iProject.getDeploymentParameters();
-            if (deploymentParameters) {
-              const methods: { method: DeploymentMethod, label: string, description?: string }[] = [];
-              if (connection.remoteFeatures.md5sum) {
-                methods.push({ method: 'compare', label: l10n.t('Compare'), description: l10n.t('Synchronizes using MD5 hash comparison') });
-              }
-
-              const files = await deployTools?.getDeployChangedFiles(deploymentParameters);
-              const changes = files?.length || 0;
-              methods.push({ method: 'changed', label: l10n.t('Changes'), description: changes > 1 || changes === 0 ? l10n.t('{0} changes detected since last upload', changes) : l10n.t('1 change detected since last upload') });
-
-              const vsCodeTools = getVSCodeTools();
-              if (vsCodeTools!.getGitAPI()) {
-                methods.push(
-                  { method: 'unstaged', label: l10n.t('Working Changes'), description: l10n.t('Unstaged changes in git') },
-                  { method: 'staged', label: l10n.t('Staged Changes') }
-                );
-              }
-
-              methods.push({ method: 'all', label: l10n.t('All'), description: l10n.t('Every file in the local workspace') });
-
-              const deploymentMethod = await window.showQuickPick(methods, { placeHolder: l10n.t('Select deployment method to {0}', deploymentParameters.remotePath) });
-              if (deploymentMethod) {
-                iProject.setDeploymentMethod(deploymentMethod.method);
-
-                this.refresh();
-              }
-            } else {
-              window.showErrorMessage(l10n.t('Chosen location ({0}) is not configured for deployment.', workspaceFolder.uri.fsPath));
-            }
-          }
         }
       }),
       commands.registerCommand(`vscode-ibmi-projectexplorer.projectExplorer.deployProject`, async (element?: Source) => {

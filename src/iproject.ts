@@ -2,11 +2,12 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import { Action, CommandResult, DeploymentMethod, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import { Action, CommandResult, DeploymentParameters, IBMiObject } from "@halcyontech/vscode-ibmi-types";
+import Instance from "@halcyontech/vscode-ibmi-types/Instance";
 import * as dotenv from 'dotenv';
 import { ValidatorResult } from "jsonschema";
-import * as path from "path";
 import { parse } from "parse-gitignore";
+import * as path from "path";
 import { TextEncoder } from "util";
 import { Uri, WorkspaceFolder, commands, l10n, window, workspace } from "vscode";
 import envUpdater from "./envUpdater";
@@ -15,10 +16,9 @@ import { getDeployTools, getInstance } from "./ibmi";
 import { IBMiJsonT } from "./ibmiJsonT";
 import { JobLogInfo } from "./jobLog";
 import { ProjectExplorerSchemaId, ProjectManager } from "./projectManager";
+import { util } from "./util";
 import { RingBuffer } from "./views/jobLog/RingBuffer";
 import { LibraryType } from "./views/projectExplorer/library";
-import Instance from "@halcyontech/vscode-ibmi-types/Instance";
-import { util } from "./util";
 
 /**
  * Represents the default variable for a project's current library.
@@ -100,11 +100,6 @@ export class IProject {
   private environmentValues: EnvironmentVariables;
 
   /**
-   * Represents the project's current deployment method.
-   */
-  private deploymentMethod: DeploymentMethod;
-
-  /**
    * Represents the validation result of the project against the `iproj.json`
    * schema.
    */
@@ -123,7 +118,6 @@ export class IProject {
     this.libraryList = undefined;
     this.jobLogs = new RingBuffer<JobLogInfo>(10);
     this.environmentValues = {};
-    this.deploymentMethod = 'compare';
   }
 
   /**
@@ -520,7 +514,7 @@ export class IProject {
               ".evfevent"
             ]
           };
-          await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action, this.deploymentMethod);
+          await commands.executeCommand(`code-for-ibmi.runAction`, { resourceUri: fileUri ? fileUri : this.workspaceFolder.uri }, undefined, action);
         }
 
         ProjectManager.fire({ type: isBuild ? 'build' : 'compile', iProject: this });
@@ -1589,7 +1583,7 @@ export class IProject {
       const deployTools = getDeployTools();
 
       return {
-        method: this.deploymentMethod,
+        method: getInstance()?.getConnection().getConfig().defaultDeploymentMethod || 'compare',
         workspaceFolder: this.workspaceFolder,
         remotePath: deployLocation,
         ignoreRules: await deployTools?.getDefaultIgnoreRules(this.workspaceFolder)
@@ -1598,20 +1592,11 @@ export class IProject {
   }
 
   /**
-   * Set the project's deployment method.
-   * 
-   * @param deploymentMethod The deployment method.
-   */
-  public setDeploymentMethod(deploymentMethod: DeploymentMethod) {
-    this.deploymentMethod = deploymentMethod;
-  }
-
-  /**
    * Deploy the project using the current deployment parameters.
    */
   public async deployProject() {
     const deployTools = getDeployTools();
-    await deployTools?.launchDeploy(this.workspaceFolder.index, this.deploymentMethod);
+    await deployTools?.launchDeploy(this.workspaceFolder.index);
   }
 
   /**

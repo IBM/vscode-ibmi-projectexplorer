@@ -2,15 +2,15 @@
  * (c) Copyright IBM Corp. 2023
  */
 
-import * as path from "path";
-import { FileStat, FileType, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
-import { ContextValue } from "../../ibmiProjectExplorer";
 import { DeploymentParameters } from "@halcyontech/vscode-ibmi-types";
+import * as path from "path";
+import { FileType, ThemeIcon, TreeItem, TreeItemCollapsibleState, Uri, WorkspaceFolder, l10n, workspace } from "vscode";
+import { getDeployTools, getInstance } from "../../ibmi";
+import { ContextValue } from "../../ibmiProjectExplorer";
+import DeletedFile from "./deletedFile";
 import { ProjectExplorerTreeItem } from "./projectExplorerTreeItem";
-import { getDeployTools } from "../../ibmi";
 import SourceDirectory from "./sourceDirectory";
 import SourceFile from "./sourceFile";
-import DeletedFile from "./deletedFile";
 
 export interface SourceInfo {
   name: string,
@@ -34,7 +34,7 @@ export default class Source extends TreeItem implements ProjectExplorerTreeItem 
     this.contextValue = Source.contextValue;
     this.iconPath = new ThemeIcon(`server-environment`);
     let deploymentMethodDescription: string;
-    switch (deploymentParameters.method) {
+    switch (getInstance()?.getConnection().getConfig().defaultDeploymentMethod) {
       case 'compare':
         deploymentMethodDescription = l10n.t('compare');
         break;
@@ -50,8 +50,14 @@ export default class Source extends TreeItem implements ProjectExplorerTreeItem 
       case 'all':
         deploymentMethodDescription = l10n.t('all');
         break;
+      case 'selected':
+        deploymentMethodDescription = l10n.t('selected');
+        break;
+      default:
+        deploymentMethodDescription = '';
+        break;
     }
-    this.description = `${deploymentParameters.remotePath} (${deploymentMethodDescription})`;
+    this.description = deploymentParameters.remotePath + (deploymentMethodDescription ? ` (${deploymentMethodDescription})` : '');
     this.tooltip = l10n.t('Deploy Location: {0}\n', deploymentParameters.remotePath) +
       l10n.t('Deployment Method: {0}', deploymentMethodDescription);
   }
@@ -126,12 +132,12 @@ export default class Source extends TreeItem implements ProjectExplorerTreeItem 
           subTree = subTree.children[index];
         } else {
           const localUri = Uri.joinPath(subTree.localUri, part);
-          let fileType : FileType;
+          let fileType: FileType;
           try {
             const statResult = await workspace.fs.stat(localUri);
             fileType = statResult.type;
           } catch (ex) {
-            fileType = FileType.Unknown; 
+            fileType = FileType.Unknown;
           }
           const remoteUri = Uri.joinPath(subTree.remoteUri, part);
 

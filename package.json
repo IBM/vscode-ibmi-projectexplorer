@@ -454,12 +454,6 @@
       },
       {
         "category": "%commands.projectExplorer%",
-        "command": "vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod",
-        "title": "%commands.projectExplorer.setDeploymentMethod%",
-        "icon": "$(filter)"
-      },
-      {
-        "category": "%commands.projectExplorer%",
         "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
         "title": "%commands.projectExplorer.deployProject%",
         "icon": "$(cloud-upload)"
@@ -889,10 +883,6 @@
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
-          "when": "never"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod",
           "when": "never"
         },
         {
@@ -1356,16 +1346,6 @@
           "command": "vscode-ibmi-projectexplorer.projectExplorer.editDeployLocation",
           "when": "view == projectExplorer && viewItem =~ /^source(?!(File|Directory)).*/",
           "group": "1_deploySettings@0"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod",
-          "when": "view == projectExplorer && viewItem =~ /^source(?!(File|Directory)).*/",
-          "group": "inline@1"
-        },
-        {
-          "command": "vscode-ibmi-projectexplorer.projectExplorer.setDeploymentMethod",
-          "when": "view == projectExplorer && viewItem =~ /^source(?!(File|Directory)).*/",
-          "group": "1_deploySettings@1"
         },
         {
           "command": "vscode-ibmi-projectexplorer.projectExplorer.deployProject",
@@ -2033,7 +2013,7 @@
     "types": "npx -p typescript tsc ./src/extension.ts --ignoreConfig --skipLibCheck --declaration --allowJs --emitDeclarationOnly --outDir types --esModuleInterop -t es2020 --moduleResolution node10 --ignoreDeprecations 6.0"
   },
   "devDependencies": {
-    "@halcyontech/vscode-ibmi-types": "^2.18",
+    "@halcyontech/vscode-ibmi-types": "3.0.13",
     "@types/node": "22.x",
     "@types/parse-gitignore": "^1.0.2",
     "@types/vscode": "^1.75.0",
