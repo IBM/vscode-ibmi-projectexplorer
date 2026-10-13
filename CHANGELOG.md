@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+# `2.12.7`
+* Remove "Set Deployment Method" option in favour of connection setting in Code4i
+
 # `2.12.6`
 * Fix "Additional Info" command contributed from the FS extension
 
