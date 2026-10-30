@@ -21,7 +21,7 @@
     "deploy": "npm publish --access public"
   },
   "dependencies": {
-    "@halcyontech/vscode-ibmi-types": "^2.9.0",
-    "jsonschema": "^1.4.1"
+    "@halcyontech/vscode-ibmi-types": "^3.0.13",
+    "jsonschema": "^1.5.0"
   }
 }
