@@ -12,6 +12,7 @@ import * as path from "path";
 import * as tar from "tar";
 import * as fs from 'fs';
 import { sourceOrbitEnabled } from "../../sourceOrbit";
+import { util } from "../../util";
 
 /**
  * Represents the configuration for a migration.
@@ -83,7 +84,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
             progress.report({ message: l10n.t('Creating temporary remote directory...'), increment: increment });
             const tempDirectory = connection.getTempRemote(`migrate_${library}`);
             const createTempDirResult = await connection.sendCommand({
-                command: `rm -rf ${tempDirectory}; mkdir -p ${tempDirectory}`
+                command: `rm -rf ${util.shellQuote(tempDirectory)}; mkdir -p ${util.shellQuote(tempDirectory)}`
             });
             if (createTempDirResult?.code !== 0) {
                 window.showErrorMessage(createTempDirResult.stderr);
@@ -97,7 +98,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
                 const sourceFile = path.parse(file).name;
                 const directoryPath = path.posix.join(tempDirectory, sourceFile);
                 const mkdirResult = await connection.sendCommand({
-                    command: `mkdir -p ${directoryPath}`
+                    command: `mkdir -p ${util.shellQuote(directoryPath)}`
                 });
                 if (mkdirResult?.code !== 0) {
                     continue;
@@ -129,7 +130,7 @@ export async function migrateSource(iProject: IProject, library: string): Promis
                 progress.report({ message: l10n.t('Downloading tarball to workspace...'), increment: increment });
                 try {
                     await connection.getContent().downloadFile(localTarball, remoteTarball);
-                    await connection.sendCommand({ command: `rm -rf ${tempDirectory}` });
+                    await connection.sendCommand({ command: `rm -rf ${util.shellQuote(tempDirectory)}` });
                 } catch (error) {
                     window.showErrorMessage(l10n.t('Failed to download tarball to workspace'));
                     return migrationResult;

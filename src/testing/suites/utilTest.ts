@@ -69,6 +69,14 @@ export const utilSuite: TestSuite = {
                 assert.equal(false, util.isEscapeQuoted('abc\\"'));
                 assert.equal(true, util.isEscapeQuoted('\\"abc\\"'));
             },
+        },
+        {
+            name: `Test shellQuote`, test: async () => {
+                assert.strictEqual(util.shellQuote(''), `''`);
+                assert.strictEqual(util.shellQuote(`'`), `''\\'''`);
+                assert.strictEqual(util.shellQuote('/tmp/dir'), `'/tmp/dir'`);
+                assert.strictEqual(util.shellQuote(`/tmp/it's`), `'/tmp/it'\\''s'`);
+            },
         }
 
     ]

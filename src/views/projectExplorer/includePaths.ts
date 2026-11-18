@@ -12,6 +12,7 @@ import * as path from "path";
 import ErrorItem from "./errorItem";
 import { Position } from "../../iproject";
 import { getInstance } from "../../ibmi";
+import { util } from "../../util";
 
 /**
  * Tree item for Include Paths heading.
@@ -71,7 +72,7 @@ export default class IncludePaths extends TreeItem implements ProjectExplorerTre
             const deployLocation = iProject!.getDeployLocation();
 
             if (includePath.startsWith('/') || !deployLocation) {
-              const directoryExists = (await connection?.sendCommand({ command: `test -d ${includePath}` }));
+              const directoryExists = (await connection?.sendCommand({ command: `test -d ${util.shellQuote(includePath)}` }));
 
               if (directoryExists && directoryExists.code === 0) {
                 // Absolute remote include path
@@ -81,7 +82,7 @@ export default class IncludePaths extends TreeItem implements ProjectExplorerTre
               }
             } else {
               const absoluteIncludePath = path.posix.join(deployLocation, includePath);
-              const directoryExists = (await connection?.sendCommand({ command: `test -d ${absoluteIncludePath}` }));
+              const directoryExists = (await connection?.sendCommand({ command: `test -d ${util.shellQuote(absoluteIncludePath)}` }));
 
               if (directoryExists && directoryExists.code === 0) {
                 // Relative remote include path

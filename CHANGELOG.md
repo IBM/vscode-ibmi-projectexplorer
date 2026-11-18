@@ -2,6 +2,9 @@
 
 All notable changes to the "vscode-ibmi-projectexplorer" extension will be documented in this file.
 
+# `2.12.7`
+* Fix include path shell command checks
+
 # `2.12.6`
 * Fix "Additional Info" command contributed from the FS extension
 
