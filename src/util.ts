@@ -85,4 +85,15 @@ export namespace util {
       return value;
     }
   }
+
+  /**
+   * Wraps a value in single quotes so the shell treats it as a single literal argument.
+   * Any embedded single quotes are escaped.
+   *
+   * @param value The string to quote.
+   * @returns The single-quoted string, safe to interpolate into a shell command.
+   */
+  export function shellQuote(value: string): string {
+    return `'${value.replace(/'/g, `'\\''`)}'`;
+  }
 }
